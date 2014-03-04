@@ -3,11 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Microsoft.AspNet.DependencyInjection;
-#if NET45
 using System.Security.Claims;
-#else
-using System.Security.ClaimsK;
-#endif
 using System.Text;
 using System.Threading.Tasks;
 
@@ -29,8 +25,6 @@ namespace Microsoft.AspNet.Identity
         private TimeSpan _defaultLockout = TimeSpan.Zero;
         private bool _disposed;
         private IPasswordHasher _passwordHasher;
-        private IIdentityValidator<string> _passwordValidator;
-        private IIdentityValidator<TUser> _userValidator;
 
         /// <summary>
         /// Constructor which takes a service provider to find the default interfaces to hook up
@@ -45,6 +39,8 @@ namespace Microsoft.AspNet.Identity
             Store = serviceProvider.GetService<IUserStore<TUser, TKey>>();
             ClaimsIdentityFactory = serviceProvider.GetService<IClaimsIdentityFactory<TUser, TKey>>();
             PasswordHasher = serviceProvider.GetService<IPasswordHasher>();
+            UserValidator = serviceProvider.GetService<IUserValidator<TUser>>();
+            PasswordValidator = serviceProvider.GetService<IPasswordValidator>();
             // TODO: validator interfaces, and maybe each optional store as well?  Email and SMS services?
         }
 
@@ -59,8 +55,7 @@ namespace Microsoft.AspNet.Identity
                 throw new ArgumentNullException("store");
             }
             Store = store;
-            //UserValidator = new UserValidator<TUser, TKey>(this);
-            //PasswordValidator = new MinimumLengthValidator(6);
+            UserValidator = new UserValidator<TUser, TKey>(this);
             //PasswordHasher = new PasswordHasher();
             //ClaimsIdentityFactory = new ClaimsIdentityFactory<TUser, TKey>();
         }
@@ -94,44 +89,12 @@ namespace Microsoft.AspNet.Identity
         /// <summary>
         ///     Used to validate users before persisting changes
         /// </summary>
-        public IIdentityValidator<TUser> UserValidator
-        {
-            get
-            {
-                ThrowIfDisposed();
-                return _userValidator;
-            }
-            set
-            {
-                ThrowIfDisposed();
-                if (value == null)
-                {
-                    throw new ArgumentNullException("value");
-                }
-                _userValidator = value;
-            }
-        }
+        public IUserValidator<TUser> UserValidator { get; set; }
 
         /// <summary>
         ///     Used to validate passwords before persisting changes
         /// </summary>
-        public IIdentityValidator<string> PasswordValidator
-        {
-            get
-            {
-                ThrowIfDisposed();
-                return _passwordValidator;
-            }
-            set
-            {
-                ThrowIfDisposed();
-                if (value == null)
-                {
-                    throw new ArgumentNullException("value");
-                }
-                _passwordValidator = value;
-            }
-        }
+        public IPasswordValidator PasswordValidator { get; set; }
 
         /// <summary>
         ///     Used to create claims identities from users
@@ -359,6 +322,10 @@ namespace Microsoft.AspNet.Identity
             return ClaimsIdentityFactory.Create(this, user, authenticationType);
         }
 
+        private async Task<IdentityResult> ValidateUserInternal(TUser user) {
+            return (UserValidator == null) ? IdentityResult.Success : await UserValidator.Validate(user).ConfigureAwait(false);
+        }
+
         /// <summary>
         ///     Create a user with no password
         /// </summary>
@@ -368,7 +335,7 @@ namespace Microsoft.AspNet.Identity
         {
             ThrowIfDisposed();
             await UpdateSecurityStampInternal(user).ConfigureAwait(false);
-            var result = await UserValidator.Validate(user).ConfigureAwait(false);
+            var result = await ValidateUserInternal(user);
             if (!result.Succeeded)
             {
                 return result;
@@ -393,8 +360,7 @@ namespace Microsoft.AspNet.Identity
             {
                 throw new ArgumentNullException("user");
             }
-
-            var result = await UserValidator.Validate(user).ConfigureAwait(false);
+            var result = await ValidateUserInternal(user);
             if (!result.Succeeded)
             {
                 return result;
@@ -612,10 +578,13 @@ namespace Microsoft.AspNet.Identity
         internal async Task<IdentityResult> UpdatePasswordInternal(IUserPasswordStore<TUser, TKey> passwordStore,
             TUser user, string newPassword)
         {
-            var result = await PasswordValidator.Validate(newPassword).ConfigureAwait(false);
-            if (!result.Succeeded)
+            if (PasswordValidator != null)
             {
-                return result;
+                var result = await PasswordValidator.Validate(newPassword).ConfigureAwait(false);
+                if (!result.Succeeded)
+                {
+                    return result;
+                }
             }
             await
                 passwordStore.SetPasswordHash(user, PasswordHasher.HashPassword(newPassword)).ConfigureAwait(false);
