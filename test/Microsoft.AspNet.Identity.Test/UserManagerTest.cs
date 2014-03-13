@@ -19,7 +19,7 @@ namespace Microsoft.AspNet.Identity.Test
             Assert.NotNull(manager.UserValidator);
         }
 
-        // TODO: Mock fails in K (this works fine in net45)
+         //TODO: Mock fails in K (this works fine in net45)
         //[Fact]
         //public async Task CreateTest()
         //{
@@ -176,7 +176,7 @@ namespace Microsoft.AspNet.Identity.Test
         //[Fact]
         //public void MethodsFailWithUnknownUserTest()
         //{
-        //    var db = UnitTestHelper.CreateDefaultDb();
+        //    var db = IdentityResultExtensions.CreateDefaultDb();
         //    var manager = new UserManager<IdentityUser>(new UserStore<IdentityUser>(db));
         //    manager.UserTokenProvider = new NoOpTokenProvider();
         //    var error = "UserId not found.";
@@ -333,8 +333,6 @@ namespace Microsoft.AspNet.Identity.Test
             {
                 return Task.FromResult(0);
             }
-
-            
         }
 
 
