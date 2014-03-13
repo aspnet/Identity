@@ -271,7 +271,6 @@ namespace Microsoft.AspNet.Identity
             }
         }
 
-
         /// <summary>
         ///     Returns an IQueryable of users if the store is an IQueryableUserStore
         /// </summary>

@@ -72,6 +72,18 @@ namespace Microsoft.AspNet.Identity
         }
 
         /// <summary>
+        ///     Returns true if the store is an IQueryableRoleStore
+        /// </summary>
+        public virtual bool SupportsQueryableRoles
+        {
+            get
+            {
+                ThrowIfDisposed();
+                return Store is IQueryableRoleStore<TRole, TKey>;
+            }
+        }
+
+        /// <summary>
         ///     Dispose this object
         /// </summary>
         public void Dispose()

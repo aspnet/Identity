@@ -151,26 +151,26 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
-        public async Task ManagerPublicNullCheckTest()
+        public async Task ManagerPublicNullChecks()
         {
-            Assert.Throws<ArgumentNullException>(() => new UserManager<TestUser, string>((IUserStore<TestUser, string>)null));
+            Assert.Throws<ArgumentNullException>("store", () => new UserManager<TestUser, string>((IUserStore<TestUser, string>)null));
             var manager = new UserManager<TestUser, string>(new NotImplementedStore());
             Assert.Throws<ArgumentNullException>(() => manager.ClaimsIdentityFactory = null);
             Assert.Throws<ArgumentNullException>(() => manager.PasswordHasher = null);
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await manager.CreateIdentity(null, "whatever"));
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await manager.Create(null));
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await manager.Create(null, null));
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await manager.Create(new TestUser(), null));
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await manager.Update(null));
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await manager.Delete(null));
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await manager.AddClaim("bogus", null));
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await manager.FindByName(null));
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await manager.Find(null, null));
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await manager.AddLogin("bogus", null));
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await manager.RemoveLogin("bogus", null));
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await manager.FindByEmail(null));
-            Assert.Throws<ArgumentNullException>(() => manager.RegisterTwoFactorProvider(null, null));
-            Assert.Throws<ArgumentNullException>(() => manager.RegisterTwoFactorProvider("bogus", null));
+            await Assert.ThrowsAsync<ArgumentNullException>("user", async () => await manager.CreateIdentity(null, "whatever"));
+            await Assert.ThrowsAsync<ArgumentNullException>("user", async () => await manager.Create(null));
+            await Assert.ThrowsAsync<ArgumentNullException>("user", async () => await manager.Create(null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>("password", async () => await manager.Create(new TestUser(), null));
+            await Assert.ThrowsAsync<ArgumentNullException>("user", async () => await manager.Update(null));
+            await Assert.ThrowsAsync<ArgumentNullException>("user", async () => await manager.Delete(null));
+            await Assert.ThrowsAsync<ArgumentNullException>("claim", async () => await manager.AddClaim("bogus", null));
+            await Assert.ThrowsAsync<ArgumentNullException>("userName", async () => await manager.FindByName(null));
+            await Assert.ThrowsAsync<ArgumentNullException>("userName", async () => await manager.Find(null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>("login", async () => await manager.AddLogin("bogus", null));
+            await Assert.ThrowsAsync<ArgumentNullException>("login", async () => await manager.RemoveLogin("bogus", null));
+            await Assert.ThrowsAsync<ArgumentNullException>("email", async () => await manager.FindByEmail(null));
+            Assert.Throws<ArgumentNullException>("twoFactorProvider", () => manager.RegisterTwoFactorProvider(null, null));
+            Assert.Throws<ArgumentNullException>("provider", () => manager.RegisterTwoFactorProvider("bogus", null));
         }
 
         //[Fact]
