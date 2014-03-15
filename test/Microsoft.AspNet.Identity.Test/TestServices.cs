@@ -11,12 +11,18 @@ namespace Microsoft.AspNet.Identity.Test
             where TUser : class,IUser<TKey>
             where TKey : IEquatable<TKey>
         {
+<<<<<<< HEAD
             var container = new ServiceCollection();
             container.Add(TestServices.DefaultServices<TUser, TKey>());
             return container.BuildServiceProvider();
+=======
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.Add(TestServices.DefaultServices<TUser, TKey>());
+            return serviceCollection.BuildServiceProvider();
+>>>>>>> Updated test to use new ServiceCollection
         }
 
-        public static IEnumerable<IServiceDescriptor> DefaultServices<TUser, TKey>() 
+        public static IEnumerable<IServiceDescriptor> DefaultServices<TUser, TKey>()
             where TUser : class,IUser<TKey>
             where TKey : IEquatable<TKey>
         {
@@ -39,12 +45,12 @@ namespace Microsoft.AspNet.Identity.Test
 
             public Type ServiceType
             {
-                get { return typeof (TService); }
+                get { return typeof(TService); }
             }
 
             public Type ImplementationType
             {
-                get { return typeof (TImplementation); }
+                get { return typeof(TImplementation); }
             }
 
             public object ImplementationInstance
@@ -67,7 +73,7 @@ namespace Microsoft.AspNet.Identity.Test
 
             public Type ServiceType
             {
-                get { return typeof (TService); }
+                get { return typeof(TService); }
             }
 
             public Type ImplementationType
