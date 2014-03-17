@@ -144,11 +144,33 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
-        public void DisposeAfterDisposeWorksTest()
+        public void DisposeAfterDisposeDoesNotThrow()
         {
             var manager = new UserManager<TestUser, string>(new NoopUserStore());
             manager.Dispose();
             manager.Dispose();
+        }
+
+        private class BadPasswordValidtor : IPasswordValidator
+        {
+            public const string ErrorMessage = "I'm Bad.";
+
+            public Task<IdentityResult> Validate(string password)
+            {
+                return Task.FromResult(IdentityResult.Failed(ErrorMessage));
+            }
+        }
+
+        [Fact]
+        public async Task PasswordValidatorBlocksCreate()
+        {
+            // TODO: Can switch to Mock eventually
+            var manager = new UserManager<TestUser, string>(new EmptyStore())
+            {
+                PasswordValidator = new BadPasswordValidtor()
+            };
+            IdentityResultAssert.IsFailure(await manager.Create(new TestUser(), "password"),
+                BadPasswordValidtor.ErrorMessage);
         }
 
         [Fact]
@@ -177,8 +199,10 @@ namespace Microsoft.AspNet.Identity.Test
         [Fact]
         public async Task MethodsFailWithUnknownUserTest()
         {
-            var manager = new UserManager<TestUser, string>(new EmptyStore());
-            manager.UserTokenProvider = new NoOpTokenProvider();
+            var manager = new UserManager<TestUser, string>(new EmptyStore())
+            {
+                UserTokenProvider = new NoOpTokenProvider()
+            };
             const string error = "UserId not found.";
             await ExceptionAssert.ThrowsAsync<InvalidOperationException>(
                 async () => await manager.AddClaim(null, new Claim("a", "b")), error);
@@ -253,9 +277,15 @@ namespace Microsoft.AspNet.Identity.Test
             await ExceptionAssert.ThrowsAsync<InvalidOperationException>(
                 async () => await manager.AccessFailed(null), error);
             await ExceptionAssert.ThrowsAsync<InvalidOperationException>(
+                async () => await manager.ResetAccessFailedCount(null), error);
+            await ExceptionAssert.ThrowsAsync<InvalidOperationException>(
+                async () => await manager.GetLockoutEnabled(null), error);
+            await ExceptionAssert.ThrowsAsync<InvalidOperationException>(
                 async () => await manager.SetLockoutEnabled(null, false), error);
             await ExceptionAssert.ThrowsAsync<InvalidOperationException>(
                 async () => await manager.SetLockoutEndDate(null, DateTimeOffset.UtcNow), error);
+            await ExceptionAssert.ThrowsAsync<InvalidOperationException>(
+                async () => await manager.GetLockoutEndDate(null), error);
             await ExceptionAssert.ThrowsAsync<InvalidOperationException>(
                 async () => await manager.IsLockedOut(null), error);
         }
