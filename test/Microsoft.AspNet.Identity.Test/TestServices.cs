@@ -11,15 +11,9 @@ namespace Microsoft.AspNet.Identity.Test
             where TUser : class,IUser<TKey>
             where TKey : IEquatable<TKey>
         {
-<<<<<<< HEAD
-            var container = new ServiceCollection();
-            container.Add(TestServices.DefaultServices<TUser, TKey>());
-            return container.BuildServiceProvider();
-=======
             var serviceCollection = new ServiceCollection();
             serviceCollection.Add(TestServices.DefaultServices<TUser, TKey>());
             return serviceCollection.BuildServiceProvider();
->>>>>>> Updated test to use new ServiceCollection
         }
 
         public static IEnumerable<IServiceDescriptor> DefaultServices<TUser, TKey>()
