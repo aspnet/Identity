@@ -169,6 +169,27 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
         }
 
         [Fact]
+        public async Task AddDupeEmailAllowedByDefault()
+        {
+            var manager = CreateManager();
+            var user = new InMemoryUser("dupe") {Email = "yup@yup.com"};
+            var user2 = new InMemoryUser("dupeEmail") { Email = "yup@yup.com" };
+            IdentityResultAssert.IsSuccess(await manager.Create(user));
+            IdentityResultAssert.IsSuccess(await manager.Create(user2));
+        }
+
+        [Fact]
+        public async Task AddDupeEmailFallsWhenUniqueEmailRequired()
+        {
+            var manager = CreateManager();
+            manager.UserValidator = new UserValidator<InMemoryUser, string> { RequireUniqueEmail = true };
+            var user = new InMemoryUser("dupe") { Email = "yup@yup.com" };
+            var user2 = new InMemoryUser("dupeEmail") { Email = "yup@yup.com" };
+            IdentityResultAssert.IsSuccess(await manager.Create(user));
+            IdentityResultAssert.IsFailure(await manager.Create(user2), "Email 'yup@yup.com' is already taken.");
+        }
+
+        [Fact]
         public async Task UpdateSecurityStampActuallyChanges()
         {
             var manager = CreateManager();
@@ -517,25 +538,40 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
             Assert.True(await manager.RoleExists(role.Name));
         }
 
-        //[Fact]
-        //public async Task BadValidatorBlocksCreateTest()
-        //{
-        //    var manager = CreateRoleManager();
-        //    manager.RoleValidator = new AlwaysBadValidator<InMemoryRole>();
-        //    IdentityResultAssert.IsFailure(await manager.Create(new InMemoryRole("blocked")),
-        //        AlwaysBadValidator<InMemoryRole>.ErrorMessage);
-        //}
+        private class AlwaysBadValidator : IUserValidator<InMemoryUser, string>, IRoleValidator<InMemoryRole, string>
+        {
+            public const string ErrorMessage = "I'm Bad.";
 
-        //[Fact]
-        //public async Task BadValidatorBlocksAllUpdatesTest()
-        //{
-        //    var manager = CreateRoleManager();
-        //    var role = new InMemoryRole("poorguy");
-        //    IdentityResultAssert.IsSuccess(await manager.Create(role));
-        //    var error = AlwaysBadValidator<InMemoryRole>.ErrorMessage;
-        //    manager.RoleValidator = new AlwaysBadValidator<InMemoryRole>();
-        //    IdentityResultAssert.IsFailure(await manager.Update(role), error);
-        //}
+            public Task<IdentityResult> Validate(UserManager<InMemoryUser, string> manager, InMemoryUser user)
+            {
+                return Task.FromResult(IdentityResult.Failed(ErrorMessage));
+            }
+
+            public Task<IdentityResult> Validate(RoleManager<InMemoryRole, string> manager, InMemoryRole role)
+            {
+                return Task.FromResult(IdentityResult.Failed(ErrorMessage));
+            }
+        }
+
+        [Fact]
+        public async Task BadValidatorBlocksCreateRole()
+        {
+            var manager = CreateRoleManager();
+            manager.RoleValidator = new AlwaysBadValidator();
+            IdentityResultAssert.IsFailure(await manager.Create(new InMemoryRole("blocked")),
+                AlwaysBadValidator.ErrorMessage);
+        }
+
+        [Fact]
+        public async Task BadValidatorBlocksRoleUpdate()
+        {
+            var manager = CreateRoleManager();
+            var role = new InMemoryRole("poorguy");
+            IdentityResultAssert.IsSuccess(await manager.Create(role));
+            var error = AlwaysBadValidator.ErrorMessage;
+            manager.RoleValidator = new AlwaysBadValidator();
+            IdentityResultAssert.IsFailure(await manager.Update(role), error);
+        }
 
         [Fact]
         public async Task CanDeleteRoleTest()
@@ -938,20 +974,18 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
         //    Assert.False(await manager.VerifyTwoFactorToken(user.Id, factorId, token));
         //}
 
-        //[Fact]
-        //public async Task UserTwoFactorProviderTest()
-        //{
-        //    var manager = CreateManager();
-        //    const string factorId = "PhoneCode";
-        //    manager.RegisterTwoFactorProvider(factorId, new PhoneNumberTokenProvider<InMemoryUser>());
-        //    var user = new InMemoryUser("PhoneCodeTest");
-        //    IdentityResultAssert.IsSuccess(await manager.Create(user));
-        //    var stamp = user.SecurityStamp;
-        //    Assert.NotNull(stamp);
-        //    IdentityResultAssert.IsSuccess(await manager.SetTwoFactorEnabled(user.Id, true));
-        //    Assert.NotEqual(stamp, await manager.GetSecurityStamp(user.Id));
-        //    Assert.True(await manager.GetTwoFactorEnabled(user.Id));
-        //}
+        [Fact]
+        public async Task EnableTwoFactorChangesSecurityStamp()
+        {
+            var manager = CreateManager();
+            var user = new InMemoryUser("TwoFactorEnabledTest");
+            IdentityResultAssert.IsSuccess(await manager.Create(user));
+            var stamp = user.SecurityStamp;
+            Assert.NotNull(stamp);
+            IdentityResultAssert.IsSuccess(await manager.SetTwoFactorEnabled(user.Id, true));
+            Assert.NotEqual(stamp, await manager.GetSecurityStamp(user.Id));
+            Assert.True(await manager.GetTwoFactorEnabled(user.Id));
+        }
 
         [Fact]
         public async Task CanSendSms()

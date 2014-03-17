@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.AspNet.DependencyInjection;
+using Microsoft.AspNet.DependencyInjection.Fallback;
 
 namespace Microsoft.AspNet.Identity.Test
 {
@@ -10,7 +11,9 @@ namespace Microsoft.AspNet.Identity.Test
             where TUser : class,IUser<TKey>
             where TKey : IEquatable<TKey>
         {
-            return new ServiceProvider().Add(TestServices.DefaultServices<TUser, TKey>());
+            var container = new ServiceCollection();
+            container.Add(TestServices.DefaultServices<TUser, TKey>());
+            return container.BuildServiceProvider();
         }
 
         public static IEnumerable<IServiceDescriptor> DefaultServices<TUser, TKey>() 
