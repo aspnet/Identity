@@ -175,88 +175,89 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
-        public void MethodsFailWithUnknownUserTest()
+        public async Task MethodsFailWithUnknownUserTest()
         {
             var manager = new UserManager<TestUser, string>(new EmptyStore());
+            manager.UserTokenProvider = new NoOpTokenProvider();
             const string error = "UserId not found.";
-            ExceptionAssert.ThrowsAsync<InvalidOperationException>(
-                () => manager.AddClaim(null, new Claim("a", "b")), error);
-            ExceptionAssert.ThrowsAsync<InvalidOperationException>(
-                () => manager.AddLogin(null, new UserLoginInfo("", "")), error);
-            ExceptionAssert.ThrowsAsync<InvalidOperationException>(
-                () => manager.AddPassword(null, null), error);
-            ExceptionAssert.ThrowsAsync<InvalidOperationException>(
-                () => manager.AddToRole(null, null), error);
-            ExceptionAssert.ThrowsAsync<InvalidOperationException>(
-                () => manager.ChangePassword(null, null, null), error);
-            ExceptionAssert.ThrowsAsync<InvalidOperationException>(
-                () => manager.GetClaims(null), error);
-            ExceptionAssert.ThrowsAsync<InvalidOperationException>(
-                () => manager.GetLogins(null), error);
-            ExceptionAssert.ThrowsAsync<InvalidOperationException>(
-                () => manager.GetRoles(null), error);
-            ExceptionAssert.ThrowsAsync<InvalidOperationException>(
-                () => manager.IsInRole(null, null), error);
-            ExceptionAssert.ThrowsAsync<InvalidOperationException>(
-                () => manager.RemoveClaim(null, new Claim("a", "b")), error);
-            ExceptionAssert.ThrowsAsync<InvalidOperationException>(
-                () => manager.RemoveLogin(null, new UserLoginInfo("", "")), error);
-            ExceptionAssert.ThrowsAsync<InvalidOperationException>(
-                () => manager.RemovePassword(null), error);
-            ExceptionAssert.ThrowsAsync<InvalidOperationException>(
-                () => manager.RemoveFromRole(null, null), error);
-            ExceptionAssert.ThrowsAsync<InvalidOperationException>(
-                () => manager.UpdateSecurityStamp(null), error);
-            ExceptionAssert.ThrowsAsync<InvalidOperationException>(
-                () => manager.GetSecurityStamp(null), error);
-            ExceptionAssert.ThrowsAsync<InvalidOperationException>(
-                () => manager.HasPassword(null), error);
-            ExceptionAssert.ThrowsAsync<InvalidOperationException>(
-                () => manager.GeneratePasswordResetToken(null), error);
-            ExceptionAssert.ThrowsAsync<InvalidOperationException>(
-                () => manager.ResetPassword(null, null, null), error);
-            ExceptionAssert.ThrowsAsync<InvalidOperationException>(
-                () => manager.IsEmailConfirmed(null), error);
-            ExceptionAssert.ThrowsAsync<InvalidOperationException>(
-                () => manager.GenerateEmailConfirmationToken(null), error);
-            ExceptionAssert.ThrowsAsync<InvalidOperationException>(
-                () => manager.ConfirmEmail(null, null), error);
-            ExceptionAssert.ThrowsAsync<InvalidOperationException>(
-                () => manager.GetEmail(null), error);
-            ExceptionAssert.ThrowsAsync<InvalidOperationException>(
-                () => manager.SetEmail(null, null), error);
-            ExceptionAssert.ThrowsAsync<InvalidOperationException>(
-                () => manager.IsPhoneNumberConfirmed(null), error);
-            ExceptionAssert.ThrowsAsync<InvalidOperationException>(
-                () => manager.ChangePhoneNumber(null, null, null), error);
-            ExceptionAssert.ThrowsAsync<InvalidOperationException>(
-                () => manager.VerifyChangePhoneNumberToken(null, null, null), error);
-            ExceptionAssert.ThrowsAsync<InvalidOperationException>(
-                () => manager.GetPhoneNumber(null), error);
-            ExceptionAssert.ThrowsAsync<InvalidOperationException>(
-                () => manager.SetPhoneNumber(null, null), error);
-            ExceptionAssert.ThrowsAsync<InvalidOperationException>(
-                () => manager.GetTwoFactorEnabled(null), error);
-            ExceptionAssert.ThrowsAsync<InvalidOperationException>(
-                () => manager.SetTwoFactorEnabled(null, true), error);
-            ExceptionAssert.ThrowsAsync<InvalidOperationException>(
-                () => manager.GenerateTwoFactorToken(null, null), error);
-            ExceptionAssert.ThrowsAsync<InvalidOperationException>(
-                () => manager.VerifyTwoFactorToken(null, null, null), error);
-            ExceptionAssert.ThrowsAsync<InvalidOperationException>(
-                () => manager.NotifyTwoFactorToken(null, null, null), error);
-            ExceptionAssert.ThrowsAsync<InvalidOperationException>(
-                () => manager.GetValidTwoFactorProviders(null), error);
-            ExceptionAssert.ThrowsAsync<InvalidOperationException>(
-                () => manager.VerifyUserToken(null, null, null), error);
-            ExceptionAssert.ThrowsAsync<InvalidOperationException>(
-                () => manager.AccessFailed(null), error);
-            ExceptionAssert.ThrowsAsync<InvalidOperationException>(
-                () => manager.SetLockoutEnabled(null, false), error);
-            ExceptionAssert.ThrowsAsync<InvalidOperationException>(
-                () => manager.SetLockoutEndDate(null, DateTimeOffset.UtcNow), error);
-            ExceptionAssert.ThrowsAsync<InvalidOperationException>(
-                () => manager.IsLockedOut(null), error);
+            await ExceptionAssert.ThrowsAsync<InvalidOperationException>(
+                async () => await manager.AddClaim(null, new Claim("a", "b")), error);
+            await ExceptionAssert.ThrowsAsync<InvalidOperationException>(
+                async () => await manager.AddLogin(null, new UserLoginInfo("", "")), error);
+            await ExceptionAssert.ThrowsAsync<InvalidOperationException>(
+                async () => await manager.AddPassword(null, null), error);
+            await ExceptionAssert.ThrowsAsync<InvalidOperationException>(
+                async () => await manager.AddToRole(null, null), error);
+            await ExceptionAssert.ThrowsAsync<InvalidOperationException>(
+                async () => await manager.ChangePassword(null, null, null), error);
+            await ExceptionAssert.ThrowsAsync<InvalidOperationException>(
+                async () => await manager.GetClaims(null), error);
+            await ExceptionAssert.ThrowsAsync<InvalidOperationException>(
+                async () => await manager.GetLogins(null), error);
+            await ExceptionAssert.ThrowsAsync<InvalidOperationException>(
+                async () => await manager.GetRoles(null), error);
+            await ExceptionAssert.ThrowsAsync<InvalidOperationException>(
+                async () => await manager.IsInRole(null, null), error);
+            await ExceptionAssert.ThrowsAsync<InvalidOperationException>(
+                async () => await manager.RemoveClaim(null, new Claim("a", "b")), error);
+            await ExceptionAssert.ThrowsAsync<InvalidOperationException>(
+                async () => await manager.RemoveLogin(null, new UserLoginInfo("", "")), error);
+            await ExceptionAssert.ThrowsAsync<InvalidOperationException>(
+                async () => await manager.RemovePassword(null), error);
+            await ExceptionAssert.ThrowsAsync<InvalidOperationException>(
+                async () => await manager.RemoveFromRole(null, null), error);
+            await ExceptionAssert.ThrowsAsync<InvalidOperationException>(
+                async () => await manager.UpdateSecurityStamp(null), error);
+            await ExceptionAssert.ThrowsAsync<InvalidOperationException>(
+                async () => await manager.GetSecurityStamp(null), error);
+            await ExceptionAssert.ThrowsAsync<InvalidOperationException>(
+                async () => await manager.HasPassword(null), error);
+            await ExceptionAssert.ThrowsAsync<InvalidOperationException>(
+                async () => await manager.GeneratePasswordResetToken(null), error);
+            await ExceptionAssert.ThrowsAsync<InvalidOperationException>(
+                async () => await manager.ResetPassword(null, null, null), error);
+            await ExceptionAssert.ThrowsAsync<InvalidOperationException>(
+                async () => await manager.IsEmailConfirmed(null), error);
+            await ExceptionAssert.ThrowsAsync<InvalidOperationException>(
+                async () => await manager.GenerateEmailConfirmationToken(null), error);
+            await ExceptionAssert.ThrowsAsync<InvalidOperationException>(
+                async () => await manager.ConfirmEmail(null, null), error);
+            await ExceptionAssert.ThrowsAsync<InvalidOperationException>(
+                async () => await manager.GetEmail(null), error);
+            await ExceptionAssert.ThrowsAsync<InvalidOperationException>(
+                async () => await manager.SetEmail(null, null), error);
+            await ExceptionAssert.ThrowsAsync<InvalidOperationException>(
+                async () => await manager.IsPhoneNumberConfirmed(null), error);
+            await ExceptionAssert.ThrowsAsync<InvalidOperationException>(
+                async () => await manager.ChangePhoneNumber(null, null, null), error);
+            await ExceptionAssert.ThrowsAsync<InvalidOperationException>(
+                async () => await manager.VerifyChangePhoneNumberToken(null, null, null), error);
+            await ExceptionAssert.ThrowsAsync<InvalidOperationException>(
+                async () => await manager.GetPhoneNumber(null), error);
+            await ExceptionAssert.ThrowsAsync<InvalidOperationException>(
+                async () => await manager.SetPhoneNumber(null, null), error);
+            await ExceptionAssert.ThrowsAsync<InvalidOperationException>(
+                async () => await manager.GetTwoFactorEnabled(null), error);
+            await ExceptionAssert.ThrowsAsync<InvalidOperationException>(
+                async () => await manager.SetTwoFactorEnabled(null, true), error);
+            await ExceptionAssert.ThrowsAsync<InvalidOperationException>(
+                async () => await manager.GenerateTwoFactorToken(null, null), error);
+            await ExceptionAssert.ThrowsAsync<InvalidOperationException>(
+                async () => await manager.VerifyTwoFactorToken(null, null, null), error);
+            await ExceptionAssert.ThrowsAsync<InvalidOperationException>(
+                async () => await manager.NotifyTwoFactorToken(null, null, null), error);
+            await ExceptionAssert.ThrowsAsync<InvalidOperationException>(
+                async () => await manager.GetValidTwoFactorProviders(null), error);
+            await ExceptionAssert.ThrowsAsync<InvalidOperationException>(
+                async () => await manager.VerifyUserToken(null, null, null), error);
+            await ExceptionAssert.ThrowsAsync<InvalidOperationException>(
+                async () => await manager.AccessFailed(null), error);
+            await ExceptionAssert.ThrowsAsync<InvalidOperationException>(
+                async () => await manager.SetLockoutEnabled(null, false), error);
+            await ExceptionAssert.ThrowsAsync<InvalidOperationException>(
+                async () => await manager.SetLockoutEndDate(null, DateTimeOffset.UtcNow), error);
+            await ExceptionAssert.ThrowsAsync<InvalidOperationException>(
+                async () => await manager.IsLockedOut(null), error);
         }
 
         [Fact]
@@ -296,6 +297,30 @@ namespace Microsoft.AspNet.Identity.Test
             await Assert.ThrowsAsync<ObjectDisposedException>(() => manager.ConfirmEmail(null, null));
         }
 
+        private class NoOpTokenProvider : IUserTokenProvider<TestUser, string>
+        {
+
+            public Task<string> Generate(string purpose, UserManager<TestUser, string> manager, TestUser user)
+            {
+                return Task.FromResult("Test");
+            }
+
+            public Task<bool> Validate(string purpose, string token, UserManager<TestUser, string> manager, TestUser user)
+            {
+                return Task.FromResult(true);
+            }
+
+            public Task Notify(string token, UserManager<TestUser, string> manager, TestUser user)
+            {
+                return Task.FromResult(0);
+            }
+
+            public Task<bool> IsValidProviderForUser(UserManager<TestUser, string> manager, TestUser user)
+            {
+                return Task.FromResult(true);
+            }
+        }
+
         private class EmptyStore :
             IUserPasswordStore<TestUser, string>,
             IUserClaimStore<TestUser, string>,
@@ -303,7 +328,9 @@ namespace Microsoft.AspNet.Identity.Test
             IUserEmailStore<TestUser, string>,
             IUserPhoneNumberStore<TestUser, string>,
             IUserLockoutStore<TestUser, string>,
-            IUserTwoFactorStore<TestUser, string>
+            IUserTwoFactorStore<TestUser, string>,
+            IUserRoleStore<TestUser, string>,
+            IUserSecurityStampStore<TestUser, string>
         {
             public void Dispose()
             {
@@ -472,6 +499,36 @@ namespace Microsoft.AspNet.Identity.Test
             public Task<bool> GetTwoFactorEnabled(TestUser user)
             {
                 return Task.FromResult(false);
+            }
+
+            public Task AddToRole(TestUser user, string roleName)
+            {
+                return Task.FromResult(0);
+            }
+
+            public Task RemoveFromRole(TestUser user, string roleName)
+            {
+                return Task.FromResult(0);
+            }
+
+            public Task<IList<string>> GetRoles(TestUser user)
+            {
+                return Task.FromResult<IList<string>>(new List<string>());
+            }
+
+            public Task<bool> IsInRole(TestUser user, string roleName)
+            {
+                return Task.FromResult(false);
+            }
+
+            public Task SetSecurityStamp(TestUser user, string stamp)
+            {
+                return Task.FromResult(0);
+            }
+
+            public Task<string> GetSecurityStamp(TestUser user)
+            {
+                return Task.FromResult("");
             }
         }
 
