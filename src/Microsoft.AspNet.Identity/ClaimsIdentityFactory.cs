@@ -5,17 +5,6 @@ using System.Threading.Tasks;
 namespace Microsoft.AspNet.Identity
 {
     /// <summary>
-    ///     Constants class
-    /// </summary>
-    public static class Constants
-    {
-        /// <summary>
-        ///     ClaimType used for the security stamp by default
-        /// </summary>
-        public const string DefaultSecurityStampClaimType = "AspNet.Identity.SecurityStamp";
-    }
-
-    /// <summary>
     ///     Creates a ClaimsIdentity from a User
     /// </summary>
     /// <typeparam name="TUser"></typeparam>
@@ -25,6 +14,11 @@ namespace Microsoft.AspNet.Identity
         where TKey : IEquatable<TKey>
     {
         /// <summary>
+        ///     ClaimType used for the security stamp by default
+        /// </summary>
+        public const string DefaultSecurityStampClaimType = "AspNet.Identity.SecurityStamp";
+
+        /// <summary>
         ///     Constructor
         /// </summary>
         public ClaimsIdentityFactory()
@@ -32,7 +26,7 @@ namespace Microsoft.AspNet.Identity
             RoleClaimType = ClaimsIdentity.DefaultRoleClaimType;
             UserIdClaimType = ClaimTypes.NameIdentifier;
             UserNameClaimType = ClaimsIdentity.DefaultNameClaimType;
-            SecurityStampClaimType = Constants.DefaultSecurityStampClaimType;
+            SecurityStampClaimType = DefaultSecurityStampClaimType;
         }
 
         /// <summary>
