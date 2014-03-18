@@ -33,7 +33,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
         }
 
         [Fact]
-        public async Task ValidatorCanBlockCreate()
+        public async Task UserValidatorCanBlockCreate()
         {
             var manager = CreateManager();
             var user = new InMemoryUser("CreateBlocked");
@@ -42,13 +42,57 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
         }
 
         [Fact]
-        public async Task ValidatorCanBlockUpdate()
+        public async Task UserValidatorCanBlockUpdate()
         {
             var manager = CreateManager();
             var user = new InMemoryUser("UpdateBlocked");
             IdentityResultAssert.IsSuccess(await manager.Create(user));
             manager.UserValidator = new AlwaysBadValidator();
             IdentityResultAssert.IsFailure(await manager.Update(user), AlwaysBadValidator.ErrorMessage);
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
+        public async Task UserValidatorBlocksShortEmailsWhenRequiresUniqueEmail(string email)
+        {
+            var manager = CreateManager();
+            var user = new InMemoryUser("UpdateBlocked") { Email = email };
+            manager.UserValidator = new UserValidator<InMemoryUser, string> { RequireUniqueEmail = true };
+            IdentityResultAssert.IsFailure(await manager.Create(user), "Email cannot be null or empty.");
+        }
+
+#if NET45
+        [Theory]
+        [InlineData("@@afd")]
+        [InlineData("bogus")]
+        public async Task UserValidatorBlocksInvalidEmailsWhenRequiresUniqueEmail(string email)
+        {
+            var manager = CreateManager();
+            var user = new InMemoryUser("UpdateBlocked") { Email = email };
+            manager.UserValidator = new UserValidator<InMemoryUser, string> { RequireUniqueEmail = true };
+            IdentityResultAssert.IsFailure(await manager.Create(user), "Email '"+email+"' is invalid.");
+        }
+#endif
+
+        [Fact]
+        public async Task PasswordValidatorCanBlockAddPassword()
+        {
+            var manager = CreateManager();
+            var user = new InMemoryUser("AddPasswordBlocked");
+            IdentityResultAssert.IsSuccess(await manager.Create(user));
+            manager.PasswordValidator = new AlwaysBadValidator();
+            IdentityResultAssert.IsFailure(await manager.AddPassword(user.Id, "password"), AlwaysBadValidator.ErrorMessage);
+        }
+
+        [Fact]
+        public async Task PasswordValidatorCanBlockChangePassword()
+        {
+            var manager = CreateManager();
+            var user = new InMemoryUser("ChangePasswordBlocked");
+            IdentityResultAssert.IsSuccess(await manager.Create(user, "password"));
+            manager.PasswordValidator = new AlwaysBadValidator();
+            IdentityResultAssert.IsFailure(await manager.ChangePassword(user.Id, "password", "new"), AlwaysBadValidator.ErrorMessage);
         }
 
         [Fact]
@@ -331,7 +375,6 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
             }
         }
 
-
         [Fact]
         public async Task CanResetPasswordWithStaticTokenProvider()
         {
@@ -349,6 +392,43 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
             Assert.Null(await manager.Find(user.UserName, password));
             Assert.Equal(user, await manager.Find(user.UserName, newPassword));
             Assert.NotEqual(stamp, user.SecurityStamp);
+        }
+
+        [Fact]
+        public async Task PasswordValidatorCanBlockResetPasswordWithStaticTokenProvider()
+        {
+            var manager = CreateManager();
+            manager.UserTokenProvider = new StaticTokenProvider();
+            var user = new InMemoryUser("ResetPasswordTest");
+            const string password = "password";
+            const string newPassword = "newpassword";
+            IdentityResultAssert.IsSuccess(await manager.Create(user, password));
+            var stamp = user.SecurityStamp;
+            Assert.NotNull(stamp);
+            var token = await manager.GeneratePasswordResetToken(user.Id);
+            Assert.NotNull(token);
+            manager.PasswordValidator = new AlwaysBadValidator();
+            IdentityResultAssert.IsFailure(await manager.ResetPassword(user.Id, token, newPassword), AlwaysBadValidator.ErrorMessage);
+            Assert.NotNull(await manager.Find(user.UserName, password));
+            Assert.Equal(user, await manager.Find(user.UserName, password));
+            Assert.Equal(stamp, user.SecurityStamp);
+        }
+
+        [Fact]
+        public async Task ResetPasswordWithStaticTokenProviderFailsWithWrongToken()
+        {
+            var manager = CreateManager();
+            manager.UserTokenProvider = new StaticTokenProvider();
+            var user = new InMemoryUser("ResetPasswordTest");
+            const string password = "password";
+            const string newPassword = "newpassword";
+            IdentityResultAssert.IsSuccess(await manager.Create(user, password));
+            var stamp = user.SecurityStamp;
+            Assert.NotNull(stamp);
+            IdentityResultAssert.IsFailure(await manager.ResetPassword(user.Id, "bogus", newPassword), "Invalid token.");
+            Assert.NotNull(await manager.Find(user.UserName, password));
+            Assert.Equal(user, await manager.Find(user.UserName, password));
+            Assert.Equal(stamp, user.SecurityStamp);
         }
 
         [Fact]
@@ -592,7 +672,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
             Assert.True(await manager.RoleExists(role.Name));
         }
 
-        private class AlwaysBadValidator : IUserValidator<InMemoryUser, string>, IRoleValidator<InMemoryRole, string>
+        private class AlwaysBadValidator : IUserValidator<InMemoryUser, string>, IRoleValidator<InMemoryRole, string>, IPasswordValidator
         {
             public const string ErrorMessage = "I'm Bad.";
 
@@ -602,6 +682,11 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
             }
 
             public Task<IdentityResult> Validate(RoleManager<InMemoryRole, string> manager, InMemoryRole role)
+            {
+                return Task.FromResult(IdentityResult.Failed(ErrorMessage));
+            }
+
+            public Task<IdentityResult> Validate(string password)
             {
                 return Task.FromResult(IdentityResult.Failed(ErrorMessage));
             }
@@ -1040,6 +1125,16 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
             Assert.Equal(token, messageService.Message.Body);
             Assert.True(await manager.VerifyTwoFactorToken(user.Id, factorId, token));
         }
+
+        [Fact]
+        public async Task NotifyWithUnknownProviderFails()
+        {
+            var manager = CreateManager();
+            var user = new InMemoryUser("NotifyFail");
+            IdentityResultAssert.IsSuccess(await manager.Create(user));
+            await ExceptionAssert.ThrowsAsync<NotSupportedException>(async () => await manager.NotifyTwoFactorToken(user.Id, "Bogus", "token"), "No IUserTwoFactorProvider for 'Bogus' is registered.");
+        }
+
 
         //[Fact]
         //public async Task EmailTokenFactorWithFormatTest()
