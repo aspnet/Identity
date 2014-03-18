@@ -336,6 +336,43 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
         }
 
         [Fact]
+        public async Task ClaimsIdentityCreatesExpectedClaims()
+        {
+            var manager = CreateManager();
+            var role = CreateRoleManager();
+            var user = new InMemoryUser("Hao");
+            IdentityResultAssert.IsSuccess(await manager.Create(user));
+            IdentityResultAssert.IsSuccess(await role.Create(new InMemoryRole("Admin")));
+            IdentityResultAssert.IsSuccess(await role.Create(new InMemoryRole("Local")));
+            IdentityResultAssert.IsSuccess(await manager.AddToRole(user.Id, "Admin"));
+            IdentityResultAssert.IsSuccess(await manager.AddToRole(user.Id, "Local"));
+            Claim[] userClaims =
+            {
+                new Claim("Whatever", "Value"),
+                new Claim("Whatever2", "Value2")
+            };
+            foreach (var c in userClaims)
+            {
+                IdentityResultAssert.IsSuccess(await manager.AddClaim(user.Id, c));
+            }
+
+            var identity = await manager.CreateIdentity(user, "test");
+            var claimsFactory = manager.ClaimsIdentityFactory as ClaimsIdentityFactory<InMemoryUser, string>;
+            Assert.NotNull(claimsFactory);
+            var claims = identity.Claims;
+            Assert.NotNull(claims);
+            Assert.True(
+                claims.Any(c => c.Type == claimsFactory.UserNameClaimType && c.Value == user.UserName));
+            Assert.True(claims.Any(c => c.Type == claimsFactory.UserIdClaimType && c.Value == user.Id));
+            Assert.True(claims.Any(c => c.Type == claimsFactory.RoleClaimType && c.Value == "Admin"));
+            Assert.True(claims.Any(c => c.Type == claimsFactory.RoleClaimType && c.Value == "Local"));
+            foreach (var cl in userClaims)
+            {
+                Assert.True(claims.Any(c => c.Type == cl.Type && c.Value == cl.Value));
+            }
+        }
+
+        [Fact]
         public async Task ConfirmEmailFalseByDefaultTest()
         {
             var manager = CreateManager();
