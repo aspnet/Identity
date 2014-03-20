@@ -24,7 +24,8 @@ namespace Microsoft.AspNet.Identity.Test
                 new ServiceDescriptor<IPasswordValidator, PasswordValidator>(),
                 new ServiceDescriptor<IUserValidator<TUser, TKey>, UserValidator<TUser, TKey>>(),
                 new ServiceDescriptor<IPasswordHasher, PasswordHasher>(),
-                new ServiceDescriptor<IClaimsIdentityFactory<TUser, TKey>, ClaimsIdentityFactory<TUser, TKey>>()
+                new ServiceDescriptor<IClaimsIdentityFactory<TUser, TKey>, ClaimsIdentityFactory<TUser, TKey>>(),
+                new ServiceDescriptor<IUserStore<TUser, TKey>, NoopUserStore>()
             };
         }
 

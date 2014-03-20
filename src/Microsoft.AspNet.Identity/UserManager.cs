@@ -40,7 +40,7 @@ namespace Microsoft.AspNet.Identity
             UserValidator = serviceProvider.GetService<IUserValidator<TUser, TKey>>();
             PasswordValidator = serviceProvider.GetService<IPasswordValidator>();
             ClaimsIdentityFactory = serviceProvider.GetService<IClaimsIdentityFactory<TUser, TKey>>();
-            //TODO: Store = serviceProvider.GetService<IUserStore<TUser, TKey>>();
+            Store = serviceProvider.GetService<IUserStore<TUser, TKey>>();
             // TODO: maybe each optional store as well?  Email and SMS services?
         }
 

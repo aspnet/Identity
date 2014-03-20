@@ -10,13 +10,21 @@ namespace Microsoft.AspNet.Identity.Test
 {
     public class UserManagerTest
     {
+        private class TestManager : UserManager<TestUser, string>
+        {
+            public IUserStore<TestUser, string> StorePublic { get { return base.Store; } }
+
+            public TestManager(IServiceProvider provider) : base(provider) { }
+        }
+
         [Fact]
         public void ServiceProviderWireupTest()
         {
-            var manager = new UserManager<TestUser, string>(TestServices.DefaultServiceProvider<TestUser, string>());
+            var manager = new TestManager(TestServices.DefaultServiceProvider<TestUser, string>());
             Assert.NotNull(manager.PasswordHasher);
             Assert.NotNull(manager.PasswordValidator);
             Assert.NotNull(manager.UserValidator);
+            Assert.NotNull(manager.StorePublic);
         }
 
         //TODO: Mock fails in K (this works fine in net45)
@@ -199,6 +207,8 @@ namespace Microsoft.AspNet.Identity.Test
         {
             Assert.Throws<ArgumentNullException>("store",
                 () => new UserManager<TestUser, string>((IUserStore<TestUser, string>) null));
+            Assert.Throws<ArgumentNullException>("serviceProvider",
+                () => new UserManager<TestUser, string>((IServiceProvider)null));
             var manager = new UserManager<TestUser, string>(new NotImplementedStore());
             Assert.Throws<ArgumentNullException>(() => manager.ClaimsIdentityFactory = null);
             Assert.Throws<ArgumentNullException>(() => manager.PasswordHasher = null);
