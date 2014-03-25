@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Testing;
+using Moq;
 using Xunit;
 
 namespace Microsoft.AspNet.Identity.Test
@@ -27,23 +28,100 @@ namespace Microsoft.AspNet.Identity.Test
             Assert.NotNull(manager.StorePublic);
         }
 
+#if NET45
         //TODO: Mock fails in K (this works fine in net45)
-        //[Fact]
-        //public async Task CreateTest()
-        //{
-        //    // Setup
-        //    var store = new Mock<IUserStore<TestUser, string>>();
-        //    var user = new TestUser();
-        //    store.Setup(s => s.Create(user)).Verifiable();
-        //    var userManager = new UserManager<TestUser, string>(store.Object);
+        [Fact]
+        public async Task CreateCallsStore()
+        {
+            // Setup
+            var store = new Mock<IUserStore<TestUser, string>>();
+            var user = new TestUser { UserName = "Foo" };
+            store.Setup(s => s.Create(user)).Returns(Task.FromResult(0)).Verifiable();
+            var validator = new Mock<UserValidator<TestUser, string>>();
+            var userManager = new UserManager<TestUser, string>(store.Object);
+            validator.Setup(v => v.Validate(userManager, user)).Returns(Task.FromResult(IdentityResult.Success)).Verifiable();
+            userManager.UserValidator = validator.Object;
 
-        //    // Act
-        //    var result = await userManager.Create(user);
+            // Act
+            var result = await userManager.Create(user);
 
-        //    // Assert
-        //    Assert.True(result.Succeeded);
-        //    store.VerifyAll();
-        //}
+            // Assert
+            Assert.True(result.Succeeded);
+            store.VerifyAll();
+        }
+
+        [Fact]
+        public async Task DeleteCallsStore()
+        {
+            // Setup
+            var store = new Mock<IUserStore<TestUser, string>>();
+            var user = new TestUser { UserName = "Foo" };
+            store.Setup(s => s.Delete(user)).Returns(Task.FromResult(0)).Verifiable();
+            var userManager = new UserManager<TestUser, string>(store.Object);
+
+            // Act
+            var result = await userManager.Delete(user);
+
+            // Assert
+            Assert.True(result.Succeeded);
+            store.VerifyAll();
+        }
+
+        [Fact]
+        public async Task UpdateCallsStore()
+        {
+            // Setup
+            var store = new Mock<IUserStore<TestUser, string>>();
+            var user = new TestUser { UserName = "Foo" };
+            store.Setup(s => s.Update(user)).Returns(Task.FromResult(0)).Verifiable();
+            var validator = new Mock<UserValidator<TestUser, string>>();
+            var userManager = new UserManager<TestUser, string>(store.Object);
+            validator.Setup(v => v.Validate(userManager, user)).Returns(Task.FromResult(IdentityResult.Success)).Verifiable();
+            userManager.UserValidator = validator.Object;
+
+            // Act
+            var result = await userManager.Update(user);
+
+            // Assert
+            Assert.True(result.Succeeded);
+            store.VerifyAll();
+        }
+
+        [Fact]
+        public async Task FindByIdCallsStore()
+        {
+            // Setup
+            var store = new Mock<IUserStore<TestUser, string>>();
+            var user = new TestUser { UserName = "Foo" };
+            store.Setup(s => s.FindById(user.Id)).Returns(Task.FromResult(user)).Verifiable();
+            var userManager = new UserManager<TestUser, string>(store.Object);
+
+            // Act
+            var result = await userManager.FindById(user.Id);
+
+            // Assert
+            Assert.Equal(user, result);
+            store.VerifyAll();
+        }
+
+        [Fact]
+        public async Task FindByNameCallsStore()
+        {
+            // Setup
+            var store = new Mock<IUserStore<TestUser, string>>();
+            var user = new TestUser {UserName="Foo"};
+            store.Setup(s => s.FindByName(user.UserName)).Returns(Task.FromResult(user)).Verifiable();
+            var userManager = new UserManager<TestUser, string>(store.Object);
+
+            // Act
+            var result = await userManager.FindByName(user.UserName);
+
+            // Assert
+            Assert.Equal(user, result);
+            store.VerifyAll();
+        }
+
+#endif
 
         [Fact]
         public async Task CheckPasswordWithNullUserReturnsFalse()
