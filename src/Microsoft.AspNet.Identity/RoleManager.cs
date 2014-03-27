@@ -161,17 +161,17 @@ namespace Microsoft.AspNet.Identity
         /// <summary>
         ///     Returns true if the role exists
         /// </summary>
-        /// <param name="roleName"></param>
+        /// <param name="name"></param>
         /// <returns></returns>
-        public virtual async Task<bool> RoleExists(string roleName)
+        public virtual async Task<bool> RoleExists(string name)
         {
             ThrowIfDisposed();
-            if (roleName == null)
+            if (name == null)
             {
-                throw new ArgumentNullException("roleName");
+                throw new ArgumentNullException("name");
             }
 
-            return await FindByName(roleName) != null;
+            return await FindByName(name) != null;
         }
 
         /// <summary>
@@ -188,17 +188,17 @@ namespace Microsoft.AspNet.Identity
         /// <summary>
         ///     Find a role by name
         /// </summary>
-        /// <param name="roleName"></param>
+        /// <param name="name"></param>
         /// <returns></returns>
-        public virtual async Task<TRole> FindByName(string roleName)
+        public virtual async Task<TRole> FindByName(string name)
         {
             ThrowIfDisposed();
-            if (roleName == null)
+            if (name == null)
             {
-                throw new ArgumentNullException("roleName");
+                throw new ArgumentNullException("name");
             }
 
-            return await Store.FindByName(roleName);
+            return await Store.FindByName(name);
         }
 
         private void ThrowIfDisposed()

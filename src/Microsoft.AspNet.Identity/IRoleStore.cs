@@ -34,15 +34,15 @@ namespace Microsoft.AspNet.Identity
         /// <summary>
         ///     Finds a role by id
         /// </summary>
-        /// <param name="roleId"></param>
+        /// <param name="id"></param>
         /// <returns></returns>
-        Task<TRole> FindById(TKey roleId);
+        Task<TRole> FindById(TKey id);
 
         /// <summary>
         ///     Find a role by name
         /// </summary>
-        /// <param name="roleName"></param>
+        /// <param name="name"></param>
         /// <returns></returns>
-        Task<TRole> FindByName(string roleName);
+        Task<TRole> FindByName(string name);
     }
 }

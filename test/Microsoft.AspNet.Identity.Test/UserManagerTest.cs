@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNet.DependencyInjection.Fallback;
 using Microsoft.AspNet.Testing;
 using Xunit;
 
@@ -20,7 +21,7 @@ namespace Microsoft.AspNet.Identity.Test
         [Fact]
         public void ServiceProviderWireupTest()
         {
-            var manager = new TestManager(TestServices.DefaultServiceProvider<TestUser, string>());
+            var manager = new TestManager(TestServices.DefaultServices<TestUser, string>().BuildServiceProvider());
             Assert.NotNull(manager.PasswordHasher);
             Assert.NotNull(manager.PasswordValidator);
             Assert.NotNull(manager.UserValidator);

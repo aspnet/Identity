@@ -38,8 +38,8 @@ namespace Microsoft.AspNet.Identity.Test
             await Assert.ThrowsAsync<ArgumentNullException>("role", async () => await manager.Create(null));
             await Assert.ThrowsAsync<ArgumentNullException>("role", async () => await manager.Update(null));
             await Assert.ThrowsAsync<ArgumentNullException>("role", async () => await manager.Delete(null));
-            await Assert.ThrowsAsync<ArgumentNullException>("roleName", async () => await manager.FindByName(null));
-            await Assert.ThrowsAsync<ArgumentNullException>("roleName", async () => await manager.RoleExists(null));
+            await Assert.ThrowsAsync<ArgumentNullException>("name", async () => await manager.FindByName(null));
+            await Assert.ThrowsAsync<ArgumentNullException>("name", async () => await manager.RoleExists(null));
         }
 
         [Fact]
@@ -72,12 +72,12 @@ namespace Microsoft.AspNet.Identity.Test
                 throw new NotImplementedException();
             }
 
-            public Task<TestRole> FindById(string roleId)
+            public Task<TestRole> FindById(string id)
             {
                 throw new NotImplementedException();
             }
 
-            public Task<TestRole> FindByName(string roleName)
+            public Task<TestRole> FindByName(string name)
             {
                 throw new NotImplementedException();
             }

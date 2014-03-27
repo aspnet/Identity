@@ -31,20 +31,20 @@ namespace Microsoft.AspNet.Identity.InMemory
             return Task.FromResult(0);
         }
 
-        public Task<InMemoryRole> FindById(string roleId)
+        public Task<InMemoryRole> FindById(string id)
         {
-            if (_roles.ContainsKey(roleId))
+            if (_roles.ContainsKey(id))
             {
-                return Task.FromResult(_roles[roleId]);
+                return Task.FromResult(_roles[id]);
             }
             return Task.FromResult<InMemoryRole>(null);
         }
 
-        public Task<InMemoryRole> FindByName(string roleName)
+        public Task<InMemoryRole> FindByName(string name)
         {
             return
                 Task.FromResult(
-                    Roles.SingleOrDefault(r => String.Equals(r.Name, roleName, StringComparison.OrdinalIgnoreCase)));
+                    Roles.SingleOrDefault(r => String.Equals(r.Name, name, StringComparison.OrdinalIgnoreCase)));
         }
 
         public void Dispose()
