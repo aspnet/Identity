@@ -6,27 +6,46 @@ using Microsoft.Data.Entity.Metadata;
 
 namespace Microsoft.AspNet.Identity.Entity
 {
-    public class IdentityContext : IdentityContext<string> { }
+    public class IdentityContext : IdentityContext<IdentityUser, IdentityRole, string, IdentityUserLogin, IdentityUserRole, IdentityUserClaim> { }
 
-    public class IdentityContext<TKey> : EntityContext where TKey : IEquatable<TKey>
+    public class IdentityContext<TUser, TRole, TKey, TUserLogin, TUserRole, TUserClaim> : EntityContext
+        where TUser : IdentityUser<TKey, TUserLogin, TUserRole, TUserClaim>
+        where TRole : IdentityRole<TKey> /*, TUserRole*/
+        where TUserLogin : IdentityUserLogin<TKey>
+        where TUserRole : IdentityUserRole<TKey>
+        where TUserClaim : IdentityUserClaim<TKey>
+        where TKey : IEquatable<TKey>
     {
 
-        public EntitySet<IdentityUser<TKey>> Users { get; set; }
-        public EntitySet<IdentityRole<TKey>> Roles { get; set; }
+        public EntitySet<TUser> Users { get; set; }
+        public EntitySet<TRole> Roles { get; set; }
 
         protected override void OnConfiguring(EntityConfigurationBuilder builder)
         {
-#if NET45
-            builder.UseSqlServer(@"Server=(localdb)\v11.0;Database=IdentityDb;Trusted_Connection=True;");
-#else
+//#if NET45
+//            builder.UseSqlServer(@"Server=(localdb)\v11.0;Database=IdentityDb;Trusted_Connection=True;");
+//#else
             builder.UseDataStore(new InMemoryDataStore());
-#endif
+//#endif
         }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.Entity<IdentityUser<TKey>>().Key(u => u.Id);
-            builder.Entity<IdentityRole<TKey>>().Key(r => r.Id);
+            // TODO: Would be nice if we could just do Entity<IUser<TKey>> instead of forcing the concrete type
+            builder.Entity<TUser>()
+                .Key(u => u.Id)
+                .Properties(ps => ps.Property(u => u.UserName));
+            builder.Entity<TRole>()
+                .Key(r => r.Id)
+                .Properties(ps => ps.Property(r => r.Name));
+
+            builder.Entity<TUserRole>()
+                .Key(r => new {r.UserId, r.RoleId});
+                //.ToTable("AspNetUserRoles");
+
+            builder.Entity<TUserLogin>()
+                .Key(l => new {l.LoginProvider, l.ProviderKey, l.UserId});
+            //.ToTable("AspNetUserLogins");
         }
 
     }

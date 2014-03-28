@@ -1,10 +1,14 @@
-﻿namespace Microsoft.AspNet.Identity.Entity
+﻿using System;
+
+namespace Microsoft.AspNet.Identity.Entity
 {
+    public class IdentityUserRole : IdentityUserRole<string> { }
+
     /// <summary>
     ///     EntityType that represents a user belonging to a role
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
-    public class IdentityUserRole<TKey>
+    public class IdentityUserRole<TKey> where TKey : IEquatable<TKey>
     {
         /// <summary>
         ///     UserId for the user that is in the role

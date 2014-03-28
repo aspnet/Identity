@@ -1,10 +1,14 @@
-﻿namespace Microsoft.AspNet.Identity.Entity
+﻿using System;
+
+namespace Microsoft.AspNet.Identity.Entity
 {
+    public class IdentityUserLogin : IdentityUserLogin<string> { }
+
     /// <summary>
     ///     Entity type for a user's login (i.e. facebook, google)
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
-    public class IdentityUserLogin<TKey>
+    public class IdentityUserLogin<TKey> where TKey : IEquatable<TKey>
     {
         /// <summary>
         ///     The login provider for the login (i.e. facebook, google)

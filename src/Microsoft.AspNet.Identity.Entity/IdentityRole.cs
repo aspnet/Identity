@@ -5,16 +5,19 @@ namespace Microsoft.AspNet.Identity.Entity
 {
     public class IdentityRole : IdentityRole<string>
     {
-        public IdentityRole(string name) : base(name) { }
+        public IdentityRole()
+        {
+            Id = Guid.NewGuid().ToString();
+        }
+
+        public IdentityRole(string name) : this()
+        {
+            Name = name;
+        }
     }
 
     public class IdentityRole<TKey> : IRole<TKey> where TKey : IEquatable<TKey>
     {
-        public IdentityRole(string name)
-        {
-            Name = name;
-        }
-
         public TKey Id { get; set; }
         public string Name { get; set; }
     }

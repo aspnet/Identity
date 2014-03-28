@@ -8,7 +8,13 @@ using Microsoft.Data.Entity;
 
 namespace Microsoft.AspNet.Identity.Entity
 {
-    public class UserStore<TUser, TKey> :
+    public class UserStore :
+        UserStore<IdentityUser, IdentityRole, string, IdentityUserLogin, IdentityUserRole, IdentityUserClaim>
+    {
+        public UserStore(EntityContext context) : base(context) { }
+    }
+
+    public class UserStore<TUser, TRole, TKey, TUserLogin, TUserRole, TUserClaim> :
         IUserLoginStore<TUser, TKey>,
         IUserClaimStore<TUser, TKey>,
         IUserRoleStore<TUser, TKey>,
@@ -19,8 +25,12 @@ namespace Microsoft.AspNet.Identity.Entity
         IUserPhoneNumberStore<TUser, TKey>,
         IUserTwoFactorStore<TUser, TKey>,
         IUserLockoutStore<TUser, TKey>
-        where TUser : IdentityUser<TKey>
         where TKey : IEquatable<TKey>
+        where TUser : IdentityUser<TKey, TUserLogin, TUserRole, TUserClaim>
+        where TRole : IdentityRole<TKey/*, TUserRole*/>
+        where TUserLogin : IdentityUserLogin<TKey>, new()
+        where TUserRole : IdentityUserRole<TKey>, new()
+        where TUserClaim : IdentityUserClaim<TKey>, new()
     {
         private bool _disposed;
 
@@ -99,7 +109,9 @@ namespace Microsoft.AspNet.Identity.Entity
         public virtual Task<TUser> FindById(TKey userId)
         {
             ThrowIfDisposed();
-            return GetUserAggregate(u => u.Id.Equals(userId));
+            // TODO: FirstOrDeafult with query throws an exception with Single
+            return Task.FromResult(Users.Where(u => u.Id.Equals(userId)).FirstOrDefault());
+            //return GetUserAggregate(u => u.Id.Equals(userId));
         }
 
         /// <summary>
@@ -110,7 +122,9 @@ namespace Microsoft.AspNet.Identity.Entity
         public virtual Task<TUser> FindByName(string userName)
         {
             ThrowIfDisposed();
-            return GetUserAggregate(u => u.UserName.ToUpper() == userName.ToUpper());
+            // TODO: FirstOrDeafult with query throws an exception with Single
+            return Task.FromResult(Users.Where(u => u.UserName.ToUpper() == userName.ToUpper()).SingleOrDefault());
+            //return GetUserAggregate(u => u.UserName.ToUpper() == userName.ToUpper());
         }
 
         public IQueryable<TUser> Users
@@ -125,7 +139,17 @@ namespace Microsoft.AspNet.Identity.Entity
             {
                 throw new ArgumentNullException("user");
             }
-            throw new NotImplementedException();
+            if (login == null)
+            {
+                throw new ArgumentNullException("login");
+            }
+            user.Logins.Add(new TUserLogin
+            {
+                UserId = user.Id,
+                ProviderKey = login.ProviderKey,
+                LoginProvider = login.LoginProvider
+            });
+            return Task.FromResult(0);
         }
 
         public Task RemoveLogin(TUser user, UserLoginInfo login)
@@ -150,9 +174,22 @@ namespace Microsoft.AspNet.Identity.Entity
             return Task.FromResult(result);
         }
 
-        public Task<TUser> Find(UserLoginInfo login)
+        public async virtual Task<TUser> Find(UserLoginInfo login)
         {
-            throw new NotImplementedException();
+            ThrowIfDisposed();
+            if (login == null)
+            {
+                throw new ArgumentNullException("login");
+            }
+            var provider = login.LoginProvider;
+            var key = login.ProviderKey;
+            var userLogin =
+                Context.Set<TUserLogin>().FirstOrDefault(l => l.LoginProvider == provider && l.ProviderKey == key);
+            if (userLogin != null)
+            {
+                return await GetUserAggregate(u => u.Id.Equals(userLogin.UserId));
+            }
+            return null;
         }
 
         /// <summary>
@@ -230,7 +267,7 @@ namespace Microsoft.AspNet.Identity.Entity
             {
                 throw new ArgumentNullException("claim");
             }
-            user.Claims.Add(new IdentityUserClaim<TKey> { UserId = user.Id, ClaimType = claim.Type, ClaimValue = claim.Value });
+            user.Claims.Add(new TUserClaim { UserId = user.Id, ClaimType = claim.Type, ClaimValue = claim.Value });
             return Task.FromResult(0);
         }
 
@@ -326,7 +363,8 @@ namespace Microsoft.AspNet.Identity.Entity
         public Task<TUser> FindByEmail(string email)
         {
             ThrowIfDisposed();
-            return GetUserAggregate(u => u.Email.ToUpper() == email.ToUpper());
+            return Task.FromResult(Users.Where(u => u.Email.ToUpper() == email.ToUpper()).SingleOrDefault());
+            //return GetUserAggregate(u => u.Email.ToUpper() == email.ToUpper());
         }
 
         /// <summary>

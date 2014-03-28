@@ -1,21 +1,35 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Microsoft.AspNet.Identity.Entity
 {
-    public class IdentityUser : IdentityUser<string>
+    public class IdentityUser : IdentityUser<string, IdentityUserLogin, IdentityUserRole, IdentityUserClaim>
     {
-        public IdentityUser(string userName) : base(userName)
+        public IdentityUser()
         {
+            Id = Guid.NewGuid().ToString();
+        }
+
+        public IdentityUser(string userName) : this()
+        {
+            UserName = userName;
         }
     }
 
-    public class IdentityUser<TKey> : IUser<TKey> where TKey : IEquatable<TKey>
+    public class IdentityUser<TKey, TLogin, TRole, TClaim> : IUser<TKey>
+        where TLogin : IdentityUserLogin<TKey>
+        where TRole : IdentityUserRole<TKey>
+        where TClaim : IdentityUserClaim<TKey>
+        where TKey : IEquatable<TKey>
     {
-        public IdentityUser(string userName)
+        public IdentityUser()
         {
-            UserName = userName;
+            Claims = new List<TClaim>();
+            Roles = new List<TRole>();
+            Logins = new List<TLogin>();
+            
         }
 
         public TKey Id { get; set; }
@@ -74,17 +88,17 @@ namespace Microsoft.AspNet.Identity.Entity
         /// <summary>
         ///     Navigation property for user roles
         /// </summary>
-        public virtual ICollection<IdentityUserRole<TKey>> Roles { get; private set; }
+        public virtual ICollection<TRole> Roles { get; private set; }
 
         /// <summary>
         ///     Navigation property for user claims
         /// </summary>
-        public virtual ICollection<IdentityUserClaim<TKey>> Claims { get; private set; }
+        public virtual ICollection<TClaim> Claims { get; private set; }
 
         /// <summary>
         ///     Navigation property for user logins
         /// </summary>
-        public virtual ICollection<IdentityUserLogin<TKey>> Logins { get; private set; }
+        public virtual ICollection<TLogin> Logins { get; private set; }
 
     }
 }

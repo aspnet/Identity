@@ -85,7 +85,8 @@ namespace Microsoft.AspNet.Identity.Entity
         public virtual Task<TRole> FindById(TKey id)
         {
             ThrowIfDisposed();
-            return GetRoleAggregate(u => u.Id.Equals(id));
+            return Task.FromResult(Roles.Where(r => r.Id.Equals(id)).FirstOrDefault());
+            //return GetRoleAggregate(u => u.Id.Equals(id));
         }
 
         /// <summary>
@@ -96,7 +97,8 @@ namespace Microsoft.AspNet.Identity.Entity
         public virtual Task<TRole> FindByName(string name)
         {
             ThrowIfDisposed();
-            return GetRoleAggregate(u => u.Name.ToUpper() == name.ToUpper());
+            return Task.FromResult(Roles.Where(r => r.Name.ToUpper() == name.ToUpper()).FirstOrDefault());
+            //return GetRoleAggregate(u => u.Name.ToUpper() == name.ToUpper());
         }
 
         private void ThrowIfDisposed()

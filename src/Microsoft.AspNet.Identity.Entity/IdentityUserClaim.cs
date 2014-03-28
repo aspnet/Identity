@@ -1,10 +1,14 @@
-﻿namespace Microsoft.AspNet.Identity.Entity
+﻿using System;
+
+namespace Microsoft.AspNet.Identity.Entity
 {
+    public class IdentityUserClaim : IdentityUserClaim<string> { }
+
     /// <summary>
     ///     EntityType that represents one specific user claim
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
-    public class IdentityUserClaim<TKey>
+    public class IdentityUserClaim<TKey> where TKey : IEquatable<TKey>
     {
         /// <summary>
         ///     Primary key
