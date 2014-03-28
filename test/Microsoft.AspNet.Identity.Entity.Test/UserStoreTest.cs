@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Testing;
 using Microsoft.Data.Entity;
+using Microsoft.Data.Entity.Metadata;
 using Microsoft.Data.InMemory;
 using Microsoft.Data.Relational;
 using Microsoft.Data.SqlServer;
@@ -16,6 +17,61 @@ namespace Microsoft.AspNet.Identity.Entity.Test
 {
     public class UserStoreTest
     {
+        [Fact]
+        public async Task Can_share_instance_between_contexts_with_sugar_experience()
+        {
+            using (var db = new SimpleContext())
+            {
+                db.Artists.Add(new SimpleContext.Artist { Name = "John Doe" });
+                await db.SaveChangesAsync();
+            }
+
+            using (var db = new SimpleContext())
+            {
+                var data = db.Artists.ToList();
+                Assert.Equal(1, data.Count);
+                Assert.Equal("John Doe", data[0].Name);
+            }
+        }
+
+        private class SimpleContext : EntityContext
+        {
+            public EntitySet<Artist> Artists { get; set; }
+
+            protected override void OnConfiguring(EntityConfigurationBuilder builder)
+            {
+                builder.UseDataStore(new InMemoryDataStore());
+            }
+
+            protected override void OnModelCreating(ModelBuilder builder)
+            {
+                builder.Entity<Artist>().Key(a => a.ArtistId);
+            }
+
+            public class Artist
+            {
+                public int ArtistId { get; set; }
+                public string Name { get; set; }
+            }
+        }
+
+        [Fact]
+        public async Task Foo()
+        {
+            using (var db = new IdentityContext())
+            {
+                db.Users.Add(new IdentityUser("A"));
+                await db.SaveChangesAsync();
+            }
+
+            using (var db = new IdentityContext())
+            {
+                var data = db.Users.ToList();
+                Assert.Equal(1, data.Count);
+                Assert.Equal("A", data[0].UserName);
+            }
+        }
+
         [Fact]
         public async Task CanDeleteUser()
         {

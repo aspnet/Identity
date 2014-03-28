@@ -35,12 +35,13 @@ namespace Microsoft.AspNet.Identity.Entity
             builder.Entity<TUser>()
                 .Key(u => u.Id)
                 .Properties(ps => ps.Property(u => u.UserName));
-            builder.Entity<TRole>()
-                .Key(r => r.Id)
-                .Properties(ps => ps.Property(r => r.Name));
-
+            //builder.Entity<TRole>()
+            //    .Key(r => r.Id);
+ 
             builder.Entity<TUserRole>()
-                .Key(r => new {r.UserId, r.RoleId});
+                .Key(r => new {r.UserId, r.RoleId})
+                .ForeignKeys(fk => fk.ForeignKey<TUser>(f => f.UserId))
+                .ForeignKeys(fk => fk.ForeignKey<TRole>(f => f.RoleId));
                 //.ToTable("AspNetUserRoles");
 
             builder.Entity<TUserLogin>()
