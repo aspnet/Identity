@@ -18,6 +18,23 @@ namespace Microsoft.AspNet.Identity.Entity.Test
     public class UserStoreTest
     {
         [Fact]
+        public async Task Can_share_instance_between_contexts_with_sugar_experience2()
+        {
+            using (var db = new IdentityContext())
+            {
+                db.Users.Add(new IdentityUser { UserName = "John Doe" });
+                await db.SaveChangesAsync();
+            }
+
+            using (var db = new IdentityContext())
+            {
+                var data = db.Users.ToList();
+                Assert.Equal(1, data.Count);
+                Assert.Equal("John Doe", data[0].UserName);
+            }
+        }
+
+        [Fact]
         public async Task Can_share_instance_between_contexts_with_sugar_experience()
         {
             using (var db = new SimpleContext())
@@ -48,9 +65,13 @@ namespace Microsoft.AspNet.Identity.Entity.Test
                 builder.Entity<Artist>().Key(a => a.ArtistId);
             }
 
-            public class Artist
+            public class Artist : ArtistBase<string>
             {
-                public int ArtistId { get; set; }
+            }
+
+            public class ArtistBase<TKey>
+            {
+                public TKey ArtistId { get; set; }
                 public string Name { get; set; }
             }
         }

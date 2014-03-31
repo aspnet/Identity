@@ -27,7 +27,7 @@ namespace Microsoft.AspNet.Identity.Entity
         IUserLockoutStore<TUser, TKey>
         where TKey : IEquatable<TKey>
         where TUser : IdentityUser<TKey, TUserLogin, TUserRole, TUserClaim>
-        where TRole : IdentityRole<TKey/*, TUserRole*/>
+        where TRole : IdentityRole<TKey, TUserRole>
         where TUserLogin : IdentityUserLogin<TKey>, new()
         where TUserRole : IdentityUserRole<TKey>, new()
         where TUserClaim : IdentityUserClaim<TKey>, new()
@@ -132,7 +132,7 @@ namespace Microsoft.AspNet.Identity.Entity
             get { return Context.Set<TUser>(); }
         }
 
-        public Task AddLogin(TUser user, UserLoginInfo login)
+        public async virtual Task AddLogin(TUser user, UserLoginInfo login)
         {
             ThrowIfDisposed();
             if (user == null)
@@ -143,16 +143,17 @@ namespace Microsoft.AspNet.Identity.Entity
             {
                 throw new ArgumentNullException("login");
             }
-            user.Logins.Add(new TUserLogin
+            var l = new TUserLogin
             {
                 UserId = user.Id,
                 ProviderKey = login.ProviderKey,
                 LoginProvider = login.LoginProvider
-            });
-            return Task.FromResult(0);
+            };
+            await Context.Set<TUserLogin>().AddAsync(l);
+            user.Logins.Add(l);
         }
 
-        public Task RemoveLogin(TUser user, UserLoginInfo login)
+        public virtual Task RemoveLogin(TUser user, UserLoginInfo login)
         {
             ThrowIfDisposed();
             if (user == null)
@@ -162,7 +163,7 @@ namespace Microsoft.AspNet.Identity.Entity
             throw new NotImplementedException();
         }
 
-        public Task<IList<UserLoginInfo>> GetLogins(TUser user)
+        public virtual Task<IList<UserLoginInfo>> GetLogins(TUser user)
         {
             ThrowIfDisposed();
             if (user == null)
@@ -198,7 +199,7 @@ namespace Microsoft.AspNet.Identity.Entity
         /// <param name="user"></param>
         /// <param name="passwordHash"></param>
         /// <returns></returns>
-        public Task SetPasswordHash(TUser user, string passwordHash)
+        public virtual Task SetPasswordHash(TUser user, string passwordHash)
         {
             ThrowIfDisposed();
             if (user == null)
@@ -214,7 +215,7 @@ namespace Microsoft.AspNet.Identity.Entity
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public Task<string> GetPasswordHash(TUser user)
+        public virtual Task<string> GetPasswordHash(TUser user)
         {
             ThrowIfDisposed();
             if (user == null)
@@ -229,7 +230,7 @@ namespace Microsoft.AspNet.Identity.Entity
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public Task<bool> HasPassword(TUser user)
+        public virtual Task<bool> HasPassword(TUser user)
         {
             return Task.FromResult(user.PasswordHash != null);
         }
@@ -288,7 +289,21 @@ namespace Microsoft.AspNet.Identity.Entity
             {
                 throw new ArgumentNullException("claim");
             }
-            throw new NotImplementedException();
+            var claims =
+                user.Claims.Where(uc => uc.ClaimValue == claim.Value && uc.ClaimType == claim.Type).ToList();
+            foreach (var c in claims)
+            {
+                user.Claims.Remove(c);
+            }
+            // TODO:these claims might not exist in the dbset
+            //var query =
+            //    _userClaims.Where(
+            //        uc => uc.UserId.Equals(user.Id) && uc.ClaimValue == claim.Value && uc.ClaimType == claim.Type);
+            //foreach (var c in query)
+            //{
+            //    _userClaims.Remove(c);
+            //}
+            return Task.FromResult(0);
         }
 
         /// <summary>
@@ -296,7 +311,7 @@ namespace Microsoft.AspNet.Identity.Entity
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public Task<bool> GetEmailConfirmed(TUser user)
+        public virtual Task<bool> GetEmailConfirmed(TUser user)
         {
             ThrowIfDisposed();
             if (user == null)
@@ -312,7 +327,7 @@ namespace Microsoft.AspNet.Identity.Entity
         /// <param name="user"></param>
         /// <param name="confirmed"></param>
         /// <returns></returns>
-        public Task SetEmailConfirmed(TUser user, bool confirmed)
+        public virtual Task SetEmailConfirmed(TUser user, bool confirmed)
         {
             ThrowIfDisposed();
             if (user == null)
@@ -329,7 +344,7 @@ namespace Microsoft.AspNet.Identity.Entity
         /// <param name="user"></param>
         /// <param name="email"></param>
         /// <returns></returns>
-        public Task SetEmail(TUser user, string email)
+        public virtual Task SetEmail(TUser user, string email)
         {
             ThrowIfDisposed();
             if (user == null)
@@ -345,7 +360,7 @@ namespace Microsoft.AspNet.Identity.Entity
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public Task<string> GetEmail(TUser user)
+        public virtual Task<string> GetEmail(TUser user)
         {
             ThrowIfDisposed();
             if (user == null)
@@ -360,7 +375,7 @@ namespace Microsoft.AspNet.Identity.Entity
         /// </summary>
         /// <param name="email"></param>
         /// <returns></returns>
-        public Task<TUser> FindByEmail(string email)
+        public virtual Task<TUser> FindByEmail(string email)
         {
             ThrowIfDisposed();
             return Task.FromResult(Users.Where(u => u.Email.ToUpper() == email.ToUpper()).SingleOrDefault());
@@ -373,7 +388,7 @@ namespace Microsoft.AspNet.Identity.Entity
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public Task<DateTimeOffset> GetLockoutEndDate(TUser user)
+        public virtual Task<DateTimeOffset> GetLockoutEndDate(TUser user)
         {
             ThrowIfDisposed();
             if (user == null)
@@ -392,7 +407,7 @@ namespace Microsoft.AspNet.Identity.Entity
         /// <param name="user"></param>
         /// <param name="lockoutEnd"></param>
         /// <returns></returns>
-        public Task SetLockoutEndDate(TUser user, DateTimeOffset lockoutEnd)
+        public virtual Task SetLockoutEndDate(TUser user, DateTimeOffset lockoutEnd)
         {
             ThrowIfDisposed();
             if (user == null)
@@ -408,7 +423,7 @@ namespace Microsoft.AspNet.Identity.Entity
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public Task<int> IncrementAccessFailedCount(TUser user)
+        public virtual Task<int> IncrementAccessFailedCount(TUser user)
         {
             ThrowIfDisposed();
             if (user == null)
@@ -424,7 +439,7 @@ namespace Microsoft.AspNet.Identity.Entity
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public Task ResetAccessFailedCount(TUser user)
+        public virtual Task ResetAccessFailedCount(TUser user)
         {
             ThrowIfDisposed();
             if (user == null)
@@ -441,7 +456,7 @@ namespace Microsoft.AspNet.Identity.Entity
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public Task<int> GetAccessFailedCount(TUser user)
+        public virtual Task<int> GetAccessFailedCount(TUser user)
         {
             ThrowIfDisposed();
             if (user == null)
@@ -456,7 +471,7 @@ namespace Microsoft.AspNet.Identity.Entity
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public Task<bool> GetLockoutEnabled(TUser user)
+        public virtual Task<bool> GetLockoutEnabled(TUser user)
         {
             ThrowIfDisposed();
             if (user == null)
@@ -472,7 +487,7 @@ namespace Microsoft.AspNet.Identity.Entity
         /// <param name="user"></param>
         /// <param name="enabled"></param>
         /// <returns></returns>
-        public Task SetLockoutEnabled(TUser user, bool enabled)
+        public virtual Task SetLockoutEnabled(TUser user, bool enabled)
         {
             ThrowIfDisposed();
             if (user == null)
@@ -489,7 +504,7 @@ namespace Microsoft.AspNet.Identity.Entity
         /// <param name="user"></param>
         /// <param name="phoneNumber"></param>
         /// <returns></returns>
-        public Task SetPhoneNumber(TUser user, string phoneNumber)
+        public virtual Task SetPhoneNumber(TUser user, string phoneNumber)
         {
             ThrowIfDisposed();
             if (user == null)
@@ -505,7 +520,7 @@ namespace Microsoft.AspNet.Identity.Entity
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public Task<string> GetPhoneNumber(TUser user)
+        public virtual Task<string> GetPhoneNumber(TUser user)
         {
             ThrowIfDisposed();
             if (user == null)
@@ -520,7 +535,7 @@ namespace Microsoft.AspNet.Identity.Entity
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public Task<bool> GetPhoneNumberConfirmed(TUser user)
+        public virtual Task<bool> GetPhoneNumberConfirmed(TUser user)
         {
             ThrowIfDisposed();
             if (user == null)
@@ -536,7 +551,7 @@ namespace Microsoft.AspNet.Identity.Entity
         /// <param name="user"></param>
         /// <param name="confirmed"></param>
         /// <returns></returns>
-        public Task SetPhoneNumberConfirmed(TUser user, bool confirmed)
+        public virtual Task SetPhoneNumberConfirmed(TUser user, bool confirmed)
         {
             ThrowIfDisposed();
             if (user == null)
@@ -560,11 +575,21 @@ namespace Microsoft.AspNet.Identity.Entity
             {
                 throw new ArgumentNullException("user");
             }
+            // TODO:
             //if (String.IsNullOrWhiteSpace(roleName))
             //{
             //    throw new ArgumentException(IdentityResources.ValueCannotBeNullOrEmpty, "roleName");
             //}
-            throw new NotImplementedException();
+            var roleEntity = Context.Set<TRole>().SingleOrDefault(r => r.Name.ToUpper() == roleName.ToUpper());
+            if (roleEntity == null)
+            {
+                throw new InvalidOperationException("Role Not Found");
+                //TODO: String.Format(CultureInfo.CurrentCulture, IdentityResources.RoleNotFound, roleName));
+            }
+            var ur = new TUserRole { UserId = user.Id, RoleId = roleEntity.Id };
+            user.Roles.Add(ur);
+            roleEntity.Users.Add(ur);
+            return Task.FromResult(0);
         }
 
         /// <summary>
@@ -628,7 +653,7 @@ namespace Microsoft.AspNet.Identity.Entity
         /// <param name="user"></param>
         /// <param name="stamp"></param>
         /// <returns></returns>
-        public Task SetSecurityStamp(TUser user, string stamp)
+        public virtual Task SetSecurityStamp(TUser user, string stamp)
         {
             ThrowIfDisposed();
             if (user == null)
@@ -644,7 +669,7 @@ namespace Microsoft.AspNet.Identity.Entity
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public Task<string> GetSecurityStamp(TUser user)
+        public virtual Task<string> GetSecurityStamp(TUser user)
         {
             ThrowIfDisposed();
             if (user == null)
@@ -660,7 +685,7 @@ namespace Microsoft.AspNet.Identity.Entity
         /// <param name="user"></param>
         /// <param name="enabled"></param>
         /// <returns></returns>
-        public Task SetTwoFactorEnabled(TUser user, bool enabled)
+        public virtual Task SetTwoFactorEnabled(TUser user, bool enabled)
         {
             ThrowIfDisposed();
             if (user == null)
@@ -676,7 +701,7 @@ namespace Microsoft.AspNet.Identity.Entity
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public Task<bool> GetTwoFactorEnabled(TUser user)
+        public virtual Task<bool> GetTwoFactorEnabled(TUser user)
         {
             ThrowIfDisposed();
             if (user == null)

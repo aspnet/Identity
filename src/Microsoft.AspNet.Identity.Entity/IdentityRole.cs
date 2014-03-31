@@ -1,24 +1,62 @@
-﻿
-using System;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Microsoft.AspNet.Identity.Entity
 {
-    public class IdentityRole : IdentityRole<string>
+    /// <summary>
+    ///     Represents a Role entity
+    /// </summary>
+    public class IdentityRole : IdentityRole<string, IdentityUserRole>
     {
+        /// <summary>
+        ///     Constructor
+        /// </summary>
         public IdentityRole()
         {
             Id = Guid.NewGuid().ToString();
         }
 
-        public IdentityRole(string name) : this()
+        /// <summary>
+        ///     Constructor
+        /// </summary>
+        /// <param name="roleName"></param>
+        public IdentityRole(string roleName)
+            : this()
         {
-            Name = name;
+            Name = roleName;
         }
     }
 
-    public class IdentityRole<TKey> : IRole<TKey> where TKey : IEquatable<TKey>
+    /// <summary>
+    ///     Represents a Role entity
+    /// </summary>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TUserRole"></typeparam>
+    public class IdentityRole<TKey, TUserRole> : IRole<TKey> 
+        where TUserRole : IdentityUserRole<TKey>
+        where TKey : IEquatable<TKey>
     {
-        public TKey Id { get; set; }
-        public string Name { get; set; }
+        /// <summary>
+        ///     Constructor
+        /// </summary>
+        public IdentityRole()
+        {
+            Users = new List<TUserRole>();
+        }
+
+        /// <summary>
+        ///     Navigation property for users in the role
+        /// </summary>
+        public virtual ICollection<TUserRole> Users { get; private set; }
+
+        /// <summary>
+        ///     Role id
+        /// </summary>
+        public virtual TKey Id { get; set; }
+
+        /// <summary>
+        ///     Role name
+        /// </summary>
+        public virtual string Name { get; set; }
     }
 }

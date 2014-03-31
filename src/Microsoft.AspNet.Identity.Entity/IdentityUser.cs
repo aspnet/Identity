@@ -32,8 +32,8 @@ namespace Microsoft.AspNet.Identity.Entity
             
         }
 
-        public TKey Id { get; set; }
-        public string UserName { get; set; }
+        public virtual TKey Id { get; set; }
+        public virtual string UserName { get; set; }
 
         /// <summary>
         ///     Email
