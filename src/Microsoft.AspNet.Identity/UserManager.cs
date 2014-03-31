@@ -26,6 +26,8 @@ namespace Microsoft.AspNet.Identity
         private bool _disposed;
         private IPasswordHasher _passwordHasher;
 
+        public UserManager() { } 
+
         /// <summary>
         ///     Constructor which takes a service provider to find the default interfaces to hook up
         /// </summary>
@@ -1634,8 +1636,7 @@ namespace Microsoft.AspNet.Identity
                 return await Update(user);
             }
             await
-                store.SetLockoutEndDate(user, DateTimeOffset.UtcNow.Add(DefaultAccountLockoutTimeSpan))
-                    ;
+                store.SetLockoutEndDate(user, DateTimeOffset.UtcNow.Add(DefaultAccountLockoutTimeSpan));
             await store.ResetAccessFailedCount(user);
             return await Update(user);
         }
