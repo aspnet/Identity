@@ -6,48 +6,45 @@ using Microsoft.AspNet.HttpFeature.Security;
 
 namespace Microsoft.AspNet.Identity.Security
 {
-    public interface IClaimsIdentityProvider<TUser, TKey>
+    public class SignInManager<TUser, TKey>
         where TUser : class, IUser<TKey>
         where TKey : IEquatable<TKey>
     {
-        Task<ClaimsIdentity> CreateUserIdentity(UserManager<TUser, TKey> manager, TUser user);
-    }
-
-    public class AuthenticationSignIn : IAuthenticationSignIn
-    {
-        public ClaimsPrincipal User { get; set; }
-        public IDictionary<string, string> Properties { get; set; }
-    }
-
-    public class ClaimsIdentityProvider<TUser, TKey> : IClaimsIdentityProvider<TUser, TKey>
-        where TUser : class, IUser<TKey>
-        where TKey : IEquatable<TKey>
-    {
-
-        public async virtual Task<ClaimsIdentity> CreateUserIdentity(UserManager<TUser, TKey> manager, TUser user)
+        private string _authType;
+        public string AuthenticationType
         {
-            // TODO: Move this to a constant?
-            return await manager.CreateIdentity(user, "Microsoft.AspNet.Identity");
+            get { return _authType ?? "Microsoft.AspNet.Identity"; }
+            set { _authType = value; }
         }
-    }
 
-    public class SignInHelper<TUser, TKey>
-        where TUser : class, IUser<TKey>
-        where TKey : IEquatable<TKey>
-    {
         public UserManager<TUser, TKey> UserManager { get; set; }
-        public IClaimsIdentityProvider<TUser, TKey> ClaimsIdentityProvider { get; set; }
+
+        public virtual async Task<ClaimsIdentity> CreateUserIdentity(UserManager<TUser, TKey> manager, TUser user)
+        {
+            if (manager == null)
+            {
+                throw new ArgumentNullException("manager");
+            }
+            return await manager.CreateIdentity(user, AuthenticationType);
+        }
+
+        // TODO: Do we need to expose this?
+        private class AuthenticationSignIn : IAuthenticationSignIn
+        {
+            public ClaimsPrincipal User { get; set; }
+            public IDictionary<string, string> Properties { get; set; }
+        }
 
         public virtual async Task<IAuthenticationSignIn> SignIn(TUser user, bool isPersistent, bool rememberBrowser)
         {
             // TODO: all the two factor logic/external
-            // TODO: set isPersistent
             var authSignIn = new AuthenticationSignIn
             {
-                User = new ClaimsPrincipal(), 
+                User = new ClaimsPrincipal(),
+                // TODO: set isPersistent/rememberBrowser
                 Properties = new Dictionary<string, string>()
             };
-            authSignIn.User.AddIdentity(await ClaimsIdentityProvider.CreateUserIdentity(UserManager, user));
+            authSignIn.User.AddIdentity(await CreateUserIdentity(UserManager, user));
             return authSignIn;
         }
 
@@ -169,13 +166,4 @@ namespace Microsoft.AspNet.Identity.Security
             return SignInStatus.Failure;
         }
     }
-
-    public enum SignInStatus
-    {
-        Success,
-        LockedOut,
-        RequiresTwoFactorAuthentication,
-        Failure
-    }
-
 }
