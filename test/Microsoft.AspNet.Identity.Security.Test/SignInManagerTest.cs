@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Microsoft.AspNet.Identity.Security.Test
 {
-    public class SignInHelperTest
+    public class SignInManagerTest
     {
 
 #if NET45
