@@ -4,7 +4,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNet.HttpFeature.Security;
 
-namespace Microsoft.AspNet.Identity
+namespace Microsoft.AspNet.Identity.Security
 {
     public interface IClaimsIdentityProvider<TUser, TKey>
         where TUser : class, IUser<TKey>
@@ -26,6 +26,7 @@ namespace Microsoft.AspNet.Identity
 
         public async virtual Task<ClaimsIdentity> CreateUserIdentity(UserManager<TUser, TKey> manager, TUser user)
         {
+            // TODO: Move this to a constant?
             return await manager.CreateIdentity(user, "Microsoft.AspNet.Identity");
         }
     }
@@ -34,21 +35,7 @@ namespace Microsoft.AspNet.Identity
         where TUser : class, IUser<TKey>
         where TKey : IEquatable<TKey>
     {
-        public SignInHelper(UserManager<TUser, TKey> userManager, IClaimsIdentityProvider<TUser, TKey> claimsIdentityProvider)
-        {
-            if (userManager == null)
-            {
-                throw new ArgumentNullException("userManager");
-            }
-            if (claimsIdentityProvider == null)
-            {
-                throw new ArgumentNullException("claimsIdentityProvider");
-            }
-            UserManager = userManager;
-            ClaimsIdentityProvider = claimsIdentityProvider;
-        }
-
-        public UserManager<TUser, TKey> UserManager { get; private set; }
+        public UserManager<TUser, TKey> UserManager { get; set; }
         public IClaimsIdentityProvider<TUser, TKey> ClaimsIdentityProvider { get; set; }
 
         public virtual async Task<IAuthenticationSignIn> SignIn(TUser user, bool isPersistent, bool rememberBrowser)
@@ -151,6 +138,10 @@ namespace Microsoft.AspNet.Identity
 
         public virtual async Task<SignInStatus> PasswordSignIn(string userName, string password, bool isPersistent, bool shouldLockout)
         {
+            if (UserManager == null)
+            {
+                return SignInStatus.Failure;
+            }
             var user = await UserManager.FindByName(userName);
             if (user == null)
             {
