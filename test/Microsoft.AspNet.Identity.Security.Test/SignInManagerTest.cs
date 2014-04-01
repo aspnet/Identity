@@ -107,22 +107,40 @@ namespace Microsoft.AspNet.Identity.Security.Test
         }
 
         [Fact]
-        public async Task PasswordSignInFailsWithWrongPasswordShouldLockoutCallsAccessFailed()
+        public async Task PasswordSignInFailsWithNoUserManager()
+        {
+            // Setup
+            var helper = new SignInManager<TestUser, string>();
+
+            // Act
+            var result = await helper.PasswordSignIn("bogus", "bogus", false, false);
+
+            // Assert
+            Assert.Equal(SignInStatus.Failure, result);
+        }
+
+        [Fact]
+        public async Task PasswordSignInFailsWithWrongPasswordCanAccessFailedAndLockout()
         {
             // Setup
             var user = new TestUser { UserName = "Foo" };
             var manager = new Mock<UserManager<TestUser, string>>();
-            manager.Setup(m => m.IsLockedOut(user.Id, CancellationToken.None)).ReturnsAsync(false).Verifiable();
+            var lockedout = false;
+            manager.Setup(m => m.AccessFailed(user.Id, CancellationToken.None)).Returns(() =>
+            {
+                lockedout = true;
+                return Task.FromResult(IdentityResult.Success);
+            }).Verifiable();
+            manager.Setup(m => m.IsLockedOut(user.Id, CancellationToken.None)).Returns(() => Task.FromResult(lockedout));
             manager.Setup(m => m.FindByName(user.UserName, CancellationToken.None)).ReturnsAsync(user).Verifiable();
             manager.Setup(m => m.CheckPassword(user, "bogus", CancellationToken.None)).ReturnsAsync(false).Verifiable();
-            manager.Setup(m => m.AccessFailed(user.Id, CancellationToken.None)).ReturnsAsync(IdentityResult.Success).Verifiable();
             var helper = new SignInManager<TestUser, string> { UserManager = manager.Object };
 
             // Act
             var result = await helper.PasswordSignIn(user.UserName, "bogus", false, true);
 
             // Assert
-            Assert.Equal(SignInStatus.Failure, result);
+            Assert.Equal(SignInStatus.LockedOut, result);
             manager.VerifyAll();
         }
 
