@@ -40,7 +40,7 @@ namespace Microsoft.AspNet.Identity.Test
             store.Setup(s => s.Create(user, CancellationToken.None)).Returns(Task.FromResult(0)).Verifiable();
             var validator = new Mock<UserValidator<TestUser, string>>();
             var userManager = new UserManager<TestUser, string>(store.Object);
-            validator.Setup(v => v.Validate(userManager, user)).Returns(Task.FromResult(IdentityResult.Success)).Verifiable();
+            validator.Setup(v => v.Validate(userManager, user, CancellationToken.None)).Returns(Task.FromResult(IdentityResult.Success)).Verifiable();
             userManager.UserValidator = validator.Object;
 
             // Act
@@ -77,7 +77,7 @@ namespace Microsoft.AspNet.Identity.Test
             store.Setup(s => s.Update(user, CancellationToken.None)).Returns(Task.FromResult(0)).Verifiable();
             var validator = new Mock<UserValidator<TestUser, string>>();
             var userManager = new UserManager<TestUser, string>(store.Object);
-            validator.Setup(v => v.Validate(userManager, user)).Returns(Task.FromResult(IdentityResult.Success)).Verifiable();
+            validator.Setup(v => v.Validate(userManager, user, CancellationToken.None)).Returns(Task.FromResult(IdentityResult.Success)).Verifiable();
             userManager.UserValidator = validator.Object;
 
             // Act
@@ -451,7 +451,7 @@ namespace Microsoft.AspNet.Identity.Test
         {
             public const string ErrorMessage = "I'm Bad.";
 
-            public Task<IdentityResult> Validate(string password)
+            public Task<IdentityResult> Validate(string password, CancellationToken cancellationToken = default(CancellationToken))
             {
                 return Task.FromResult(IdentityResult.Failed(ErrorMessage));
             }
@@ -670,23 +670,23 @@ namespace Microsoft.AspNet.Identity.Test
 
         private class NoOpTokenProvider : IUserTokenProvider<TestUser, string>
         {
-            public Task<string> Generate(string purpose, UserManager<TestUser, string> manager, TestUser user)
+            public Task<string> Generate(string purpose, UserManager<TestUser, string> manager, TestUser user, CancellationToken cancellationToken = default(CancellationToken))
             {
                 return Task.FromResult("Test");
             }
 
             public Task<bool> Validate(string purpose, string token, UserManager<TestUser, string> manager,
-                TestUser user)
+                TestUser user, CancellationToken cancellationToken = default(CancellationToken))
             {
                 return Task.FromResult(true);
             }
 
-            public Task Notify(string token, UserManager<TestUser, string> manager, TestUser user)
+            public Task Notify(string token, UserManager<TestUser, string> manager, TestUser user, CancellationToken cancellationToken = default(CancellationToken))
             {
                 return Task.FromResult(0);
             }
 
-            public Task<bool> IsValidProviderForUser(UserManager<TestUser, string> manager, TestUser user)
+            public Task<bool> IsValidProviderForUser(UserManager<TestUser, string> manager, TestUser user, CancellationToken cancellationToken = default(CancellationToken))
             {
                 return Task.FromResult(true);
             }

@@ -1,3 +1,4 @@
+using System.Threading;
 using Microsoft.AspNet.HttpFeature.Security;
 using Moq;
 using System.Security.Claims;
@@ -20,7 +21,7 @@ namespace Microsoft.AspNet.Identity.Security.Test
             var userManager = new UserManager<TestUser, string>(store.Object);
             var identityFactory = new Mock<IClaimsIdentityFactory<TestUser, string>>();
             var testIdentity = new ClaimsIdentity("Microsoft.AspNet.Identity");
-            identityFactory.Setup(s => s.Create(userManager, user, "Microsoft.AspNet.Identity")).ReturnsAsync(testIdentity).Verifiable();
+            identityFactory.Setup(s => s.Create(userManager, user, "Microsoft.AspNet.Identity", CancellationToken.None)).ReturnsAsync(testIdentity).Verifiable();
             userManager.ClaimsIdentityFactory = identityFactory.Object;
             var helper = new SignInManager<TestUser, string> { UserManager = userManager };
 
@@ -38,8 +39,8 @@ namespace Microsoft.AspNet.Identity.Security.Test
             // Setup
             var user = new TestUser { UserName = "Foo" };
             var manager = new Mock<UserManager<TestUser, string>>();
-            manager.Setup(m => m.IsLockedOut(user.Id)).ReturnsAsync(true).Verifiable();
-            manager.Setup(m => m.FindByName(user.UserName)).ReturnsAsync(user).Verifiable();
+            manager.Setup(m => m.IsLockedOut(user.Id, CancellationToken.None)).ReturnsAsync(true).Verifiable();
+            manager.Setup(m => m.FindByName(user.UserName, CancellationToken.None)).ReturnsAsync(user).Verifiable();
             var helper = new SignInManager<TestUser, string> { UserManager = manager.Object };
 
             // Act
@@ -56,10 +57,10 @@ namespace Microsoft.AspNet.Identity.Security.Test
             // Setup
             var user = new TestUser { UserName = "Foo" };
             var manager = new Mock<UserManager<TestUser, string>>();
-            manager.Setup(m => m.IsLockedOut(user.Id)).ReturnsAsync(false).Verifiable();
-            manager.Setup(m => m.FindByName(user.UserName)).ReturnsAsync(user).Verifiable();
-            manager.Setup(m => m.CheckPassword(user, "password")).ReturnsAsync(true).Verifiable();
-            manager.Setup(m => m.CreateIdentity(user, "Microsoft.AspNet.Identity")).ReturnsAsync(new ClaimsIdentity("Microsoft.AspNet.Identity")).Verifiable();
+            manager.Setup(m => m.IsLockedOut(user.Id, CancellationToken.None)).ReturnsAsync(false).Verifiable();
+            manager.Setup(m => m.FindByName(user.UserName, CancellationToken.None)).ReturnsAsync(user).Verifiable();
+            manager.Setup(m => m.CheckPassword(user, "password", CancellationToken.None)).ReturnsAsync(true).Verifiable();
+            manager.Setup(m => m.CreateIdentity(user, "Microsoft.AspNet.Identity", CancellationToken.None)).ReturnsAsync(new ClaimsIdentity("Microsoft.AspNet.Identity")).Verifiable();
             var helper = new SignInManager<TestUser, string> { UserManager = manager.Object };
 
             // Act
@@ -76,9 +77,9 @@ namespace Microsoft.AspNet.Identity.Security.Test
             // Setup
             var user = new TestUser { UserName = "Foo" };
             var manager = new Mock<UserManager<TestUser, string>>();
-            manager.Setup(m => m.IsLockedOut(user.Id)).ReturnsAsync(false).Verifiable();
-            manager.Setup(m => m.FindByName(user.UserName)).ReturnsAsync(user).Verifiable();
-            manager.Setup(m => m.CheckPassword(user, "bogus")).ReturnsAsync(false).Verifiable();
+            manager.Setup(m => m.IsLockedOut(user.Id, CancellationToken.None)).ReturnsAsync(false).Verifiable();
+            manager.Setup(m => m.FindByName(user.UserName, CancellationToken.None)).ReturnsAsync(user).Verifiable();
+            manager.Setup(m => m.CheckPassword(user, "bogus", CancellationToken.None)).ReturnsAsync(false).Verifiable();
             var helper = new SignInManager<TestUser, string> { UserManager = manager.Object };
 
             // Act
@@ -94,7 +95,7 @@ namespace Microsoft.AspNet.Identity.Security.Test
         {
             // Setup
             var manager = new Mock<UserManager<TestUser, string>>();
-            manager.Setup(m => m.FindByName("bogus")).ReturnsAsync(null).Verifiable();
+            manager.Setup(m => m.FindByName("bogus", CancellationToken.None)).ReturnsAsync(null).Verifiable();
             var helper = new SignInManager<TestUser, string> { UserManager = manager.Object };
 
             // Act
@@ -111,10 +112,10 @@ namespace Microsoft.AspNet.Identity.Security.Test
             // Setup
             var user = new TestUser { UserName = "Foo" };
             var manager = new Mock<UserManager<TestUser, string>>();
-            manager.Setup(m => m.IsLockedOut(user.Id)).ReturnsAsync(false).Verifiable();
-            manager.Setup(m => m.FindByName(user.UserName)).ReturnsAsync(user).Verifiable();
-            manager.Setup(m => m.CheckPassword(user, "bogus")).ReturnsAsync(false).Verifiable();
-            manager.Setup(m => m.AccessFailed(user.Id)).ReturnsAsync(IdentityResult.Success).Verifiable();
+            manager.Setup(m => m.IsLockedOut(user.Id, CancellationToken.None)).ReturnsAsync(false).Verifiable();
+            manager.Setup(m => m.FindByName(user.UserName, CancellationToken.None)).ReturnsAsync(user).Verifiable();
+            manager.Setup(m => m.CheckPassword(user, "bogus", CancellationToken.None)).ReturnsAsync(false).Verifiable();
+            manager.Setup(m => m.AccessFailed(user.Id, CancellationToken.None)).ReturnsAsync(IdentityResult.Success).Verifiable();
             var helper = new SignInManager<TestUser, string> { UserManager = manager.Object };
 
             // Act
