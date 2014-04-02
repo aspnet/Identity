@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNet.HttpFeature.Security;
+using Microsoft.AspNet.Abstractions;
+using Microsoft.AspNet.Abstractions.Security;
 
 namespace Microsoft.AspNet.Identity.Security
 {
@@ -18,34 +19,28 @@ namespace Microsoft.AspNet.Identity.Security
         }
 
         public UserManager<TUser, TKey> UserManager { get; set; }
+        public HttpContext Context { get; set; }
 
-        public virtual async Task<ClaimsIdentity> CreateUserIdentity(UserManager<TUser, TKey> manager, TUser user)
+
+        public virtual async Task<ClaimsIdentity> CreateUserIdentity(TUser user)
         {
-            if (manager == null)
+            if (UserManager == null)
             {
-                throw new ArgumentNullException("manager");
+                return null;
             }
-            return await manager.CreateIdentity(user, AuthenticationType);
+            return await UserManager.CreateIdentity(user, AuthenticationType);
         }
 
-        // TODO: Do we need to expose this?
-        private class AuthenticationSignIn : IAuthenticationSignIn
+        public virtual async Task SignIn(TUser user, bool isPersistent, bool rememberBrowser)
         {
-            public ClaimsPrincipal User { get; set; }
-            public IDictionary<string, string> Properties { get; set; }
-        }
-
-        public virtual async Task<IAuthenticationSignIn> SignIn(TUser user, bool isPersistent, bool rememberBrowser)
-        {
-            // TODO: all the two factor logic/external
-            var authSignIn = new AuthenticationSignIn
+            if (Context == null)
             {
-                User = new ClaimsPrincipal(),
-                // TODO: set isPersistent/rememberBrowser
-                Properties = new Dictionary<string, string>()
-            };
-            authSignIn.User.AddIdentity(await CreateUserIdentity(UserManager, user));
-            return authSignIn;
+                return;
+            }
+
+            // TODO: all the two factor logic/external/rememberBrowser
+            var userIdentity = await CreateUserIdentity(user);
+            Context.Response.SignIn(userIdentity, new AuthenticationProperties { IsPersistent = isPersistent });
         }
 
         //public virtual async Task<bool> SendTwoFactorCode(string provider)
