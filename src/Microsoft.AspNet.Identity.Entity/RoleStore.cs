@@ -39,9 +39,9 @@ namespace Microsoft.AspNet.Identity.Entity
             }
         }
 
-        public virtual Task<TRole> GetRoleAggregate(Expression<Func<TRole, bool>> filter)
+        public virtual Task<TRole> GetRoleAggregate(Expression<Func<TRole, bool>> filter, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return Roles.SingleOrDefaultAsync(filter);
+            return Roles.SingleOrDefaultAsync(filter, cancellationToken);
         }
 
         public async virtual Task Create(TRole role, CancellationToken cancellationToken = default(CancellationToken))
