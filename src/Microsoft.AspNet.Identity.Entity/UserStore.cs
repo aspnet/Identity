@@ -109,6 +109,7 @@ namespace Microsoft.AspNet.Identity.Entity
         ///     Find a user by id
         /// </summary>
         /// <param name="userId"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         public virtual Task<TUser> FindById(TKey userId, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -123,6 +124,7 @@ namespace Microsoft.AspNet.Identity.Entity
         ///     Find a user by name
         /// </summary>
         /// <param name="userName"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         public virtual Task<TUser> FindByName(string userName, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -387,6 +389,7 @@ namespace Microsoft.AspNet.Identity.Entity
         ///     Get the user's email
         /// </summary>
         /// <param name="user"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         public virtual Task<string> GetEmail(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -418,6 +421,7 @@ namespace Microsoft.AspNet.Identity.Entity
         ///     not locked out.
         /// </summary>
         /// <param name="user"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         public virtual Task<DateTimeOffset> GetLockoutEndDate(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -438,6 +442,7 @@ namespace Microsoft.AspNet.Identity.Entity
         /// </summary>
         /// <param name="user"></param>
         /// <param name="lockoutEnd"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         public virtual Task SetLockoutEndDate(TUser user, DateTimeOffset lockoutEnd, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -455,6 +460,7 @@ namespace Microsoft.AspNet.Identity.Entity
         ///     Used to record when an attempt to access the user has failed
         /// </summary>
         /// <param name="user"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         public virtual Task<int> IncrementAccessFailedCount(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -472,6 +478,7 @@ namespace Microsoft.AspNet.Identity.Entity
         ///     Used to reset the account access count, typically after the account is successfully accessed
         /// </summary>
         /// <param name="user"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         public virtual Task ResetAccessFailedCount(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -490,6 +497,7 @@ namespace Microsoft.AspNet.Identity.Entity
         ///     verified or the account is locked out.
         /// </summary>
         /// <param name="user"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         public virtual Task<int> GetAccessFailedCount(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -506,6 +514,7 @@ namespace Microsoft.AspNet.Identity.Entity
         ///     Returns whether the user can be locked out.
         /// </summary>
         /// <param name="user"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         public virtual Task<bool> GetLockoutEnabled(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -523,6 +532,7 @@ namespace Microsoft.AspNet.Identity.Entity
         /// </summary>
         /// <param name="user"></param>
         /// <param name="enabled"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         public virtual Task SetLockoutEnabled(TUser user, bool enabled, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -541,6 +551,7 @@ namespace Microsoft.AspNet.Identity.Entity
         /// </summary>
         /// <param name="user"></param>
         /// <param name="phoneNumber"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         public virtual Task SetPhoneNumber(TUser user, string phoneNumber, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -558,6 +569,7 @@ namespace Microsoft.AspNet.Identity.Entity
         ///     Get a user's phone number
         /// </summary>
         /// <param name="user"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         public virtual Task<string> GetPhoneNumber(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -574,6 +586,7 @@ namespace Microsoft.AspNet.Identity.Entity
         ///     Returns whether the user phoneNumber is confirmed
         /// </summary>
         /// <param name="user"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         public virtual Task<bool> GetPhoneNumberConfirmed(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -591,6 +604,7 @@ namespace Microsoft.AspNet.Identity.Entity
         /// </summary>
         /// <param name="user"></param>
         /// <param name="confirmed"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         public virtual Task SetPhoneNumberConfirmed(TUser user, bool confirmed, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -609,6 +623,7 @@ namespace Microsoft.AspNet.Identity.Entity
         /// </summary>
         /// <param name="user"></param>
         /// <param name="roleName"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         public virtual Task AddToRole(TUser user, string roleName, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -679,6 +694,7 @@ namespace Microsoft.AspNet.Identity.Entity
         /// </summary>
         /// <param name="user"></param>
         /// <param name="roleName"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         public virtual Task<bool> IsInRole(TUser user, string roleName, CancellationToken cancellationToken = default(CancellationToken))
         {

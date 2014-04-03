@@ -6,7 +6,12 @@ using Microsoft.Data.Entity.Metadata;
 
 namespace Microsoft.AspNet.Identity.Entity
 {
-    public class IdentityContext : IdentityContext<IdentityUser, IdentityRole, string, IdentityUserLogin, IdentityUserRole, IdentityUserClaim> { }
+    public class IdentityContext :
+        IdentityContext<IdentityUser, IdentityRole, string, IdentityUserLogin, IdentityUserRole, IdentityUserClaim>
+    {
+        public IdentityContext(EntityConfiguration config) : base(config) { }
+        public IdentityContext() { }
+    }
 
     public class IdentityContext<TUser, TRole, TKey, TUserLogin, TUserRole, TUserClaim> : EntityContext
         where TUser : IdentityUser<TKey, TUserLogin, TUserRole, TUserClaim>
@@ -19,6 +24,9 @@ namespace Microsoft.AspNet.Identity.Entity
 
         public EntitySet<TUser> Users { get; set; }
         public EntitySet<TRole> Roles { get; set; }
+
+        public IdentityContext() { }
+        public IdentityContext(EntityConfiguration config) : base(config) { }
 
         protected override void OnConfiguring(EntityConfigurationBuilder builder)
         {
@@ -35,8 +43,10 @@ namespace Microsoft.AspNet.Identity.Entity
             builder.Entity<TUser>()
                 .Key(u => u.Id)
                 .Properties(ps => ps.Property(u => u.UserName));
-            //builder.Entity<TRole>()
-            //    .Key(r => r.Id);
+                //.ToTable("AspNetUsers");
+            builder.Entity<TRole>()
+                .Key(r => r.Id);
+                //.ToTable("AspNetRoles");
  
             builder.Entity<TUserRole>()
                 .Key(r => new {r.UserId, r.RoleId})
@@ -45,8 +55,15 @@ namespace Microsoft.AspNet.Identity.Entity
                 //.ToTable("AspNetUserRoles");
 
             builder.Entity<TUserLogin>()
-                .Key(l => new {l.LoginProvider, l.ProviderKey, l.UserId});
+                .Key(l => new {l.LoginProvider, l.ProviderKey, l.UserId})
+                .ForeignKeys(fk => fk.ForeignKey<TUser>(f => f.UserId));
             //.ToTable("AspNetUserLogins");
+
+            builder.Entity<TUserClaim>()
+                .Key(c => c.Id)
+                .ForeignKeys(fk => fk.ForeignKey<TUser>(f => f.UserId));
+            //.ToTable("AspNetUserClaims");
+
         }
 
     }
