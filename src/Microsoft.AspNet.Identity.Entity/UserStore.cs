@@ -60,9 +60,9 @@ namespace Microsoft.AspNet.Identity.Entity
             }
         }
 
-        protected virtual Task<TUser> GetUserAggregate(Expression<Func<TUser, bool>> filter)
+        protected virtual Task<TUser> GetUserAggregate(Expression<Func<TUser, bool>> filter, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return Users.SingleOrDefaultAsync(filter);
+            return Users.SingleOrDefaultAsync(filter, cancellationToken);
                 //Include(u => u.Roles)
                 //.Include(u => u.Claims)
                 //.Include(u => u.Logins)
@@ -100,7 +100,6 @@ namespace Microsoft.AspNet.Identity.Entity
             {
                 throw new ArgumentNullException("user");
             }
-            // TODO: why is there no DeleteAsync?
             Context.Delete(user);
             await SaveChanges(cancellationToken);
         }
@@ -115,9 +114,8 @@ namespace Microsoft.AspNet.Identity.Entity
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
-            // TODO: FirstOrDeafult with query throws an exception with Single
-            return Task.FromResult(Users.SingleOrDefault(u => u.Id.Equals(userId)));
-            //return GetUserAggregate(u => u.Id.Equals(userId));
+            return Users.SingleOrDefaultAsync(u => u.Id.Equals(userId), cancellationToken);
+            // TODO: return GetUserAggregate(u => u.Id.Equals(userId), cancellationToken);
         }
 
         /// <summary>
@@ -130,9 +128,8 @@ namespace Microsoft.AspNet.Identity.Entity
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
-            // TODO: FirstOrDeafult with query throws an exception with Single
-            return Task.FromResult(Users.SingleOrDefault(u => u.UserName.ToUpper() == userName.ToUpper()));
-            //return GetUserAggregate(u => u.UserName.ToUpper() == userName.ToUpper());
+            return Users.SingleOrDefaultAsync(u => u.UserName.ToUpper() == userName.ToUpper(), cancellationToken);
+            // TODO: return GetUserAggregate(u => u.UserName.ToUpper() == userName.ToUpper(), cancellationToken);
         }
 
         public IQueryable<TUser> Users
@@ -196,11 +193,12 @@ namespace Microsoft.AspNet.Identity.Entity
             }
             var provider = login.LoginProvider;
             var key = login.ProviderKey;
+            // TODO: use FirstOrDefaultAsync
             var userLogin =
                 Context.Set<TUserLogin>().FirstOrDefault(l => l.LoginProvider == provider && l.ProviderKey == key);
             if (userLogin != null)
             {
-                return await GetUserAggregate(u => u.Id.Equals(userLogin.UserId));
+                return await GetUserAggregate(u => u.Id.Equals(userLogin.UserId), cancellationToken);
             }
             return null;
         }
@@ -413,7 +411,7 @@ namespace Microsoft.AspNet.Identity.Entity
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
             return Task.FromResult(Users.SingleOrDefault(u => u.Email.ToUpper() == email.ToUpper()));
-            //return GetUserAggregate(u => u.Email.ToUpper() == email.ToUpper());
+            //return GetUserAggregate(u => u.Email.ToUpper() == email.ToUpper(), cancellationToken);
         }
 
         /// <summary>

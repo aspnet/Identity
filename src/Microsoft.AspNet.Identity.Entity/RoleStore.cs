@@ -52,7 +52,7 @@ namespace Microsoft.AspNet.Identity.Entity
             {
                 throw new ArgumentNullException("role");
             }
-            await Context.AddAsync(role);
+            await Context.AddAsync(role, cancellationToken);
             await SaveChanges(cancellationToken);
         }
 
@@ -64,7 +64,7 @@ namespace Microsoft.AspNet.Identity.Entity
             {
                 throw new ArgumentNullException("role");
             }
-            await Context.UpdateAsync(role);
+            await Context.UpdateAsync(role, cancellationToken);
             await SaveChanges(cancellationToken);
         }
 
@@ -76,7 +76,6 @@ namespace Microsoft.AspNet.Identity.Entity
             {
                 throw new ArgumentNullException("role");
             }
-            // TODO: why is there no DeleteAsync?
             Context.Delete(role);
             await SaveChanges(cancellationToken);
         }
@@ -91,7 +90,7 @@ namespace Microsoft.AspNet.Identity.Entity
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
-            return Task.FromResult(Roles.SingleOrDefault(r => r.Id.Equals(id)));
+            return Roles.SingleOrDefaultAsync(r => r.Id.Equals(id), cancellationToken);
             //return GetRoleAggregate(u => u.Id.Equals(id));
         }
 
@@ -105,7 +104,7 @@ namespace Microsoft.AspNet.Identity.Entity
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
-            return Task.FromResult(Roles.SingleOrDefault(r => r.Name.ToUpper() == name.ToUpper()));
+            return Roles.SingleOrDefaultAsync(r => r.Name.ToUpper() == name.ToUpper(), cancellationToken);
             //return GetRoleAggregate(u => u.Name.ToUpper() == name.ToUpper());
         }
 
