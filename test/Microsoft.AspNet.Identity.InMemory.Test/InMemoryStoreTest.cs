@@ -1413,7 +1413,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
 
         private static RoleManager<InMemoryRole> CreateRoleManager()
         {
-            return new RoleManager<InMemoryRole>(new InMemoryRoleStore());
+            return new RoleManager<InMemoryRole>(new InMemoryRoleStore<InMemoryRole>());
         }
 
         public class TestMessageService : IIdentityMessageService
