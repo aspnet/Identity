@@ -39,7 +39,6 @@ namespace Microsoft.AspNet.Identity.Entity
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            // TODO: Would be nice if we could just do Entity<IUser<TKey>> instead of forcing the concrete type
             builder.Entity<TUser>()
                 .Key(u => u.Id)
                 .Properties(ps => ps.Property(u => u.UserName));
