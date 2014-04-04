@@ -80,7 +80,7 @@ namespace Microsoft.AspNet.Identity
         }
 
         /// <summary>
-        ///     Create a role
+        ///     CreateAsync a role
         /// </summary>
         /// <param name="role"></param>
         /// <param name="cancellationToken"></param>
@@ -103,7 +103,7 @@ namespace Microsoft.AspNet.Identity
         }
 
         /// <summary>
-        ///     Update an existing role
+        ///     UpdateAsync an existing role
         /// </summary>
         /// <param name="role"></param>
         /// <param name="cancellationToken"></param>
@@ -126,7 +126,7 @@ namespace Microsoft.AspNet.Identity
         }
 
         /// <summary>
-        ///     Delete a role
+        ///     DeleteAsync a role
         /// </summary>
         /// <param name="role"></param>
         /// <param name="cancellationToken"></param>
@@ -161,7 +161,7 @@ namespace Microsoft.AspNet.Identity
         }
 
         /// <summary>
-        ///     Find a role by id
+        ///     FindByLoginAsync a role by id
         /// </summary>
         /// <param name="roleId"></param>
         /// <param name="cancellationToken"></param>
@@ -197,7 +197,7 @@ namespace Microsoft.AspNet.Identity
         }
 
         /// <summary>
-        ///     Find a role by name
+        ///     FindByLoginAsync a role by name
         /// </summary>
         /// <param name="roleName"></param>
         /// <param name="cancellationToken"></param>

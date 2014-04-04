@@ -35,41 +35,41 @@ namespace Microsoft.AspNet.Identity.InMemory
             return Task.FromResult(user.Claims);
         }
 
-        public Task AddClaim(TUser user, Claim claim, CancellationToken cancellationToken = default(CancellationToken))
+        public Task AddClaimAsync(TUser user, Claim claim, CancellationToken cancellationToken = default(CancellationToken))
         {
             user.Claims.Add(claim);
             return Task.FromResult(0);
         }
 
-        public Task RemoveClaim(TUser user, Claim claim, CancellationToken cancellationToken = default(CancellationToken))
+        public Task RemoveClaimAsync(TUser user, Claim claim, CancellationToken cancellationToken = default(CancellationToken))
         {
             user.Claims.Remove(claim);
             return Task.FromResult(0);
         }
 
-        public Task SetEmail(TUser user, string email, CancellationToken cancellationToken = default(CancellationToken))
+        public Task SetEmailAsync(TUser user, string email, CancellationToken cancellationToken = default(CancellationToken))
         {
             user.Email = email;
             return Task.FromResult(0);
         }
 
-        public Task<string> GetEmail(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<string> GetEmailAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.FromResult(user.Email);
         }
 
-        public Task<bool> GetEmailConfirmed(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<bool> GetEmailConfirmedAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.FromResult(user.EmailConfirmed);
         }
 
-        public Task SetEmailConfirmed(TUser user, bool confirmed, CancellationToken cancellationToken = default(CancellationToken))
+        public Task SetEmailConfirmedAsync(TUser user, bool confirmed, CancellationToken cancellationToken = default(CancellationToken))
         {
             user.EmailConfirmed = confirmed;
             return Task.FromResult(0);
         }
 
-        public Task<TUser> FindByEmail(string email, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<TUser> FindByEmailAsync(string email, CancellationToken cancellationToken = default(CancellationToken))
         {
             return
                 Task.FromResult(
@@ -81,48 +81,48 @@ namespace Microsoft.AspNet.Identity.InMemory
             return Task.FromResult(user.LockoutEnd);
         }
 
-        public Task SetLockoutEndDate(TUser user, DateTimeOffset lockoutEnd, CancellationToken cancellationToken = default(CancellationToken))
+        public Task SetLockoutEndDateAsync(TUser user, DateTimeOffset lockoutEnd, CancellationToken cancellationToken = default(CancellationToken))
         {
             user.LockoutEnd = lockoutEnd;
             return Task.FromResult(0);
         }
 
-        public Task<int> IncrementAccessFailedCount(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<int> IncrementAccessFailedCountAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             user.AccessFailedCount++;
             return Task.FromResult(user.AccessFailedCount);
         }
 
-        public Task ResetAccessFailedCount(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public Task ResetAccessFailedCountAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             user.AccessFailedCount = 0;
             return Task.FromResult(0);
         }
 
-        public Task<int> GetAccessFailedCount(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<int> GetAccessFailedCountAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.FromResult(user.AccessFailedCount);
         }
 
-        public Task<bool> GetLockoutEnabled(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<bool> GetLockoutEnabledAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.FromResult(user.LockoutEnabled);
         }
 
-        public Task SetLockoutEnabled(TUser user, bool enabled, CancellationToken cancellationToken = default(CancellationToken))
+        public Task SetLockoutEnabledAsync(TUser user, bool enabled, CancellationToken cancellationToken = default(CancellationToken))
         {
             user.LockoutEnabled = enabled;
             return Task.FromResult(0);
         }
 
-        public Task AddLogin(TUser user, UserLoginInfo login, CancellationToken cancellationToken = default(CancellationToken))
+        public Task AddLoginAsync(TUser user, UserLoginInfo login, CancellationToken cancellationToken = default(CancellationToken))
         {
             user.Logins.Add(login);
             _logins[login] = user;
             return Task.FromResult(0);
         }
 
-        public Task RemoveLogin(TUser user, UserLoginInfo login, CancellationToken cancellationToken = default(CancellationToken))
+        public Task RemoveLoginAsync(TUser user, UserLoginInfo login, CancellationToken cancellationToken = default(CancellationToken))
         {
             var logs =
                 user.Logins.Where(l => l.ProviderKey == login.ProviderKey && l.LoginProvider == login.LoginProvider)
@@ -135,12 +135,12 @@ namespace Microsoft.AspNet.Identity.InMemory
             return Task.FromResult(0);
         }
 
-        public Task<IList<UserLoginInfo>> GetLogins(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<IList<UserLoginInfo>> GetLoginsAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.FromResult(user.Logins);
         }
 
-        public Task<TUser> Find(UserLoginInfo login, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<TUser> FindByLoginAsync(UserLoginInfo login, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (_logins.ContainsKey(login))
             {
@@ -149,7 +149,7 @@ namespace Microsoft.AspNet.Identity.InMemory
             return Task.FromResult<TUser>(null);
         }
 
-        public Task<string> GetUserId(TUser user, CancellationToken cancellationToken = new CancellationToken())
+        public Task<string> GetUserIdAsync(TUser user, CancellationToken cancellationToken = new CancellationToken())
         {
             return Task.FromResult(user.Id);
         }
@@ -157,6 +157,12 @@ namespace Microsoft.AspNet.Identity.InMemory
         public Task<string> GetUserName(TUser user, CancellationToken cancellationToken = new CancellationToken())
         {
             return Task.FromResult(user.UserName);
+        }
+
+        public Task SetUserNameAsync(TUser user, string userName, CancellationToken cancellationToken = new CancellationToken())
+        {
+            user.UserName = userName;
+            return Task.FromResult(0);
         }
 
         public Task Create(TUser user, CancellationToken cancellationToken = default(CancellationToken))
@@ -201,23 +207,23 @@ namespace Microsoft.AspNet.Identity.InMemory
             return Task.FromResult(0);
         }
 
-        public Task SetPasswordHash(TUser user, string passwordHash, CancellationToken cancellationToken = default(CancellationToken))
+        public Task SetPasswordHashAsync(TUser user, string passwordHash, CancellationToken cancellationToken = default(CancellationToken))
         {
             user.PasswordHash = passwordHash;
             return Task.FromResult(0);
         }
 
-        public Task<string> GetPasswordHash(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<string> GetPasswordHashAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.FromResult(user.PasswordHash);
         }
 
-        public Task<bool> HasPassword(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<bool> HasPasswordAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.FromResult(user.PasswordHash != null);
         }
 
-        public Task SetPhoneNumber(TUser user, string phoneNumber, CancellationToken cancellationToken = default(CancellationToken))
+        public Task SetPhoneNumberAsync(TUser user, string phoneNumber, CancellationToken cancellationToken = default(CancellationToken))
         {
             user.PhoneNumber = phoneNumber;
             return Task.FromResult(0);
@@ -233,30 +239,30 @@ namespace Microsoft.AspNet.Identity.InMemory
             return Task.FromResult(user.PhoneNumberConfirmed);
         }
 
-        public Task SetPhoneNumberConfirmed(TUser user, bool confirmed, CancellationToken cancellationToken = default(CancellationToken))
+        public Task SetPhoneNumberConfirmedAsync(TUser user, bool confirmed, CancellationToken cancellationToken = default(CancellationToken))
         {
             user.PhoneNumberConfirmed = confirmed;
             return Task.FromResult(0);
         }
 
-        public Task AddToRole(TUser user, string role, CancellationToken cancellationToken = default(CancellationToken))
+        public Task AddToRoleAsync(TUser user, string role, CancellationToken cancellationToken = default(CancellationToken))
         {
             user.Roles.Add(role);
             return Task.FromResult(0);
         }
 
-        public Task RemoveFromRole(TUser user, string role, CancellationToken cancellationToken = default(CancellationToken))
+        public Task RemoveFromRoleAsync(TUser user, string role, CancellationToken cancellationToken = default(CancellationToken))
         {
             user.Roles.Remove(role);
             return Task.FromResult(0);
         }
 
-        public Task<IList<string>> GetRoles(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<IList<string>> GetRolesAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.FromResult(user.Roles);
         }
 
-        public Task<bool> IsInRole(TUser user, string role, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<bool> IsInRoleAsync(TUser user, string role, CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.FromResult(user.Roles.Contains(role));
         }
@@ -267,18 +273,18 @@ namespace Microsoft.AspNet.Identity.InMemory
             return Task.FromResult(0);
         }
 
-        public Task<string> GetSecurityStamp(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<string> GetSecurityStampAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.FromResult(user.SecurityStamp);
         }
 
-        public Task SetTwoFactorEnabled(TUser user, bool enabled, CancellationToken cancellationToken = default(CancellationToken))
+        public Task SetTwoFactorEnabledAsync(TUser user, bool enabled, CancellationToken cancellationToken = default(CancellationToken))
         {
             user.TwoFactorEnabled = enabled;
             return Task.FromResult(0);
         }
 
-        public Task<bool> GetTwoFactorEnabled(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<bool> GetTwoFactorEnabledAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.FromResult(user.TwoFactorEnabled);
         }

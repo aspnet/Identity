@@ -27,7 +27,7 @@ namespace Microsoft.AspNet.Identity.Entity
         public EntityContext Context { get; private set; }
 
         /// <summary>
-        ///     If true will call SaveChanges after Create/Update/Delete
+        ///     If true will call SaveChanges after CreateAsync/UpdateAsync/DeleteAsync
         /// </summary>
         public bool AutoSaveChanges { get; set; }
 
@@ -97,7 +97,7 @@ namespace Microsoft.AspNet.Identity.Entity
         }
 
         /// <summary>
-        ///     Find a role by id
+        ///     FindByLoginAsync a role by id
         /// </summary>
         /// <param name="id"></param>
         /// <param name="cancellationToken"></param>
@@ -112,7 +112,7 @@ namespace Microsoft.AspNet.Identity.Entity
         }
 
         /// <summary>
-        ///     Find a role by name
+        ///     FindByLoginAsync a role by name
         /// </summary>
         /// <param name="name"></param>
         /// <param name="cancellationToken"></param>

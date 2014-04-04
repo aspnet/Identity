@@ -5,7 +5,7 @@ namespace Microsoft.AspNet.Identity.Test
 {
     public class NoopUserStore : IUserStore<TestUser>
     {
-        public Task<string> GetUserId(TestUser user, CancellationToken cancellationToken = new CancellationToken())
+        public Task<string> GetUserIdAsync(TestUser user, CancellationToken cancellationToken = new CancellationToken())
         {
             return Task.FromResult(user.Id);
         }
@@ -13,6 +13,11 @@ namespace Microsoft.AspNet.Identity.Test
         public Task<string> GetUserName(TestUser user, CancellationToken cancellationToken = new CancellationToken())
         {
             return Task.FromResult(user.UserName);
+        }
+
+        public Task SetUserNameAsync(TestUser user, string userName, CancellationToken cancellationToken = new CancellationToken())
+        {
+            return Task.FromResult(0);
         }
 
         public Task Create(TestUser user, CancellationToken cancellationToken = default(CancellationToken))

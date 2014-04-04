@@ -12,7 +12,7 @@ namespace Microsoft.AspNet.Identity
     public interface IRoleValidator<TRole> where TRole : class
     {
         /// <summary>
-        ///     Validate the user
+        ///     ValidateAsync the user
         /// </summary>
         /// <param name="role"></param>
         /// <param name="manager"></param>

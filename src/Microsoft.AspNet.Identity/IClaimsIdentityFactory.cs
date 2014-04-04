@@ -13,7 +13,7 @@ namespace Microsoft.AspNet.Identity
         where TUser : class
     {
         /// <summary>
-        ///     Create a ClaimsIdentity from an user using a UserManager
+        ///     CreateAsync a ClaimsIdentity from an user using a UserManager
         /// </summary>
         /// <param name="manager"></param>
         /// <param name="user"></param>

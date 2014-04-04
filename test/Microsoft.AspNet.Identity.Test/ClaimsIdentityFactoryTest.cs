@@ -37,12 +37,12 @@ namespace Microsoft.AspNet.Identity.Test
             var user = new TestUser { UserName = "Foo" };
             userManager.Setup(m => m.SupportsUserRole).Returns(supportRoles);
             userManager.Setup(m => m.SupportsUserClaim).Returns(supportClaims);
-            userManager.Setup(m => m.GetUserId(user, CancellationToken.None)).ReturnsAsync(user.Id);
-            userManager.Setup(m => m.GetUserName(user, CancellationToken.None)).ReturnsAsync(user.UserName);
+            userManager.Setup(m => m.GetUserIdAsync(user, CancellationToken.None)).ReturnsAsync(user.Id);
+            userManager.Setup(m => m.GetUserNameAsync(user, CancellationToken.None)).ReturnsAsync(user.UserName);
             var roleClaims = new[] { "Admin", "Local" }; 
-            userManager.Setup(m => m.GetRoles(user.Id, CancellationToken.None)).ReturnsAsync(roleClaims);
+            userManager.Setup(m => m.GetRolesAsync(user, CancellationToken.None)).ReturnsAsync(roleClaims);
             var userClaims = new[] { new Claim("Whatever", "Value"), new Claim("Whatever2", "Value2") };
-            userManager.Setup(m => m.GetClaims(user.Id, CancellationToken.None)).ReturnsAsync(userClaims);
+            userManager.Setup(m => m.GetClaimsAsync(user, CancellationToken.None)).ReturnsAsync(userClaims);
 
             const string authType = "Microsoft.AspNet.Identity";
             var factory = new ClaimsIdentityFactory<TestUser>();

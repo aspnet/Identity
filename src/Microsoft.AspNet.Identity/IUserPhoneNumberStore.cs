@@ -16,7 +16,7 @@ namespace Microsoft.AspNet.Identity
         /// <param name="phoneNumber"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task SetPhoneNumber(TUser user, string phoneNumber, CancellationToken cancellationToken = default(CancellationToken));
+        Task SetPhoneNumberAsync(TUser user, string phoneNumber, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         ///     Get the user phoneNumber
@@ -41,6 +41,6 @@ namespace Microsoft.AspNet.Identity
         /// <param name="confirmed"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task SetPhoneNumberConfirmed(TUser user, bool confirmed, CancellationToken cancellationToken = default(CancellationToken));
+        Task SetPhoneNumberConfirmedAsync(TUser user, bool confirmed, CancellationToken cancellationToken = default(CancellationToken));
     }
 }
