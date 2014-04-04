@@ -16,7 +16,7 @@ namespace Microsoft.AspNet.Identity
         /// <param name="role"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task Create(TRole role, CancellationToken cancellationToken = default(CancellationToken));
+        Task CreateAsync(TRole role, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         ///     UpdateAsync a role
@@ -24,7 +24,7 @@ namespace Microsoft.AspNet.Identity
         /// <param name="role"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task Update(TRole role, CancellationToken cancellationToken = default(CancellationToken));
+        Task UpdateAsync(TRole role, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         ///     DeleteAsync a role
@@ -32,7 +32,7 @@ namespace Microsoft.AspNet.Identity
         /// <param name="role"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task Delete(TRole role, CancellationToken cancellationToken = default(CancellationToken));
+        Task DeleteAsync(TRole role, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         ///     Returns a role's id
@@ -40,7 +40,7 @@ namespace Microsoft.AspNet.Identity
         /// <param name="role"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<string> GetRoleId(TRole role, CancellationToken cancellationToken = default(CancellationToken));
+        Task<string> GetRoleIdAsync(TRole role, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         ///     Returns a role's name
@@ -48,7 +48,7 @@ namespace Microsoft.AspNet.Identity
         /// <param name="role"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<string> GetRoleName(TRole role, CancellationToken cancellationToken = default(CancellationToken));
+        Task<string> GetRoleNameAsync(TRole role, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         ///     Finds a role by id
@@ -56,7 +56,7 @@ namespace Microsoft.AspNet.Identity
         /// <param name="roleId"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<TRole> FindById(string roleId, CancellationToken cancellationToken = default(CancellationToken));
+        Task<TRole> FindByIdAsync(string roleId, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         ///     FindByLoginAsync a role by name
@@ -64,6 +64,6 @@ namespace Microsoft.AspNet.Identity
         /// <param name="roleName"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<TRole> FindByName(string roleName, CancellationToken cancellationToken = default(CancellationToken));
+        Task<TRole> FindByNameAsync(string roleName, CancellationToken cancellationToken = default(CancellationToken));
     }
 }

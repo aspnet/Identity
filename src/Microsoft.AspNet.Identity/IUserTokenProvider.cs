@@ -17,7 +17,7 @@ namespace Microsoft.AspNet.Identity
         /// <param name="user"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<string> Generate(string purpose, UserManager<TUser> manager, TUser user, CancellationToken cancellationToken = default(CancellationToken));
+        Task<string> GenerateAsync(string purpose, UserManager<TUser> manager, TUser user, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         ///     ValidateAsync and unprotect a token, returns null if invalid

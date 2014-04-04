@@ -16,11 +16,11 @@ namespace Microsoft.AspNet.Identity.Test
             var factory = new ClaimsIdentityFactory<TestUser>();
             var manager = new UserManager<TestUser>(new NoopUserStore());
             await Assert.ThrowsAsync<ArgumentNullException>("manager",
-                async () => await factory.Create(null, null, "whatever"));
+                async () => await factory.CreateAsync(null, null, "whatever"));
             await Assert.ThrowsAsync<ArgumentNullException>("user",
-                async () => await factory.Create(manager, null, "whatever"));
+                async () => await factory.CreateAsync(manager, null, "whatever"));
             await Assert.ThrowsAsync<ArgumentNullException>("value",
-                async () => await factory.Create(manager, new TestUser(), null));
+                async () => await factory.CreateAsync(manager, new TestUser(), null));
         }
 
  #if NET45
@@ -48,7 +48,7 @@ namespace Microsoft.AspNet.Identity.Test
             var factory = new ClaimsIdentityFactory<TestUser>();
 
             // Act
-            var identity = await factory.Create(userManager.Object, user, authType);
+            var identity = await factory.CreateAsync(userManager.Object, user, authType);
 
             // Assert
             Assert.NotNull(identity);

@@ -486,7 +486,7 @@
 //        // TODO: No token provider implementations yet
 //        private class StaticTokenProvider : IUserTokenProvider<IdentityUser>
 //        {
-//            public Task<string> Generate(string purpose, UserManager<IdentityUser> manager,
+//            public Task<string> GenerateAsync(string purpose, UserManager<IdentityUser> manager,
 //                IdentityUser user, CancellationToken token)
 //            {
 //                return Task.FromResult(MakeToken(purpose, user));
@@ -645,7 +645,7 @@
 //            Assert.False(await mgr.IsLockedOutAsync(user.Id));
 //            IdentityResultAssert.IsSuccess(await mgr.AccessFailedAsync(user.Id));
 //            Assert.True(await mgr.IsLockedOutAsync(user.Id));
-//            Assert.True(await mgr.GetLockoutEndDate(user.Id) > DateTimeOffset.UtcNow.AddMinutes(55));
+//            Assert.True(await mgr.GetLockoutEndDateAsync(user.Id) > DateTimeOffset.UtcNow.AddMinutes(55));
 //            Assert.Equal(0, await mgr.GetAccessFailedCountAsync(user.Id));
 //        }
 
@@ -663,11 +663,11 @@
 //            Assert.False(await mgr.IsLockedOutAsync(user.Id));
 //            IdentityResultAssert.IsSuccess(await mgr.AccessFailedAsync(user.Id));
 //            Assert.False(await mgr.IsLockedOutAsync(user.Id));
-//            Assert.False(await mgr.GetLockoutEndDate(user.Id) > DateTimeOffset.UtcNow.AddMinutes(55));
+//            Assert.False(await mgr.GetLockoutEndDateAsync(user.Id) > DateTimeOffset.UtcNow.AddMinutes(55));
 //            Assert.Equal(1, await mgr.GetAccessFailedCountAsync(user.Id));
 //            IdentityResultAssert.IsSuccess(await mgr.AccessFailedAsync(user.Id));
 //            Assert.True(await mgr.IsLockedOutAsync(user.Id));
-//            Assert.True(await mgr.GetLockoutEndDate(user.Id) > DateTimeOffset.UtcNow.AddMinutes(55));
+//            Assert.True(await mgr.GetLockoutEndDateAsync(user.Id) > DateTimeOffset.UtcNow.AddMinutes(55));
 //            Assert.Equal(0, await mgr.GetAccessFailedCountAsync(user.Id));
 //        }
 
@@ -685,15 +685,15 @@
 //            Assert.False(await mgr.IsLockedOutAsync(user.Id));
 //            IdentityResultAssert.IsSuccess(await mgr.AccessFailedAsync(user.Id));
 //            Assert.False(await mgr.IsLockedOutAsync(user.Id));
-//            Assert.False(await mgr.GetLockoutEndDate(user.Id) > DateTimeOffset.UtcNow.AddMinutes(55));
+//            Assert.False(await mgr.GetLockoutEndDateAsync(user.Id) > DateTimeOffset.UtcNow.AddMinutes(55));
 //            Assert.Equal(1, await mgr.GetAccessFailedCountAsync(user.Id));
 //            IdentityResultAssert.IsSuccess(await mgr.ResetAccessFailedCountAsync(user.Id));
 //            Assert.Equal(0, await mgr.GetAccessFailedCountAsync(user.Id));
 //            Assert.False(await mgr.IsLockedOutAsync(user.Id));
-//            Assert.False(await mgr.GetLockoutEndDate(user.Id) > DateTimeOffset.UtcNow.AddMinutes(55));
+//            Assert.False(await mgr.GetLockoutEndDateAsync(user.Id) > DateTimeOffset.UtcNow.AddMinutes(55));
 //            IdentityResultAssert.IsSuccess(await mgr.AccessFailedAsync(user.Id));
 //            Assert.False(await mgr.IsLockedOutAsync(user.Id));
-//            Assert.False(await mgr.GetLockoutEndDate(user.Id) > DateTimeOffset.UtcNow.AddMinutes(55));
+//            Assert.False(await mgr.GetLockoutEndDateAsync(user.Id) > DateTimeOffset.UtcNow.AddMinutes(55));
 //            Assert.Equal(1, await mgr.GetAccessFailedCountAsync(user.Id));
 //        }
 
@@ -713,11 +713,11 @@
 //            Assert.False(await mgr.IsLockedOutAsync(user.Id));
 //            IdentityResultAssert.IsSuccess(await mgr.AccessFailedAsync(user.Id));
 //            Assert.False(await mgr.IsLockedOutAsync(user.Id));
-//            Assert.False(await mgr.GetLockoutEndDate(user.Id) > DateTimeOffset.UtcNow.AddMinutes(55));
+//            Assert.False(await mgr.GetLockoutEndDateAsync(user.Id) > DateTimeOffset.UtcNow.AddMinutes(55));
 //            Assert.Equal(1, await mgr.GetAccessFailedCountAsync(user.Id));
 //            IdentityResultAssert.IsSuccess(await mgr.AccessFailedAsync(user.Id));
 //            Assert.True(await mgr.IsLockedOutAsync(user.Id));
-//            Assert.True(await mgr.GetLockoutEndDate(user.Id) > DateTimeOffset.UtcNow.AddMinutes(55));
+//            Assert.True(await mgr.GetLockoutEndDateAsync(user.Id) > DateTimeOffset.UtcNow.AddMinutes(55));
 //            Assert.Equal(0, await mgr.GetAccessFailedCountAsync(user.Id));
 //        }
 
@@ -732,7 +732,7 @@
 //            Assert.True(user.LockoutEnabled);
 //            IdentityResultAssert.IsSuccess(await mgr.SetLockoutEndDateAsync(user.Id, new DateTimeOffset()));
 //            Assert.False(await mgr.IsLockedOutAsync(user.Id));
-//            Assert.Equal(new DateTimeOffset(), await mgr.GetLockoutEndDate(user.Id));
+//            Assert.Equal(new DateTimeOffset(), await mgr.GetLockoutEndDateAsync(user.Id));
 //            Assert.Null(user.LockoutEndDateUtc);
 //        }
 
@@ -798,7 +798,7 @@
 //            var lockoutEnd = new DateTimeOffset(DateTime.Now.AddMinutes(30).ToLocalTime());
 //            IdentityResultAssert.IsSuccess(await mgr.SetLockoutEndDateAsync(user.Id, lockoutEnd));
 //            Assert.True(await mgr.IsLockedOutAsync(user.Id));
-//            var end = await mgr.GetLockoutEndDate(user.Id);
+//            var end = await mgr.GetLockoutEndDateAsync(user.Id);
 //            Assert.Equal(lockoutEnd, end);
 //        }
 
@@ -808,9 +808,9 @@
 //        {
 //            var manager = CreateRoleManager();
 //            var role = new IdentityRole("create");
-//            Assert.False(await manager.RoleExists(role.Name));
+//            Assert.False(await manager.RoleExistsAsync(role.Name));
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(role));
-//            Assert.True(await manager.RoleExists(role.Name));
+//            Assert.True(await manager.RoleExistsAsync(role.Name));
 //        }
 
 //        private class AlwaysBadValidator : IUserValidator<IdentityUser>, IRoleValidator<IdentityRole>,
@@ -859,10 +859,10 @@
 //        {
 //            var manager = CreateRoleManager();
 //            var role = new IdentityRole("delete");
-//            Assert.False(await manager.RoleExists(role.Name));
+//            Assert.False(await manager.RoleExistsAsync(role.Name));
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(role));
 //            IdentityResultAssert.IsSuccess(await manager.DeleteAsync(role));
-//            Assert.False(await manager.RoleExists(role.Name));
+//            Assert.False(await manager.RoleExistsAsync(role.Name));
 //        }
 
 //        [Fact]
@@ -881,7 +881,7 @@
 //            var manager = CreateRoleManager();
 //            var role = new IdentityRole("FindByNameAsync");
 //            Assert.Null(await manager.FindByNameAsync(role.Name));
-//            Assert.False(await manager.RoleExists(role.Name));
+//            Assert.False(await manager.RoleExistsAsync(role.Name));
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(role));
 //            Assert.Equal(role, await manager.FindByNameAsync(role.Name));
 //        }
@@ -891,12 +891,12 @@
 //        {
 //            var manager = CreateRoleManager();
 //            var role = new IdentityRole("update");
-//            Assert.False(await manager.RoleExists(role.Name));
+//            Assert.False(await manager.RoleExistsAsync(role.Name));
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(role));
-//            Assert.True(await manager.RoleExists(role.Name));
+//            Assert.True(await manager.RoleExistsAsync(role.Name));
 //            role.Name = "Changed";
 //            IdentityResultAssert.IsSuccess(await manager.UpdateAsync(role));
-//            Assert.False(await manager.RoleExists("update"));
+//            Assert.False(await manager.RoleExistsAsync("update"));
 //            Assert.Equal(role, await manager.FindByNameAsync(role.Name));
 //        }
 
@@ -925,14 +925,14 @@
 //        //    var userMgr = CreateManager();
 //        //    var roleMgr = CreateRoleManager();
 //        //    var role = new IdentityRole("deleteNonEmpty");
-//        //    Assert.False(await roleMgr.RoleExists(role.Name));
+//        //    Assert.False(await roleMgr.RoleExistsAsync(role.Name));
 //        //    IdentityResultAssert.IsSuccess(await roleMgr.CreateAsync(role));
 //        //    var user = new IdentityUser("t");
 //        //    IdentityResultAssert.IsSuccess(await userMgr.CreateAsync(user));
 //        //    IdentityResultAssert.IsSuccess(await userMgr.AddToRoleAsync(user.Id, role.Name));
 //        //    IdentityResultAssert.IsSuccess(await roleMgr.DeleteAsync(role));
 //        //    Assert.Null(await roleMgr.FindByNameAsync(role.Name));
-//        //    Assert.False(await roleMgr.RoleExists(role.Name));
+//        //    Assert.False(await roleMgr.RoleExistsAsync(role.Name));
 //        //    // REVIEW: We should throw if deleteing a non empty role?
 //        //    var roles = await userMgr.GetRolesAsync(user.Id);
 
@@ -947,7 +947,7 @@
 //        ////    var userMgr = CreateManager();
 //        ////    var roleMgr = CreateRoleManager();
 //        ////    var role = new IdentityRole("deleteNonEmpty");
-//        ////    Assert.False(await roleMgr.RoleExists(role.Name));
+//        ////    Assert.False(await roleMgr.RoleExistsAsync(role.Name));
 //        ////    IdentityResultAssert.IsSuccess(await roleMgr.CreateAsync(role));
 //        ////    var user = new IdentityUser("t");
 //        ////    IdentityResultAssert.IsSuccess(await userMgr.CreateAsync(user));
@@ -961,9 +961,9 @@
 //        {
 //            var manager = CreateRoleManager();
 //            var role = new IdentityRole("dupeRole");
-//            Assert.False(await manager.RoleExists(role.Name));
+//            Assert.False(await manager.RoleExistsAsync(role.Name));
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(role));
-//            Assert.True(await manager.RoleExists(role.Name));
+//            Assert.True(await manager.RoleExistsAsync(role.Name));
 //            var role2 = new IdentityRole("dupeRole");
 //            IdentityResultAssert.IsFailure(await manager.CreateAsync(role2));
 //        }
@@ -1197,7 +1197,7 @@
 
 //        private class EmailTokenProvider : IUserTokenProvider<IdentityUser>
 //        {
-//            public Task<string> Generate(string purpose, UserManager<IdentityUser> manager, IdentityUser user, CancellationToken token)
+//            public Task<string> GenerateAsync(string purpose, UserManager<IdentityUser> manager, IdentityUser user, CancellationToken token)
 //            {
 //                return Task.FromResult(MakeToken(purpose));
 //            }
@@ -1226,7 +1226,7 @@
 
 //        private class SmsTokenProvider : IUserTokenProvider<IdentityUser>
 //        {
-//            public Task<string> Generate(string purpose, UserManager<IdentityUser> manager, IdentityUser user, CancellationToken token)
+//            public Task<string> GenerateAsync(string purpose, UserManager<IdentityUser> manager, IdentityUser user, CancellationToken token)
 //            {
 //                return Task.FromResult(MakeToken(purpose));
 //            }
@@ -1614,7 +1614,7 @@
 //        {
 //            public IdentityMessage Message { get; set; }
 
-//            public Task Send(IdentityMessage message, CancellationToken token)
+//            public Task SendAsync(IdentityMessage message, CancellationToken token)
 //            {
 //                Message = message;
 //                return Task.FromResult(0);

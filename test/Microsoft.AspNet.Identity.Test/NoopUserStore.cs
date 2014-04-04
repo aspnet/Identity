@@ -10,7 +10,7 @@ namespace Microsoft.AspNet.Identity.Test
             return Task.FromResult(user.Id);
         }
 
-        public Task<string> GetUserName(TestUser user, CancellationToken cancellationToken = new CancellationToken())
+        public Task<string> GetUserNameAsync(TestUser user, CancellationToken cancellationToken = new CancellationToken())
         {
             return Task.FromResult(user.UserName);
         }
@@ -20,22 +20,22 @@ namespace Microsoft.AspNet.Identity.Test
             return Task.FromResult(0);
         }
 
-        public Task Create(TestUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public Task CreateAsync(TestUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.FromResult(0);
         }
 
-        public Task Update(TestUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public Task UpdateAsync(TestUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.FromResult(0);
         }
 
-        public Task<TestUser> FindById(string userId, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<TestUser> FindByIdAsync(string userId, CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.FromResult<TestUser>(null);
         }
 
-        public Task<TestUser> FindByName(string userName, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<TestUser> FindByNameAsync(string userName, CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.FromResult<TestUser>(null);
         }
@@ -44,7 +44,7 @@ namespace Microsoft.AspNet.Identity.Test
         {
         }
 
-        public Task Delete(TestUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public Task DeleteAsync(TestUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.FromResult(0);
         }

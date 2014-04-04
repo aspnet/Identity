@@ -77,7 +77,7 @@ namespace Microsoft.AspNet.Identity.Entity
             return Task.FromResult(Convert.ToString(user.Id, CultureInfo.InvariantCulture));
         }
 
-        public Task<string> GetUserName(TUser user, CancellationToken cancellationToken = new CancellationToken())
+        public Task<string> GetUserNameAsync(TUser user, CancellationToken cancellationToken = new CancellationToken())
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -100,7 +100,7 @@ namespace Microsoft.AspNet.Identity.Entity
             return Task.FromResult(0);
         }
 
-        public async virtual Task Create(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public async virtual Task CreateAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -112,7 +112,7 @@ namespace Microsoft.AspNet.Identity.Entity
             await SaveChanges(cancellationToken);
         }
 
-        public async virtual Task Update(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public async virtual Task UpdateAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -124,7 +124,7 @@ namespace Microsoft.AspNet.Identity.Entity
             await SaveChanges(cancellationToken);
         }
 
-        public async virtual Task Delete(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public async virtual Task DeleteAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -147,7 +147,7 @@ namespace Microsoft.AspNet.Identity.Entity
         /// <param name="userId"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public virtual Task<TUser> FindById(string userId, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<TUser> FindByIdAsync(string userId, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -162,7 +162,7 @@ namespace Microsoft.AspNet.Identity.Entity
         /// <param name="userName"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public virtual Task<TUser> FindByName(string userName, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<TUser> FindByNameAsync(string userName, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -295,7 +295,7 @@ namespace Microsoft.AspNet.Identity.Entity
         /// <param name="user"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public virtual Task<IList<Claim>> GetClaims(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<IList<Claim>> GetClaimsAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -459,7 +459,7 @@ namespace Microsoft.AspNet.Identity.Entity
         /// <param name="user"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public virtual Task<DateTimeOffset> GetLockoutEndDate(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<DateTimeOffset> GetLockoutEndDateAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -607,7 +607,7 @@ namespace Microsoft.AspNet.Identity.Entity
         /// <param name="user"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public virtual Task<string> GetPhoneNumber(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<string> GetPhoneNumberAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -624,7 +624,7 @@ namespace Microsoft.AspNet.Identity.Entity
         /// <param name="user"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public virtual Task<bool> GetPhoneNumberConfirmed(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<bool> GetPhoneNumberConfirmedAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -754,7 +754,7 @@ namespace Microsoft.AspNet.Identity.Entity
         /// <param name="stamp"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public virtual Task SetSecurityStamp(TUser user, string stamp, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task SetSecurityStampAsync(TUser user, string stamp, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();

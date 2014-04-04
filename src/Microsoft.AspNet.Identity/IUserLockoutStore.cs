@@ -17,7 +17,7 @@ namespace Microsoft.AspNet.Identity
         /// <param name="user"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<DateTimeOffset> GetLockoutEndDate(TUser user, CancellationToken cancellationToken = default(CancellationToken));
+        Task<DateTimeOffset> GetLockoutEndDateAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         ///     Locks a user out until the specified end date (set to a past date, to unlock a user)

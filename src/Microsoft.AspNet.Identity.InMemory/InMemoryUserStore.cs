@@ -30,7 +30,7 @@ namespace Microsoft.AspNet.Identity.InMemory
             get { return _users.Values.AsQueryable(); }
         }
 
-        public Task<IList<Claim>> GetClaims(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<IList<Claim>> GetClaimsAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.FromResult(user.Claims);
         }
@@ -76,7 +76,7 @@ namespace Microsoft.AspNet.Identity.InMemory
                     Users.FirstOrDefault(u => String.Equals(u.Email, email, StringComparison.OrdinalIgnoreCase)));
         }
 
-        public Task<DateTimeOffset> GetLockoutEndDate(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<DateTimeOffset> GetLockoutEndDateAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.FromResult(user.LockoutEnd);
         }
@@ -154,7 +154,7 @@ namespace Microsoft.AspNet.Identity.InMemory
             return Task.FromResult(user.Id);
         }
 
-        public Task<string> GetUserName(TUser user, CancellationToken cancellationToken = new CancellationToken())
+        public Task<string> GetUserNameAsync(TUser user, CancellationToken cancellationToken = new CancellationToken())
         {
             return Task.FromResult(user.UserName);
         }
@@ -165,19 +165,19 @@ namespace Microsoft.AspNet.Identity.InMemory
             return Task.FromResult(0);
         }
 
-        public Task Create(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public Task CreateAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             _users[user.Id] = user;
             return Task.FromResult(0);
         }
 
-        public Task Update(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public Task UpdateAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             _users[user.Id] = user;
             return Task.FromResult(0);
         }
 
-        public Task<TUser> FindById(string userId, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<TUser> FindByIdAsync(string userId, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (_users.ContainsKey(userId))
             {
@@ -190,14 +190,14 @@ namespace Microsoft.AspNet.Identity.InMemory
         {
         }
 
-        public Task<TUser> FindByName(string userName, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<TUser> FindByNameAsync(string userName, CancellationToken cancellationToken = default(CancellationToken))
         {
             return
                 Task.FromResult(
                     Users.FirstOrDefault(u => String.Equals(u.UserName, userName, StringComparison.OrdinalIgnoreCase)));
         }
 
-        public Task Delete(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public Task DeleteAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (user == null || !_users.ContainsKey(user.Id))
             {
@@ -229,12 +229,12 @@ namespace Microsoft.AspNet.Identity.InMemory
             return Task.FromResult(0);
         }
 
-        public Task<string> GetPhoneNumber(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<string> GetPhoneNumberAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.FromResult(user.PhoneNumber);
         }
 
-        public Task<bool> GetPhoneNumberConfirmed(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<bool> GetPhoneNumberConfirmedAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.FromResult(user.PhoneNumberConfirmed);
         }
@@ -267,7 +267,7 @@ namespace Microsoft.AspNet.Identity.InMemory
             return Task.FromResult(user.Roles.Contains(role));
         }
 
-        public Task SetSecurityStamp(TUser user, string stamp, CancellationToken cancellationToken = default(CancellationToken))
+        public Task SetSecurityStampAsync(TUser user, string stamp, CancellationToken cancellationToken = default(CancellationToken))
         {
             user.SecurityStamp = stamp;
             return Task.FromResult(0);

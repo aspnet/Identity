@@ -23,7 +23,7 @@ namespace Microsoft.AspNet.Identity.Security.Test
             var identityFactory = new Mock<IClaimsIdentityFactory<TestUser>>();
             const string authType = "Test";
             var testIdentity = new ClaimsIdentity(authType);
-            identityFactory.Setup(s => s.Create(userManager, user, authType, CancellationToken.None)).ReturnsAsync(testIdentity).Verifiable();
+            identityFactory.Setup(s => s.CreateAsync(userManager, user, authType, CancellationToken.None)).ReturnsAsync(testIdentity).Verifiable();
             userManager.ClaimsIdentityFactory = identityFactory.Object;
             var context = new Mock<HttpContext>();
             var response = new Mock<HttpResponse>();

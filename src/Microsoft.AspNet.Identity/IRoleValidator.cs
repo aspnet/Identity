@@ -18,6 +18,6 @@ namespace Microsoft.AspNet.Identity
         /// <param name="manager"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<IdentityResult> Validate(RoleManager<TRole> manager, TRole role, CancellationToken cancellationToken = default(CancellationToken));
+        Task<IdentityResult> ValidateAsync(RoleManager<TRole> manager, TRole role, CancellationToken cancellationToken = default(CancellationToken));
     }
 }

@@ -38,7 +38,7 @@ namespace Microsoft.AspNet.Identity.Test
             // Setup
             var store = new Mock<IUserStore<TestUser>>();
             var user = new TestUser { UserName = "Foo" };
-            store.Setup(s => s.Create(user, CancellationToken.None)).Returns(Task.FromResult(0)).Verifiable();
+            store.Setup(s => s.CreateAsync(user, CancellationToken.None)).Returns(Task.FromResult(0)).Verifiable();
             var validator = new Mock<UserValidator<TestUser>>();
             var userManager = new UserManager<TestUser>(store.Object);
             validator.Setup(v => v.ValidateAsync(userManager, user, CancellationToken.None)).Returns(Task.FromResult(IdentityResult.Success)).Verifiable();
@@ -58,7 +58,7 @@ namespace Microsoft.AspNet.Identity.Test
             // Setup
             var store = new Mock<IUserStore<TestUser>>();
             var user = new TestUser { UserName = "Foo" };
-            store.Setup(s => s.Delete(user, CancellationToken.None)).Returns(Task.FromResult(0)).Verifiable();
+            store.Setup(s => s.DeleteAsync(user, CancellationToken.None)).Returns(Task.FromResult(0)).Verifiable();
             var userManager = new UserManager<TestUser>(store.Object);
 
             // Act
@@ -75,7 +75,7 @@ namespace Microsoft.AspNet.Identity.Test
             // Setup
             var store = new Mock<IUserStore<TestUser>>();
             var user = new TestUser { UserName = "Foo" };
-            store.Setup(s => s.Update(user, CancellationToken.None)).Returns(Task.FromResult(0)).Verifiable();
+            store.Setup(s => s.UpdateAsync(user, CancellationToken.None)).Returns(Task.FromResult(0)).Verifiable();
             var validator = new Mock<UserValidator<TestUser>>();
             var userManager = new UserManager<TestUser>(store.Object);
             validator.Setup(v => v.ValidateAsync(userManager, user, CancellationToken.None)).Returns(Task.FromResult(IdentityResult.Success)).Verifiable();
@@ -115,7 +115,7 @@ namespace Microsoft.AspNet.Identity.Test
             // Setup
             var store = new Mock<IUserStore<TestUser>>();
             var user = new TestUser { UserName = "Foo" };
-            store.Setup(s => s.FindById(user.Id, CancellationToken.None)).Returns(Task.FromResult(user)).Verifiable();
+            store.Setup(s => s.FindByIdAsync(user.Id, CancellationToken.None)).Returns(Task.FromResult(user)).Verifiable();
             var userManager = new UserManager<TestUser>(store.Object);
 
             // Act
@@ -132,7 +132,7 @@ namespace Microsoft.AspNet.Identity.Test
             // Setup
             var store = new Mock<IUserStore<TestUser>>();
             var user = new TestUser {UserName="Foo"};
-            store.Setup(s => s.FindByName(user.UserName, CancellationToken.None)).Returns(Task.FromResult(user)).Verifiable();
+            store.Setup(s => s.FindByNameAsync(user.UserName, CancellationToken.None)).Returns(Task.FromResult(user)).Verifiable();
             var userManager = new UserManager<TestUser>(store.Object);
 
             // Act
@@ -471,7 +471,7 @@ namespace Microsoft.AspNet.Identity.Test
         {
             public const string ErrorMessage = "I'm Bad.";
 
-            public Task<IdentityResult> Validate(string password, CancellationToken cancellationToken = default(CancellationToken))
+            public Task<IdentityResult> ValidateAsync(string password, CancellationToken cancellationToken = default(CancellationToken))
             {
                 return Task.FromResult(IdentityResult.Failed(ErrorMessage));
             }
@@ -488,7 +488,7 @@ namespace Microsoft.AspNet.Identity.Test
             IUserRoleStore<TestUser>,
             IUserSecurityStampStore<TestUser>
         {
-            public Task<IList<Claim>> GetClaims(TestUser user, CancellationToken cancellationToken = default(CancellationToken))
+            public Task<IList<Claim>> GetClaimsAsync(TestUser user, CancellationToken cancellationToken = default(CancellationToken))
             {
                 return Task.FromResult<IList<Claim>>(new List<Claim>());
             }
@@ -528,7 +528,7 @@ namespace Microsoft.AspNet.Identity.Test
                 return Task.FromResult<TestUser>(null);
             }
 
-            public Task<DateTimeOffset> GetLockoutEndDate(TestUser user, CancellationToken cancellationToken = default(CancellationToken))
+            public Task<DateTimeOffset> GetLockoutEndDateAsync(TestUser user, CancellationToken cancellationToken = default(CancellationToken))
             {
                 return Task.FromResult(DateTimeOffset.MinValue);
             }
@@ -592,27 +592,27 @@ namespace Microsoft.AspNet.Identity.Test
                 return Task.FromResult(0);
             }
 
-            public Task Create(TestUser user, CancellationToken cancellationToken = default(CancellationToken))
+            public Task CreateAsync(TestUser user, CancellationToken cancellationToken = default(CancellationToken))
             {
                 return Task.FromResult(0);
             }
 
-            public Task Update(TestUser user, CancellationToken cancellationToken = default(CancellationToken))
+            public Task UpdateAsync(TestUser user, CancellationToken cancellationToken = default(CancellationToken))
             {
                 return Task.FromResult(0);
             }
 
-            public Task Delete(TestUser user, CancellationToken cancellationToken = default(CancellationToken))
+            public Task DeleteAsync(TestUser user, CancellationToken cancellationToken = default(CancellationToken))
             {
                 return Task.FromResult(0);
             }
 
-            public Task<TestUser> FindById(string userId, CancellationToken cancellationToken = default(CancellationToken))
+            public Task<TestUser> FindByIdAsync(string userId, CancellationToken cancellationToken = default(CancellationToken))
             {
                 return Task.FromResult<TestUser>(null);
             }
 
-            public Task<TestUser> FindByName(string userName, CancellationToken cancellationToken = default(CancellationToken))
+            public Task<TestUser> FindByNameAsync(string userName, CancellationToken cancellationToken = default(CancellationToken))
             {
                 return Task.FromResult<TestUser>(null);
             }
@@ -637,12 +637,12 @@ namespace Microsoft.AspNet.Identity.Test
                 return Task.FromResult(0);
             }
 
-            public Task<string> GetPhoneNumber(TestUser user, CancellationToken cancellationToken = default(CancellationToken))
+            public Task<string> GetPhoneNumberAsync(TestUser user, CancellationToken cancellationToken = default(CancellationToken))
             {
                 return Task.FromResult("");
             }
 
-            public Task<bool> GetPhoneNumberConfirmed(TestUser user, CancellationToken cancellationToken = default(CancellationToken))
+            public Task<bool> GetPhoneNumberConfirmedAsync(TestUser user, CancellationToken cancellationToken = default(CancellationToken))
             {
                 return Task.FromResult(false);
             }
@@ -672,7 +672,7 @@ namespace Microsoft.AspNet.Identity.Test
                 return Task.FromResult(false);
             }
 
-            public Task SetSecurityStamp(TestUser user, string stamp, CancellationToken cancellationToken = default(CancellationToken))
+            public Task SetSecurityStampAsync(TestUser user, string stamp, CancellationToken cancellationToken = default(CancellationToken))
             {
                 return Task.FromResult(0);
             }
@@ -697,7 +697,7 @@ namespace Microsoft.AspNet.Identity.Test
                 return Task.FromResult<string>(null);
             }
 
-            public Task<string> GetUserName(TestUser user, CancellationToken cancellationToken = default(CancellationToken))
+            public Task<string> GetUserNameAsync(TestUser user, CancellationToken cancellationToken = default(CancellationToken))
             {
                 return Task.FromResult<string>(null);
             }
@@ -705,7 +705,7 @@ namespace Microsoft.AspNet.Identity.Test
 
         private class NoOpTokenProvider : IUserTokenProvider<TestUser>
         {
-            public Task<string> Generate(string purpose, UserManager<TestUser> manager, TestUser user, CancellationToken cancellationToken = default(CancellationToken))
+            public Task<string> GenerateAsync(string purpose, UserManager<TestUser> manager, TestUser user, CancellationToken cancellationToken = default(CancellationToken))
             {
                 return Task.FromResult("Test");
             }
@@ -736,7 +736,7 @@ namespace Microsoft.AspNet.Identity.Test
             IUserLockoutStore<TestUser>,
             IUserTwoFactorStore<TestUser>
         {
-            public Task<IList<Claim>> GetClaims(TestUser user, CancellationToken cancellationToken = default(CancellationToken))
+            public Task<IList<Claim>> GetClaimsAsync(TestUser user, CancellationToken cancellationToken = default(CancellationToken))
             {
                 throw new NotImplementedException();
             }
@@ -776,7 +776,7 @@ namespace Microsoft.AspNet.Identity.Test
                 throw new NotImplementedException();
             }
 
-            public Task<DateTimeOffset> GetLockoutEndDate(TestUser user, CancellationToken cancellationToken = default(CancellationToken))
+            public Task<DateTimeOffset> GetLockoutEndDateAsync(TestUser user, CancellationToken cancellationToken = default(CancellationToken))
             {
                 throw new NotImplementedException();
             }
@@ -841,7 +841,7 @@ namespace Microsoft.AspNet.Identity.Test
                 throw new NotImplementedException();
             }
 
-            public Task<string> GetUserName(TestUser user, CancellationToken cancellationToken = new CancellationToken())
+            public Task<string> GetUserNameAsync(TestUser user, CancellationToken cancellationToken = new CancellationToken())
             {
                 throw new NotImplementedException();
             }
@@ -851,27 +851,27 @@ namespace Microsoft.AspNet.Identity.Test
                 throw new NotImplementedException();
             }
 
-            public Task Create(TestUser user, CancellationToken cancellationToken = default(CancellationToken))
+            public Task CreateAsync(TestUser user, CancellationToken cancellationToken = default(CancellationToken))
             {
                 throw new NotImplementedException();
             }
 
-            public Task Update(TestUser user, CancellationToken cancellationToken = default(CancellationToken))
+            public Task UpdateAsync(TestUser user, CancellationToken cancellationToken = default(CancellationToken))
             {
                 throw new NotImplementedException();
             }
 
-            public Task Delete(TestUser user, CancellationToken cancellationToken = default(CancellationToken))
+            public Task DeleteAsync(TestUser user, CancellationToken cancellationToken = default(CancellationToken))
             {
                 throw new NotImplementedException();
             }
 
-            public Task<TestUser> FindById(string userId, CancellationToken cancellationToken = default(CancellationToken))
+            public Task<TestUser> FindByIdAsync(string userId, CancellationToken cancellationToken = default(CancellationToken))
             {
                 throw new NotImplementedException();
             }
 
-            public Task<TestUser> FindByName(string userName, CancellationToken cancellationToken = default(CancellationToken))
+            public Task<TestUser> FindByNameAsync(string userName, CancellationToken cancellationToken = default(CancellationToken))
             {
                 throw new NotImplementedException();
             }
@@ -896,12 +896,12 @@ namespace Microsoft.AspNet.Identity.Test
                 throw new NotImplementedException();
             }
 
-            public Task<string> GetPhoneNumber(TestUser user, CancellationToken cancellationToken = default(CancellationToken))
+            public Task<string> GetPhoneNumberAsync(TestUser user, CancellationToken cancellationToken = default(CancellationToken))
             {
                 throw new NotImplementedException();
             }
 
-            public Task<bool> GetPhoneNumberConfirmed(TestUser user, CancellationToken cancellationToken = default(CancellationToken))
+            public Task<bool> GetPhoneNumberConfirmedAsync(TestUser user, CancellationToken cancellationToken = default(CancellationToken))
             {
                 throw new NotImplementedException();
             }

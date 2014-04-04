@@ -318,7 +318,7 @@ namespace Microsoft.AspNet.Identity
             {
                 throw new ArgumentNullException("user");
             }
-            return ClaimsIdentityFactory.Create(this, user, authenticationType, cancellationToken);
+            return ClaimsIdentityFactory.CreateAsync(this, user, authenticationType, cancellationToken);
         }
 
         private async Task<IdentityResult> ValidateUserInternal(TUser user, CancellationToken cancellationToken)
@@ -347,7 +347,7 @@ namespace Microsoft.AspNet.Identity
             {
                 await GetUserLockoutStore().SetLockoutEnabledAsync(user, true, cancellationToken);
             }
-            await Store.Create(user, cancellationToken);
+            await Store.CreateAsync(user, cancellationToken);
             return IdentityResult.Success;
         }
 
@@ -369,7 +369,7 @@ namespace Microsoft.AspNet.Identity
             {
                 return result;
             }
-            await Store.Update(user, cancellationToken);
+            await Store.UpdateAsync(user, cancellationToken);
             return IdentityResult.Success;
         }
 
@@ -386,7 +386,7 @@ namespace Microsoft.AspNet.Identity
             {
                 throw new ArgumentNullException("user");
             }
-            await Store.Delete(user, cancellationToken);
+            await Store.DeleteAsync(user, cancellationToken);
             return IdentityResult.Success;
         }
 
@@ -399,7 +399,7 @@ namespace Microsoft.AspNet.Identity
         public virtual Task<TUser> FindByIdAsync(string userId, CancellationToken cancellationToken = default(CancellationToken))
         {
             ThrowIfDisposed();
-            return Store.FindById(userId, cancellationToken);
+            return Store.FindByIdAsync(userId, cancellationToken);
         }
 
         /// <summary>
@@ -415,7 +415,7 @@ namespace Microsoft.AspNet.Identity
             {
                 throw new ArgumentNullException("userName");
             }
-            return Store.FindByName(userName, cancellationToken);
+            return Store.FindByNameAsync(userName, cancellationToken);
         }
 
         // IUserPasswordStore methods
@@ -468,7 +468,7 @@ namespace Microsoft.AspNet.Identity
             {
                 throw new ArgumentNullException("user");
             }
-            return await Store.GetUserName(user, cancellationToken);
+            return await Store.GetUserNameAsync(user, cancellationToken);
         }
 
         /// <summary>
@@ -635,7 +635,7 @@ namespace Microsoft.AspNet.Identity
         {
             if (PasswordValidator != null)
             {
-                var result = await PasswordValidator.Validate(newPassword, cancellationToken);
+                var result = await PasswordValidator.ValidateAsync(newPassword, cancellationToken);
                 if (!result.Succeeded)
                 {
                     return result;
@@ -691,7 +691,7 @@ namespace Microsoft.AspNet.Identity
         }
 
         /// <summary>
-        ///     Generate a new security stamp for a user, used for SignOutEverywhere functionality
+        ///     GenerateAsync a new security stamp for a user, used for SignOutEverywhere functionality
         /// </summary>
         /// <param name="user"></param>
         /// <param name="cancellationToken"></param>
@@ -709,7 +709,7 @@ namespace Microsoft.AspNet.Identity
         }
 
         /// <summary>
-        ///     Generate a password reset token for the user using the UserTokenProvider
+        ///     GenerateAsync a password reset token for the user using the UserTokenProvider
         /// </summary>
         /// <param name="user"></param>
         /// <param name="cancellationToken"></param>
@@ -754,7 +754,7 @@ namespace Microsoft.AspNet.Identity
         {
             if (SupportsUserSecurityStamp)
             {
-                await GetSecurityStore().SetSecurityStamp(user, NewSecurityStamp(), cancellationToken);
+                await GetSecurityStore().SetSecurityStampAsync(user, NewSecurityStamp(), cancellationToken);
             }
         }
 
@@ -920,7 +920,7 @@ namespace Microsoft.AspNet.Identity
             {
                 throw new ArgumentNullException("user");
             }
-            return await claimStore.GetClaims(user, cancellationToken);
+            return await claimStore.GetClaimsAsync(user, cancellationToken);
         }
 
         private IUserRoleStore<TUser> GetUserRoleStore()
@@ -1155,7 +1155,7 @@ namespace Microsoft.AspNet.Identity
             {
                 throw new ArgumentNullException("user");
             }
-            return await store.GetPhoneNumber(user, cancellationToken);
+            return await store.GetPhoneNumberAsync(user, cancellationToken);
         }
 
         /// <summary>
@@ -1219,7 +1219,7 @@ namespace Microsoft.AspNet.Identity
             {
                 throw new ArgumentNullException("user");
             }
-            return await store.GetPhoneNumberConfirmed(user, cancellationToken);
+            return await store.GetPhoneNumberConfirmedAsync(user, cancellationToken);
         }
 
         // Two factor APIS
@@ -1308,7 +1308,7 @@ namespace Microsoft.AspNet.Identity
             {
                 throw new ArgumentNullException("user");
             }
-            return await UserTokenProvider.Generate(purpose, this, user, cancellationToken);
+            return await UserTokenProvider.GenerateAsync(purpose, this, user, cancellationToken);
         }
 
         /// <summary>
@@ -1398,7 +1398,7 @@ namespace Microsoft.AspNet.Identity
                 throw new NotSupportedException(String.Format(CultureInfo.CurrentCulture, Resources.NoTwoFactorProvider,
                     twoFactorProvider));
             }
-            return await _factors[twoFactorProvider].Generate(twoFactorProvider, this, user, cancellationToken);
+            return await _factors[twoFactorProvider].GenerateAsync(twoFactorProvider, this, user, cancellationToken);
         }
 
         /// <summary>
@@ -1477,7 +1477,7 @@ namespace Microsoft.AspNet.Identity
         // SMS/Email methods
 
         /// <summary>
-        ///     Send an email to the user
+        ///     SendAsync an email to the user
         /// </summary>
         /// <param name="user"></param>
         /// <param name="subject"></param>
@@ -1499,12 +1499,12 @@ namespace Microsoft.AspNet.Identity
                     Subject = subject,
                     Body = body,
                 };
-                await EmailService.Send(msg, cancellationToken);
+                await EmailService.SendAsync(msg, cancellationToken);
             }
         }
 
         /// <summary>
-        ///     Send a user a sms message
+        ///     SendAsync a user a sms message
         /// </summary>
         /// <param name="user"></param>
         /// <param name="message"></param>
@@ -1524,7 +1524,7 @@ namespace Microsoft.AspNet.Identity
                     Destination = await GetPhoneNumberAsync(user, cancellationToken),
                     Body = message
                 };
-                await SmsService.Send(msg, cancellationToken);
+                await SmsService.SendAsync(msg, cancellationToken);
             }
         }
 
@@ -1557,7 +1557,7 @@ namespace Microsoft.AspNet.Identity
             {
                 return false;
             }
-            var lockoutTime = await store.GetLockoutEndDate(user, cancellationToken).ConfigureAwait((false));
+            var lockoutTime = await store.GetLockoutEndDateAsync(user, cancellationToken).ConfigureAwait((false));
             return lockoutTime >= DateTimeOffset.UtcNow;
         }
 
@@ -1609,7 +1609,7 @@ namespace Microsoft.AspNet.Identity
             {
                 throw new ArgumentNullException("user");
             }
-            return await store.GetLockoutEndDate(user);
+            return await store.GetLockoutEndDateAsync(user);
         }
 
         /// <summary>

@@ -44,7 +44,7 @@ namespace Microsoft.AspNet.Identity.Entity
             return Roles.SingleOrDefaultAsync(filter, cancellationToken);
         }
 
-        public async virtual Task Create(TRole role, CancellationToken cancellationToken = default(CancellationToken))
+        public async virtual Task CreateAsync(TRole role, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -56,7 +56,7 @@ namespace Microsoft.AspNet.Identity.Entity
             await SaveChanges(cancellationToken);
         }
 
-        public async virtual Task Update(TRole role, CancellationToken cancellationToken = default(CancellationToken))
+        public async virtual Task UpdateAsync(TRole role, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -68,7 +68,7 @@ namespace Microsoft.AspNet.Identity.Entity
             await SaveChanges(cancellationToken);
         }
 
-        public async virtual Task Delete(TRole role, CancellationToken cancellationToken = default(CancellationToken))
+        public async virtual Task DeleteAsync(TRole role, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -80,12 +80,12 @@ namespace Microsoft.AspNet.Identity.Entity
             await SaveChanges(cancellationToken);
         }
 
-        public Task<string> GetRoleId(TRole role, CancellationToken cancellationToken = new CancellationToken())
+        public Task<string> GetRoleIdAsync(TRole role, CancellationToken cancellationToken = new CancellationToken())
         {
             return Task.FromResult(role.Id);
         }
 
-        public Task<string> GetRoleName(TRole role, CancellationToken cancellationToken = new CancellationToken())
+        public Task<string> GetRoleNameAsync(TRole role, CancellationToken cancellationToken = new CancellationToken())
         {
             return Task.FromResult(role.Name);
         }
@@ -102,7 +102,7 @@ namespace Microsoft.AspNet.Identity.Entity
         /// <param name="id"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public virtual Task<TRole> FindById(string id, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<TRole> FindByIdAsync(string id, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -117,7 +117,7 @@ namespace Microsoft.AspNet.Identity.Entity
         /// <param name="name"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public virtual Task<TRole> FindByName(string name, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<TRole> FindByNameAsync(string name, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();

@@ -346,8 +346,8 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
             var role = CreateRoleManager();
             var user = new InMemoryUser("Hao");
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
-            IdentityResultAssert.IsSuccess(await role.Create(new InMemoryRole("Admin")));
-            IdentityResultAssert.IsSuccess(await role.Create(new InMemoryRole("Local")));
+            IdentityResultAssert.IsSuccess(await role.CreateAsync(new InMemoryRole("Admin")));
+            IdentityResultAssert.IsSuccess(await role.CreateAsync(new InMemoryRole("Local")));
             IdentityResultAssert.IsSuccess(await manager.AddToRoleAsync(user, "Admin"));
             IdentityResultAssert.IsSuccess(await manager.AddToRoleAsync(user, "Local"));
             Claim[] userClaims =
@@ -388,7 +388,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
         // TODO: No token provider implementations yet
         private class StaticTokenProvider : IUserTokenProvider<InMemoryUser>
         {
-            public Task<string> Generate(string purpose, UserManager<InMemoryUser> manager,
+            public Task<string> GenerateAsync(string purpose, UserManager<InMemoryUser> manager,
                 InMemoryUser user, CancellationToken cancellationToken = default(CancellationToken))
             {
                 return Task.FromResult(MakeToken(purpose, user));
@@ -710,9 +710,9 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
         {
             var manager = CreateRoleManager();
             var role = new InMemoryRole("create");
-            Assert.False(await manager.RoleExists(role.Name));
-            IdentityResultAssert.IsSuccess(await manager.Create(role));
-            Assert.True(await manager.RoleExists(role.Name));
+            Assert.False(await manager.RoleExistsAsync(role.Name));
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(role));
+            Assert.True(await manager.RoleExistsAsync(role.Name));
         }
 
         private class AlwaysBadValidator : IUserValidator<InMemoryUser>, IRoleValidator<InMemoryRole>,
@@ -720,12 +720,12 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
         {
             public const string ErrorMessage = "I'm Bad.";
 
-            public Task<IdentityResult> Validate(string password, CancellationToken cancellationToken = default(CancellationToken))
+            public Task<IdentityResult> ValidateAsync(string password, CancellationToken cancellationToken = default(CancellationToken))
             {
                 return Task.FromResult(IdentityResult.Failed(ErrorMessage));
             }
 
-            public Task<IdentityResult> Validate(RoleManager<InMemoryRole> manager, InMemoryRole role, CancellationToken cancellationToken = default(CancellationToken))
+            public Task<IdentityResult> ValidateAsync(RoleManager<InMemoryRole> manager, InMemoryRole role, CancellationToken cancellationToken = default(CancellationToken))
             {
                 return Task.FromResult(IdentityResult.Failed(ErrorMessage));
             }
@@ -741,7 +741,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
         {
             var manager = CreateRoleManager();
             manager.RoleValidator = new AlwaysBadValidator();
-            IdentityResultAssert.IsFailure(await manager.Create(new InMemoryRole("blocked")),
+            IdentityResultAssert.IsFailure(await manager.CreateAsync(new InMemoryRole("blocked")),
                 AlwaysBadValidator.ErrorMessage);
         }
 
@@ -750,10 +750,10 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
         {
             var manager = CreateRoleManager();
             var role = new InMemoryRole("poorguy");
-            IdentityResultAssert.IsSuccess(await manager.Create(role));
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(role));
             var error = AlwaysBadValidator.ErrorMessage;
             manager.RoleValidator = new AlwaysBadValidator();
-            IdentityResultAssert.IsFailure(await manager.Update(role), error);
+            IdentityResultAssert.IsFailure(await manager.UpdateAsync(role), error);
         }
 
         [Fact]
@@ -761,10 +761,10 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
         {
             var manager = CreateRoleManager();
             var role = new InMemoryRole("delete");
-            Assert.False(await manager.RoleExists(role.Name));
-            IdentityResultAssert.IsSuccess(await manager.Create(role));
-            IdentityResultAssert.IsSuccess(await manager.Delete(role));
-            Assert.False(await manager.RoleExists(role.Name));
+            Assert.False(await manager.RoleExistsAsync(role.Name));
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(role));
+            IdentityResultAssert.IsSuccess(await manager.DeleteAsync(role));
+            Assert.False(await manager.RoleExistsAsync(role.Name));
         }
 
         [Fact]
@@ -772,9 +772,9 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
         {
             var manager = CreateRoleManager();
             var role = new InMemoryRole("FindByIdAsync");
-            Assert.Null(await manager.FindById(role.Id));
-            IdentityResultAssert.IsSuccess(await manager.Create(role));
-            Assert.Equal(role, await manager.FindById(role.Id));
+            Assert.Null(await manager.FindByIdAsync(role.Id));
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(role));
+            Assert.Equal(role, await manager.FindByIdAsync(role.Id));
         }
 
         [Fact]
@@ -783,8 +783,8 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
             var manager = CreateRoleManager();
             var role = new InMemoryRole("FindByNameAsync");
             Assert.Null(await manager.FindByName(role.Name));
-            Assert.False(await manager.RoleExists(role.Name));
-            IdentityResultAssert.IsSuccess(await manager.Create(role));
+            Assert.False(await manager.RoleExistsAsync(role.Name));
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(role));
             Assert.Equal(role, await manager.FindByName(role.Name));
         }
 
@@ -793,12 +793,12 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
         {
             var manager = CreateRoleManager();
             var role = new InMemoryRole("update");
-            Assert.False(await manager.RoleExists(role.Name));
-            IdentityResultAssert.IsSuccess(await manager.Create(role));
-            Assert.True(await manager.RoleExists(role.Name));
+            Assert.False(await manager.RoleExistsAsync(role.Name));
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(role));
+            Assert.True(await manager.RoleExistsAsync(role.Name));
             role.Name = "Changed";
-            IdentityResultAssert.IsSuccess(await manager.Update(role));
-            Assert.False(await manager.RoleExists("update"));
+            IdentityResultAssert.IsSuccess(await manager.UpdateAsync(role));
+            Assert.False(await manager.RoleExistsAsync("update"));
             Assert.Equal(role, await manager.FindByName(role.Name));
         }
 
@@ -813,7 +813,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
             };
             foreach (var r in roles)
             {
-                IdentityResultAssert.IsSuccess(await manager.Create(r));
+                IdentityResultAssert.IsSuccess(await manager.CreateAsync(r));
             }
             Assert.Equal(roles.Length, manager.Roles.Count());
             var r1 = manager.Roles.FirstOrDefault(r => r.Name == "r1");
@@ -827,14 +827,14 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
         //    var userMgr = CreateManager();
         //    var roleMgr = CreateRoleManager();
         //    var role = new InMemoryRole("deleteNonEmpty");
-        //    Assert.False(await roleMgr.RoleExists(role.Name));
+        //    Assert.False(await roleMgr.RoleExistsAsync(role.Name));
         //    IdentityResultAssert.IsSuccess(await roleMgr.CreateAsync(role));
         //    var user = new InMemoryUser("t");
         //    IdentityResultAssert.IsSuccess(await userMgr.CreateAsync(user));
         //    IdentityResultAssert.IsSuccess(await userMgr.AddToRoleAsync(user, role.Name));
         //    IdentityResultAssert.IsSuccess(await roleMgr.DeleteAsync(role));
         //    Assert.Null(await roleMgr.FindByNameAsync(role.Name));
-        //    Assert.False(await roleMgr.RoleExists(role.Name));
+        //    Assert.False(await roleMgr.RoleExistsAsync(role.Name));
         //    // REVIEW: We should throw if deleteing a non empty role?
         //    var roles = await userMgr.GetRolesAsync(user);
 
@@ -849,7 +849,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
         ////    var userMgr = CreateManager();
         ////    var roleMgr = CreateRoleManager();
         ////    var role = new InMemoryRole("deleteNonEmpty");
-        ////    Assert.False(await roleMgr.RoleExists(role.Name));
+        ////    Assert.False(await roleMgr.RoleExistsAsync(role.Name));
         ////    IdentityResultAssert.IsSuccess(await roleMgr.CreateAsync(role));
         ////    var user = new InMemoryUser("t");
         ////    IdentityResultAssert.IsSuccess(await userMgr.CreateAsync(user));
@@ -863,11 +863,11 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
         {
             var manager = CreateRoleManager();
             var role = new InMemoryRole("dupeRole");
-            Assert.False(await manager.RoleExists(role.Name));
-            IdentityResultAssert.IsSuccess(await manager.Create(role));
-            Assert.True(await manager.RoleExists(role.Name));
+            Assert.False(await manager.RoleExistsAsync(role.Name));
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(role));
+            Assert.True(await manager.RoleExistsAsync(role.Name));
             var role2 = new InMemoryRole("dupeRole");
-            IdentityResultAssert.IsFailure(await manager.Create(role2));
+            IdentityResultAssert.IsFailure(await manager.CreateAsync(role2));
         }
 
         [Fact]
@@ -876,7 +876,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
             var manager = CreateManager();
             var roleManager = CreateRoleManager();
             var role = new InMemoryRole("addUserTest");
-            IdentityResultAssert.IsSuccess(await roleManager.Create(role));
+            IdentityResultAssert.IsSuccess(await roleManager.CreateAsync(role));
             InMemoryUser[] users =
             {
                 new InMemoryUser("1"), new InMemoryUser("2"), new InMemoryUser("3"),
@@ -911,7 +911,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
             }
             foreach (var r in roles)
             {
-                IdentityResultAssert.IsSuccess(await roleManager.Create(r));
+                IdentityResultAssert.IsSuccess(await roleManager.CreateAsync(r));
                 foreach (var u in users)
                 {
                     IdentityResultAssert.IsSuccess(await userManager.AddToRoleAsync(u, r.Name));
@@ -945,7 +945,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
             };
             foreach (var r in roles)
             {
-                IdentityResultAssert.IsSuccess(await roleManager.Create(r));
+                IdentityResultAssert.IsSuccess(await roleManager.CreateAsync(r));
                 IdentityResultAssert.IsSuccess(await userManager.AddToRoleAsync(user, r.Name));
                 Assert.True(await userManager.IsInRoleAsync(user, r.Name));
             }
@@ -968,7 +968,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
                 IdentityResultAssert.IsSuccess(await userManager.CreateAsync(u));
             }
             var r = new InMemoryRole("r1");
-            IdentityResultAssert.IsSuccess(await roleManager.Create(r));
+            IdentityResultAssert.IsSuccess(await roleManager.CreateAsync(r));
             foreach (var u in users)
             {
                 IdentityResultAssert.IsSuccess(await userManager.AddToRoleAsync(u, r.Name));
@@ -989,7 +989,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
             var role = new InMemoryRole("addUserDupeTest");
             var user = new InMemoryUser("user1");
             IdentityResultAssert.IsSuccess(await userMgr.CreateAsync(user));
-            IdentityResultAssert.IsSuccess(await roleMgr.Create(role));
+            IdentityResultAssert.IsSuccess(await roleMgr.CreateAsync(role));
             var result = await userMgr.RemoveFromRoleAsync(user, role.Name);
             IdentityResultAssert.IsFailure(result, "User is not in role.");
         }
@@ -1002,7 +1002,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
             var role = new InMemoryRole("addUserDupeTest");
             var user = new InMemoryUser("user1");
             IdentityResultAssert.IsSuccess(await userMgr.CreateAsync(user));
-            IdentityResultAssert.IsSuccess(await roleMgr.Create(role));
+            IdentityResultAssert.IsSuccess(await roleMgr.CreateAsync(role));
             IdentityResultAssert.IsSuccess(await userMgr.AddToRoleAsync(user, role.Name));
             Assert.True(await userMgr.IsInRoleAsync(user, role.Name));
             IdentityResultAssert.IsFailure(await userMgr.AddToRoleAsync(user, role.Name), "User already in role.");
@@ -1013,7 +1013,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
         {
             var roleMgr = CreateRoleManager();
             var role = new InMemoryRole("findRoleByNameTest");
-            IdentityResultAssert.IsSuccess(await roleMgr.Create(role));
+            IdentityResultAssert.IsSuccess(await roleMgr.CreateAsync(role));
             Assert.Equal(role.Id, (await roleMgr.FindByName(role.Name)).Id);
         }
 
@@ -1022,8 +1022,8 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
         {
             var roleMgr = CreateRoleManager();
             var role = new InMemoryRole("findRoleTest");
-            IdentityResultAssert.IsSuccess(await roleMgr.Create(role));
-            Assert.Equal(role.Name, (await roleMgr.FindById(role.Id)).Name);
+            IdentityResultAssert.IsSuccess(await roleMgr.CreateAsync(role));
+            Assert.Equal(role.Name, (await roleMgr.FindByIdAsync(role.Id)).Name);
         }
 
         [Fact]
@@ -1093,7 +1093,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
 
         private class EmailTokenProvider : IUserTokenProvider<InMemoryUser>
         {
-            public Task<string> Generate(string purpose, UserManager<InMemoryUser> manager, InMemoryUser user, CancellationToken cancellationToken = default(CancellationToken))
+            public Task<string> GenerateAsync(string purpose, UserManager<InMemoryUser> manager, InMemoryUser user, CancellationToken cancellationToken = default(CancellationToken))
             {
                 return Task.FromResult(MakeToken(purpose));
             }
@@ -1122,7 +1122,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
 
         private class SmsTokenProvider : IUserTokenProvider<InMemoryUser>
         {
-            public Task<string> Generate(string purpose, UserManager<InMemoryUser> manager, InMemoryUser user, CancellationToken cancellationToken = default(CancellationToken))
+            public Task<string> GenerateAsync(string purpose, UserManager<InMemoryUser> manager, InMemoryUser user, CancellationToken cancellationToken = default(CancellationToken))
             {
                 return Task.FromResult(MakeToken(purpose));
             }
@@ -1420,7 +1420,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
         {
             public IdentityMessage Message { get; set; }
 
-            public Task Send(IdentityMessage message, CancellationToken cancellationToken = default(CancellationToken))
+            public Task SendAsync(IdentityMessage message, CancellationToken cancellationToken = default(CancellationToken))
             {
                 Message = message;
                 return Task.FromResult(0);

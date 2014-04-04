@@ -17,7 +17,7 @@ namespace Microsoft.AspNet.Identity
         /// <param name="user"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<IList<Claim>> GetClaims(TUser user, CancellationToken cancellationToken = default(CancellationToken));
+        Task<IList<Claim>> GetClaimsAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         ///     Add a new user claim

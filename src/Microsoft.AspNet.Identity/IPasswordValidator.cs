@@ -12,6 +12,6 @@ namespace Microsoft.AspNet.Identity
         ///     ValidateAsync the item
         /// </summary>
         /// <returns></returns>
-        Task<IdentityResult> Validate(string password, CancellationToken cancellationToken = default(CancellationToken));
+        Task<IdentityResult> ValidateAsync(string password, CancellationToken cancellationToken = default(CancellationToken));
     }
 }
