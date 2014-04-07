@@ -20,7 +20,7 @@
 //        {
 //            using (var db = new IdentityContext())
 //            {
-//                db.Users.Add(new IdentityUser { UserName = "John Doe" });
+//                db.Users.Add(new EntityUser { UserName = "John Doe" });
 //                await db.SaveChangesAsync();
 //            }
 
@@ -93,7 +93,7 @@
 //        {
 //            using (var db = new IdentityContext())
 //            {
-//                db.Users.Add(new IdentityUser("A"));
+//                db.Users.Add(new EntityUser("A"));
 //                await db.SaveChangesAsync();
 //            }
 
@@ -109,7 +109,7 @@
 //        public async Task CanDeleteUser()
 //        {
 //            var manager = CreateManager();
-//            var user = new IdentityUser("DeleteAsync");
+//            var user = new EntityUser("DeleteAsync");
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
 //            IdentityResultAssert.IsSuccess(await manager.DeleteAsync(user));
 //            Assert.Null(await manager.FindByIdAsync(user.Id));
@@ -119,7 +119,7 @@
 //        //public async Task CanUpdateUserName()
 //        //{
 //        //    var manager = CreateManager();
-//        //    var user = new IdentityUser("UpdateAsync");
+//        //    var user = new EntityUser("UpdateAsync");
 //        //    IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
 //        //    Assert.Null(await manager.FindByNameAsync("New"));
 //        //    user.UserName = "New";
@@ -132,7 +132,7 @@
 //        public async Task UserValidatorCanBlockCreate()
 //        {
 //            var manager = CreateManager();
-//            var user = new IdentityUser("CreateBlocked");
+//            var user = new EntityUser("CreateBlocked");
 //            manager.UserValidator = new AlwaysBadValidator();
 //            IdentityResultAssert.IsFailure(await manager.CreateAsync(user), AlwaysBadValidator.ErrorMessage);
 //        }
@@ -141,7 +141,7 @@
 //        //public async Task UserValidatorCanBlockUpdate()
 //        //{
 //        //    var manager = CreateManager();
-//        //    var user = new IdentityUser("UpdateBlocked");
+//        //    var user = new EntityUser("UpdateBlocked");
 //        //    IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
 //        //    manager.UserValidator = new AlwaysBadValidator();
 //        //    IdentityResultAssert.IsFailure(await manager.UpdateAsync(user), AlwaysBadValidator.ErrorMessage);
@@ -153,8 +153,8 @@
 //        //        public async Task UserValidatorBlocksShortEmailsWhenRequiresUniqueEmail(string email)
 //        //        {
 //        //            var manager = CreateManager();
-//        //            var user = new IdentityUser("UpdateBlocked") {Email = email};
-//        //            manager.UserValidator = new UserValidator<IdentityUser, string> {RequireUniqueEmail = true};
+//        //            var user = new EntityUser("UpdateBlocked") {Email = email};
+//        //            manager.UserValidator = new UserValidator<EntityUser, string> {RequireUniqueEmail = true};
 //        //            IdentityResultAssert.IsFailure(await manager.CreateAsync(user), "Email cannot be null or empty.");
 //        //        }
 
@@ -165,8 +165,8 @@
 //        //        public async Task UserValidatorBlocksInvalidEmailsWhenRequiresUniqueEmail(string email)
 //        //        {
 //        //            var manager = CreateManager();
-//        //            var user = new IdentityUser("UpdateBlocked") {Email = email};
-//        //            manager.UserValidator = new UserValidator<IdentityUser, string> {RequireUniqueEmail = true};
+//        //            var user = new EntityUser("UpdateBlocked") {Email = email};
+//        //            manager.UserValidator = new UserValidator<EntityUser, string> {RequireUniqueEmail = true};
 //        //            IdentityResultAssert.IsFailure(await manager.CreateAsync(user), "Email '" + email + "' is invalid.");
 //        //        }
 //        //#endif
@@ -175,10 +175,10 @@
 //        //        public async Task PasswordValidatorCanBlockAddPassword()
 //        //        {
 //        //            var manager = CreateManager();
-//        //            var user = new IdentityUser("AddPasswordBlocked");
+//        //            var user = new EntityUser("AddPasswordBlocked");
 //        //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
 //        //            manager.PasswordValidator = new AlwaysBadValidator();
-//        //            IdentityResultAssert.IsFailure(await manager.AddPasswordAsync(user.Id, "password"),
+//        //            IdentityResultAssert.IsFailure(await manager.AddPasswordAsync(user, "password"),
 //        //                AlwaysBadValidator.ErrorMessage);
 //        //        }
 
@@ -186,10 +186,10 @@
 //        public async Task PasswordValidatorCanBlockChangePassword()
 //        {
 //            var manager = CreateManager();
-//            var user = new IdentityUser("ChangePasswordBlocked");
+//            var user = new EntityUser("ChangePasswordBlocked");
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user, "password"));
 //            manager.PasswordValidator = new AlwaysBadValidator();
-//            IdentityResultAssert.IsFailure(await manager.ChangePasswordAsync(user.Id, "password", "new"),
+//            IdentityResultAssert.IsFailure(await manager.ChangePasswordAsync(user, "password", "new"),
 //                AlwaysBadValidator.ErrorMessage);
 //        }
 
@@ -197,11 +197,11 @@
 //        public async Task CanCreateUserNoPassword()
 //        {
 //            var manager = CreateManager();
-//            IdentityResultAssert.IsSuccess(await manager.CreateAsync(new IdentityUser("CreateUserTest")));
+//            IdentityResultAssert.IsSuccess(await manager.CreateAsync(new EntityUser("CreateUserTest")));
 //            var user = await manager.FindByNameAsync("CreateUserTest");
 //            Assert.NotNull(user);
 //            Assert.Null(user.PasswordHash);
-//            var logins = await manager.GetLoginsAsync(user.Id);
+//            var logins = await manager.GetLoginsAsync(user);
 //            Assert.NotNull(logins);
 //            Assert.Equal(0, logins.Count());
 //        }
@@ -213,12 +213,12 @@
 //            const string userName = "CreateExternalUserTest";
 //            const string provider = "ZzAuth";
 //            const string providerKey = "HaoKey";
-//            IdentityResultAssert.IsSuccess(await manager.CreateAsync(new IdentityUser(userName)));
+//            IdentityResultAssert.IsSuccess(await manager.CreateAsync(new EntityUser(userName)));
 //            var user = await manager.FindByNameAsync(userName);
 //            Assert.NotNull(user);
 //            var login = new UserLoginInfo(provider, providerKey);
-//            IdentityResultAssert.IsSuccess(await manager.AddLoginAsync(user.Id, login));
-//            var logins = await manager.GetLoginsAsync(user.Id);
+//            IdentityResultAssert.IsSuccess(await manager.AddLoginAsync(user, login));
+//            var logins = await manager.GetLoginsAsync(user);
 //            Assert.NotNull(logins);
 //            Assert.Equal(1, logins.Count());
 //            Assert.Equal(provider, logins.First().LoginProvider);
@@ -230,27 +230,27 @@
 //        {
 //            var manager = CreateManager();
 //            var login = new UserLoginInfo("Provider", "key");
-//            var user = new IdentityUser("CreateUserLoginAddPasswordTest");
+//            var user = new EntityUser("CreateUserLoginAddPasswordTest");
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
-//            IdentityResultAssert.IsSuccess(await manager.AddLoginAsync(user.Id, login));
-//            Assert.False(await manager.HasPasswordAsync(user.Id));
-//            IdentityResultAssert.IsSuccess(await manager.AddPasswordAsync(user.Id, "password"));
-//            Assert.True(await manager.HasPasswordAsync(user.Id));
-//            var logins = await manager.GetLoginsAsync(user.Id);
+//            IdentityResultAssert.IsSuccess(await manager.AddLoginAsync(user, login));
+//            Assert.False(await manager.HasPasswordAsync(user));
+//            IdentityResultAssert.IsSuccess(await manager.AddPasswordAsync(user, "password"));
+//            Assert.True(await manager.HasPasswordAsync(user));
+//            var logins = await manager.GetLoginsAsync(user);
 //            Assert.NotNull(logins);
 //            Assert.Equal(1, logins.Count());
 //            Assert.Equal(user, await manager.FindByLoginAsync(login));
-//            Assert.Equal(user, await manager.FindByLoginAsync(user.UserName, "password"));
+//            Assert.Equal(user, await manager.FindByUserNamePasswordAsync(user.UserName, "password"));
 //        }
 
 //        [Fact]
 //        public async Task AddPasswordFailsIfAlreadyHave()
 //        {
 //            var manager = CreateManager();
-//            var user = new IdentityUser("CannotAddAnotherPassword");
+//            var user = new EntityUser("CannotAddAnotherPassword");
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user, "Password"));
-//            Assert.True(await manager.HasPasswordAsync(user.Id));
-//            IdentityResultAssert.IsFailure(await manager.AddPasswordAsync(user.Id, "password"),
+//            Assert.True(await manager.HasPasswordAsync(user));
+//            IdentityResultAssert.IsFailure(await manager.AddPasswordAsync(user, "password"),
 //                "User already has a password set.");
 //        }
 
@@ -258,22 +258,22 @@
 //        public async Task CanCreateUserAddRemoveLogin()
 //        {
 //            var manager = CreateManager();
-//            var user = new IdentityUser("CreateUserAddRemoveLoginTest");
+//            var user = new EntityUser("CreateUserAddRemoveLoginTest");
 //            var login = new UserLoginInfo("Provider", "key");
 //            var result = await manager.CreateAsync(user);
 //            Assert.NotNull(user);
 //            IdentityResultAssert.IsSuccess(result);
-//            IdentityResultAssert.IsSuccess(await manager.AddLoginAsync(user.Id, login));
+//            IdentityResultAssert.IsSuccess(await manager.AddLoginAsync(user, login));
 //            Assert.Equal(user, await manager.FindByLoginAsync(login));
-//            var logins = await manager.GetLoginsAsync(user.Id);
+//            var logins = await manager.GetLoginsAsync(user);
 //            Assert.NotNull(logins);
 //            Assert.Equal(1, logins.Count());
 //            Assert.Equal(login.LoginProvider, logins.Last().LoginProvider);
 //            Assert.Equal(login.ProviderKey, logins.Last().ProviderKey);
 //            var stamp = user.SecurityStamp;
-//            IdentityResultAssert.IsSuccess(await manager.RemoveLoginAsync(user.Id, login));
+//            IdentityResultAssert.IsSuccess(await manager.RemoveLoginAsync(user, login));
 //            Assert.Null(await manager.FindByLoginAsync(login));
-//            logins = await manager.GetLoginsAsync(user.Id);
+//            logins = await manager.GetLoginsAsync(user);
 //            Assert.NotNull(logins);
 //            Assert.Equal(0, logins.Count());
 //            Assert.NotEqual(stamp, user.SecurityStamp);
@@ -283,11 +283,11 @@
 //        public async Task CanRemovePassword()
 //        {
 //            var manager = CreateManager();
-//            var user = new IdentityUser("RemovePasswordTest");
+//            var user = new EntityUser("RemovePasswordTest");
 //            const string password = "password";
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user, password));
 //            var stamp = user.SecurityStamp;
-//            IdentityResultAssert.IsSuccess(await manager.RemovePasswordAsync(user.Id));
+//            IdentityResultAssert.IsSuccess(await manager.RemovePasswordAsync(user));
 //            var u = await manager.FindByNameAsync(user.UserName);
 //            Assert.NotNull(u);
 //            Assert.Null(u.PasswordHash);
@@ -298,16 +298,16 @@
 //        public async Task CanChangePassword()
 //        {
 //            var manager = CreateManager();
-//            var user = new IdentityUser("ChangePasswordTest");
+//            var user = new EntityUser("ChangePasswordTest");
 //            const string password = "password";
 //            const string newPassword = "newpassword";
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user, password));
 //            Assert.Equal(manager.Users.Count(), 1);
 //            var stamp = user.SecurityStamp;
 //            Assert.NotNull(stamp);
-//            IdentityResultAssert.IsSuccess(await manager.ChangePasswordAsync(user.Id, password, newPassword));
-//            Assert.Null(await manager.FindByLoginAsync(user.UserName, password));
-//            Assert.Equal(user, await manager.FindByLoginAsync(user.UserName, newPassword));
+//            IdentityResultAssert.IsSuccess(await manager.ChangePasswordAsync(user, password, newPassword));
+//            Assert.Null(await manager.FindByUserNamePasswordAsync(user.UserName, password));
+//            Assert.Equal(user, await manager.FindByUserNamePasswordAsync(user.UserName, newPassword));
 //            Assert.NotEqual(stamp, user.SecurityStamp);
 //        }
 
@@ -315,23 +315,23 @@
 //        public async Task CanAddRemoveUserClaim()
 //        {
 //            var manager = CreateManager();
-//            var user = new IdentityUser("ClaimsAddRemove");
+//            var user = new EntityUser("ClaimsAddRemove");
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
 //            Claim[] claims = { new Claim("c", "v"), new Claim("c2", "v2"), new Claim("c2", "v3") };
 //            foreach (var c in claims)
 //            {
-//                IdentityResultAssert.IsSuccess(await manager.AddClaimAsync(user.Id, c));
+//                IdentityResultAssert.IsSuccess(await manager.AddClaimAsync(user, c));
 //            }
-//            var userClaims = await manager.GetClaimsAsync(user.Id);
+//            var userClaims = await manager.GetClaimsAsync(user);
 //            Assert.Equal(3, userClaims.Count);
-//            IdentityResultAssert.IsSuccess(await manager.RemoveClaimAsync(user.Id, claims[0]));
-//            userClaims = await manager.GetClaimsAsync(user.Id);
+//            IdentityResultAssert.IsSuccess(await manager.RemoveClaimAsync(user, claims[0]));
+//            userClaims = await manager.GetClaimsAsync(user);
 //            Assert.Equal(2, userClaims.Count);
-//            IdentityResultAssert.IsSuccess(await manager.RemoveClaimAsync(user.Id, claims[1]));
-//            userClaims = await manager.GetClaimsAsync(user.Id);
+//            IdentityResultAssert.IsSuccess(await manager.RemoveClaimAsync(user, claims[1]));
+//            userClaims = await manager.GetClaimsAsync(user);
 //            Assert.Equal(1, userClaims.Count);
-//            IdentityResultAssert.IsSuccess(await manager.RemoveClaimAsync(user.Id, claims[2]));
-//            userClaims = await manager.GetClaimsAsync(user.Id);
+//            IdentityResultAssert.IsSuccess(await manager.RemoveClaimAsync(user, claims[2]));
+//            userClaims = await manager.GetClaimsAsync(user);
 //            Assert.Equal(0, userClaims.Count);
 //        }
 
@@ -339,9 +339,9 @@
 //        public async Task ChangePasswordFallsIfPasswordWrong()
 //        {
 //            var manager = CreateManager();
-//            var user = new IdentityUser("user");
+//            var user = new EntityUser("user");
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user, "password"));
-//            var result = await manager.ChangePasswordAsync(user.Id, "bogus", "newpassword");
+//            var result = await manager.ChangePasswordAsync(user, "bogus", "newpassword");
 //            IdentityResultAssert.IsFailure(result, "Incorrect password.");
 //        }
 
@@ -349,8 +349,8 @@
 //        public async Task AddDupeUserNameFails()
 //        {
 //            var manager = CreateManager();
-//            var user = new IdentityUser("dupe");
-//            var user2 = new IdentityUser("dupe");
+//            var user = new EntityUser("dupe");
+//            var user2 = new EntityUser("dupe");
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
 //            IdentityResultAssert.IsFailure(await manager.CreateAsync(user2), "Name dupe is already taken.");
 //        }
@@ -359,8 +359,8 @@
 //        public async Task AddDupeEmailAllowedByDefault()
 //        {
 //            var manager = CreateManager();
-//            var user = new IdentityUser("dupe") { Email = "yup@yup.com" };
-//            var user2 = new IdentityUser("dupeEmail") { Email = "yup@yup.com" };
+//            var user = new EntityUser("dupe") { Email = "yup@yup.com" };
+//            var user2 = new EntityUser("dupeEmail") { Email = "yup@yup.com" };
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user2));
 //        }
@@ -369,9 +369,9 @@
 //        public async Task AddDupeEmailFallsWhenUniqueEmailRequired()
 //        {
 //            var manager = CreateManager();
-//            manager.UserValidator = new UserValidator<IdentityUser> { RequireUniqueEmail = true };
-//            var user = new IdentityUser("dupe") { Email = "yup@yup.com" };
-//            var user2 = new IdentityUser("dupeEmail") { Email = "yup@yup.com" };
+//            manager.UserValidator = new UserValidator<EntityUser> { RequireUniqueEmail = true };
+//            var user = new EntityUser("dupe") { Email = "yup@yup.com" };
+//            var user2 = new EntityUser("dupeEmail") { Email = "yup@yup.com" };
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
 //            IdentityResultAssert.IsFailure(await manager.CreateAsync(user2), "Email 'yup@yup.com' is already taken.");
 //        }
@@ -380,12 +380,12 @@
 //        public async Task UpdateSecurityStampActuallyChanges()
 //        {
 //            var manager = CreateManager();
-//            var user = new IdentityUser("stampMe");
+//            var user = new EntityUser("stampMe");
 //            Assert.Null(user.SecurityStamp);
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
 //            var stamp = user.SecurityStamp;
 //            Assert.NotNull(stamp);
-//            IdentityResultAssert.IsSuccess(await manager.UpdateSecurityStampAsync(user.Id));
+//            IdentityResultAssert.IsSuccess(await manager.UpdateSecurityStampAsync(user));
 //            Assert.NotEqual(stamp, user.SecurityStamp);
 //        }
 
@@ -393,11 +393,11 @@
 //        public async Task AddDupeLoginFails()
 //        {
 //            var manager = CreateManager();
-//            var user = new IdentityUser("DupeLogin");
+//            var user = new EntityUser("DupeLogin");
 //            var login = new UserLoginInfo("provder", "key");
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
-//            IdentityResultAssert.IsSuccess(await manager.AddLoginAsync(user.Id, login));
-//            var result = await manager.AddLoginAsync(user.Id, login);
+//            IdentityResultAssert.IsSuccess(await manager.AddLoginAsync(user, login));
+//            var result = await manager.AddLoginAsync(user, login);
 //            IdentityResultAssert.IsFailure(result, "A user with that external login already exists.");
 //        }
 
@@ -408,7 +408,7 @@
 //            var manager = CreateManager();
 //            const string userName = "EmailTest";
 //            const string email = "email@test.com";
-//            var user = new IdentityUser(userName) { Email = email };
+//            var user = new EntityUser(userName) { Email = email };
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
 //            var fetch = await manager.FindByEmailAsync(email);
 //            Assert.Equal(user, fetch);
@@ -420,9 +420,9 @@
 //            var mgr = CreateManager();
 //            var users = new[]
 //            {
-//                new IdentityUser("user1"),
-//                new IdentityUser("user2"),
-//                new IdentityUser("user3")
+//                new EntityUser("user1"),
+//                new EntityUser("user2"),
+//                new EntityUser("user3")
 //            };
 //            foreach (var u in users)
 //            {
@@ -442,12 +442,12 @@
 //            var context = CreateContext();
 //            var manager = CreateManager(context);
 //            var role = CreateRoleManager(context);
-//            var user = new IdentityUser("Hao");
+//            var user = new EntityUser("Hao");
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
-//            IdentityResultAssert.IsSuccess(await role.CreateAsync(new IdentityRole("Admin")));
-//            IdentityResultAssert.IsSuccess(await role.CreateAsync(new IdentityRole("Local")));
-//            IdentityResultAssert.IsSuccess(await manager.AddToRoleAsync(user.Id, "Admin"));
-//            IdentityResultAssert.IsSuccess(await manager.AddToRoleAsync(user.Id, "Local"));
+//            IdentityResultAssert.IsSuccess(await role.CreateAsync(new EntityRole("Admin")));
+//            IdentityResultAssert.IsSuccess(await role.CreateAsync(new EntityRole("Local")));
+//            IdentityResultAssert.IsSuccess(await manager.AddToRoleAsync(user, "Admin"));
+//            IdentityResultAssert.IsSuccess(await manager.AddToRoleAsync(user, "Local"));
 //            Claim[] userClaims =
 //            {
 //                new Claim("Whatever", "Value"),
@@ -455,13 +455,13 @@
 //            };
 //            foreach (var c in userClaims)
 //            {
-//                IdentityResultAssert.IsSuccess(await manager.AddClaimAsync(user.Id, c));
+//                IdentityResultAssert.IsSuccess(await manager.AddClaimAsync(user, c));
 //            }
 
 //            var identity = await manager.CreateIdentity(user, "test");
-//            var claimsFactory = manager.ClaimsIdentityFactory as ClaimsIdentityFactory<IdentityUser>;
+//            var claimsFactory = (ClaimsIdentityFactory<EntityUser>)manager.ClaimsIdentityFactory;
 //            Assert.NotNull(claimsFactory);
-//            var claims = identity.Claims;
+//            var claims = identity.Claims.ToList();
 //            Assert.NotNull(claims);
 //            Assert.True(
 //                claims.Any(c => c.Type == claimsFactory.UserNameClaimType && c.Value == user.UserName));
@@ -478,39 +478,39 @@
 //        public async Task ConfirmEmailFalseByDefaultTest()
 //        {
 //            var manager = CreateManager();
-//            var user = new IdentityUser("test");
+//            var user = new EntityUser("test");
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
-//            Assert.False(await manager.IsEmailConfirmedAsync(user.Id));
+//            Assert.False(await manager.IsEmailConfirmedAsync(user));
 //        }
 
 //        // TODO: No token provider implementations yet
-//        private class StaticTokenProvider : IUserTokenProvider<IdentityUser>
+//        private class StaticTokenProvider : IUserTokenProvider<EntityUser>
 //        {
-//            public Task<string> GenerateAsync(string purpose, UserManager<IdentityUser> manager,
-//                IdentityUser user, CancellationToken token)
+//            public Task<string> GenerateAsync(string purpose, UserManager<EntityUser> manager,
+//                EntityUser user, CancellationToken token)
 //            {
 //                return Task.FromResult(MakeToken(purpose, user));
 //            }
 
-//            public Task<bool> ValidateAsync(string purpose, string token, UserManager<IdentityUser> manager,
-//                IdentityUser user, CancellationToken cancellationToken)
+//            public Task<bool> ValidateAsync(string purpose, string token, UserManager<EntityUser> manager,
+//                EntityUser user, CancellationToken cancellationToken)
 //            {
 //                return Task.FromResult(token == MakeToken(purpose, user));
 //            }
 
-//            public Task NotifyAsync(string token, UserManager<IdentityUser> manager, IdentityUser user, CancellationToken cancellationToken)
+//            public Task NotifyAsync(string token, UserManager<EntityUser> manager, EntityUser user, CancellationToken cancellationToken)
 //            {
 //                return Task.FromResult(0);
 //            }
 
-//            public Task<bool> IsValidProviderForUserAsync(UserManager<IdentityUser> manager, IdentityUser user, CancellationToken token)
+//            public Task<bool> IsValidProviderForUserAsync(UserManager<EntityUser> manager, EntityUser user, CancellationToken token)
 //            {
 //                return Task.FromResult(true);
 //            }
 
-//            private static string MakeToken(string purpose, IdentityUser user)
+//            private static string MakeToken(string purpose, EntityUser user)
 //            {
-//                return string.Join(":", user.Id, purpose, "ImmaToken");
+//                return string.Join(":", user, purpose, "ImmaToken");
 //            }
 //        }
 
@@ -519,17 +519,17 @@
 //        {
 //            var manager = CreateManager();
 //            manager.UserTokenProvider = new StaticTokenProvider();
-//            var user = new IdentityUser("ResetPasswordTest");
+//            var user = new EntityUser("ResetPasswordTest");
 //            const string password = "password";
 //            const string newPassword = "newpassword";
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user, password));
 //            var stamp = user.SecurityStamp;
 //            Assert.NotNull(stamp);
-//            var token = await manager.GeneratePasswordResetTokenAsync(user.Id);
+//            var token = await manager.GeneratePasswordResetTokenAsync(user);
 //            Assert.NotNull(token);
-//            IdentityResultAssert.IsSuccess(await manager.ResetPassword(user.Id, token, newPassword));
-//            Assert.Null(await manager.FindByLoginAsync(user.UserName, password));
-//            Assert.Equal(user, await manager.FindByLoginAsync(user.UserName, newPassword));
+//            IdentityResultAssert.IsSuccess(await manager.ResetPassword(user, token, newPassword));
+//            Assert.Null(await manager.FindByUserNamePasswordAsync(user.UserName, password));
+//            Assert.Equal(user, await manager.FindByUserNamePasswordAsync(user.UserName, newPassword));
 //            Assert.NotEqual(stamp, user.SecurityStamp);
 //        }
 
@@ -538,19 +538,19 @@
 //        {
 //            var manager = CreateManager();
 //            manager.UserTokenProvider = new StaticTokenProvider();
-//            var user = new IdentityUser("ResetPasswordTest");
+//            var user = new EntityUser("ResetPasswordTest");
 //            const string password = "password";
 //            const string newPassword = "newpassword";
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user, password));
 //            var stamp = user.SecurityStamp;
 //            Assert.NotNull(stamp);
-//            var token = await manager.GeneratePasswordResetTokenAsync(user.Id);
+//            var token = await manager.GeneratePasswordResetTokenAsync(user);
 //            Assert.NotNull(token);
 //            manager.PasswordValidator = new AlwaysBadValidator();
-//            IdentityResultAssert.IsFailure(await manager.ResetPassword(user.Id, token, newPassword),
+//            IdentityResultAssert.IsFailure(await manager.ResetPassword(user, token, newPassword),
 //                AlwaysBadValidator.ErrorMessage);
-//            Assert.NotNull(await manager.FindByLoginAsync(user.UserName, password));
-//            Assert.Equal(user, await manager.FindByLoginAsync(user.UserName, password));
+//            Assert.NotNull(await manager.FindByUserNamePasswordAsync(user.UserName, password));
+//            Assert.Equal(user, await manager.FindByUserNamePasswordAsync(user.UserName, password));
 //            Assert.Equal(stamp, user.SecurityStamp);
 //        }
 
@@ -559,15 +559,15 @@
 //        {
 //            var manager = CreateManager();
 //            manager.UserTokenProvider = new StaticTokenProvider();
-//            var user = new IdentityUser("ResetPasswordTest");
+//            var user = new EntityUser("ResetPasswordTest");
 //            const string password = "password";
 //            const string newPassword = "newpassword";
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user, password));
 //            var stamp = user.SecurityStamp;
 //            Assert.NotNull(stamp);
-//            IdentityResultAssert.IsFailure(await manager.ResetPassword(user.Id, "bogus", newPassword), "Invalid token.");
-//            Assert.NotNull(await manager.FindByLoginAsync(user.UserName, password));
-//            Assert.Equal(user, await manager.FindByLoginAsync(user.UserName, password));
+//            IdentityResultAssert.IsFailure(await manager.ResetPassword(user, "bogus", newPassword), "Invalid token.");
+//            Assert.NotNull(await manager.FindByUserNamePasswordAsync(user.UserName, password));
+//            Assert.Equal(user, await manager.FindByUserNamePasswordAsync(user.UserName, password));
 //            Assert.Equal(stamp, user.SecurityStamp);
 //        }
 
@@ -576,15 +576,15 @@
 //        {
 //            var manager = CreateManager();
 //            manager.UserTokenProvider = new StaticTokenProvider();
-//            var user = new IdentityUser("UserTokenTest");
-//            var user2 = new IdentityUser("UserTokenTest2");
+//            var user = new EntityUser("UserTokenTest");
+//            var user2 = new EntityUser("UserTokenTest2");
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user2));
-//            var token = await manager.GenerateUserTokenAsync("test", user.Id);
-//            Assert.True(await manager.VerifyUserTokenAsync(user.Id, "test", token));
-//            Assert.False(await manager.VerifyUserTokenAsync(user.Id, "test2", token));
-//            Assert.False(await manager.VerifyUserTokenAsync(user.Id, "test", token + "a"));
-//            Assert.False(await manager.VerifyUserTokenAsync(user2.Id, "test", token));
+//            var token = await manager.GenerateUserTokenAsync("test", user);
+//            Assert.True(await manager.VerifyUserTokenAsync(user, "test", token));
+//            Assert.False(await manager.VerifyUserTokenAsync(user, "test2", token));
+//            Assert.False(await manager.VerifyUserTokenAsync(user, "test", token + "a"));
+//            Assert.False(await manager.VerifyUserTokenAsync(user2, "test", token));
 //        }
 
 //        [Fact]
@@ -592,15 +592,15 @@
 //        {
 //            var manager = CreateManager();
 //            manager.UserTokenProvider = new StaticTokenProvider();
-//            var user = new IdentityUser("test");
+//            var user = new EntityUser("test");
 //            Assert.False(user.EmailConfirmed);
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
-//            var token = await manager.GenerateEmailConfirmationTokenAsync(user.Id);
+//            var token = await manager.GenerateEmailConfirmationTokenAsync(user);
 //            Assert.NotNull(token);
-//            IdentityResultAssert.IsSuccess(await manager.ConfirmEmailAsync(user.Id, token));
-//            Assert.True(await manager.IsEmailConfirmedAsync(user.Id));
-//            IdentityResultAssert.IsSuccess(await manager.SetEmailAsync(user.Id, null));
-//            Assert.False(await manager.IsEmailConfirmedAsync(user.Id));
+//            IdentityResultAssert.IsSuccess(await manager.ConfirmEmailAsync(user, token));
+//            Assert.True(await manager.IsEmailConfirmedAsync(user));
+//            IdentityResultAssert.IsSuccess(await manager.SetEmailAsync(user, null));
+//            Assert.False(await manager.IsEmailConfirmedAsync(user));
 //        }
 
 //        [Fact]
@@ -608,11 +608,11 @@
 //        {
 //            var manager = CreateManager();
 //            manager.UserTokenProvider = new StaticTokenProvider();
-//            var user = new IdentityUser("test");
+//            var user = new EntityUser("test");
 //            Assert.False(user.EmailConfirmed);
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
-//            IdentityResultAssert.IsFailure(await manager.ConfirmEmailAsync(user.Id, "bogus"), "Invalid token.");
-//            Assert.False(await manager.IsEmailConfirmedAsync(user.Id));
+//            IdentityResultAssert.IsFailure(await manager.ConfirmEmailAsync(user, "bogus"), "Invalid token.");
+//            Assert.False(await manager.IsEmailConfirmedAsync(user));
 //        }
 
 //        // TODO: Can't reenable til we have a SecurityStamp linked token provider
@@ -620,14 +620,14 @@
 //        //public async Task ConfirmTokenFailsAfterPasswordChange()
 //        //{
 //        //    var manager = CreateManager();
-//        //    var user = new IdentityUser("test");
+//        //    var user = new EntityUser("test");
 //        //    Assert.False(user.EmailConfirmed);
 //        //    IdentityResultAssert.IsSuccess(await manager.CreateAsync(user, "password"));
-//        //    var token = await manager.GenerateEmailConfirmationTokenAsync(user.Id);
+//        //    var token = await manager.GenerateEmailConfirmationTokenAsync(user);
 //        //    Assert.NotNull(token);
-//        //    IdentityResultAssert.IsSuccess(await manager.ChangePasswordAsync(user.Id, "password", "newpassword"));
-//        //    IdentityResultAssert.IsFailure(await manager.ConfirmEmailAsync(user.Id, token), "Invalid token.");
-//        //    Assert.False(await manager.IsEmailConfirmedAsync(user.Id));
+//        //    IdentityResultAssert.IsSuccess(await manager.ChangePasswordAsync(user, "password", "newpassword"));
+//        //    IdentityResultAssert.IsFailure(await manager.ConfirmEmailAsync(user, token), "Invalid token.");
+//        //    Assert.False(await manager.IsEmailConfirmedAsync(user));
 //        //}
 
 //        // Lockout tests
@@ -638,15 +638,15 @@
 //            var mgr = CreateManager();
 //            mgr.DefaultAccountLockoutTimeSpan = TimeSpan.FromHours(1);
 //            mgr.UserLockoutEnabledByDefault = true;
-//            var user = new IdentityUser("fastLockout");
+//            var user = new EntityUser("fastLockout");
 //            IdentityResultAssert.IsSuccess(await mgr.CreateAsync(user));
-//            Assert.True(await mgr.GetLockoutEnabledAsync(user.Id));
+//            Assert.True(await mgr.GetLockoutEnabledAsync(user));
 //            Assert.True(user.LockoutEnabled);
-//            Assert.False(await mgr.IsLockedOutAsync(user.Id));
-//            IdentityResultAssert.IsSuccess(await mgr.AccessFailedAsync(user.Id));
-//            Assert.True(await mgr.IsLockedOutAsync(user.Id));
-//            Assert.True(await mgr.GetLockoutEndDateAsync(user.Id) > DateTimeOffset.UtcNow.AddMinutes(55));
-//            Assert.Equal(0, await mgr.GetAccessFailedCountAsync(user.Id));
+//            Assert.False(await mgr.IsLockedOutAsync(user));
+//            IdentityResultAssert.IsSuccess(await mgr.AccessFailedAsync(user));
+//            Assert.True(await mgr.IsLockedOutAsync(user));
+//            Assert.True(await mgr.GetLockoutEndDateAsync(user) > DateTimeOffset.UtcNow.AddMinutes(55));
+//            Assert.Equal(0, await mgr.GetAccessFailedCountAsync(user));
 //        }
 
 //        [Fact]
@@ -656,19 +656,19 @@
 //            mgr.DefaultAccountLockoutTimeSpan = TimeSpan.FromHours(1);
 //            mgr.UserLockoutEnabledByDefault = true;
 //            mgr.MaxFailedAccessAttemptsBeforeLockout = 2;
-//            var user = new IdentityUser("twoFailureLockout");
+//            var user = new EntityUser("twoFailureLockout");
 //            IdentityResultAssert.IsSuccess(await mgr.CreateAsync(user));
-//            Assert.True(await mgr.GetLockoutEnabledAsync(user.Id));
+//            Assert.True(await mgr.GetLockoutEnabledAsync(user));
 //            Assert.True(user.LockoutEnabled);
-//            Assert.False(await mgr.IsLockedOutAsync(user.Id));
-//            IdentityResultAssert.IsSuccess(await mgr.AccessFailedAsync(user.Id));
-//            Assert.False(await mgr.IsLockedOutAsync(user.Id));
-//            Assert.False(await mgr.GetLockoutEndDateAsync(user.Id) > DateTimeOffset.UtcNow.AddMinutes(55));
-//            Assert.Equal(1, await mgr.GetAccessFailedCountAsync(user.Id));
-//            IdentityResultAssert.IsSuccess(await mgr.AccessFailedAsync(user.Id));
-//            Assert.True(await mgr.IsLockedOutAsync(user.Id));
-//            Assert.True(await mgr.GetLockoutEndDateAsync(user.Id) > DateTimeOffset.UtcNow.AddMinutes(55));
-//            Assert.Equal(0, await mgr.GetAccessFailedCountAsync(user.Id));
+//            Assert.False(await mgr.IsLockedOutAsync(user));
+//            IdentityResultAssert.IsSuccess(await mgr.AccessFailedAsync(user));
+//            Assert.False(await mgr.IsLockedOutAsync(user));
+//            Assert.False(await mgr.GetLockoutEndDateAsync(user) > DateTimeOffset.UtcNow.AddMinutes(55));
+//            Assert.Equal(1, await mgr.GetAccessFailedCountAsync(user));
+//            IdentityResultAssert.IsSuccess(await mgr.AccessFailedAsync(user));
+//            Assert.True(await mgr.IsLockedOutAsync(user));
+//            Assert.True(await mgr.GetLockoutEndDateAsync(user) > DateTimeOffset.UtcNow.AddMinutes(55));
+//            Assert.Equal(0, await mgr.GetAccessFailedCountAsync(user));
 //        }
 
 //        [Fact]
@@ -678,23 +678,23 @@
 //            mgr.DefaultAccountLockoutTimeSpan = TimeSpan.FromHours(1);
 //            mgr.UserLockoutEnabledByDefault = true;
 //            mgr.MaxFailedAccessAttemptsBeforeLockout = 2;
-//            var user = new IdentityUser("resetLockout");
+//            var user = new EntityUser("resetLockout");
 //            IdentityResultAssert.IsSuccess(await mgr.CreateAsync(user));
-//            Assert.True(await mgr.GetLockoutEnabledAsync(user.Id));
+//            Assert.True(await mgr.GetLockoutEnabledAsync(user));
 //            Assert.True(user.LockoutEnabled);
-//            Assert.False(await mgr.IsLockedOutAsync(user.Id));
-//            IdentityResultAssert.IsSuccess(await mgr.AccessFailedAsync(user.Id));
-//            Assert.False(await mgr.IsLockedOutAsync(user.Id));
-//            Assert.False(await mgr.GetLockoutEndDateAsync(user.Id) > DateTimeOffset.UtcNow.AddMinutes(55));
-//            Assert.Equal(1, await mgr.GetAccessFailedCountAsync(user.Id));
-//            IdentityResultAssert.IsSuccess(await mgr.ResetAccessFailedCountAsync(user.Id));
-//            Assert.Equal(0, await mgr.GetAccessFailedCountAsync(user.Id));
-//            Assert.False(await mgr.IsLockedOutAsync(user.Id));
-//            Assert.False(await mgr.GetLockoutEndDateAsync(user.Id) > DateTimeOffset.UtcNow.AddMinutes(55));
-//            IdentityResultAssert.IsSuccess(await mgr.AccessFailedAsync(user.Id));
-//            Assert.False(await mgr.IsLockedOutAsync(user.Id));
-//            Assert.False(await mgr.GetLockoutEndDateAsync(user.Id) > DateTimeOffset.UtcNow.AddMinutes(55));
-//            Assert.Equal(1, await mgr.GetAccessFailedCountAsync(user.Id));
+//            Assert.False(await mgr.IsLockedOutAsync(user));
+//            IdentityResultAssert.IsSuccess(await mgr.AccessFailedAsync(user));
+//            Assert.False(await mgr.IsLockedOutAsync(user));
+//            Assert.False(await mgr.GetLockoutEndDateAsync(user) > DateTimeOffset.UtcNow.AddMinutes(55));
+//            Assert.Equal(1, await mgr.GetAccessFailedCountAsync(user));
+//            IdentityResultAssert.IsSuccess(await mgr.ResetAccessFailedCountAsync(user));
+//            Assert.Equal(0, await mgr.GetAccessFailedCountAsync(user));
+//            Assert.False(await mgr.IsLockedOutAsync(user));
+//            Assert.False(await mgr.GetLockoutEndDateAsync(user) > DateTimeOffset.UtcNow.AddMinutes(55));
+//            IdentityResultAssert.IsSuccess(await mgr.AccessFailedAsync(user));
+//            Assert.False(await mgr.IsLockedOutAsync(user));
+//            Assert.False(await mgr.GetLockoutEndDateAsync(user) > DateTimeOffset.UtcNow.AddMinutes(55));
+//            Assert.Equal(1, await mgr.GetAccessFailedCountAsync(user));
 //        }
 
 //        [Fact]
@@ -703,22 +703,22 @@
 //            var mgr = CreateManager();
 //            mgr.DefaultAccountLockoutTimeSpan = TimeSpan.FromHours(1);
 //            mgr.MaxFailedAccessAttemptsBeforeLockout = 2;
-//            var user = new IdentityUser("manualLockout");
+//            var user = new EntityUser("manualLockout");
 //            IdentityResultAssert.IsSuccess(await mgr.CreateAsync(user));
-//            Assert.False(await mgr.GetLockoutEnabledAsync(user.Id));
+//            Assert.False(await mgr.GetLockoutEnabledAsync(user));
 //            Assert.False(user.LockoutEnabled);
-//            IdentityResultAssert.IsSuccess(await mgr.SetLockoutEnabledAsync(user.Id, true));
-//            Assert.True(await mgr.GetLockoutEnabledAsync(user.Id));
+//            IdentityResultAssert.IsSuccess(await mgr.SetLockoutEnabledAsync(user, true));
+//            Assert.True(await mgr.GetLockoutEnabledAsync(user));
 //            Assert.True(user.LockoutEnabled);
-//            Assert.False(await mgr.IsLockedOutAsync(user.Id));
-//            IdentityResultAssert.IsSuccess(await mgr.AccessFailedAsync(user.Id));
-//            Assert.False(await mgr.IsLockedOutAsync(user.Id));
-//            Assert.False(await mgr.GetLockoutEndDateAsync(user.Id) > DateTimeOffset.UtcNow.AddMinutes(55));
-//            Assert.Equal(1, await mgr.GetAccessFailedCountAsync(user.Id));
-//            IdentityResultAssert.IsSuccess(await mgr.AccessFailedAsync(user.Id));
-//            Assert.True(await mgr.IsLockedOutAsync(user.Id));
-//            Assert.True(await mgr.GetLockoutEndDateAsync(user.Id) > DateTimeOffset.UtcNow.AddMinutes(55));
-//            Assert.Equal(0, await mgr.GetAccessFailedCountAsync(user.Id));
+//            Assert.False(await mgr.IsLockedOutAsync(user));
+//            IdentityResultAssert.IsSuccess(await mgr.AccessFailedAsync(user));
+//            Assert.False(await mgr.IsLockedOutAsync(user));
+//            Assert.False(await mgr.GetLockoutEndDateAsync(user) > DateTimeOffset.UtcNow.AddMinutes(55));
+//            Assert.Equal(1, await mgr.GetAccessFailedCountAsync(user));
+//            IdentityResultAssert.IsSuccess(await mgr.AccessFailedAsync(user));
+//            Assert.True(await mgr.IsLockedOutAsync(user));
+//            Assert.True(await mgr.GetLockoutEndDateAsync(user) > DateTimeOffset.UtcNow.AddMinutes(55));
+//            Assert.Equal(0, await mgr.GetAccessFailedCountAsync(user));
 //        }
 
 //        [Fact]
@@ -726,27 +726,27 @@
 //        {
 //            var mgr = CreateManager();
 //            mgr.UserLockoutEnabledByDefault = true;
-//            var user = new IdentityUser("LockoutTest");
+//            var user = new EntityUser("LockoutTest");
 //            IdentityResultAssert.IsSuccess(await mgr.CreateAsync(user));
-//            Assert.True(await mgr.GetLockoutEnabledAsync(user.Id));
+//            Assert.True(await mgr.GetLockoutEnabledAsync(user));
 //            Assert.True(user.LockoutEnabled);
-//            IdentityResultAssert.IsSuccess(await mgr.SetLockoutEndDateAsync(user.Id, new DateTimeOffset()));
-//            Assert.False(await mgr.IsLockedOutAsync(user.Id));
-//            Assert.Equal(new DateTimeOffset(), await mgr.GetLockoutEndDateAsync(user.Id));
-//            Assert.Null(user.LockoutEndDateUtc);
+//            IdentityResultAssert.IsSuccess(await mgr.SetLockoutEndDateAsync(user, new DateTimeOffset()));
+//            Assert.False(await mgr.IsLockedOutAsync(user));
+//            Assert.Equal(new DateTimeOffset(), await mgr.GetLockoutEndDateAsync(user));
+//            Assert.Null(user.LockoutEnd);
 //        }
 
 //        [Fact]
 //        public async Task LockoutFailsIfNotEnabled()
 //        {
 //            var mgr = CreateManager();
-//            var user = new IdentityUser("LockoutNotEnabledTest");
+//            var user = new EntityUser("LockoutNotEnabledTest");
 //            IdentityResultAssert.IsSuccess(await mgr.CreateAsync(user));
-//            Assert.False(await mgr.GetLockoutEnabledAsync(user.Id));
+//            Assert.False(await mgr.GetLockoutEnabledAsync(user));
 //            Assert.False(user.LockoutEnabled);
-//            IdentityResultAssert.IsFailure(await mgr.SetLockoutEndDateAsync(user.Id, new DateTimeOffset()),
+//            IdentityResultAssert.IsFailure(await mgr.SetLockoutEndDateAsync(user, new DateTimeOffset()),
 //                "Lockout is not enabled for this user.");
-//            Assert.False(await mgr.IsLockedOutAsync(user.Id));
+//            Assert.False(await mgr.IsLockedOutAsync(user));
 //        }
 
 //        [Fact]
@@ -754,11 +754,11 @@
 //        {
 //            var mgr = CreateManager();
 //            mgr.UserLockoutEnabledByDefault = true;
-//            var user = new IdentityUser("LockoutUtcNowTest") { LockoutEndDateUtc = DateTime.UtcNow.AddSeconds(-1) };
+//            var user = new EntityUser("LockoutUtcNowTest") { LockoutEnd = DateTime.UtcNow.AddSeconds(-1) };
 //            IdentityResultAssert.IsSuccess(await mgr.CreateAsync(user));
-//            Assert.True(await mgr.GetLockoutEnabledAsync(user.Id));
+//            Assert.True(await mgr.GetLockoutEnabledAsync(user));
 //            Assert.True(user.LockoutEnabled);
-//            Assert.False(await mgr.IsLockedOutAsync(user.Id));
+//            Assert.False(await mgr.IsLockedOutAsync(user));
 //        }
 
 //        [Fact]
@@ -766,12 +766,12 @@
 //        {
 //            var mgr = CreateManager();
 //            mgr.UserLockoutEnabledByDefault = true;
-//            var user = new IdentityUser("LockoutUtcNowTest");
+//            var user = new EntityUser("LockoutUtcNowTest");
 //            IdentityResultAssert.IsSuccess(await mgr.CreateAsync(user));
-//            Assert.True(await mgr.GetLockoutEnabledAsync(user.Id));
+//            Assert.True(await mgr.GetLockoutEnabledAsync(user));
 //            Assert.True(user.LockoutEnabled);
-//            IdentityResultAssert.IsSuccess(await mgr.SetLockoutEndDateAsync(user.Id, DateTimeOffset.UtcNow.AddSeconds(-1)));
-//            Assert.False(await mgr.IsLockedOutAsync(user.Id));
+//            IdentityResultAssert.IsSuccess(await mgr.SetLockoutEndDateAsync(user, DateTimeOffset.UtcNow.AddSeconds(-1)));
+//            Assert.False(await mgr.IsLockedOutAsync(user));
 //        }
 
 //        [Fact]
@@ -779,11 +779,11 @@
 //        {
 //            var mgr = CreateManager();
 //            mgr.UserLockoutEnabledByDefault = true;
-//            var user = new IdentityUser("LockoutUtcNowTest") { LockoutEndDateUtc = DateTime.UtcNow.AddMinutes(5) };
+//            var user = new EntityUser("LockoutUtcNowTest") { LockoutEnd = DateTime.UtcNow.AddMinutes(5) };
 //            IdentityResultAssert.IsSuccess(await mgr.CreateAsync(user));
-//            Assert.True(await mgr.GetLockoutEnabledAsync(user.Id));
+//            Assert.True(await mgr.GetLockoutEnabledAsync(user));
 //            Assert.True(user.LockoutEnabled);
-//            Assert.True(await mgr.IsLockedOutAsync(user.Id));
+//            Assert.True(await mgr.IsLockedOutAsync(user));
 //        }
 
 //        [Fact]
@@ -791,14 +791,14 @@
 //        {
 //            var mgr = CreateManager();
 //            mgr.UserLockoutEnabledByDefault = true;
-//            var user = new IdentityUser("LockoutTest");
+//            var user = new EntityUser("LockoutTest");
 //            IdentityResultAssert.IsSuccess(await mgr.CreateAsync(user));
-//            Assert.True(await mgr.GetLockoutEnabledAsync(user.Id));
+//            Assert.True(await mgr.GetLockoutEnabledAsync(user));
 //            Assert.True(user.LockoutEnabled);
 //            var lockoutEnd = new DateTimeOffset(DateTime.Now.AddMinutes(30).ToLocalTime());
-//            IdentityResultAssert.IsSuccess(await mgr.SetLockoutEndDateAsync(user.Id, lockoutEnd));
-//            Assert.True(await mgr.IsLockedOutAsync(user.Id));
-//            var end = await mgr.GetLockoutEndDateAsync(user.Id);
+//            IdentityResultAssert.IsSuccess(await mgr.SetLockoutEndDateAsync(user, lockoutEnd));
+//            Assert.True(await mgr.IsLockedOutAsync(user));
+//            var end = await mgr.GetLockoutEndDateAsync(user);
 //            Assert.Equal(lockoutEnd, end);
 //        }
 
@@ -807,13 +807,13 @@
 //        public async Task CanCreateRoleTest()
 //        {
 //            var manager = CreateRoleManager();
-//            var role = new IdentityRole("create");
+//            var role = new EntityRole("create");
 //            Assert.False(await manager.RoleExistsAsync(role.Name));
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(role));
 //            Assert.True(await manager.RoleExistsAsync(role.Name));
 //        }
 
-//        private class AlwaysBadValidator : IUserValidator<IdentityUser>, IRoleValidator<IdentityRole>,
+//        private class AlwaysBadValidator : IUserValidator<EntityUser>, IRoleValidator<EntityRole>,
 //            IPasswordValidator
 //        {
 //            public const string ErrorMessage = "I'm Bad.";
@@ -823,12 +823,12 @@
 //                return Task.FromResult(IdentityResult.Failed(ErrorMessage));
 //            }
 
-//            public Task<IdentityResult> ValidateAsync(RoleManager<IdentityRole> manager, IdentityRole role, CancellationToken token)
+//            public Task<IdentityResult> ValidateAsync(RoleManager<EntityRole> manager, EntityRole role, CancellationToken token)
 //            {
 //                return Task.FromResult(IdentityResult.Failed(ErrorMessage));
 //            }
 
-//            public Task<IdentityResult> ValidateAsync(UserManager<IdentityUser> manager, IdentityUser user, CancellationToken token)
+//            public Task<IdentityResult> ValidateAsync(UserManager<EntityUser> manager, EntityUser user, CancellationToken token)
 //            {
 //                return Task.FromResult(IdentityResult.Failed(ErrorMessage));
 //            }
@@ -839,7 +839,7 @@
 //        {
 //            var manager = CreateRoleManager();
 //            manager.RoleValidator = new AlwaysBadValidator();
-//            IdentityResultAssert.IsFailure(await manager.CreateAsync(new IdentityRole("blocked")),
+//            IdentityResultAssert.IsFailure(await manager.CreateAsync(new EntityRole("blocked")),
 //                AlwaysBadValidator.ErrorMessage);
 //        }
 
@@ -847,7 +847,7 @@
 //        public async Task BadValidatorBlocksRoleUpdate()
 //        {
 //            var manager = CreateRoleManager();
-//            var role = new IdentityRole("poorguy");
+//            var role = new EntityRole("poorguy");
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(role));
 //            var error = AlwaysBadValidator.ErrorMessage;
 //            manager.RoleValidator = new AlwaysBadValidator();
@@ -858,7 +858,7 @@
 //        public async Task CanDeleteRoleTest()
 //        {
 //            var manager = CreateRoleManager();
-//            var role = new IdentityRole("delete");
+//            var role = new EntityRole("delete");
 //            Assert.False(await manager.RoleExistsAsync(role.Name));
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(role));
 //            IdentityResultAssert.IsSuccess(await manager.DeleteAsync(role));
@@ -869,7 +869,7 @@
 //        public async Task CanRoleFindByIdTest()
 //        {
 //            var manager = CreateRoleManager();
-//            var role = new IdentityRole("FindByIdAsync");
+//            var role = new EntityRole("FindByIdAsync");
 //            Assert.Null(await manager.FindByIdAsync(role.Id));
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(role));
 //            Assert.Equal(role, await manager.FindByIdAsync(role.Id));
@@ -879,7 +879,7 @@
 //        public async Task CanRoleFindByName()
 //        {
 //            var manager = CreateRoleManager();
-//            var role = new IdentityRole("FindByNameAsync");
+//            var role = new EntityRole("FindByNameAsync");
 //            Assert.Null(await manager.FindByNameAsync(role.Name));
 //            Assert.False(await manager.RoleExistsAsync(role.Name));
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(role));
@@ -890,7 +890,7 @@
 //        public async Task CanUpdateRoleNameTest()
 //        {
 //            var manager = CreateRoleManager();
-//            var role = new IdentityRole("update");
+//            var role = new EntityRole("update");
 //            Assert.False(await manager.RoleExistsAsync(role.Name));
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(role));
 //            Assert.True(await manager.RoleExistsAsync(role.Name));
@@ -904,10 +904,10 @@
 //        public async Task CanQuerableRolesTest()
 //        {
 //            var manager = CreateRoleManager();
-//            IdentityRole[] roles =
+//            EntityRole[] roles =
 //            {
-//                new IdentityRole("r1"), new IdentityRole("r2"), new IdentityRole("r3"),
-//                new IdentityRole("r4")
+//                new EntityRole("r1"), new EntityRole("r2"), new EntityRole("r3"),
+//                new EntityRole("r4")
 //            };
 //            foreach (var r in roles)
 //            {
@@ -924,17 +924,17 @@
 //        //    // Need fail if not empty?
 //        //    var userMgr = CreateManager();
 //        //    var roleMgr = CreateRoleManager();
-//        //    var role = new IdentityRole("deleteNonEmpty");
+//        //    var role = new EntityRole("deleteNonEmpty");
 //        //    Assert.False(await roleMgr.RoleExistsAsync(role.Name));
 //        //    IdentityResultAssert.IsSuccess(await roleMgr.CreateAsync(role));
-//        //    var user = new IdentityUser("t");
+//        //    var user = new EntityUser("t");
 //        //    IdentityResultAssert.IsSuccess(await userMgr.CreateAsync(user));
-//        //    IdentityResultAssert.IsSuccess(await userMgr.AddToRoleAsync(user.Id, role.Name));
+//        //    IdentityResultAssert.IsSuccess(await userMgr.AddToRoleAsync(user, role.Name));
 //        //    IdentityResultAssert.IsSuccess(await roleMgr.DeleteAsync(role));
 //        //    Assert.Null(await roleMgr.FindByNameAsync(role.Name));
 //        //    Assert.False(await roleMgr.RoleExistsAsync(role.Name));
 //        //    // REVIEW: We should throw if deleteing a non empty role?
-//        //    var roles = await userMgr.GetRolesAsync(user.Id);
+//        //    var roles = await userMgr.GetRolesAsync(user);
 
 //        //    // In memory this doesn't work since there's no concept of cascading deletes
 //        //    //Assert.Equal(0, roles.Count());
@@ -946,12 +946,12 @@
 //        ////    // Need fail if not empty?
 //        ////    var userMgr = CreateManager();
 //        ////    var roleMgr = CreateRoleManager();
-//        ////    var role = new IdentityRole("deleteNonEmpty");
+//        ////    var role = new EntityRole("deleteNonEmpty");
 //        ////    Assert.False(await roleMgr.RoleExistsAsync(role.Name));
 //        ////    IdentityResultAssert.IsSuccess(await roleMgr.CreateAsync(role));
-//        ////    var user = new IdentityUser("t");
+//        ////    var user = new EntityUser("t");
 //        ////    IdentityResultAssert.IsSuccess(await userMgr.CreateAsync(user));
-//        ////    IdentityResultAssert.IsSuccess(await userMgr.AddToRoleAsync(user.Id, role.Name));
+//        ////    IdentityResultAssert.IsSuccess(await userMgr.AddToRoleAsync(user, role.Name));
 //        ////    IdentityResultAssert.IsSuccess(await userMgr.DeleteAsync(user));
 //        ////    role = roleMgr.FindByIdAsync(role.Id);
 //        ////}
@@ -960,11 +960,11 @@
 //        public async Task CreateRoleFailsIfExists()
 //        {
 //            var manager = CreateRoleManager();
-//            var role = new IdentityRole("dupeRole");
+//            var role = new EntityRole("dupeRole");
 //            Assert.False(await manager.RoleExistsAsync(role.Name));
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(role));
 //            Assert.True(await manager.RoleExistsAsync(role.Name));
-//            var role2 = new IdentityRole("dupeRole");
+//            var role2 = new EntityRole("dupeRole");
 //            IdentityResultAssert.IsFailure(await manager.CreateAsync(role2));
 //        }
 
@@ -974,18 +974,18 @@
 //            var context = CreateContext();
 //            var manager = CreateManager(context);
 //            var roleManager = CreateRoleManager(context);
-//            var role = new IdentityRole("addUserTest");
+//            var role = new EntityRole("addUserTest");
 //            IdentityResultAssert.IsSuccess(await roleManager.CreateAsync(role));
-//            IdentityUser[] users =
+//            EntityUser[] users =
 //            {
-//                new IdentityUser("1"), new IdentityUser("2"), new IdentityUser("3"),
-//                new IdentityUser("4")
+//                new EntityUser("1"), new EntityUser("2"), new EntityUser("3"),
+//                new EntityUser("4")
 //            };
 //            foreach (var u in users)
 //            {
 //                IdentityResultAssert.IsSuccess(await manager.CreateAsync(u));
-//                IdentityResultAssert.IsSuccess(await manager.AddToRoleAsync(u.Id, role.Name));
-//                Assert.True(await manager.IsInRoleAsync(u.Id, role.Name));
+//                IdentityResultAssert.IsSuccess(await manager.AddToRoleAsync(u, role.Name));
+//                Assert.True(await manager.IsInRoleAsync(u, role.Name));
 //            }
 //        }
 
@@ -995,15 +995,15 @@
 //            var context = CreateContext();
 //            var userManager = CreateManager(context);
 //            var roleManager = CreateRoleManager(context);
-//            IdentityUser[] users =
+//            EntityUser[] users =
 //            {
-//                new IdentityUser("u1"), new IdentityUser("u2"), new IdentityUser("u3"),
-//                new IdentityUser("u4")
+//                new EntityUser("u1"), new EntityUser("u2"), new EntityUser("u3"),
+//                new EntityUser("u4")
 //            };
-//            IdentityRole[] roles =
+//            EntityRole[] roles =
 //            {
-//                new IdentityRole("r1"), new IdentityRole("r2"), new IdentityRole("r3"),
-//                new IdentityRole("r4")
+//                new EntityRole("r1"), new EntityRole("r2"), new EntityRole("r3"),
+//                new EntityRole("r4")
 //            };
 //            foreach (var u in users)
 //            {
@@ -1014,14 +1014,14 @@
 //                IdentityResultAssert.IsSuccess(await roleManager.CreateAsync(r));
 //                foreach (var u in users)
 //                {
-//                    IdentityResultAssert.IsSuccess(await userManager.AddToRoleAsync(u.Id, r.Name));
-//                    Assert.True(await userManager.IsInRoleAsync(u.Id, r.Name));
+//                    IdentityResultAssert.IsSuccess(await userManager.AddToRoleAsync(u, r.Name));
+//                    Assert.True(await userManager.IsInRoleAsync(u, r.Name));
 //                }
 //            }
 
 //            foreach (var u in users)
 //            {
-//                var rs = await userManager.GetRolesAsync(u.Id);
+//                var rs = await userManager.GetRolesAsync(u);
 //                Assert.Equal(roles.Length, rs.Count);
 //                foreach (var r in roles)
 //                {
@@ -1037,21 +1037,21 @@
 //            var context = CreateContext();
 //            var userManager = CreateManager(context);
 //            var roleManager = CreateRoleManager(context);
-//            var user = new IdentityUser("MultiRoleUser");
+//            var user = new EntityUser("MultiRoleUser");
 //            IdentityResultAssert.IsSuccess(await userManager.CreateAsync(user));
-//            IdentityRole[] roles =
+//            EntityRole[] roles =
 //            {
-//                new IdentityRole("r1"), new IdentityRole("r2"), new IdentityRole("r3"),
-//                new IdentityRole("r4")
+//                new EntityRole("r1"), new EntityRole("r2"), new EntityRole("r3"),
+//                new EntityRole("r4")
 //            };
 //            foreach (var r in roles)
 //            {
 //                IdentityResultAssert.IsSuccess(await roleManager.CreateAsync(r));
-//                IdentityResultAssert.IsSuccess(await userManager.AddToRoleAsync(user.Id, r.Name));
-//                Assert.True(await userManager.IsInRoleAsync(user.Id, r.Name));
+//                IdentityResultAssert.IsSuccess(await userManager.AddToRoleAsync(user, r.Name));
+//                Assert.True(await userManager.IsInRoleAsync(user, r.Name));
 //            }
-//            IdentityResultAssert.IsSuccess(await userManager.RemoveFromRoleAsync(user.Id, roles[2].Name));
-//            Assert.False(await userManager.IsInRoleAsync(user.Id, roles[2].Name));
+//            IdentityResultAssert.IsSuccess(await userManager.RemoveFromRoleAsync(user, roles[2].Name));
+//            Assert.False(await userManager.IsInRoleAsync(user, roles[2].Name));
 //        }
 
 //        [Fact]
@@ -1060,26 +1060,26 @@
 //            var context = CreateContext();
 //            var userManager = CreateManager(context);
 //            var roleManager = CreateRoleManager(context);
-//            IdentityUser[] users =
+//            EntityUser[] users =
 //            {
-//                new IdentityUser("1"), new IdentityUser("2"), new IdentityUser("3"),
-//                new IdentityUser("4")
+//                new EntityUser("1"), new EntityUser("2"), new EntityUser("3"),
+//                new EntityUser("4")
 //            };
 //            foreach (var u in users)
 //            {
 //                IdentityResultAssert.IsSuccess(await userManager.CreateAsync(u));
 //            }
-//            var r = new IdentityRole("r1");
+//            var r = new EntityRole("r1");
 //            IdentityResultAssert.IsSuccess(await roleManager.CreateAsync(r));
 //            foreach (var u in users)
 //            {
-//                IdentityResultAssert.IsSuccess(await userManager.AddToRoleAsync(u.Id, r.Name));
-//                Assert.True(await userManager.IsInRoleAsync(u.Id, r.Name));
+//                IdentityResultAssert.IsSuccess(await userManager.AddToRoleAsync(u, r.Name));
+//                Assert.True(await userManager.IsInRoleAsync(u, r.Name));
 //            }
 //            foreach (var u in users)
 //            {
-//                IdentityResultAssert.IsSuccess(await userManager.RemoveFromRoleAsync(u.Id, r.Name));
-//                Assert.False(await userManager.IsInRoleAsync(u.Id, r.Name));
+//                IdentityResultAssert.IsSuccess(await userManager.RemoveFromRoleAsync(u, r.Name));
+//                Assert.False(await userManager.IsInRoleAsync(u, r.Name));
 //            }
 //        }
 
@@ -1089,11 +1089,11 @@
 //            var context = CreateContext();
 //            var userMgr = CreateManager(context);
 //            var roleMgr = CreateRoleManager(context);
-//            var role = new IdentityRole("addUserDupeTest");
-//            var user = new IdentityUser("user1");
+//            var role = new EntityRole("addUserDupeTest");
+//            var user = new EntityUser("user1");
 //            IdentityResultAssert.IsSuccess(await userMgr.CreateAsync(user));
 //            IdentityResultAssert.IsSuccess(await roleMgr.CreateAsync(role));
-//            var result = await userMgr.RemoveFromRoleAsync(user.Id, role.Name);
+//            var result = await userMgr.RemoveFromRoleAsync(user, role.Name);
 //            IdentityResultAssert.IsFailure(result, "User is not in role.");
 //        }
 
@@ -1103,20 +1103,20 @@
 //            var context = CreateContext();
 //            var userMgr = CreateManager(context);
 //            var roleMgr = CreateRoleManager(context);
-//            var role = new IdentityRole("addUserDupeTest");
-//            var user = new IdentityUser("user1");
+//            var role = new EntityRole("addUserDupeTest");
+//            var user = new EntityUser("user1");
 //            IdentityResultAssert.IsSuccess(await userMgr.CreateAsync(user));
 //            IdentityResultAssert.IsSuccess(await roleMgr.CreateAsync(role));
-//            IdentityResultAssert.IsSuccess(await userMgr.AddToRoleAsync(user.Id, role.Name));
-//            Assert.True(await userMgr.IsInRoleAsync(user.Id, role.Name));
-//            IdentityResultAssert.IsFailure(await userMgr.AddToRoleAsync(user.Id, role.Name), "User already in role.");
+//            IdentityResultAssert.IsSuccess(await userMgr.AddToRoleAsync(user, role.Name));
+//            Assert.True(await userMgr.IsInRoleAsync(user, role.Name));
+//            IdentityResultAssert.IsFailure(await userMgr.AddToRoleAsync(user, role.Name), "User already in role.");
 //        }
 
 //        [Fact]
 //        public async Task CanFindRoleByNameWithManager()
 //        {
 //            var roleMgr = CreateRoleManager();
-//            var role = new IdentityRole("findRoleByNameTest");
+//            var role = new EntityRole("findRoleByNameTest");
 //            IdentityResultAssert.IsSuccess(await roleMgr.CreateAsync(role));
 //            Assert.Equal(role.Id, (await roleMgr.FindByNameAsync(role.Name)).Id);
 //        }
@@ -1125,7 +1125,7 @@
 //        public async Task CanFindRoleWithManager()
 //        {
 //            var roleMgr = CreateRoleManager();
-//            var role = new IdentityRole("findRoleTest");
+//            var role = new EntityRole("findRoleTest");
 //            IdentityResultAssert.IsSuccess(await roleMgr.CreateAsync(role));
 //            Assert.Equal(role, await roleMgr.FindByIdAsync(role.Id));
 //        }
@@ -1135,13 +1135,13 @@
 //        {
 //            var manager = CreateManager();
 //            var userName = "PhoneTest";
-//            var user = new IdentityUser(userName);
+//            var user = new EntityUser(userName);
 //            user.PhoneNumber = "123-456-7890";
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
-//            var stamp = await manager.GetSecurityStampAsync(user.Id);
-//            Assert.Equal(await manager.GetPhoneNumberAsync(user.Id), "123-456-7890");
-//            IdentityResultAssert.IsSuccess(await manager.SetPhoneNumberAsync(user.Id, "111-111-1111"));
-//            Assert.Equal(await manager.GetPhoneNumberAsync(user.Id), "111-111-1111");
+//            var stamp = await manager.GetSecurityStampAsync(user);
+//            Assert.Equal(await manager.GetPhoneNumberAsync(user), "123-456-7890");
+//            IdentityResultAssert.IsSuccess(await manager.SetPhoneNumberAsync(user, "111-111-1111"));
+//            Assert.Equal(await manager.GetPhoneNumberAsync(user), "111-111-1111");
 //            Assert.NotEqual(stamp, user.SecurityStamp);
 //        }
 
@@ -1150,14 +1150,14 @@
 //        {
 //            var manager = CreateManager();
 //            const string userName = "PhoneTest";
-//            var user = new IdentityUser(userName) { PhoneNumber = "123-456-7890" };
+//            var user = new EntityUser(userName) { PhoneNumber = "123-456-7890" };
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
-//            Assert.False(await manager.IsPhoneNumberConfirmedAsync(user.Id));
-//            var stamp = await manager.GetSecurityStampAsync(user.Id);
-//            var token1 = await manager.GenerateChangePhoneNumberToken(user.Id, "111-111-1111");
-//            IdentityResultAssert.IsSuccess(await manager.ChangePhoneNumberAsync(user.Id, "111-111-1111", token1));
-//            Assert.True(await manager.IsPhoneNumberConfirmedAsync(user.Id));
-//            Assert.Equal(await manager.GetPhoneNumberAsync(user.Id), "111-111-1111");
+//            Assert.False(await manager.IsPhoneNumberConfirmedAsync(user));
+//            var stamp = await manager.GetSecurityStampAsync(user);
+//            var token1 = await manager.GenerateChangePhoneNumberToken(user, "111-111-1111");
+//            IdentityResultAssert.IsSuccess(await manager.ChangePhoneNumberAsync(user, "111-111-1111", token1));
+//            Assert.True(await manager.IsPhoneNumberConfirmedAsync(user));
+//            Assert.Equal(await manager.GetPhoneNumberAsync(user), "111-111-1111");
 //            Assert.NotEqual(stamp, user.SecurityStamp);
 //        }
 
@@ -1166,14 +1166,14 @@
 //        {
 //            var manager = CreateManager();
 //            const string userName = "PhoneTest";
-//            var user = new IdentityUser(userName) { PhoneNumber = "123-456-7890" };
+//            var user = new EntityUser(userName) { PhoneNumber = "123-456-7890" };
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
-//            Assert.False(await manager.IsPhoneNumberConfirmedAsync(user.Id));
-//            var stamp = await manager.GetSecurityStampAsync(user.Id);
-//            IdentityResultAssert.IsFailure(await manager.ChangePhoneNumberAsync(user.Id, "111-111-1111", "bogus"),
+//            Assert.False(await manager.IsPhoneNumberConfirmedAsync(user));
+//            var stamp = await manager.GetSecurityStampAsync(user);
+//            IdentityResultAssert.IsFailure(await manager.ChangePhoneNumberAsync(user, "111-111-1111", "bogus"),
 //                "Invalid token.");
-//            Assert.False(await manager.IsPhoneNumberConfirmedAsync(user.Id));
-//            Assert.Equal(await manager.GetPhoneNumberAsync(user.Id), "123-456-7890");
+//            Assert.False(await manager.IsPhoneNumberConfirmedAsync(user));
+//            Assert.Equal(await manager.GetPhoneNumberAsync(user), "123-456-7890");
 //            Assert.Equal(stamp, user.SecurityStamp);
 //        }
 
@@ -1182,40 +1182,40 @@
 //        {
 //            var manager = CreateManager();
 //            const string userName = "VerifyPhoneTest";
-//            var user = new IdentityUser(userName);
+//            var user = new EntityUser(userName);
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
 //            const string num1 = "111-123-4567";
 //            const string num2 = "111-111-1111";
-//            var token1 = await manager.GenerateChangePhoneNumberToken(user.Id, num1);
-//            var token2 = await manager.GenerateChangePhoneNumberToken(user.Id, num2);
+//            var token1 = await manager.GenerateChangePhoneNumberToken(user, num1);
+//            var token2 = await manager.GenerateChangePhoneNumberToken(user, num2);
 //            Assert.NotEqual(token1, token2);
-//            Assert.True(await manager.VerifyChangePhoneNumberTokenAsync(user.Id, token1, num1));
-//            Assert.True(await manager.VerifyChangePhoneNumberTokenAsync(user.Id, token2, num2));
-//            Assert.False(await manager.VerifyChangePhoneNumberTokenAsync(user.Id, token2, num1));
-//            Assert.False(await manager.VerifyChangePhoneNumberTokenAsync(user.Id, token1, num2));
+//            Assert.True(await manager.VerifyChangePhoneNumberTokenAsync(user, token1, num1));
+//            Assert.True(await manager.VerifyChangePhoneNumberTokenAsync(user, token2, num2));
+//            Assert.False(await manager.VerifyChangePhoneNumberTokenAsync(user, token2, num1));
+//            Assert.False(await manager.VerifyChangePhoneNumberTokenAsync(user, token1, num2));
 //        }
 
-//        private class EmailTokenProvider : IUserTokenProvider<IdentityUser>
+//        private class EmailTokenProvider : IUserTokenProvider<EntityUser>
 //        {
-//            public Task<string> GenerateAsync(string purpose, UserManager<IdentityUser> manager, IdentityUser user, CancellationToken token)
+//            public Task<string> GenerateAsync(string purpose, UserManager<EntityUser> manager, EntityUser user, CancellationToken token)
 //            {
 //                return Task.FromResult(MakeToken(purpose));
 //            }
 
-//            public Task<bool> ValidateAsync(string purpose, string token, UserManager<IdentityUser> manager,
-//                IdentityUser user, CancellationToken cancellationToken)
+//            public Task<bool> ValidateAsync(string purpose, string token, UserManager<EntityUser> manager,
+//                EntityUser user, CancellationToken cancellationToken)
 //            {
 //                return Task.FromResult(token == MakeToken(purpose));
 //            }
 
-//            public Task NotifyAsync(string token, UserManager<IdentityUser> manager, IdentityUser user, CancellationToken cancellationToken)
+//            public Task NotifyAsync(string token, UserManager<EntityUser> manager, EntityUser user, CancellationToken cancellationToken)
 //            {
-//                return manager.SendEmail(user.Id, token, token);
+//                return manager.SendEmail(user, token, token);
 //            }
 
-//            public async Task<bool> IsValidProviderForUserAsync(UserManager<IdentityUser> manager, IdentityUser user, CancellationToken token)
+//            public async Task<bool> IsValidProviderForUserAsync(UserManager<EntityUser> manager, EntityUser user, CancellationToken token)
 //            {
-//                return !string.IsNullOrEmpty(await manager.GetEmailAsync(user.Id));
+//                return !string.IsNullOrEmpty(await manager.GetEmailAsync(user));
 //            }
 
 //            private static string MakeToken(string purpose)
@@ -1224,27 +1224,27 @@
 //            }
 //        }
 
-//        private class SmsTokenProvider : IUserTokenProvider<IdentityUser>
+//        private class SmsTokenProvider : IUserTokenProvider<EntityUser>
 //        {
-//            public Task<string> GenerateAsync(string purpose, UserManager<IdentityUser> manager, IdentityUser user, CancellationToken token)
+//            public Task<string> GenerateAsync(string purpose, UserManager<EntityUser> manager, EntityUser user, CancellationToken token)
 //            {
 //                return Task.FromResult(MakeToken(purpose));
 //            }
 
-//            public Task<bool> ValidateAsync(string purpose, string token, UserManager<IdentityUser> manager,
-//                IdentityUser user, CancellationToken cancellationToken)
+//            public Task<bool> ValidateAsync(string purpose, string token, UserManager<EntityUser> manager,
+//                EntityUser user, CancellationToken cancellationToken)
 //            {
 //                return Task.FromResult(token == MakeToken(purpose));
 //            }
 
-//            public Task NotifyAsync(string token, UserManager<IdentityUser> manager, IdentityUser user, CancellationToken cancellationToken)
+//            public Task NotifyAsync(string token, UserManager<EntityUser> manager, EntityUser user, CancellationToken cancellationToken)
 //            {
-//                return manager.SendSms(user.Id, token);
+//                return manager.SendSms(user, token);
 //            }
 
-//            public async Task<bool> IsValidProviderForUserAsync(UserManager<IdentityUser> manager, IdentityUser user, CancellationToken token)
+//            public async Task<bool> IsValidProviderForUserAsync(UserManager<EntityUser> manager, EntityUser user, CancellationToken token)
 //            {
-//                return !string.IsNullOrEmpty(await manager.GetPhoneNumberAsync(user.Id));
+//                return !string.IsNullOrEmpty(await manager.GetPhoneNumberAsync(user));
 //            }
 
 //            private static string MakeToken(string purpose)
@@ -1261,30 +1261,30 @@
 //            manager.EmailService = messageService;
 //            const string factorId = "EmailCode";
 //            manager.RegisterTwoFactorProvider(factorId, new EmailTokenProvider());
-//            var user = new IdentityUser("EmailCodeTest") { Email = "foo@foo.com" };
+//            var user = new EntityUser("EmailCodeTest") { Email = "foo@foo.com" };
 //            const string password = "password";
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user, password));
 //            var stamp = user.SecurityStamp;
 //            Assert.NotNull(stamp);
-//            var token = await manager.GenerateTwoFactorTokenAsync(user.Id, factorId);
+//            var token = await manager.GenerateTwoFactorTokenAsync(user, factorId);
 //            Assert.NotNull(token);
 //            Assert.Null(messageService.Message);
-//            IdentityResultAssert.IsSuccess(await manager.NotifyTwoFactorTokenAsync(user.Id, factorId, token));
+//            IdentityResultAssert.IsSuccess(await manager.NotifyTwoFactorTokenAsync(user, factorId, token));
 //            Assert.NotNull(messageService.Message);
 //            Assert.Equal(token, messageService.Message.Subject);
 //            Assert.Equal(token, messageService.Message.Body);
-//            Assert.True(await manager.VerifyTwoFactorTokenAsync(user.Id, factorId, token));
+//            Assert.True(await manager.VerifyTwoFactorTokenAsync(user, factorId, token));
 //        }
 
 //        [Fact]
 //        public async Task NotifyWithUnknownProviderFails()
 //        {
 //            var manager = CreateManager();
-//            var user = new IdentityUser("NotifyFail");
+//            var user = new EntityUser("NotifyFail");
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
 //            await
 //                ExceptionAssert.ThrowsAsync<NotSupportedException>(
-//                    async () => await manager.NotifyTwoFactorTokenAsync(user.Id, "Bogus", "token"),
+//                    async () => await manager.NotifyTwoFactorTokenAsync(user, "Bogus", "token"),
 //                    "No IUserTwoFactorProvider for 'Bogus' is registered.");
 //        }
 
@@ -1296,24 +1296,24 @@
 //        //    var messageService = new TestMessageService();
 //        //    manager.EmailService = messageService;
 //        //    const string factorId = "EmailCode";
-//        //    manager.RegisterTwoFactorProvider(factorId, new EmailTokenProvider<IdentityUser>
+//        //    manager.RegisterTwoFactorProvider(factorId, new EmailTokenProvider<EntityUser>
 //        //    {
 //        //        Subject = "Security Code",
 //        //        BodyFormat = "Your code is: {0}"
 //        //    });
-//        //    var user = new IdentityUser("EmailCodeTest") { Email = "foo@foo.com" };
+//        //    var user = new EntityUser("EmailCodeTest") { Email = "foo@foo.com" };
 //        //    const string password = "password";
 //        //    IdentityResultAssert.IsSuccess(await manager.CreateAsync(user, password));
 //        //    var stamp = user.SecurityStamp;
 //        //    Assert.NotNull(stamp);
-//        //    var token = await manager.GenerateTwoFactorTokenAsync(user.Id, factorId);
+//        //    var token = await manager.GenerateTwoFactorTokenAsync(user, factorId);
 //        //    Assert.NotNull(token);
 //        //    Assert.Null(messageService.Message);
-//        //    IdentityResultAssert.IsSuccess(await manager.NotifyTwoFactorTokenAsync(user.Id, factorId, token));
+//        //    IdentityResultAssert.IsSuccess(await manager.NotifyTwoFactorTokenAsync(user, factorId, token));
 //        //    Assert.NotNull(messageService.Message);
 //        //    Assert.Equal("Security Code", messageService.Message.Subject);
 //        //    Assert.Equal("Your code is: " + token, messageService.Message.Body);
-//        //    Assert.True(await manager.VerifyTwoFactorTokenAsync(user.Id, factorId, token));
+//        //    Assert.True(await manager.VerifyTwoFactorTokenAsync(user, factorId, token));
 //        //}
 
 //        //[Fact]
@@ -1321,28 +1321,28 @@
 //        //{
 //        //    var manager = CreateManager();
 //        //    const string factorId = "EmailCode";
-//        //    manager.RegisterTwoFactorProvider(factorId, new EmailTokenProvider<IdentityUser>());
-//        //    var user = new IdentityUser("EmailCodeTest") { Email = "foo@foo.com" };
+//        //    manager.RegisterTwoFactorProvider(factorId, new EmailTokenProvider<EntityUser>());
+//        //    var user = new EntityUser("EmailCodeTest") { Email = "foo@foo.com" };
 //        //    IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
 //        //    var stamp = user.SecurityStamp;
 //        //    Assert.NotNull(stamp);
-//        //    var token = await manager.GenerateTwoFactorTokenAsync(user.Id, factorId);
+//        //    var token = await manager.GenerateTwoFactorTokenAsync(user, factorId);
 //        //    Assert.NotNull(token);
-//        //    IdentityResultAssert.IsSuccess(await manager.UpdateSecurityStampAsync(user.Id));
-//        //    Assert.False(await manager.VerifyTwoFactorTokenAsync(user.Id, factorId, token));
+//        //    IdentityResultAssert.IsSuccess(await manager.UpdateSecurityStampAsync(user));
+//        //    Assert.False(await manager.VerifyTwoFactorTokenAsync(user, factorId, token));
 //        //}
 
 //        [Fact]
 //        public async Task EnableTwoFactorChangesSecurityStamp()
 //        {
 //            var manager = CreateManager();
-//            var user = new IdentityUser("TwoFactorEnabledTest");
+//            var user = new EntityUser("TwoFactorEnabledTest");
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
 //            var stamp = user.SecurityStamp;
 //            Assert.NotNull(stamp);
-//            IdentityResultAssert.IsSuccess(await manager.SetTwoFactorEnabledAsync(user.Id, true));
-//            Assert.NotEqual(stamp, await manager.GetSecurityStampAsync(user.Id));
-//            Assert.True(await manager.GetTwoFactorEnabledAsync(user.Id));
+//            IdentityResultAssert.IsSuccess(await manager.SetTwoFactorEnabledAsync(user, true));
+//            Assert.NotEqual(stamp, await manager.GetSecurityStampAsync(user));
+//            Assert.True(await manager.GetTwoFactorEnabledAsync(user));
 //        }
 
 //        [Fact]
@@ -1351,9 +1351,9 @@
 //            var manager = CreateManager();
 //            var messageService = new TestMessageService();
 //            manager.SmsService = messageService;
-//            var user = new IdentityUser("SmsTest") { PhoneNumber = "4251234567" };
+//            var user = new EntityUser("SmsTest") { PhoneNumber = "4251234567" };
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
-//            await manager.SendSms(user.Id, "Hi");
+//            await manager.SendSms(user, "Hi");
 //            Assert.NotNull(messageService.Message);
 //            Assert.Equal("Hi", messageService.Message.Body);
 //        }
@@ -1364,9 +1364,9 @@
 //            var manager = CreateManager();
 //            var messageService = new TestMessageService();
 //            manager.EmailService = messageService;
-//            var user = new IdentityUser("EmailTest") { Email = "foo@foo.com" };
+//            var user = new EntityUser("EmailTest") { Email = "foo@foo.com" };
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
-//            await manager.SendEmail(user.Id, "Hi", "Body");
+//            await manager.SendEmail(user, "Hi", "Body");
 //            Assert.NotNull(messageService.Message);
 //            Assert.Equal("Hi", messageService.Message.Subject);
 //            Assert.Equal("Body", messageService.Message.Body);
@@ -1380,17 +1380,17 @@
 //            manager.SmsService = messageService;
 //            const string factorId = "PhoneCode";
 //            manager.RegisterTwoFactorProvider(factorId, new SmsTokenProvider());
-//            var user = new IdentityUser("PhoneCodeTest") { PhoneNumber = "4251234567" };
+//            var user = new EntityUser("PhoneCodeTest") { PhoneNumber = "4251234567" };
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
 //            var stamp = user.SecurityStamp;
 //            Assert.NotNull(stamp);
-//            var token = await manager.GenerateTwoFactorTokenAsync(user.Id, factorId);
+//            var token = await manager.GenerateTwoFactorTokenAsync(user, factorId);
 //            Assert.NotNull(token);
 //            Assert.Null(messageService.Message);
-//            IdentityResultAssert.IsSuccess(await manager.NotifyTwoFactorTokenAsync(user.Id, factorId, token));
+//            IdentityResultAssert.IsSuccess(await manager.NotifyTwoFactorTokenAsync(user, factorId, token));
 //            Assert.NotNull(messageService.Message);
 //            Assert.Equal(token, messageService.Message.Body);
-//            Assert.True(await manager.VerifyTwoFactorTokenAsync(user.Id, factorId, token));
+//            Assert.True(await manager.VerifyTwoFactorTokenAsync(user, factorId, token));
 //        }
 
 //        //[Fact]
@@ -1400,44 +1400,44 @@
 //        //    var messageService = new TestMessageService();
 //        //    manager.SmsService = messageService;
 //        //    const string factorId = "PhoneCode";
-//        //    manager.RegisterTwoFactorProvider(factorId, new PhoneNumberTokenProvider<IdentityUser>
+//        //    manager.RegisterTwoFactorProvider(factorId, new PhoneNumberTokenProvider<EntityUser>
 //        //    {
 //        //        MessageFormat = "Your code is: {0}"
 //        //    });
-//        //    var user = new IdentityUser("PhoneCodeTest") { PhoneNumber = "4251234567" };
+//        //    var user = new EntityUser("PhoneCodeTest") { PhoneNumber = "4251234567" };
 //        //    IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
 //        //    var stamp = user.SecurityStamp;
 //        //    Assert.NotNull(stamp);
-//        //    var token = await manager.GenerateTwoFactorTokenAsync(user.Id, factorId);
+//        //    var token = await manager.GenerateTwoFactorTokenAsync(user, factorId);
 //        //    Assert.NotNull(token);
 //        //    Assert.Null(messageService.Message);
-//        //    IdentityResultAssert.IsSuccess(await manager.NotifyTwoFactorTokenAsync(user.Id, factorId, token));
+//        //    IdentityResultAssert.IsSuccess(await manager.NotifyTwoFactorTokenAsync(user, factorId, token));
 //        //    Assert.NotNull(messageService.Message);
 //        //    Assert.Equal("Your code is: " + token, messageService.Message.Body);
-//        //    Assert.True(await manager.VerifyTwoFactorTokenAsync(user.Id, factorId, token));
+//        //    Assert.True(await manager.VerifyTwoFactorTokenAsync(user, factorId, token));
 //        //}
 
 //        [Fact]
 //        public async Task GenerateTwoFactorWithUnknownFactorProviderWillThrow()
 //        {
 //            var manager = CreateManager();
-//            var user = new IdentityUser("PhoneCodeTest");
+//            var user = new EntityUser("PhoneCodeTest");
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
 //            const string error = "No IUserTwoFactorProvider for 'bogus' is registered.";
 //            await
 //                ExceptionAssert.ThrowsAsync<NotSupportedException>(
-//                    () => manager.GenerateTwoFactorTokenAsync(user.Id, "bogus"), error);
+//                    () => manager.GenerateTwoFactorTokenAsync(user, "bogus"), error);
 //            await ExceptionAssert.ThrowsAsync<NotSupportedException>(
-//                () => manager.VerifyTwoFactorTokenAsync(user.Id, "bogus", "bogus"), error);
+//                () => manager.VerifyTwoFactorTokenAsync(user, "bogus", "bogus"), error);
 //        }
 
 //        [Fact]
 //        public async Task GetValidTwoFactorTestEmptyWithNoProviders()
 //        {
 //            var manager = CreateManager();
-//            var user = new IdentityUser("test");
+//            var user = new EntityUser("test");
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
-//            var factors = await manager.GetValidTwoFactorProviders(user.Id);
+//            var factors = await manager.GetValidTwoFactorProviders(user);
 //            Assert.NotNull(factors);
 //            Assert.True(!factors.Any());
 //        }
@@ -1448,22 +1448,22 @@
 //            var manager = CreateManager();
 //            manager.RegisterTwoFactorProvider("phone", new SmsTokenProvider());
 //            manager.RegisterTwoFactorProvider("email", new EmailTokenProvider());
-//            var user = new IdentityUser("test");
+//            var user = new EntityUser("test");
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
-//            var factors = await manager.GetValidTwoFactorProviders(user.Id);
+//            var factors = await manager.GetValidTwoFactorProviders(user);
 //            Assert.NotNull(factors);
 //            Assert.True(!factors.Any());
-//            IdentityResultAssert.IsSuccess(await manager.SetPhoneNumberAsync(user.Id, "111-111-1111"));
-//            factors = await manager.GetValidTwoFactorProviders(user.Id);
+//            IdentityResultAssert.IsSuccess(await manager.SetPhoneNumberAsync(user, "111-111-1111"));
+//            factors = await manager.GetValidTwoFactorProviders(user);
 //            Assert.NotNull(factors);
 //            Assert.True(factors.Count() == 1);
 //            Assert.Equal("phone", factors[0]);
-//            IdentityResultAssert.IsSuccess(await manager.SetEmailAsync(user.Id, "test@test.com"));
-//            factors = await manager.GetValidTwoFactorProviders(user.Id);
+//            IdentityResultAssert.IsSuccess(await manager.SetEmailAsync(user, "test@test.com"));
+//            factors = await manager.GetValidTwoFactorProviders(user);
 //            Assert.NotNull(factors);
 //            Assert.True(factors.Count() == 2);
-//            IdentityResultAssert.IsSuccess(await manager.SetEmailAsync(user.Id, null));
-//            factors = await manager.GetValidTwoFactorProviders(user.Id);
+//            IdentityResultAssert.IsSuccess(await manager.SetEmailAsync(user, null));
+//            factors = await manager.GetValidTwoFactorProviders(user);
 //            Assert.NotNull(factors);
 //            Assert.True(factors.Count() == 1);
 //            Assert.Equal("phone", factors[0]);
@@ -1474,16 +1474,16 @@
 //        //{
 //        //    var manager = CreateManager();
 //        //    var factorId = "PhoneCode";
-//        //    manager.RegisterTwoFactorProvider(factorId, new PhoneNumberTokenProvider<IdentityUser>());
-//        //    var user = new IdentityUser("PhoneCodeTest");
+//        //    manager.RegisterTwoFactorProvider(factorId, new PhoneNumberTokenProvider<EntityUser>());
+//        //    var user = new EntityUser("PhoneCodeTest");
 //        //    user.PhoneNumber = "4251234567";
 //        //    IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
 //        //    var stamp = user.SecurityStamp;
 //        //    Assert.NotNull(stamp);
-//        //    var token = await manager.GenerateTwoFactorTokenAsync(user.Id, factorId);
+//        //    var token = await manager.GenerateTwoFactorTokenAsync(user, factorId);
 //        //    Assert.NotNull(token);
-//        //    IdentityResultAssert.IsSuccess(await manager.UpdateSecurityStampAsync(user.Id));
-//        //    Assert.False(await manager.VerifyTwoFactorTokenAsync(user.Id, factorId, token));
+//        //    IdentityResultAssert.IsSuccess(await manager.UpdateSecurityStampAsync(user));
+//        //    Assert.False(await manager.VerifyTwoFactorTokenAsync(user, factorId, token));
 //        //}
 
 //        [Fact]
@@ -1492,11 +1492,11 @@
 //            var manager = CreateManager();
 //            manager.RegisterTwoFactorProvider("PhoneCode", new SmsTokenProvider());
 //            manager.RegisterTwoFactorProvider("EmailCode", new EmailTokenProvider());
-//            var user = new IdentityUser("WrongTokenProviderTest") { PhoneNumber = "4251234567" };
+//            var user = new EntityUser("WrongTokenProviderTest") { PhoneNumber = "4251234567" };
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
-//            var token = await manager.GenerateTwoFactorTokenAsync(user.Id, "PhoneCode");
+//            var token = await manager.GenerateTwoFactorTokenAsync(user, "PhoneCode");
 //            Assert.NotNull(token);
-//            Assert.False(await manager.VerifyTwoFactorTokenAsync(user.Id, "EmailCode", token));
+//            Assert.False(await manager.VerifyTwoFactorTokenAsync(user, "EmailCode", token));
 //        }
 
 //        [Fact]
@@ -1505,9 +1505,9 @@
 //            var manager = CreateManager();
 //            const string factorId = "PhoneCode";
 //            manager.RegisterTwoFactorProvider(factorId, new SmsTokenProvider());
-//            var user = new IdentityUser("PhoneCodeTest") { PhoneNumber = "4251234567" };
+//            var user = new EntityUser("PhoneCodeTest") { PhoneNumber = "4251234567" };
 //            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
-//            Assert.False(await manager.VerifyTwoFactorTokenAsync(user.Id, factorId, "bogus"));
+//            Assert.False(await manager.VerifyTwoFactorTokenAsync(user, factorId, "bogus"));
 //        }
 
 //        private class DataStoreConfig : ContextConfiguration
@@ -1529,7 +1529,7 @@
 //        private static EntityContext CreateContext()
 //        {
 //            var configuration = new EntityConfigurationBuilder()
-//                            //.UseModel(model)
+//                //.UseModel(model)
 //                            .UseDataStore(new InMemoryDataStore())
 //                            .BuildConfiguration();
 
@@ -1590,22 +1590,22 @@
 //        }
 
 
-//        private static UserManager<IdentityUser> CreateManager(EntityContext context)
+//        private static UserManager<EntityUser> CreateManager(EntityContext context)
 //        {
-//            return new UserManager<IdentityUser>(new UserStore(context));
+//            return new UserManager<EntityUser>(new UserStore(context));
 //        }
 
-//        private static UserManager<IdentityUser> CreateManager()
+//        private static UserManager<EntityUser> CreateManager()
 //        {
 //            return CreateManager(CreateContext());
 //        }
 
-//        private static RoleManager<IdentityRole> CreateRoleManager(EntityContext context)
+//        private static RoleManager<EntityRole> CreateRoleManager(EntityContext context)
 //        {
-//            return new RoleManager<IdentityRole>(new RoleStore<IdentityRole, string>(context));
+//            return new RoleManager<EntityRole>(new RoleStore<EntityRole, string>(context));
 //        }
 
-//        private static RoleManager<IdentityRole> CreateRoleManager()
+//        private static RoleManager<EntityRole> CreateRoleManager()
 //        {
 //            return CreateRoleManager(CreateContext());
 //        }

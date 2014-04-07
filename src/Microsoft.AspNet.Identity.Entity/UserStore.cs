@@ -11,7 +11,7 @@ using Microsoft.Data.Entity;
 namespace Microsoft.AspNet.Identity.Entity
 {
     public class UserStore :
-        UserStore<IdentityUser, IdentityRole, string, IdentityUserLogin, IdentityUserRole, IdentityUserClaim>
+        UserStore<EntityUser, EntityRole, string, IdentityUserLogin, IdentityUserRole, IdentityUserClaim>
     {
         public UserStore(EntityContext context) : base(context) { }
     }
@@ -28,8 +28,8 @@ namespace Microsoft.AspNet.Identity.Entity
         IUserTwoFactorStore<TUser>,
         IUserLockoutStore<TUser>
         where TKey : IEquatable<TKey>
-        where TUser : IdentityUser<TKey, TUserLogin, TUserRole, TUserClaim>
-        where TRole : IdentityRole<TKey, TUserRole>
+        where TUser : EntityUser<TKey, TUserLogin, TUserRole, TUserClaim>
+        where TRole : EntityRole<TKey, TUserRole>
         where TUserLogin : IdentityUserLogin<TKey>, new()
         where TUserRole : IdentityUserRole<TKey>, new()
         where TUserClaim : IdentityUserClaim<TKey>, new()
@@ -468,8 +468,8 @@ namespace Microsoft.AspNet.Identity.Entity
                 throw new ArgumentNullException("user");
             }
             return
-                Task.FromResult(user.LockoutEndDateUtc.HasValue
-                    ? new DateTimeOffset(DateTime.SpecifyKind(user.LockoutEndDateUtc.Value, DateTimeKind.Utc))
+                Task.FromResult(user.LockoutEnd.HasValue
+                    ? new DateTimeOffset(DateTime.SpecifyKind(user.LockoutEnd.Value, DateTimeKind.Utc))
                     : new DateTimeOffset());
         }
 
@@ -488,7 +488,7 @@ namespace Microsoft.AspNet.Identity.Entity
             {
                 throw new ArgumentNullException("user");
             }
-            user.LockoutEndDateUtc = lockoutEnd == DateTimeOffset.MinValue ? (DateTime?)null : lockoutEnd.UtcDateTime;
+            user.LockoutEnd = lockoutEnd == DateTimeOffset.MinValue ? (DateTime?)null : lockoutEnd.UtcDateTime;
             return Task.FromResult(0);
         }
 

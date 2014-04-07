@@ -19,7 +19,7 @@ namespace Microsoft.AspNet.Identity
         Task CreateAsync(TRole role, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
-        ///     UpdateAsync a role
+        ///     Update a role
         /// </summary>
         /// <param name="role"></param>
         /// <param name="cancellationToken"></param>
@@ -59,7 +59,7 @@ namespace Microsoft.AspNet.Identity
         Task<TRole> FindByIdAsync(string roleId, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
-        ///     FindByLoginAsync a role by name
+        ///     Find a role by name
         /// </summary>
         /// <param name="roleName"></param>
         /// <param name="cancellationToken"></param>

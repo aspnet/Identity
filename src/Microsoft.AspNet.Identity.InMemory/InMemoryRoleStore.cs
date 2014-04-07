@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.AspNet.Identity.InMemory
 {
-    public class InMemoryRoleStore<TRole> : IQueryableRoleStore<TRole> where TRole : InMemoryRole
+    public class InMemoryRoleStore<TRole> : IQueryableRoleStore<TRole> where TRole : IdentityRole
 
     {
         private readonly Dictionary<string, TRole> _roles = new Dictionary<string, TRole>();

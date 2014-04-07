@@ -1,27 +1,33 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Security.Claims;
 
-namespace Microsoft.AspNet.Identity.InMemory
+namespace Microsoft.AspNet.Identity
 {
-    public class InMemoryUser
+    public class IdentityUser : IdentityUser<string>
     {
-        private readonly IList<Claim> _claims;
-        private readonly IList<UserLoginInfo> _logins;
-        private readonly IList<string> _roles;
-
-        public InMemoryUser()
+        public IdentityUser()
         {
             Id = Guid.NewGuid().ToString();
-            _logins = new List<UserLoginInfo>();
-            _claims = new List<Claim>();
-            _roles = new List<string>();
         }
 
-        public InMemoryUser(string name) : this()
+        public IdentityUser(string userName) : this()
         {
-            UserName = name;
+            UserName = userName;
         }
+    }
+
+    public class IdentityUser<TKey>
+        where TKey : IEquatable<TKey>
+    {
+        public IdentityUser()
+        {
+            Claims = new List<IdentityUserClaim<TKey>>();
+            Roles = new List<IdentityUserRole<TKey>>();
+            Logins = new List<IdentityUserLogin<TKey>>();
+        }
+
+        public virtual TKey Id { get; set; }
+        public virtual string UserName { get; set; }
 
         /// <summary>
         ///     Email
@@ -73,22 +79,20 @@ namespace Microsoft.AspNet.Identity.InMemory
         /// </summary>
         public virtual int AccessFailedCount { get; set; }
 
-        public IList<UserLoginInfo> Logins
-        {
-            get { return _logins; }
-        }
+        /// <summary>
+        ///     Roles for the user
+        /// </summary>
+        public virtual ICollection<IdentityUserRole<TKey>> Roles { get; private set; }
 
-        public IList<Claim> Claims
-        {
-            get { return _claims; }
-        }
+        /// <summary>
+        ///     Claims for the user
+        /// </summary>
+        public virtual ICollection<IdentityUserClaim<TKey>> Claims { get; private set; }
 
-        public IList<string> Roles
-        {
-            get { return _roles; }
-        }
+        /// <summary>
+        ///     Associated logins for the user
+        /// </summary>
+        public virtual ICollection<IdentityUserLogin<TKey>> Logins { get; private set; }
 
-        public virtual string Id { get; set; }
-        public virtual string UserName { get; set; }
     }
 }

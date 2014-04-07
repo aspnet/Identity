@@ -9,7 +9,7 @@ namespace Microsoft.AspNet.Identity.Entity
 {
     public class RoleStore<TRole, TKey> : 
         IQueryableRoleStore<TRole>
-        where TRole : IdentityRole
+        where TRole : EntityRole
         where TKey : IEquatable<TKey>
     {
         private bool _disposed;
