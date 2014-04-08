@@ -32,7 +32,7 @@ namespace Microsoft.AspNet.Identity.Security.Test
             var helper = new SignInManager<TestUser> { UserManager = userManager, AuthenticationType = authType, Context = context.Object };
 
             // Act
-            await helper.SignIn(user, false, false);
+            await helper.SignInAsync(user, false, false);
 
             // Assert
             identityFactory.VerifyAll();
@@ -127,6 +127,16 @@ namespace Microsoft.AspNet.Identity.Security.Test
 
             // Assert
             Assert.Equal(SignInStatus.Failure, result);
+        }
+
+        [Fact]
+        public async Task SignInWithNoContextDoesNotBlowUp()
+        {
+            // Setup
+            var helper = new SignInManager<TestUser>();
+
+            // Act
+            await helper.SignInAsync(null, false, false);
         }
 
         [Fact]

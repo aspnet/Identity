@@ -29,7 +29,7 @@ namespace Microsoft.AspNet.Identity.Security
             return await UserManager.CreateIdentity(user, AuthenticationType);
         }
 
-        public virtual async Task SignIn(TUser user, bool isPersistent, bool rememberBrowser)
+        public virtual async Task SignInAsync(TUser user, bool isPersistent, bool rememberBrowser)
         {
             if (Context == null)
             {
@@ -143,7 +143,7 @@ namespace Microsoft.AspNet.Identity.Security
             }
             if (await UserManager.CheckPasswordAsync(user, password))
             {
-                await SignIn(user, isPersistent, false);
+                await SignInAsync(user, isPersistent, false);
                 return SignInStatus.Success;
                 //TODO: return await SignInOrTwoFactor(user, isPersistent);
             }

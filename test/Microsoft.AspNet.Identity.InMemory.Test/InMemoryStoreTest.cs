@@ -34,6 +34,27 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
         }
 
         [Fact]
+        public async Task CanSetUserName()
+        {
+            var manager = CreateManager();
+            var user = new IdentityUser("UpdateAsync");
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
+            Assert.Null(await manager.FindByNameAsync("New"));
+            IdentityResultAssert.IsSuccess(await manager.SetUserNameAsync(user, "New"));
+            Assert.NotNull(await manager.FindByNameAsync("New"));
+            Assert.Null(await manager.FindByNameAsync("UpdateAsync"));
+        }
+
+        [Fact]
+        public async Task CanFindById()
+        {
+            var manager = CreateManager();
+            var user = new IdentityUser("FindByid");
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
+            Assert.NotNull(await manager.FindByIdAsync(user.Id));
+        }
+
+        [Fact]
         public async Task UserValidatorCanBlockCreate()
         {
             var manager = CreateManager();
