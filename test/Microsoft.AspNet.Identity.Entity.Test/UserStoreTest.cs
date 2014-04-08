@@ -33,23 +33,6 @@ namespace Microsoft.AspNet.Identity.Entity.Test
         }
 
         [Fact]
-        public async Task Can_share_instance_between_contexts_with_sugar_experience()
-        {
-            using (var db = new SimpleContext())
-            {
-                db.Artists.Add(new SimpleContext.Artist { Name = "John Doe" });
-                await db.SaveChangesAsync();
-            }
-
-            using (var db = new SimpleContext())
-            {
-                var data = db.Artists.ToList();
-                Assert.Equal(1, data.Count);
-                Assert.Equal("John Doe", data[0].Name);
-            }
-        }
-
-        [Fact]
         public async Task Can_create_two_artists()
         {
             using (var db = new SimpleContext())
