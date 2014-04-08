@@ -37,6 +37,12 @@ namespace Microsoft.AspNet.Identity.InMemory
             return Task.FromResult(role.Name);
         }
 
+        public Task SetRoleNameAsync(TRole role, string roleName, CancellationToken cancellationToken = new CancellationToken())
+        {
+            role.Name = roleName;
+            return Task.FromResult(0);
+        }
+
         public Task UpdateAsync(TRole role, CancellationToken cancellationToken = default(CancellationToken))
         {
             _roles[role.Id] = role;

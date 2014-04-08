@@ -185,6 +185,20 @@ namespace Microsoft.AspNet.Identity
         }
 
         /// <summary>
+        /// Set the name of the role
+        /// </summary>
+        /// <param name="role"></param>
+        /// <param name="name"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public virtual async Task<IdentityResult> SetRoleNameAsync(TRole role, string name, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            ThrowIfDisposed();
+            await Store.SetRoleNameAsync(role, name, cancellationToken);
+            return IdentityResult.Success;
+        }
+
+        /// <summary>
         /// Return the role id for a role
         /// </summary>
         /// <param name="role"></param>

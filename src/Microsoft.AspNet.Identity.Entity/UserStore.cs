@@ -11,7 +11,12 @@ using Microsoft.Data.Entity;
 namespace Microsoft.AspNet.Identity.Entity
 {
     public class UserStore :
-        UserStore<EntityUser, EntityRole, string, IdentityUserLogin, IdentityUserRole, IdentityUserClaim>
+        UserStore<EntityUser>
+    {
+        public UserStore(EntityContext context) : base(context) { }
+    }
+
+    public class UserStore<TUser> : UserStore<TUser, EntityRole, string, IdentityUserLogin, IdentityUserRole, IdentityUserClaim> where TUser:EntityUser
     {
         public UserStore(EntityContext context) : base(context) { }
     }

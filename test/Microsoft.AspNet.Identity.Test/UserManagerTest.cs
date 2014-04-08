@@ -342,6 +342,10 @@ namespace Microsoft.AspNet.Identity.Test
                 UserTokenProvider = new NoOpTokenProvider()
             };
             await Assert.ThrowsAsync<ArgumentNullException>("user",
+                async () => await manager.GetUserNameAsync(null));
+            await Assert.ThrowsAsync<ArgumentNullException>("user",
+                async () => await manager.SetUserNameAsync(null, "bogus"));
+            await Assert.ThrowsAsync<ArgumentNullException>("user",
                 async () => await manager.AddClaimAsync(null, new Claim("a", "b")));
             await Assert.ThrowsAsync<ArgumentNullException>("user",
                 async () => await manager.AddLoginAsync(null, new UserLoginInfo("", "")));
@@ -427,6 +431,10 @@ namespace Microsoft.AspNet.Identity.Test
                 async () => await manager.GetLockoutEndDateAsync(null));
             await Assert.ThrowsAsync<ArgumentNullException>("user",
                 async () => await manager.IsLockedOutAsync(null));
+            await Assert.ThrowsAsync<ArgumentNullException>("user",
+                async () => await manager.SendEmail(null, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>("user",
+                async () => await manager.SendSms(null, null));
         }
 
         [Fact]

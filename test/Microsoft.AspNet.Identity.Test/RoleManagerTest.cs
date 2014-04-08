@@ -83,6 +83,11 @@ namespace Microsoft.AspNet.Identity.Test
                 throw new NotImplementedException();
             }
 
+            public Task SetRoleNameAsync(TestRole role, string roleName, CancellationToken cancellationToken = new CancellationToken())
+            {
+                throw new NotImplementedException();
+            }
+
             public Task<TestRole> FindByIdAsync(string roleId, CancellationToken cancellationToken = default(CancellationToken))
             {
                 throw new NotImplementedException();
