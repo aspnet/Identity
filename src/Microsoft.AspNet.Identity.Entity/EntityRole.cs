@@ -32,7 +32,7 @@ namespace Microsoft.AspNet.Identity.Entity
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
     /// <typeparam name="TUserRole"></typeparam>
-    public class EntityRole<TKey, TUserRole> : IdentityRole<TKey>
+    public class EntityRole<TKey, TUserRole>
         where TUserRole : IdentityUserRole<TKey>
         where TKey : IEquatable<TKey>
     {
@@ -48,5 +48,16 @@ namespace Microsoft.AspNet.Identity.Entity
         ///     Navigation property for users in the role
         /// </summary>
         public virtual ICollection<TUserRole> Users { get; private set; }
+
+        /// <summary>
+        ///     Role id
+        /// </summary>
+        public virtual TKey Id { get; set; }
+
+        /// <summary>
+        ///     Role name
+        /// </summary>
+        public virtual string Name { get; set; }
     }
 }
+

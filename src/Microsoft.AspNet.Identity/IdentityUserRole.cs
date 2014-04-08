@@ -10,6 +10,13 @@ namespace Microsoft.AspNet.Identity
     /// <typeparam name="TKey"></typeparam>
     public class IdentityUserRole<TKey> where TKey : IEquatable<TKey>
     {
+        // TODO: Remove
+        public virtual string Id
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         ///     UserId for the user that is in the role
         /// </summary>

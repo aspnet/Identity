@@ -60,7 +60,8 @@ namespace Microsoft.AspNet.Identity.Entity
 
         protected virtual Task<TUser> GetUserAggregate(Expression<Func<TUser, bool>> filter, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return Users.SingleOrDefaultAsync(filter, cancellationToken);
+            return Task.FromResult(Users.SingleOrDefault(filter));
+            // TODO: return Users.SingleOrDefaultAsync(filter, cancellationToken);
                 //Include(u => u.Roles)
                 //.Include(u => u.Claims)
                 //.Include(u => u.Logins)
@@ -142,7 +143,7 @@ namespace Microsoft.AspNet.Identity.Entity
         }
 
         /// <summary>
-        ///     FindByLoginAsync a user by id
+        ///     Find a user by id
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="cancellationToken"></param>
@@ -152,12 +153,11 @@ namespace Microsoft.AspNet.Identity.Entity
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
             var id = ConvertUserId(userId);
-            return Users.SingleOrDefaultAsync(u => u.Id.Equals(id), cancellationToken);
-            // TODO: return GetUserAggregate(u => u.Id.Equals(userId), cancellationToken);
+            return GetUserAggregate(u => u.Id.Equals(userId), cancellationToken);
         }
 
         /// <summary>
-        ///     FindByLoginAsync a user by name
+        ///     Find a user by name
         /// </summary>
         /// <param name="userName"></param>
         /// <param name="cancellationToken"></param>
@@ -166,8 +166,7 @@ namespace Microsoft.AspNet.Identity.Entity
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
-            return Users.SingleOrDefaultAsync(u => u.UserName.ToUpper() == userName.ToUpper(), cancellationToken);
-            // TODO: return GetUserAggregate(u => u.UserName.ToUpper() == userName.ToUpper(), cancellationToken);
+            return GetUserAggregate(u => u.UserName.ToUpper() == userName.ToUpper(), cancellationToken);
         }
 
         public IQueryable<TUser> Users
@@ -205,7 +204,19 @@ namespace Microsoft.AspNet.Identity.Entity
             {
                 throw new ArgumentNullException("user");
             }
-            throw new NotImplementedException();
+            if (login == null)
+            {
+                throw new ArgumentNullException("login");
+            }
+            var provider = login.LoginProvider;
+            var key = login.ProviderKey;
+            var entry = user.Logins.SingleOrDefault(l => l.LoginProvider == provider && l.ProviderKey == key);
+            if (entry != null)
+            {
+                user.Logins.Remove(entry);
+                Context.Set<TUserLogin>().Remove(entry);
+            }
+            return Task.FromResult(0);
         }
 
         public virtual Task<IList<UserLoginInfo>> GetLoginsAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
@@ -705,7 +716,17 @@ namespace Microsoft.AspNet.Identity.Entity
             //{
             //    throw new ArgumentException(IdentityResources.ValueCannotBeNullOrEmpty, "roleName");
             //}
-            throw new NotImplementedException();
+            var roleEntity = Context.Set<TRole>().SingleOrDefault(r => r.Name.ToUpper() == roleName.ToUpper());
+            if (roleEntity != null)
+            {
+                var userRole = user.Roles.FirstOrDefault(r => roleEntity.Id.Equals(r.RoleId));
+                if (userRole != null)
+                {
+                    user.Roles.Remove(userRole);
+                    roleEntity.Users.Remove(userRole);
+                }
+            }
+            return Task.FromResult(0);
         }
 
         /// <summary>
@@ -722,7 +743,11 @@ namespace Microsoft.AspNet.Identity.Entity
             {
                 throw new ArgumentNullException("user");
             }
-            throw new NotImplementedException();
+            var query = from userRoles in user.Roles
+                        join roles in Context.Set<TRole>()
+                            on userRoles.RoleId equals roles.Id
+                        select roles.Name;
+            return Task.FromResult<IList<string>>(query.ToList());
         }
 
         /// <summary>
@@ -744,7 +769,11 @@ namespace Microsoft.AspNet.Identity.Entity
             //{
             //    throw new ArgumentException(IdentityResources.ValueCannotBeNullOrEmpty, "roleName");
             //}
-            throw new NotImplementedException();
+            var any =
+                Context.Set<TRole>().Where(r => r.Name.ToUpper() == roleName.ToUpper())
+                    .Where(r => r.Users.Any(ur => ur.UserId.Equals(user.Id)))
+                    .Count() > 0;
+            return Task.FromResult(any);
         }
 
         /// <summary>

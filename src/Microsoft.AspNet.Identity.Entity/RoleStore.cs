@@ -97,7 +97,7 @@ namespace Microsoft.AspNet.Identity.Entity
         }
 
         /// <summary>
-        ///     FindByLoginAsync a role by id
+        ///     Find a role by id
         /// </summary>
         /// <param name="id"></param>
         /// <param name="cancellationToken"></param>
@@ -107,12 +107,13 @@ namespace Microsoft.AspNet.Identity.Entity
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
             var roleId = ConvertId(id);
-            return Roles.SingleOrDefaultAsync(r => r.Id.Equals(roleId), cancellationToken);
+            return Task.FromResult(Roles.SingleOrDefault(r => r.Id.Equals(roleId)));
+            // return Roles.SingleOrDefaultAsync(r => r.Id.Equals(roleId), cancellationToken);
             //return GetRoleAggregate(u => u.Id.Equals(id));
         }
 
         /// <summary>
-        ///     FindByLoginAsync a role by name
+        ///     Find a role by name
         /// </summary>
         /// <param name="name"></param>
         /// <param name="cancellationToken"></param>
@@ -121,7 +122,8 @@ namespace Microsoft.AspNet.Identity.Entity
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
-            return Roles.SingleOrDefaultAsync(r => r.Name.ToUpper() == name.ToUpper(), cancellationToken);
+            return Task.FromResult(Roles.SingleOrDefault(r => r.Name.ToUpper() == name.ToUpper()));
+            // TODo: return Roles.SingleOrDefaultAsync(r => r.Name.ToUpper() == name.ToUpper(), cancellationToken);
             //return GetRoleAggregate(u => u.Name.ToUpper() == name.ToUpper());
         }
 
