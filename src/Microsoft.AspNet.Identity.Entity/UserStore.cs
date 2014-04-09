@@ -158,7 +158,7 @@ namespace Microsoft.AspNet.Identity.Entity
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
             var id = ConvertUserId(userId);
-            return GetUserAggregate(u => u.Id.Equals(userId), cancellationToken);
+            return GetUserAggregate(u => u.Id.Equals(id), cancellationToken);
         }
 
         /// <summary>

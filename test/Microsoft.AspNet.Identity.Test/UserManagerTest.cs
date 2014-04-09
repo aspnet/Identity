@@ -1,12 +1,11 @@
+using Microsoft.AspNet.DependencyInjection.Fallback;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNet.DependencyInjection.Fallback;
-using Microsoft.AspNet.Testing;
-using Moq;
 using Xunit;
 
 namespace Microsoft.AspNet.Identity.Test
@@ -15,7 +14,7 @@ namespace Microsoft.AspNet.Identity.Test
     {
         private class TestManager : UserManager<TestUser>
         {
-            public IUserStore<TestUser> StorePublic { get { return base.Store; } }
+            public IUserStore<TestUser> StorePublic { get { return Store; } }
 
             public TestManager(IServiceProvider provider) : base(provider) { }
         }

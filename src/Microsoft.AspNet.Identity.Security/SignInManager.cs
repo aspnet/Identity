@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.AspNet.Abstractions;
+using Microsoft.AspNet.Abstractions.Security;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNet.Abstractions;
-using Microsoft.AspNet.Abstractions.Security;
 
 namespace Microsoft.AspNet.Identity.Security
 {
