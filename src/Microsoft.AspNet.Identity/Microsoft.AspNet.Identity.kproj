@@ -26,6 +26,11 @@
     <Compile Include="IClaimsIdentityFactory.cs" />
     <Compile Include="IdentityMessage.cs" />
     <Compile Include="IdentityResult.cs" />
+    <Compile Include="IdentityRole.cs" />
+    <Compile Include="IdentityUser.cs" />
+    <Compile Include="IdentityUserClaim.cs" />
+    <Compile Include="IdentityUserLogin.cs" />
+    <Compile Include="IdentityUserRole.cs" />
     <Compile Include="IIdentityMessageService.cs" />
     <Compile Include="IPasswordHasher.cs" />
     <Compile Include="IPasswordValidator.cs" />
