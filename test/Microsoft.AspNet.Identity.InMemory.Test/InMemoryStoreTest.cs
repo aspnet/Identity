@@ -1129,7 +1129,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
 
             public Task NotifyAsync(string token, UserManager<IdentityUser> manager, IdentityUser user, CancellationToken cancellationToken = default(CancellationToken))
             {
-                return manager.SendEmail(user, token, token);
+                return manager.SendEmailAsync(user, token, token);
             }
 
             public async Task<bool> IsValidProviderForUserAsync(UserManager<IdentityUser> manager, IdentityUser user, CancellationToken cancellationToken = default(CancellationToken))
@@ -1158,7 +1158,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
 
             public Task NotifyAsync(string token, UserManager<IdentityUser> manager, IdentityUser user, CancellationToken cancellationToken = default(CancellationToken))
             {
-                return manager.SendSms(user, token, cancellationToken);
+                return manager.SendSmsAsync(user, token, cancellationToken);
             }
 
             public async Task<bool> IsValidProviderForUserAsync(UserManager<IdentityUser> manager, IdentityUser user, CancellationToken cancellationToken = default(CancellationToken))
@@ -1272,7 +1272,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
             manager.SmsService = messageService;
             var user = new IdentityUser("SmsTest") {PhoneNumber = "4251234567"};
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
-            await manager.SendSms(user, "Hi");
+            await manager.SendSmsAsync(user, "Hi");
             Assert.NotNull(messageService.Message);
             Assert.Equal("Hi", messageService.Message.Body);
         }
@@ -1285,7 +1285,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
             manager.EmailService = messageService;
             var user = new IdentityUser("EmailTest") {Email = "foo@foo.com"};
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
-            await manager.SendEmail(user, "Hi", "Body");
+            await manager.SendEmailAsync(user, "Hi", "Body");
             Assert.NotNull(messageService.Message);
             Assert.Equal("Hi", messageService.Message.Subject);
             Assert.Equal("Body", messageService.Message.Body);
@@ -1356,7 +1356,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
             var manager = CreateManager();
             var user = new IdentityUser("test");
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
-            var factors = await manager.GetValidTwoFactorProviders(user);
+            var factors = await manager.GetValidTwoFactorProvidersAsync(user);
             Assert.NotNull(factors);
             Assert.True(!factors.Any());
         }
@@ -1369,20 +1369,20 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
             manager.RegisterTwoFactorProvider("email", new EmailTokenProvider());
             var user = new IdentityUser("test");
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
-            var factors = await manager.GetValidTwoFactorProviders(user);
+            var factors = await manager.GetValidTwoFactorProvidersAsync(user);
             Assert.NotNull(factors);
             Assert.True(!factors.Any());
             IdentityResultAssert.IsSuccess(await manager.SetPhoneNumberAsync(user, "111-111-1111"));
-            factors = await manager.GetValidTwoFactorProviders(user);
+            factors = await manager.GetValidTwoFactorProvidersAsync(user);
             Assert.NotNull(factors);
             Assert.True(factors.Count() == 1);
             Assert.Equal("phone", factors[0]);
             IdentityResultAssert.IsSuccess(await manager.SetEmailAsync(user, "test@test.com"));
-            factors = await manager.GetValidTwoFactorProviders(user);
+            factors = await manager.GetValidTwoFactorProvidersAsync(user);
             Assert.NotNull(factors);
             Assert.True(factors.Count() == 2);
             IdentityResultAssert.IsSuccess(await manager.SetEmailAsync(user, null));
-            factors = await manager.GetValidTwoFactorProviders(user);
+            factors = await manager.GetValidTwoFactorProvidersAsync(user);
             Assert.NotNull(factors);
             Assert.True(factors.Count() == 1);
             Assert.Equal("phone", factors[0]);

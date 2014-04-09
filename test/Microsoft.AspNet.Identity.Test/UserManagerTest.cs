@@ -414,7 +414,7 @@ namespace Microsoft.AspNet.Identity.Test
             await Assert.ThrowsAsync<ArgumentNullException>("user",
                 async () => await manager.NotifyTwoFactorTokenAsync(null, null, null));
             await Assert.ThrowsAsync<ArgumentNullException>("user",
-                async () => await manager.GetValidTwoFactorProviders(null));
+                async () => await manager.GetValidTwoFactorProvidersAsync(null));
             await Assert.ThrowsAsync<ArgumentNullException>("user",
                 async () => await manager.VerifyUserTokenAsync(null, null, null));
             await Assert.ThrowsAsync<ArgumentNullException>("user",
@@ -434,9 +434,9 @@ namespace Microsoft.AspNet.Identity.Test
             await Assert.ThrowsAsync<ArgumentNullException>("user",
                 async () => await manager.IsLockedOutAsync(null));
             await Assert.ThrowsAsync<ArgumentNullException>("user",
-                async () => await manager.SendEmail(null, null, null));
+                async () => await manager.SendEmailAsync(null, null, null));
             await Assert.ThrowsAsync<ArgumentNullException>("user",
-                async () => await manager.SendSms(null, null));
+                async () => await manager.SendSmsAsync(null, null));
         }
 
         [Fact]
