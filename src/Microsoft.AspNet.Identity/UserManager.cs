@@ -1238,7 +1238,7 @@ namespace Microsoft.AspNet.Identity
         /// <param name="user"></param>
         /// <param name="phoneNumber"></param>
         /// <returns></returns>
-        public virtual async Task<string> GenerateChangePhoneNumberToken(TUser user, string phoneNumber)
+        public virtual async Task<string> GenerateChangePhoneNumberTokenAsync(TUser user, string phoneNumber)
         {
             ThrowIfDisposed();
             return

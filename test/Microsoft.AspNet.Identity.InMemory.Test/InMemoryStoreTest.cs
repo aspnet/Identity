@@ -1062,6 +1062,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
             Assert.NotEqual(stamp, user.SecurityStamp);
         }
 
+#if NET45
         [Fact]
         public async Task CanChangePhoneNumber()
         {
@@ -1071,7 +1072,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
             Assert.False(await manager.IsPhoneNumberConfirmedAsync(user));
             var stamp = await manager.GetSecurityStampAsync(user);
-            var token1 = await manager.GenerateChangePhoneNumberToken(user, "111-111-1111");
+            var token1 = await manager.GenerateChangePhoneNumberTokenAsync(user, "111-111-1111");
             IdentityResultAssert.IsSuccess(await manager.ChangePhoneNumberAsync(user, "111-111-1111", token1));
             Assert.True(await manager.IsPhoneNumberConfirmedAsync(user));
             Assert.Equal(await manager.GetPhoneNumberAsync(user), "111-111-1111");
@@ -1103,14 +1104,15 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
             const string num1 = "111-123-4567";
             const string num2 = "111-111-1111";
-            var token1 = await manager.GenerateChangePhoneNumberToken(user, num1);
-            var token2 = await manager.GenerateChangePhoneNumberToken(user, num2);
+            var token1 = await manager.GenerateChangePhoneNumberTokenAsync(user, num1);
+            var token2 = await manager.GenerateChangePhoneNumberTokenAsync(user, num2);
             Assert.NotEqual(token1, token2);
             Assert.True(await manager.VerifyChangePhoneNumberTokenAsync(user, token1, num1));
             Assert.True(await manager.VerifyChangePhoneNumberTokenAsync(user, token2, num2));
             Assert.False(await manager.VerifyChangePhoneNumberTokenAsync(user, token2, num1));
             Assert.False(await manager.VerifyChangePhoneNumberTokenAsync(user, token1, num2));
         }
+#endif
 
         private class EmailTokenProvider : IUserTokenProvider<IdentityUser>
         {

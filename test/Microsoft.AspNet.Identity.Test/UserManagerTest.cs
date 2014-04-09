@@ -219,12 +219,14 @@ namespace Microsoft.AspNet.Identity.Test
             Assert.False(manager.SupportsUserSecurityStamp);
             await Assert.ThrowsAsync<NotSupportedException>(() => manager.UpdateSecurityStampAsync(null));
             await Assert.ThrowsAsync<NotSupportedException>(() => manager.GetSecurityStampAsync(null));
+#if NET45
             await
                 Assert.ThrowsAsync<NotSupportedException>(
                     () => manager.VerifyChangePhoneNumberTokenAsync(null, "1", "111-111-1111"));
             await
                 Assert.ThrowsAsync<NotSupportedException>(
-                    () => manager.GenerateChangePhoneNumberToken(null, "111-111-1111"));
+                    () => manager.GenerateChangePhoneNumberTokenAsync(null, "111-111-1111"));
+#endif
         }
 
         [Fact]
