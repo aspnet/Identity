@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.Data.Entity;
 using Microsoft.Data.InMemory;
-using Microsoft.Data.SqlServer;
 using Microsoft.Data.Entity.Metadata;
 
 namespace Microsoft.AspNet.Identity.Entity
