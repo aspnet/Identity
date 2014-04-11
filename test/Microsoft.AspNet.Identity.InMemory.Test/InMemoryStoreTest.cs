@@ -381,7 +381,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
                 IdentityResultAssert.IsSuccess(await manager.AddClaimAsync(user, c));
             }
 
-            var identity = await manager.CreateIdentity(user, "test");
+            var identity = await manager.CreateIdentityAsync(user, "test");
             var claimsFactory = (ClaimsIdentityFactory<IdentityUser>)manager.ClaimsIdentityFactory;
             Assert.NotNull(claimsFactory);
             var claims = identity.Claims.ToList();

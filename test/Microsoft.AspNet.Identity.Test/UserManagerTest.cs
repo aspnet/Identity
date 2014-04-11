@@ -315,7 +315,7 @@ namespace Microsoft.AspNet.Identity.Test
             Assert.Throws<ArgumentNullException>(() => manager.PasswordHasher = null);
             await
                 Assert.ThrowsAsync<ArgumentNullException>("user",
-                    async () => await manager.CreateIdentity(null, "whatever"));
+                    async () => await manager.CreateIdentityAsync(null, "whatever"));
             await Assert.ThrowsAsync<ArgumentNullException>("user", async () => await manager.CreateAsync(null));
             await Assert.ThrowsAsync<ArgumentNullException>("user", async () => await manager.CreateAsync(null, null));
             await
@@ -464,7 +464,7 @@ namespace Microsoft.AspNet.Identity.Test
             await Assert.ThrowsAsync<ObjectDisposedException>(() => manager.FindByNameAsync(null));
             await Assert.ThrowsAsync<ObjectDisposedException>(() => manager.CreateAsync(null));
             await Assert.ThrowsAsync<ObjectDisposedException>(() => manager.CreateAsync(null, null));
-            await Assert.ThrowsAsync<ObjectDisposedException>(() => manager.CreateIdentity(null, null));
+            await Assert.ThrowsAsync<ObjectDisposedException>(() => manager.CreateIdentityAsync(null, null));
             await Assert.ThrowsAsync<ObjectDisposedException>(() => manager.UpdateAsync(null));
             await Assert.ThrowsAsync<ObjectDisposedException>(() => manager.DeleteAsync(null));
             await Assert.ThrowsAsync<ObjectDisposedException>(() => manager.UpdateSecurityStampAsync(null));

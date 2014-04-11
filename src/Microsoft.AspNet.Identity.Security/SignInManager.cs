@@ -24,7 +24,7 @@ namespace Microsoft.AspNet.Identity.Security
             {
                 return null;
             }
-            return await UserManager.CreateIdentity(user, AuthenticationType);
+            return await UserManager.CreateIdentityAsync(user, AuthenticationType);
         }
 
         public virtual async Task SignInAsync(TUser user, bool isPersistent, bool rememberBrowser)

@@ -311,7 +311,7 @@ namespace Microsoft.AspNet.Identity
         /// <param name="authenticationType"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public virtual Task<ClaimsIdentity> CreateIdentity(TUser user, string authenticationType, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<ClaimsIdentity> CreateIdentityAsync(TUser user, string authenticationType, CancellationToken cancellationToken = default(CancellationToken))
         {
             ThrowIfDisposed();
             if (user == null)
