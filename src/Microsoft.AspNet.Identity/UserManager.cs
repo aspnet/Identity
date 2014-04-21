@@ -26,8 +26,6 @@ namespace Microsoft.AspNet.Identity
         private IPasswordHasher _passwordHasher;
         private LockoutPolicy _lockoutPolicy;
 
-        public UserManager() { } 
-
         /// <summary>
         ///     Constructor which takes a service provider
         /// </summary>

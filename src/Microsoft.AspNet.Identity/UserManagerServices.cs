@@ -50,7 +50,7 @@ namespace Microsoft.AspNet.Identity
 
         public UserManagerBuilder<TUser> Use<T>(Func<T> func)
         {
-            Services.AddInstance<IPasswordValidator>(func());
+            Services.AddInstance<T>(func());
             return this;
         }
 
@@ -77,7 +77,7 @@ namespace Microsoft.AspNet.Identity
 
         public UserManagerBuilder<TUser> UseManager<TManager>() where TManager : UserManager<TUser>
         {
-            Services.AddSingleton<UserManager<TUser>, TManager>();
+            Services.AddSingleton<TManager, TManager>();
             return this;
         }
 
@@ -95,14 +95,12 @@ namespace Microsoft.AspNet.Identity
 
     public static class ServiceCollectionExtensions
     {
-        public static UserManagerBuilder<TUser> UseIdentity<TUser>(this ServiceCollection services, Action<UserManagerBuilder<TUser>> actionBuilder) where TUser : class
+        public static UserManagerBuilder<TUser> AddIdentity<TUser>(this ServiceCollection services, Action<UserManagerBuilder<TUser>> actionBuilder) where TUser : class
         {
             services.Add(UserManagerServices<TUser>.GetDefaultServices());
             var builder = new UserManagerBuilder<TUser>(services);
             actionBuilder(builder);
             return builder;
         }
-    
     }
-
 }

@@ -16,6 +16,58 @@ namespace Microsoft.AspNet.Identity.Entity.Test
 {
     public class UserStoreTest
     {
+        class ApplicationUserManager : UserManager<EntityUser>
+        {
+            public ApplicationUserManager(IServiceProvider services) : base(services) { }
+        }
+
+        [Fact]
+        public async Task CanUseAddedManagerInstance()
+        {
+            var services = new ServiceCollection();
+            var store = new UserStore(new IdentityContext());
+            services.AddInstance<UserManager<EntityUser>>(new UserManager<EntityUser>(store));
+            var provider = services.BuildServiceProvider();
+            var manager = provider.GetService<UserManager<EntityUser>>();
+            Assert.NotNull(manager);
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(new EntityUser("hello")));
+        }
+
+        [Fact]
+        public async Task CanUseSingletonManagerInstance()
+        {
+            var services = new ServiceCollection();
+            var store = new UserStore(new IdentityContext());
+            services.AddIdentity<EntityUser>(s =>
+            {
+                s.UseStore(() => store);
+                s.UseManager<ApplicationUserManager>();
+            });
+            //services.AddSingleton<ApplicationUserManager, ApplicationUserManager>();
+
+            var provider = services.BuildServiceProvider();
+            var manager = provider.GetService<ApplicationUserManager>();
+            Assert.NotNull(manager);
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(new EntityUser("hello")));
+        }
+
+        //[Fact]
+        //public async Task CanUseSingletonGenericManagerInstance()
+        //{
+        //    var services = new ServiceCollection();
+        //    var store = new UserStore(new IdentityContext());
+        //    services.AddIdentity<EntityUser>(s =>
+        //    {
+        //        s.UseStore(() => store);
+        //        s.UseManager<UserManager<EntityUser>>();
+        //    });
+
+        //    var provider = services.BuildServiceProvider();
+        //    var manager = provider.GetService<UserManager<EntityUser>>();
+        //    Assert.NotNull(manager);
+        //    IdentityResultAssert.IsSuccess(await manager.CreateAsync(new EntityUser("hello")));
+        //}
+
         [Fact]
         public async Task UserStoreMethodsThrowWhenDisposedTest()
         {
