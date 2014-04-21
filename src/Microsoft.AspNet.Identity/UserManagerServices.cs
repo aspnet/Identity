@@ -41,7 +41,7 @@ namespace Microsoft.AspNet.Identity
 
     public class UserManagerBuilder<TUser> where TUser : class 
     {
-        public ServiceCollection Services { get; set; }
+        private ServiceCollection Services { get; set; }
 
         public UserManagerBuilder(ServiceCollection services)
         {
@@ -75,6 +75,12 @@ namespace Microsoft.AspNet.Identity
             return Use(func);
         }
 
+        public UserManagerBuilder<TUser> UseManager<TManager>() where TManager : UserManager<TUser>
+        {
+            Services.AddSingleton<UserManager<TUser>, TManager>();
+            return this;
+        }
+
         //public UserManagerBuilder<TUser> UseTwoFactorProviders(Func<IDictionary<string, IUserTokenProvider<TUser>>> func)
         //{
         //    return Use(func);
@@ -85,12 +91,18 @@ namespace Microsoft.AspNet.Identity
             return Use(func);
         }
 
-        public UserManagerBuilder<TUser> UseUserManager<TManager>(Func<IServiceProvider, TManager> func)
-            where TManager : UserManager<TUser>
+    }
+
+    public static class ServiceCollectionExtensions
+    {
+        public static UserManagerBuilder<TUser> UseIdentity<TUser>(this ServiceCollection services, Action<UserManagerBuilder<TUser>> actionBuilder) where TUser : class
         {
-            Services.AddInstance<TManager>(func(Services.BuildServiceProvider()));
-            return this;
+            services.Add(UserManagerServices<TUser>.GetDefaultServices());
+            var builder = new UserManagerBuilder<TUser>(services);
+            actionBuilder(builder);
+            return builder;
         }
+    
     }
 
 }
