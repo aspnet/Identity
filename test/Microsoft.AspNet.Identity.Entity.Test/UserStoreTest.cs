@@ -38,10 +38,10 @@ namespace Microsoft.AspNet.Identity.Entity.Test
         {
             var services = new ServiceCollection();
             var store = new UserStore(new IdentityContext());
-            services.AddIdentity<EntityUser>(s =>
+            services.AddIdentity<EntityUser, EntityRole>(s =>
             {
-                s.UseStore(() => store);
-                s.UseManager<ApplicationUserManager>();
+                s.UseUserStore(() => store);
+                s.UseUserManager<ApplicationUserManager>();
             });
             //services.AddSingleton<ApplicationUserManager, ApplicationUserManager>();
 

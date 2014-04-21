@@ -23,7 +23,7 @@ namespace Microsoft.AspNet.Identity.Test
         [Fact]
         public void EnsureDefaultServicesDefaultsWithStoreWorks()
         {
-            var services = new ServiceCollection {UserManagerServices<TestUser>.GetDefaultServices()};
+            var services = new ServiceCollection {IdentityServices.GetDefaultUserServices<TestUser>()};
             services.AddInstance<IUserStore<TestUser>>(new NoopUserStore());
             var manager = new TestManager(services.BuildServiceProvider());
             Assert.NotNull(manager.PasswordHasher);

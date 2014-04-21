@@ -26,6 +26,9 @@ namespace Microsoft.AspNet.Identity
         private IPasswordHasher _passwordHasher;
         private LockoutPolicy _lockoutPolicy;
 
+        // Needed for mock unit tests
+        public UserManager() { } 
+
         /// <summary>
         ///     Constructor which takes a service provider
         /// </summary>
@@ -45,7 +48,7 @@ namespace Microsoft.AspNet.Identity
             {
                 throw new ArgumentNullException("store");
             }
-            var services = new ServiceCollection { UserManagerServices<TUser>.GetDefaultServices() };
+            var services = new ServiceCollection { IdentityServices.GetDefaultUserServices<TUser>() };
             services.AddInstance<IUserStore<TUser>>(store);
             Initialize(services.BuildServiceProvider());
         }
