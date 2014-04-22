@@ -1458,7 +1458,12 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
 
         private static UserManager<IdentityUser> CreateManager()
         {
-            return new UserManager<IdentityUser>(new InMemoryUserStore<IdentityUser>());
+            var manager = new UserManager<IdentityUser>(new InMemoryUserStore<IdentityUser>())
+            {
+                UserValidator = new UserValidator<IdentityUser>(),
+                PasswordValidator = new PasswordValidator()
+            };
+            return manager;
         }
 
         private static RoleManager<IdentityRole> CreateRoleManager()

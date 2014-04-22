@@ -47,13 +47,13 @@ namespace Microsoft.AspNet.Identity
 
         public IdentityBuilder<TUser, TRole> UseUserManager<TManager>() where TManager : UserManager<TUser>
         {
-            Services.AddSingleton<TManager, TManager>();
+            Services.AddScoped<TManager, TManager>();
             return this;
         }
 
         public IdentityBuilder<TUser, TRole> UseRoleManager<TManager>() where TManager : RoleManager<TRole>
         {
-            Services.AddSingleton<TManager, TManager>();
+            Services.AddScoped<TManager, TManager>();
             return this;
         }
 

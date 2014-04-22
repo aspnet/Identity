@@ -22,7 +22,14 @@ namespace Microsoft.AspNet.Identity
 
             // TODO: review defaults for validators should get picked up from config?
             yield return describe.Instance<IUserValidator<TUser>>(new UserValidator<TUser>());
-            yield return describe.Instance<IPasswordValidator>(new PasswordValidator());
+            yield return describe.Instance<IPasswordValidator>(new PasswordValidator()
+            {
+                RequiredLength = 6,
+                RequireDigit = true,
+                RequireLowercase = true,
+                RequireNonLetterOrDigit = true,
+                RequireUppercase = true
+            });
             yield return describe.Instance<IPasswordHasher>(new PasswordHasher());
             yield return describe.Instance<IClaimsIdentityFactory<TUser>>(new ClaimsIdentityFactory<TUser>());
             yield return describe.Instance<LockoutPolicy>(new LockoutPolicy
@@ -38,7 +45,7 @@ namespace Microsoft.AspNet.Identity
 
         public static IEnumerable<IServiceDescriptor> GetDefaultRoleServices<TRole>() where TRole : class
         {
-            return GetDefaultUserServices<TRole>(new Configuration());
+            return GetDefaultRoleServices<TRole>(new Configuration());
         }
 
         public static IEnumerable<IServiceDescriptor> GetDefaultRoleServices<TRole>(IConfiguration configuration) where TRole : class

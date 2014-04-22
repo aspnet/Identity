@@ -65,6 +65,11 @@ namespace Microsoft.AspNet.Identity
             ClaimsIdentityFactory = serviceProvider.GetService<IClaimsIdentityFactory<TUser>>();
             LockoutPolicy = serviceProvider.GetService<LockoutPolicy>();
             Store = serviceProvider.GetService<IUserStore<TUser>>();
+            if (Store == null)
+            {
+                // TODO: what is the right way to enforce required services
+                throw new InvalidOperationException();
+            }
             // TODO: Email/Sms/Token services
         }
 
