@@ -95,7 +95,7 @@ namespace Microsoft.AspNet.Identity.Security.Test
         }
 
         [Theory]
-        [InlineData(DefaultAuthenticationTypes.ApplicationCookie)]
+        [InlineData("Microsoft.AspNet.Identity.Security.Application")]
         [InlineData("Foo")]
         public void SignOutCallsContextResponseSignOut(string authenticationType)
         {
