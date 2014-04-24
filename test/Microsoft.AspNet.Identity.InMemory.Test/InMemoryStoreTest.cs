@@ -3,6 +3,8 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNet.DependencyInjection;
+using Microsoft.AspNet.DependencyInjection.Fallback;
 using Microsoft.AspNet.Testing;
 using Xunit;
 
@@ -80,7 +82,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
         {
             var manager = CreateManager();
             var user = new IdentityUser("UpdateBlocked") {Email = email};
-            manager.UserValidator = new UserValidator<IdentityUser> {RequireUniqueEmail = true};
+            manager.UserValidator = new UserValidator<IdentityUser>(new IdentityOptions()) {RequireUniqueEmail = true};
             IdentityResultAssert.IsFailure(await manager.CreateAsync(user), "Email cannot be null or empty.");
         }
 
@@ -92,7 +94,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
         {
             var manager = CreateManager();
             var user = new IdentityUser("UpdateBlocked") {Email = email};
-            manager.UserValidator = new UserValidator<IdentityUser> {RequireUniqueEmail = true};
+            manager.UserValidator = new UserValidator<IdentityUser> (new IdentityOptions()) {RequireUniqueEmail = true};
             IdentityResultAssert.IsFailure(await manager.CreateAsync(user), "Email '" + email + "' is invalid.");
         }
 #endif
@@ -293,7 +295,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
         public async Task AddDupeEmailFallsWhenUniqueEmailRequired()
         {
             var manager = CreateManager();
-            manager.UserValidator = new UserValidator<IdentityUser> {RequireUniqueEmail = true};
+            manager.UserValidator = new UserValidator<IdentityUser> (new IdentityOptions()) {RequireUniqueEmail = true};
             var user = new IdentityUser("dupe") {Email = "yup@yup.com"};
             var user2 = new IdentityUser("dupeEmail") {Email = "yup@yup.com"};
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
@@ -559,11 +561,8 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
         public async Task SingleFailureLockout()
         {
             var mgr = CreateManager();
-            mgr.LockoutPolicy = new LockoutPolicy
-            {
-                DefaultAccountLockoutTimeSpan = TimeSpan.FromHours(1),
-                UserLockoutEnabledByDefault = true
-            };
+            mgr.Options.LockoutDefaultTimeSpan = TimeSpan.FromHours(1);
+            mgr.Options.LockoutEnabledByDefault = true;
             var user = new IdentityUser("fastLockout");
             IdentityResultAssert.IsSuccess(await mgr.CreateAsync(user));
             Assert.True(await mgr.GetLockoutEnabledAsync(user));
@@ -579,12 +578,9 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
         public async Task TwoFailureLockout()
         {
             var mgr = CreateManager();
-            mgr.LockoutPolicy = new LockoutPolicy
-            {
-                DefaultAccountLockoutTimeSpan = TimeSpan.FromHours(1),
-                UserLockoutEnabledByDefault = true,
-                MaxFailedAccessAttemptsBeforeLockout = 2
-            };
+            mgr.Options.LockoutDefaultTimeSpan = TimeSpan.FromHours(1);
+            mgr.Options.LockoutEnabledByDefault = true;
+            mgr.Options.LockoutMaxFailedAccessAttempts = 2;
             var user = new IdentityUser("twoFailureLockout");
             IdentityResultAssert.IsSuccess(await mgr.CreateAsync(user));
             Assert.True(await mgr.GetLockoutEnabledAsync(user));
@@ -604,12 +600,9 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
         public async Task ResetAccessCountPreventsLockout()
         {
             var mgr = CreateManager();
-            mgr.LockoutPolicy = new LockoutPolicy
-            {
-                DefaultAccountLockoutTimeSpan = TimeSpan.FromHours(1),
-                UserLockoutEnabledByDefault = true,
-                MaxFailedAccessAttemptsBeforeLockout = 2
-            };
+            mgr.Options.LockoutDefaultTimeSpan = TimeSpan.FromHours(1);
+            mgr.Options.LockoutEnabledByDefault = true;
+            mgr.Options.LockoutMaxFailedAccessAttempts = 2;
             var user = new IdentityUser("resetLockout");
             IdentityResultAssert.IsSuccess(await mgr.CreateAsync(user));
             Assert.True(await mgr.GetLockoutEnabledAsync(user));
@@ -633,11 +626,8 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
         public async Task CanEnableLockoutManuallyAndLockout()
         {
             var mgr = CreateManager();
-            mgr.LockoutPolicy = new LockoutPolicy
-            {
-                DefaultAccountLockoutTimeSpan = TimeSpan.FromHours(1),
-                MaxFailedAccessAttemptsBeforeLockout = 2
-            };
+            mgr.Options.LockoutDefaultTimeSpan = TimeSpan.FromHours(1);
+            mgr.Options.LockoutMaxFailedAccessAttempts = 2;
             var user = new IdentityUser("manualLockout");
             IdentityResultAssert.IsSuccess(await mgr.CreateAsync(user));
             Assert.False(await mgr.GetLockoutEnabledAsync(user));
@@ -660,10 +650,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
         public async Task UserNotLockedOutWithNullDateTimeAndIsSetToNullDate()
         {
             var mgr = CreateManager();
-            mgr.LockoutPolicy = new LockoutPolicy
-            {
-                UserLockoutEnabledByDefault = true,
-            };
+            mgr.Options.LockoutEnabledByDefault = true;
             var user = new IdentityUser("LockoutTest");
             IdentityResultAssert.IsSuccess(await mgr.CreateAsync(user));
             Assert.True(await mgr.GetLockoutEnabledAsync(user));
@@ -691,10 +678,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
         public async Task LockoutEndToUtcNowMinus1SecInUserShouldNotBeLockedOut()
         {
             var mgr = CreateManager();
-            mgr.LockoutPolicy = new LockoutPolicy
-            {
-                UserLockoutEnabledByDefault = true,
-            };
+            mgr.Options.LockoutEnabledByDefault = true;
             var user = new IdentityUser("LockoutUtcNowTest") { LockoutEnd = DateTimeOffset.UtcNow.AddSeconds(-1) };
             IdentityResultAssert.IsSuccess(await mgr.CreateAsync(user));
             Assert.True(await mgr.GetLockoutEnabledAsync(user));
@@ -706,10 +690,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
         public async Task LockoutEndToUtcNowSubOneSecondWithManagerShouldNotBeLockedOut()
         {
             var mgr = CreateManager();
-            mgr.LockoutPolicy = new LockoutPolicy
-            {
-                UserLockoutEnabledByDefault = true,
-            };
+            mgr.Options.LockoutEnabledByDefault = true;
             var user = new IdentityUser("LockoutUtcNowTest");
             IdentityResultAssert.IsSuccess(await mgr.CreateAsync(user));
             Assert.True(await mgr.GetLockoutEnabledAsync(user));
@@ -722,10 +703,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
         public async Task LockoutEndToUtcNowPlus5ShouldBeLockedOut()
         {
             var mgr = CreateManager();
-            mgr.LockoutPolicy = new LockoutPolicy
-            {
-                UserLockoutEnabledByDefault = true,
-            };
+            mgr.Options.LockoutEnabledByDefault = true;
             var user = new IdentityUser("LockoutUtcNowTest") { LockoutEnd = DateTimeOffset.UtcNow.AddMinutes(5) };
             IdentityResultAssert.IsSuccess(await mgr.CreateAsync(user));
             Assert.True(await mgr.GetLockoutEnabledAsync(user));
@@ -737,10 +715,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
         public async Task UserLockedOutWithDateTimeLocalKindNowPlus30()
         {
             var mgr = CreateManager();
-            mgr.LockoutPolicy = new LockoutPolicy
-            {
-                UserLockoutEnabledByDefault = true,
-            };
+            mgr.Options.LockoutEnabledByDefault = true;
             var user = new IdentityUser("LockoutTest");
             IdentityResultAssert.IsSuccess(await mgr.CreateAsync(user));
             Assert.True(await mgr.GetLockoutEnabledAsync(user));
@@ -1458,17 +1433,23 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
 
         private static UserManager<IdentityUser> CreateManager()
         {
-            var manager = new UserManager<IdentityUser>(new InMemoryUserStore<IdentityUser>())
-            {
-                UserValidator = new UserValidator<IdentityUser>(),
-                PasswordValidator = new PasswordValidator()
-            };
-            return manager;
+            var services = new ServiceCollection();
+            services.AddTransient<IUserValidator<IdentityUser>, UserValidator<IdentityUser>>();
+            services.AddTransient<IPasswordValidator, PasswordValidator>();
+            services.AddTransient<IdentityOptions, IdentityOptions>();
+            //services.AddInstance<IUserStore<IdentityUser>>(new InMemoryUserStore<IdentityUser>());
+            //services.AddSingleton<UserManager<IdentityUser>, UserManager<IdentityUser>>();
+            //return services.BuildServiceProvider().GetService<UserManager<IdentityUser>>();
+            return new UserManager<IdentityUser>(services.BuildServiceProvider(), new InMemoryUserStore<IdentityUser>());
         }
 
         private static RoleManager<IdentityRole> CreateRoleManager()
         {
-            return new RoleManager<IdentityRole>(new InMemoryRoleStore<IdentityRole>());
+            var services = new ServiceCollection();
+            services.AddTransient<IRoleValidator<IdentityRole>, RoleValidator<IdentityRole>>();
+            services.AddInstance<IRoleStore<IdentityRole>>(new InMemoryRoleStore<IdentityRole>());
+            //return services.BuildServiceProvider().GetService<RoleManager<IdentityRole>>();
+            return new RoleManager<IdentityRole>(services.BuildServiceProvider(), new InMemoryRoleStore<IdentityRole>());
         }
 
         public class TestMessageService : IIdentityMessageService

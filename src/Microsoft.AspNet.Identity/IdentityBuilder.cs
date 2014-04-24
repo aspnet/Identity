@@ -18,13 +18,6 @@ namespace Microsoft.AspNet.Identity
             return this;
         }
 
-        public IdentityBuilder<TUser, TRole> UseIdentity()
-        {
-            Services.Add(IdentityServices.GetDefaultUserServices<TUser>());
-            Services.Add(IdentityServices.GetDefaultRoleServices<TRole>());
-            return this;
-        }
-
         public IdentityBuilder<TUser, TRole> UseUserStore(Func<IUserStore<TUser>> func)
         {
             return Use(func);
@@ -61,11 +54,6 @@ namespace Microsoft.AspNet.Identity
         //{
         //    return Use(func);
         //}
-
-        public IdentityBuilder<TUser, TRole> UseLockoutPolicy(Func<LockoutPolicy> func)
-        {
-            return Use(func);
-        }
 
     }
 }

@@ -3,6 +3,8 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNet.DependencyInjection;
+using Microsoft.AspNet.DependencyInjection.Fallback;
 using Moq;
 using Xunit;
 
@@ -13,8 +15,8 @@ namespace Microsoft.AspNet.Identity.Test
         [Fact]
         public async Task CreateIdentityNullChecks()
         {
-            var factory = new ClaimsIdentityFactory<TestUser>();
-            var manager = new UserManager<TestUser>(new NoopUserStore());
+            var factory = new ClaimsIdentityFactory<TestUser>(new IdentityOptions());
+            var manager = new UserManager<TestUser>(new ServiceCollection().BuildServiceProvider(), new NoopUserStore());
             await Assert.ThrowsAsync<ArgumentNullException>("manager",
                 async () => await factory.CreateAsync(null, null, "whatever"));
             await Assert.ThrowsAsync<ArgumentNullException>("user",
@@ -33,7 +35,8 @@ namespace Microsoft.AspNet.Identity.Test
         public async Task EnsureClaimsIdentityHasExpectedClaims(bool supportRoles, bool supportClaims)
         {
             // Setup
-            var userManager = new Mock<UserManager<TestUser>>();
+            var store = new Mock<IUserStore<TestUser>>();
+            var userManager = new Mock<UserManager<TestUser>>(new ServiceCollection().BuildServiceProvider(), store.Object);
             var user = new TestUser { UserName = "Foo" };
             userManager.Setup(m => m.SupportsUserRole).Returns(supportRoles);
             userManager.Setup(m => m.SupportsUserClaim).Returns(supportClaims);
@@ -45,7 +48,7 @@ namespace Microsoft.AspNet.Identity.Test
             userManager.Setup(m => m.GetClaimsAsync(user, CancellationToken.None)).ReturnsAsync(userClaims);
 
             const string authType = "Microsoft.AspNet.Identity";
-            var factory = new ClaimsIdentityFactory<TestUser>();
+            var factory = new ClaimsIdentityFactory<TestUser>(new IdentityOptions());
 
             // Act
             var identity = await factory.CreateAsync(userManager.Object, user, authType);

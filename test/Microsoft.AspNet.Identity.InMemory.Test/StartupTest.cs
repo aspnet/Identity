@@ -10,6 +10,66 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
 {
     public class StartupTest
     {
+        [Fact]
+        public void EnsureSetupUsageWorksOnMyInstance()
+        {
+            IBuilder builder = new Builder(new ServiceCollection().BuildServiceProvider());
+            var myOptions = new IdentityOptions();
+            builder.UseServices(services => {
+                services.AddIdentity<IdentityUser>(identityServices => { });
+                services.AddInstance<IdentityOptions>(myOptions);
+            });
+
+            var setup = builder.ApplicationServices.GetService<IOptionsSetup<IdentityOptions>>();
+            Assert.IsType(typeof(DefaultIdentitySetup), setup);
+            var optionsGetter = builder.ApplicationServices.GetService<IOptionsAccessor<IdentityOptions>>();
+            Assert.NotNull(optionsGetter);
+            setup.Setup(optionsGetter.Options);
+
+            Assert.Equal(myOptions, optionsGetter.Options);
+
+            Assert.True(myOptions.PasswordsRequireLowercase);
+            Assert.True(myOptions.PasswordsRequireDigit);
+            Assert.True(myOptions.PasswordsRequireNonLetterOrDigit);
+            Assert.True(myOptions.PasswordsRequireUppercase);
+            Assert.Equal(6, myOptions.PasswordsRequiredLength);
+        }
+
+        public class NoopIdentitySetup : IOptionsSetup<IdentityOptions>
+        {
+            public int ExecutionOrder { get; set; }
+            public void Setup(IdentityOptions options)
+            {
+            }
+        }
+
+        [Fact]
+        public void CanOverrideDisableSetup()
+        {
+            IBuilder builder = new Builder(new ServiceCollection().BuildServiceProvider());
+            var myOptions = new IdentityOptions();
+            builder.UseServices(services =>
+            {
+                services.AddIdentity<IdentityUser>(identityServices => { });
+                services.AddInstance<IdentityOptions>(myOptions);
+                services.AddSetup<NoopIdentitySetup>();
+            });
+
+            var setup = builder.ApplicationServices.GetService<IOptionsSetup<IdentityOptions>>();
+            Assert.IsType(typeof(NoopIdentitySetup), setup);
+
+            var optionsGetter = builder.ApplicationServices.GetService<IOptionsAccessor<IdentityOptions>>();
+            Assert.NotNull(optionsGetter);
+            setup.Setup(optionsGetter.Options);
+
+            Assert.Equal(myOptions, optionsGetter.Options);
+
+            Assert.False(myOptions.PasswordsRequireLowercase);
+            Assert.False(myOptions.PasswordsRequireDigit);
+            Assert.False(myOptions.PasswordsRequireNonLetterOrDigit);
+            Assert.False(myOptions.PasswordsRequireUppercase);
+            Assert.Equal(0, myOptions.PasswordsRequiredLength);
+        }
 
         [Fact]
         public async Task EnsureStartupUsageWorks()
@@ -54,12 +114,12 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
 
         public class ApplicationUserManager : UserManager<ApplicationUser>
         {
-            public ApplicationUserManager(IServiceProvider services) : base(services) { }
+            public ApplicationUserManager(IServiceProvider services, IUserStore<ApplicationUser> store) : base(services, store) { }
         }
 
         public class ApplicationRoleManager : RoleManager<IdentityRole>
         {
-            public ApplicationRoleManager(IServiceProvider services) : base(services) { }
+            public ApplicationRoleManager(IServiceProvider services, IRoleStore<IdentityRole> store) : base(services, store) { }
         }
 
         public class ApplicationUser : IdentityUser
