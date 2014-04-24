@@ -10,60 +10,36 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
 {
     public class StartupTest
     {
-        [Fact]
-        public void EnsureSetupUsageWorksOnMyInstance()
+        public class PasswordsNegativeLengthSetup : IOptionsSetup<IdentityOptions>
         {
-            IBuilder builder = new Builder(new ServiceCollection().BuildServiceProvider());
-            var myOptions = new IdentityOptions();
-            builder.UseServices(services => {
-                services.AddIdentity<IdentityUser>(identityServices => { });
-                services.AddInstance<IdentityOptions>(myOptions);
-            });
-
-            var setup = builder.ApplicationServices.GetService<IOptionsSetup<IdentityOptions>>();
-            Assert.IsType(typeof(DefaultIdentitySetup), setup);
-            var optionsGetter = builder.ApplicationServices.GetService<IOptionsAccessor<IdentityOptions>>();
-            Assert.NotNull(optionsGetter);
-            setup.Setup(optionsGetter.Options);
-
-            Assert.Equal(myOptions, optionsGetter.Options);
-
-            Assert.True(myOptions.PasswordsRequireLowercase);
-            Assert.True(myOptions.PasswordsRequireDigit);
-            Assert.True(myOptions.PasswordsRequireNonLetterOrDigit);
-            Assert.True(myOptions.PasswordsRequireUppercase);
-            Assert.Equal(6, myOptions.PasswordsRequiredLength);
-        }
-
-        public class NoopIdentitySetup : IOptionsSetup<IdentityOptions>
-        {
-            public int ExecutionOrder { get; set; }
+            public int Order { get { return 0; } }
             public void Setup(IdentityOptions options)
             {
+                options.PasswordsRequiredLength = -1;
             }
         }
 
         [Fact]
-        public void CanOverrideDisableSetup()
+        public void CanCustomizeIdentityOptions()
         {
             IBuilder builder = new Builder(new ServiceCollection().BuildServiceProvider());
-            var myOptions = new IdentityOptions {PasswordsRequiredLength = 0};
-            builder.UseServices(services =>
-            {
+            builder.UseServices(services => {
                 services.AddIdentity<IdentityUser>(identityServices => { });
-                services.AddInstance<IdentityOptions>(myOptions);
-                services.AddSetup<NoopIdentitySetup>();
+                services.AddSetup<PasswordsNegativeLengthSetup>();
             });
 
             var setup = builder.ApplicationServices.GetService<IOptionsSetup<IdentityOptions>>();
-            Assert.IsType(typeof(NoopIdentitySetup), setup);
-
+            Assert.IsType(typeof(PasswordsNegativeLengthSetup), setup);
             var optionsGetter = builder.ApplicationServices.GetService<IOptionsAccessor<IdentityOptions>>();
             Assert.NotNull(optionsGetter);
             setup.Setup(optionsGetter.Options);
 
-            Assert.Equal(myOptions, optionsGetter.Options);
-            Assert.Equal(0, myOptions.PasswordsRequiredLength);
+            var myOptions = optionsGetter.Options;
+            Assert.True(myOptions.PasswordsRequireLowercase);
+            Assert.True(myOptions.PasswordsRequireDigit);
+            Assert.True(myOptions.PasswordsRequireNonLetterOrDigit);
+            Assert.True(myOptions.PasswordsRequireUppercase);
+            Assert.Equal(-1, myOptions.PasswordsRequiredLength);
         }
 
         [Fact]
@@ -71,17 +47,21 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
         {
             IBuilder builder = new Builder(new ServiceCollection().BuildServiceProvider());
 
+            //builder.UseServices(services => services.AddIdentity<ApplicationUser>(s =>
+            //    s.AddEntity<ApplicationDbContext>()
+            //{
+                
             builder.UseServices(services => services.AddIdentity<ApplicationUser>(s =>
             {
-                s.UseUserStore(() => new InMemoryUserStore<ApplicationUser>());
-                s.UseUserManager<ApplicationUserManager>();
-                s.UseRoleStore(() => new InMemoryRoleStore<IdentityRole>());
-                s.UseRoleManager<ApplicationRoleManager>();
+                s.AddInMemory();
+                s.AddUserManager<ApplicationUserManager>();
+                s.AddRoleManager<ApplicationRoleManager>();
             }));
 
             var userStore = builder.ApplicationServices.GetService<IUserStore<ApplicationUser>>();
             var roleStore = builder.ApplicationServices.GetService<IRoleStore<IdentityRole>>();
             var userManager = builder.ApplicationServices.GetService<ApplicationUserManager>();
+            //TODO: var userManager = builder.ApplicationServices.GetService<UserManager<IdentityUser>();
             var roleManager = builder.ApplicationServices.GetService<ApplicationRoleManager>();
 
             Assert.NotNull(userStore);

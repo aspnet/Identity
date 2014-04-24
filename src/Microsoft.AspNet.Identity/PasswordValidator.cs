@@ -12,17 +12,17 @@ namespace Microsoft.AspNet.Identity
     /// </summary>
     public class PasswordValidator : IPasswordValidator
     {
-        public PasswordValidator(IdentityOptions options)
+        public PasswordValidator(IOptionsAccessor<IdentityOptions> options)
         {
-            if (options == null)
+            if (options == null || options.Options == null)
             {
                 throw new ArgumentNullException("options");
             }
-            RequireDigit = options.PasswordsRequireDigit;
-            RequiredLength = options.PasswordsRequiredLength;
-            RequireLowercase = options.PasswordsRequireLowercase;
-            RequireUppercase = options.PasswordsRequireUppercase;
-            RequireNonLetterOrDigit = options.PasswordsRequireNonLetterOrDigit;
+            RequireDigit = options.Options.PasswordsRequireDigit;
+            RequiredLength = options.Options.PasswordsRequiredLength;
+            RequireLowercase = options.Options.PasswordsRequireLowercase;
+            RequireUppercase = options.Options.PasswordsRequireUppercase;
+            RequireNonLetterOrDigit = options.Options.PasswordsRequireNonLetterOrDigit;
         }
 
         /// <summary>

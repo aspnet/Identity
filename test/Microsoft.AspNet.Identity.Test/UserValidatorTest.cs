@@ -13,7 +13,7 @@ namespace Microsoft.AspNet.Identity.Test
         {
             // Setup
             var manager = new UserManager<TestUser>(new ServiceCollection().BuildServiceProvider(), new NoopUserStore());
-            var validator = new UserValidator<TestUser>(new IdentityOptions());
+            var validator = new UserValidator<TestUser>(new IdentityOptionsAccessor(new DefaultIdentitySetup()));
 
             // Act
             // Assert
@@ -28,7 +28,7 @@ namespace Microsoft.AspNet.Identity.Test
         {
             // Setup
             var manager = new UserManager<TestUser>(new ServiceCollection().BuildServiceProvider(), new NoopUserStore());
-            var validator = new UserValidator<TestUser>(new IdentityOptions());
+            var validator = new UserValidator<TestUser>(new IdentityOptionsAccessor(new DefaultIdentitySetup()));
             var user = new TestUser {UserName = input};
 
             // Act
@@ -48,7 +48,7 @@ namespace Microsoft.AspNet.Identity.Test
         {
             // Setup
             var manager = new UserManager<TestUser>(new ServiceCollection().BuildServiceProvider(), new NoopUserStore());
-            var validator = new UserValidator<TestUser>(new IdentityOptions());
+            var validator = new UserValidator<TestUser>(new IdentityOptionsAccessor(new DefaultIdentitySetup()));
             var user = new TestUser {UserName = userName};
 
             // Act
@@ -75,7 +75,7 @@ namespace Microsoft.AspNet.Identity.Test
         {
             // Setup
             var manager = new UserManager<TestUser>(new ServiceCollection().BuildServiceProvider(), new NoopUserStore());
-            var validator = new UserValidator<TestUser>(new IdentityOptions()) {AllowOnlyAlphanumericUserNames = false};
+            var validator = new UserValidator<TestUser>(new IdentityOptionsAccessor(new DefaultIdentitySetup())) { AllowOnlyAlphanumericUserNames = false };
             var user = new TestUser {UserName = userName};
 
             // Act

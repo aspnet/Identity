@@ -1,6 +1,7 @@
 using Microsoft.AspNet.Identity;
 using System;
 using System.Linq;
+using System.Reflection;
 
 namespace Microsoft.AspNet.DependencyInjection
 {
@@ -12,8 +13,7 @@ namespace Microsoft.AspNet.DependencyInjection
         {
             services.Add(IdentityServices.GetDefaultUserServices<TUser>());
             services.Add(IdentityServices.GetDefaultRoleServices<TRole>());
-            services.AddSingleton<IdentityOptions, IdentityOptions>(); // TODO: what is the correct lifetime?
-            services.AddTransient<IOptionsAccessor<IdentityOptions>, IdentityOptionsAccessor>();
+            services.AddSingleton<IOptionsAccessor<IdentityOptions>, IdentityOptionsAccessor>();
             services.AddSetup<DefaultIdentitySetup>(); // TODO: add overload which doesn't take setup?
             actionBuilder(new IdentityBuilder<TUser, TRole>(services));
             return services;
@@ -34,6 +34,7 @@ namespace Microsoft.AspNet.DependencyInjection
                 .Where(t => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IOptionsSetup<>));
             foreach (var setupType in setupTypes)
             {
+                // TODO: Make this register/add to the IEnumerable<IOptionsSetup<T>
                 services.Add(new ServiceDescriptor
                 {
                     ServiceType = setupType,
@@ -41,6 +42,7 @@ namespace Microsoft.AspNet.DependencyInjection
                     Lifecycle = LifecycleKind.Transient
                 });
             }
+#else
 #endif
             return services;
         }

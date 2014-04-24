@@ -3,16 +3,6 @@ using System.Security.Claims;
 
 namespace Microsoft.AspNet.Identity
 {
-    public class IdentityOptionsAccessor : IOptionsAccessor<IdentityOptions>
-    {
-        public IdentityOptionsAccessor(IdentityOptions options)
-        {
-            Options = options;
-        }
-
-        public IdentityOptions Options { get; private set; }
-    }
-
     /// <summary>
     ///     Configuration for lockout
     /// </summary>
@@ -21,10 +11,11 @@ namespace Microsoft.AspNet.Identity
         /// <summary>
         ///     ClaimType used for the security stamp by default
         /// </summary>
-        public const string DefaultSecurityStampClaimType = "AspNet.Identity.SecurityStamp";
+        public static readonly string DefaultSecurityStampClaimType = "AspNet.Identity.SecurityStamp";
 
         public IdentityOptions()
         {
+            // TODO: Split into sub options
             ClaimTypeRole = ClaimTypes.Role;
             ClaimTypeSecurityStamp = DefaultSecurityStampClaimType;
             ClaimTypeUserId = ClaimTypes.NameIdentifier;
@@ -113,5 +104,30 @@ namespace Microsoft.AspNet.Identity
         ///     Default amount of time an user is locked out for after MaxFailedAccessAttempsBeforeLockout is reached
         /// </summary>
         public TimeSpan LockoutDefaultTimeSpan { get; set; }
+
+        public void Copy(IdentityOptions options)
+        {
+            if (options == null)
+            {
+                return;
+            }
+            ClaimTypeRole = options.ClaimTypeRole;
+            ClaimTypeSecurityStamp = options.ClaimTypeSecurityStamp;
+            ClaimTypeUserId = options.ClaimTypeUserId;
+            ClaimTypeUserName = options.ClaimTypeUserName;
+
+            UsersAllowOnlyAlphanumericNames = options.UsersAllowOnlyAlphanumericNames;
+            UsersRequireUniqueEmail = options.UsersRequireUniqueEmail;
+
+            PasswordsRequireDigit = options.PasswordsRequireDigit;
+            PasswordsRequireLowercase = options.PasswordsRequireLowercase;
+            PasswordsRequireNonLetterOrDigit = options.PasswordsRequireNonLetterOrDigit;
+            PasswordsRequireUppercase = options.PasswordsRequireUppercase;
+            PasswordsRequiredLength = options.PasswordsRequiredLength;
+
+            LockoutDefaultTimeSpan = options.LockoutDefaultTimeSpan;
+            LockoutEnabledByDefault = options.LockoutEnabledByDefault;
+            LockoutMaxFailedAccessAttempts = options.LockoutMaxFailedAccessAttempts;
+        }
     }
 }

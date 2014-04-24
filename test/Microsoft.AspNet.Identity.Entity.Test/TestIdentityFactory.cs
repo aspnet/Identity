@@ -78,6 +78,22 @@ namespace Microsoft.AspNet.Identity.Entity.Test
             return db;
         }
 
+        public class TestSetup : IOptionsSetup<IdentityOptions>
+        {
+            private readonly IdentityOptions _options;
+
+            public TestSetup(IdentityOptions options)
+            {
+                _options = options;
+            }
+
+            public int Order { get { return 0; } }
+            public void Setup(IdentityOptions options)
+            {
+                options.Copy(_options);
+            }
+        }
+
 
         public static UserManager<EntityUser> CreateManager(EntityContext context)
         {
@@ -93,7 +109,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
                 PasswordsRequireNonLetterOrDigit = false,
                 PasswordsRequireUppercase = false
             };
-            services.AddInstance<IdentityOptions>(options);
+            services.AddInstance<IOptionsAccessor<IdentityOptions>>(new IdentityOptionsAccessor(new TestSetup(options)));
             //return services.BuildServiceProvider().GetService<UserManager<EntityUser>>();
             return new UserManager<EntityUser>(services.BuildServiceProvider(), new UserStore<EntityUser>(context));
         }
