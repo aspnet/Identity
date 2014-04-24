@@ -81,12 +81,14 @@ namespace Microsoft.AspNet.Identity.Entity.Test
 
         public static UserManager<EntityUser> CreateManager(EntityContext context)
         {
-            var manager = new UserManager<EntityUser>(new UserStore(context))
-            {
-                UserValidator = new UserValidator<EntityUser>(),
-                PasswordValidator = new PasswordValidator()
-            };
-            return manager;
+            var services = new ServiceCollection();
+            services.AddTransient<IUserValidator<EntityUser>, UserValidator<EntityUser>>();
+            services.AddTransient<IPasswordValidator, PasswordValidator>();
+            services.AddInstance<IUserStore<EntityUser>>(new UserStore<EntityUser>(context));
+            services.AddSingleton<UserManager<EntityUser>, UserManager<EntityUser>>();
+            services.AddTransient<IdentityOptions, IdentityOptions>();
+            //return services.BuildServiceProvider().GetService<UserManager<EntityUser>>();
+            return new UserManager<EntityUser>(services.BuildServiceProvider(), new UserStore<EntityUser>(context));
         }
 
         public static UserManager<EntityUser> CreateManager()
@@ -96,7 +98,11 @@ namespace Microsoft.AspNet.Identity.Entity.Test
 
         public static RoleManager<EntityRole> CreateRoleManager(EntityContext context)
         {
-            return new RoleManager<EntityRole>(new RoleStore<EntityRole, string>(context));
+            var services = new ServiceCollection();
+            services.AddTransient<IRoleValidator<EntityRole>, RoleValidator<EntityRole>>();
+            services.AddInstance<IRoleStore<EntityRole>>(new RoleStore<EntityRole, string>(context));
+//            return services.BuildServiceProvider().GetService<RoleManager<EntityRole>>();
+            return new RoleManager<EntityRole>(services.BuildServiceProvider(), new RoleStore<EntityRole, string>(context));
         }
 
         public static RoleManager<EntityRole> CreateRoleManager()
