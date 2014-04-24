@@ -82,7 +82,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
         {
             var manager = CreateManager();
             var user = new IdentityUser("UpdateBlocked") {Email = email};
-            manager.UserValidator = new UserValidator<IdentityUser>(new IdentityOptions()) {RequireUniqueEmail = true};
+            manager.UserValidator = new UserValidator<IdentityUser>(new IdentityOptionsAccessor(new DefaultIdentitySetup())) { RequireUniqueEmail = true };
             IdentityResultAssert.IsFailure(await manager.CreateAsync(user), "Email cannot be null or empty.");
         }
 
@@ -94,7 +94,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
         {
             var manager = CreateManager();
             var user = new IdentityUser("UpdateBlocked") {Email = email};
-            manager.UserValidator = new UserValidator<IdentityUser> (new IdentityOptions()) {RequireUniqueEmail = true};
+            manager.UserValidator = new UserValidator<IdentityUser>(new IdentityOptionsAccessor(new DefaultIdentitySetup())) { RequireUniqueEmail = true };
             IdentityResultAssert.IsFailure(await manager.CreateAsync(user), "Email '" + email + "' is invalid.");
         }
 #endif
@@ -295,7 +295,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
         public async Task AddDupeEmailFallsWhenUniqueEmailRequired()
         {
             var manager = CreateManager();
-            manager.UserValidator = new UserValidator<IdentityUser> (new IdentityOptions()) {RequireUniqueEmail = true};
+            manager.UserValidator = new UserValidator<IdentityUser> (new IdentityOptionsAccessor(new DefaultIdentitySetup())) {RequireUniqueEmail = true};
             var user = new IdentityUser("dupe") {Email = "yup@yup.com"};
             var user2 = new IdentityUser("dupeEmail") {Email = "yup@yup.com"};
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
@@ -1432,6 +1432,22 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
             Assert.False(await manager.VerifyTwoFactorTokenAsync(user, factorId, "bogus"));
         }
 
+        public class TestSetup : IOptionsSetup<IdentityOptions>
+        {
+            private readonly IdentityOptions _options;
+
+            public TestSetup(IdentityOptions options)
+            {
+                _options = options;
+            }
+
+            public int Order { get { return 0;  } }
+            public void Setup(IdentityOptions options)
+            {
+                options.Copy(_options);
+            }
+        }
+
         private static UserManager<IdentityUser> CreateManager()
         {
             var services = new ServiceCollection();
@@ -1444,7 +1460,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
                 PasswordsRequireNonLetterOrDigit = false,
                 PasswordsRequireUppercase = false
             };
-            services.AddInstance<IdentityOptions>(options);
+            services.AddInstance<IOptionsAccessor<IdentityOptions>>(new IdentityOptionsAccessor(new TestSetup(options)));
             //services.AddInstance<IUserStore<IdentityUser>>(new InMemoryUserStore<IdentityUser>());
             //services.AddSingleton<UserManager<IdentityUser>, UserManager<IdentityUser>>();
             //return services.BuildServiceProvider().GetService<UserManager<IdentityUser>>();

@@ -11,8 +11,8 @@ namespace Microsoft.AspNet.Identity.Test
         public void CanSpecifyUserValidatorInstance()
         {
             var services = new ServiceCollection();
-            var validator = new UserValidator<IdentityUser>(new IdentityOptions());
-            services.AddIdentity<IdentityUser>(b => b.UseUserValidator(() => validator));
+            var validator = new UserValidator<IdentityUser>(new IdentityOptionsAccessor(new DefaultIdentitySetup()));
+            services.AddIdentity<IdentityUser>(b => b.AddUserValidator(() => validator));
             Assert.Equal(validator, services.BuildServiceProvider().GetService<IUserValidator<IdentityUser>>());
         }
 
@@ -20,8 +20,8 @@ namespace Microsoft.AspNet.Identity.Test
         public void CanSpecifyPasswordValidatorInstance()
         {
             var services = new ServiceCollection();
-            var validator = new PasswordValidator(new IdentityOptions());
-            services.AddIdentity<IdentityUser>(b => b.UsePasswordValidator(() => validator));
+            var validator = new PasswordValidator(new IdentityOptionsAccessor(new DefaultIdentitySetup()));
+            services.AddIdentity<IdentityUser>(b => b.AddPasswordValidator(() => validator));
             Assert.Equal(validator, services.BuildServiceProvider().GetService<IPasswordValidator>());
         }
 
@@ -34,7 +34,7 @@ namespace Microsoft.AspNet.Identity.Test
         [Fact]
         public void CanSpecifyClaimsIdentityFactoryInstance()
         {
-            CanOverride<IClaimsIdentityFactory<IdentityUser>>(new ClaimsIdentityFactory<IdentityUser>(new IdentityOptions()));
+            CanOverride<IClaimsIdentityFactory<IdentityUser>>(new ClaimsIdentityFactory<IdentityUser>(new IdentityOptionsAccessor(new DefaultIdentitySetup())));
         }
 
         [Fact]
@@ -60,7 +60,7 @@ namespace Microsoft.AspNet.Identity.Test
         private static void CanOverride<TService>(TService instance)
         {
             var services = new ServiceCollection();
-            services.AddIdentity<IdentityUser>(b => b.Use<TService>(() => instance));
+            services.AddIdentity<IdentityUser>(b => b.AddInstance<TService>(() => instance));
             Assert.Equal(instance, services.BuildServiceProvider().GetService<TService>());
         }
 

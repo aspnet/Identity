@@ -24,7 +24,7 @@ namespace Microsoft.AspNet.Identity.Test
         public void EnsureDefaultServicesDefaultsWithStoreWorks()
         {
             var services = new ServiceCollection {IdentityServices.GetDefaultUserServices<TestUser>()};
-            services.AddTransient<IdentityOptions, IdentityOptions>();
+            services.AddInstance<IOptionsAccessor<IdentityOptions>>(new IdentityOptionsAccessor(new DefaultIdentitySetup()));
             services.AddTransient<IUserStore<TestUser>, NoopUserStore>();
             services.AddTransient<TestManager, TestManager>();
             var manager = services.BuildServiceProvider().GetService<TestManager>();
@@ -44,7 +44,7 @@ namespace Microsoft.AspNet.Identity.Test
             var store = new Mock<IUserStore<TestUser>>();
             var user = new TestUser { UserName = "Foo" };
             store.Setup(s => s.CreateAsync(user, CancellationToken.None)).Returns(Task.FromResult(0)).Verifiable();
-            var validator = new Mock<UserValidator<TestUser>>(new IdentityOptions());
+            var validator = new Mock<UserValidator<TestUser>>(new IdentityOptionsAccessor(new DefaultIdentitySetup()));
             var userManager = new UserManager<TestUser>(new ServiceCollection().BuildServiceProvider(), store.Object);
             validator.Setup(v => v.ValidateAsync(userManager, user, CancellationToken.None)).Returns(Task.FromResult(IdentityResult.Success)).Verifiable();
             userManager.UserValidator = validator.Object;
@@ -81,7 +81,7 @@ namespace Microsoft.AspNet.Identity.Test
             var store = new Mock<IUserStore<TestUser>>();
             var user = new TestUser { UserName = "Foo" };
             store.Setup(s => s.UpdateAsync(user, CancellationToken.None)).Returns(Task.FromResult(0)).Verifiable();
-            var validator = new Mock<UserValidator<TestUser>>(new IdentityOptions());
+            var validator = new Mock<UserValidator<TestUser>>(new IdentityOptionsAccessor(new DefaultIdentitySetup()));
             var userManager = new UserManager<TestUser>(new ServiceCollection().BuildServiceProvider(), store.Object);
             validator.Setup(v => v.ValidateAsync(userManager, user, CancellationToken.None)).Returns(Task.FromResult(IdentityResult.Success)).Verifiable();
             userManager.UserValidator = validator.Object;
@@ -101,7 +101,7 @@ namespace Microsoft.AspNet.Identity.Test
             var store = new Mock<IUserStore<TestUser>>();
             var user = new TestUser();
             store.Setup(s => s.SetUserNameAsync(user, It.IsAny<string>(), CancellationToken.None)).Returns(Task.FromResult(0)).Verifiable();
-            var validator = new Mock<UserValidator<TestUser>>(new IdentityOptions());
+            var validator = new Mock<UserValidator<TestUser>>(new IdentityOptionsAccessor(new DefaultIdentitySetup()));
             var userManager = new UserManager<TestUser>(new ServiceCollection().BuildServiceProvider(), store.Object);
             validator.Setup(v => v.ValidateAsync(userManager, user, CancellationToken.None)).Returns(Task.FromResult(IdentityResult.Success)).Verifiable();
             userManager.UserValidator = validator.Object;

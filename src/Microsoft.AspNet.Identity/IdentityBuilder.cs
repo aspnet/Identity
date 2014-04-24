@@ -5,46 +5,48 @@ namespace Microsoft.AspNet.Identity
 {
     public class IdentityBuilder<TUser, TRole> where TUser : class where TRole : class
     {
-        private ServiceCollection Services { get; set; }
+        public ServiceCollection Services { get; private set; }
 
         public IdentityBuilder(ServiceCollection services)
         {
             Services = services;
         }
 
-        public IdentityBuilder<TUser, TRole> Use<T>(Func<T> func)
+        // Rename to Add
+
+        public IdentityBuilder<TUser, TRole> AddInstance<T>(Func<T> func)
         {
             Services.AddInstance<T>(func());
             return this;
         }
 
-        public IdentityBuilder<TUser, TRole> UseUserStore(Func<IUserStore<TUser>> func)
+        public IdentityBuilder<TUser, TRole> AddUserStore(Func<IUserStore<TUser>> func)
         {
-            return Use(func);
+            return AddInstance(func);
         }
 
-        public IdentityBuilder<TUser, TRole> UseRoleStore(Func<IRoleStore<TRole>> func)
+        public IdentityBuilder<TUser, TRole> AddRoleStore(Func<IRoleStore<TRole>> func)
         {
-            return Use(func);
+            return AddInstance(func);
         }
 
-        public IdentityBuilder<TUser, TRole> UsePasswordValidator(Func<IPasswordValidator> func)
+        public IdentityBuilder<TUser, TRole> AddPasswordValidator(Func<IPasswordValidator> func)
         {
-            return Use(func);
+            return AddInstance(func);
         }
 
-        public IdentityBuilder<TUser, TRole> UseUserValidator(Func<IUserValidator<TUser>> func)
+        public IdentityBuilder<TUser, TRole> AddUserValidator(Func<IUserValidator<TUser>> func)
         {
-            return Use(func);
+            return AddInstance(func);
         }
 
-        public IdentityBuilder<TUser, TRole> UseUserManager<TManager>() where TManager : UserManager<TUser>
+        public IdentityBuilder<TUser, TRole> AddUserManager<TManager>() where TManager : UserManager<TUser>
         {
             Services.AddScoped<TManager, TManager>();
             return this;
         }
 
-        public IdentityBuilder<TUser, TRole> UseRoleManager<TManager>() where TManager : RoleManager<TRole>
+        public IdentityBuilder<TUser, TRole> AddRoleManager<TManager>() where TManager : RoleManager<TRole>
         {
             Services.AddScoped<TManager, TManager>();
             return this;

@@ -15,16 +15,16 @@ namespace Microsoft.AspNet.Identity
         /// <summary>
         ///     Constructor
         /// </summary>
-        public ClaimsIdentityFactory(IdentityOptions options)
+        public ClaimsIdentityFactory(IOptionsAccessor<IdentityOptions> options)
         {
-            if (options == null)
+            if (options == null || options.Options == null)
             {
                 throw new ArgumentNullException("options");
             }
-            RoleClaimType = options.ClaimTypeRole;
-            UserIdClaimType = options.ClaimTypeUserId;
-            UserNameClaimType = options.ClaimTypeUserName;
-            SecurityStampClaimType = options.ClaimTypeSecurityStamp;
+            RoleClaimType = options.Options.ClaimTypeRole;
+            UserIdClaimType = options.Options.ClaimTypeUserId;
+            UserNameClaimType = options.Options.ClaimTypeUserName;
+            SecurityStampClaimType = options.Options.ClaimTypeSecurityStamp;
         }
 
         /// <summary>

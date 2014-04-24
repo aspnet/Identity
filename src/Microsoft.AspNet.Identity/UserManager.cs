@@ -42,11 +42,12 @@ namespace Microsoft.AspNet.Identity
                 throw new ArgumentNullException("store");
             }
             Store = store;
-            Options = serviceProvider.GetService<IdentityOptions>() ?? new IdentityOptions();
+            var options = serviceProvider.GetService<IOptionsAccessor<IdentityOptions>>() ?? new IdentityOptionsAccessor(new DefaultIdentitySetup());
+            Options = options.Options;
             PasswordHasher = serviceProvider.GetService<IPasswordHasher>() ?? new PasswordHasher();
-            UserValidator = serviceProvider.GetService<IUserValidator<TUser>>() ?? new UserValidator<TUser>(Options);
-            PasswordValidator = serviceProvider.GetService<IPasswordValidator>() ?? new PasswordValidator(Options);
-            ClaimsIdentityFactory = serviceProvider.GetService<IClaimsIdentityFactory<TUser>>() ?? new ClaimsIdentityFactory<TUser>(Options);
+            UserValidator = serviceProvider.GetService<IUserValidator<TUser>>() ?? new UserValidator<TUser>(options);
+            PasswordValidator = serviceProvider.GetService<IPasswordValidator>() ?? new PasswordValidator(options);
+            ClaimsIdentityFactory = serviceProvider.GetService<IClaimsIdentityFactory<TUser>>() ?? new ClaimsIdentityFactory<TUser>(options);
             // TODO: Email/Sms/Token services
         }
 
