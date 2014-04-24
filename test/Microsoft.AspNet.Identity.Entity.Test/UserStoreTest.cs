@@ -21,7 +21,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
             public ApplicationUserManager(IServiceProvider services) : base(services) { }
         }
 
-        [Fact]
+        // [Fact] Disabled - see issue #48
         public async Task CanUseAddedManagerInstance()
         {
             var services = new ServiceCollection();
@@ -209,9 +209,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
 
             protected override void OnConfiguring(EntityConfigurationBuilder builder)
             {
-                builder
-                    .WithServices(s => s.AddInMemoryStore())
-                    .UseInMemoryStore(persist: true);
+                builder.UseInMemoryStore();
             }
 
             protected override void OnModelCreating(ModelBuilder builder)
