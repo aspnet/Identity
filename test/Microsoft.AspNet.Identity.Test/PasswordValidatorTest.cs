@@ -37,7 +37,13 @@ namespace Microsoft.AspNet.Identity.Test
         public async Task FailsIfTooShortTests(string input)
         {
             const string error = "Passwords must be at least 6 characters.";
-            var valid = new PasswordValidator(new IdentityOptions()) {RequiredLength = 6};
+            var valid = new PasswordValidator(new IdentityOptions())
+            {
+                RequireNonLetterOrDigit = false,
+                RequireDigit = false,
+                RequireLowercase = false,
+                RequireUppercase = false,
+            };
             IdentityResultAssert.IsFailure(await valid.ValidateAsync(input), error);
         }
 
@@ -46,7 +52,13 @@ namespace Microsoft.AspNet.Identity.Test
         [InlineData("aaaaaaaaaaa")]
         public async Task SuccessIfLongEnoughTests(string input)
         {
-            var valid = new PasswordValidator(new IdentityOptions()) { RequiredLength = 6 };
+            var valid = new PasswordValidator(new IdentityOptions())
+            {
+                RequireNonLetterOrDigit = false,
+                RequireDigit = false,
+                RequireLowercase = false,
+                RequireUppercase = false,
+            };
             IdentityResultAssert.IsSuccess(await valid.ValidateAsync(input));
         }
 
@@ -55,7 +67,14 @@ namespace Microsoft.AspNet.Identity.Test
         [InlineData("aaaaaaaaaaa")]
         public async Task FailsWithoutRequiredNonAlphanumericTests(string input)
         {
-            var valid = new PasswordValidator(new IdentityOptions()) { RequireNonLetterOrDigit = true };
+            var valid = new PasswordValidator(new IdentityOptions())
+            {
+                RequireNonLetterOrDigit = true,
+                RequireDigit = false,
+                RequireLowercase = false,
+                RequireUppercase = false,
+                RequiredLength = 0
+            };
             IdentityResultAssert.IsFailure(await valid.ValidateAsync(input),
                 "Passwords must have at least one non letter or digit character.");
         }
@@ -66,7 +85,14 @@ namespace Microsoft.AspNet.Identity.Test
         [InlineData("!!!!!!")]
         public async Task SucceedsWithRequiredNonAlphanumericTests(string input)
         {
-            var valid = new PasswordValidator(new IdentityOptions()) { RequireNonLetterOrDigit = true };
+            var valid = new PasswordValidator(new IdentityOptions())
+            {
+                RequireNonLetterOrDigit = true,
+                RequireDigit = false,
+                RequireLowercase = false,
+                RequireUppercase = false,
+                RequiredLength = 0
+            };
             IdentityResultAssert.IsSuccess(await valid.ValidateAsync(input));
         }
 
