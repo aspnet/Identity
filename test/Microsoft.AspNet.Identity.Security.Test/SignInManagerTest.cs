@@ -1,6 +1,8 @@
 using System.Threading;
 using Microsoft.AspNet.Abstractions;
 using Microsoft.AspNet.Abstractions.Security;
+using Microsoft.AspNet.DependencyInjection;
+using Microsoft.AspNet.DependencyInjection.Fallback;
 using Moq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -17,9 +19,9 @@ namespace Microsoft.AspNet.Identity.Security.Test
         public async Task EnsureClaimsIdentityFactoryCreateIdentityCalled()
         {
             // Setup
-            var store = new Mock<IUserStore<TestUser>>();
             var user = new TestUser { UserName = "Foo" };
-            var userManager = new UserManager<TestUser>(store.Object);
+            var store = new Mock<IUserStore<TestUser>>();
+            var userManager = new UserManager<TestUser>(new ServiceCollection().BuildServiceProvider(), store.Object);
             var identityFactory = new Mock<IClaimsIdentityFactory<TestUser>>();
             const string authType = "Test";
             var testIdentity = new ClaimsIdentity(authType);
@@ -29,7 +31,12 @@ namespace Microsoft.AspNet.Identity.Security.Test
             var response = new Mock<HttpResponse>();
             context.Setup(c => c.Response).Returns(response.Object).Verifiable();
             response.Setup(r => r.SignIn(testIdentity, It.IsAny<AuthenticationProperties>())).Verifiable();
-            var helper = new SignInManager<TestUser> { UserManager = userManager, AuthenticationType = authType, Context = context.Object };
+            var contextAccessor = new Mock<IContextAccessor<HttpContext>>();
+            contextAccessor.Setup(a => a.Value).Returns(context.Object);
+            var helper = new SignInManager<TestUser>(userManager, contextAccessor.Object)
+            {
+                AuthenticationType = authType
+            };
 
             // Act
             await helper.SignInAsync(user, false, false);
@@ -43,10 +50,14 @@ namespace Microsoft.AspNet.Identity.Security.Test
         {
             // Setup
             var user = new TestUser { UserName = "Foo" };
-            var manager = new Mock<UserManager<TestUser>>();
+            var store = new Mock<IUserStore<TestUser>>();
+            var manager = new Mock<UserManager<TestUser>>(new ServiceCollection().BuildServiceProvider(), store.Object);
             manager.Setup(m => m.IsLockedOutAsync(user, CancellationToken.None)).ReturnsAsync(true).Verifiable();
             manager.Setup(m => m.FindByNameAsync(user.UserName, CancellationToken.None)).ReturnsAsync(user).Verifiable();
-            var helper = new SignInManager<TestUser> { UserManager = manager.Object };
+            var context = new Mock<HttpContext>();
+            var contextAccessor = new Mock<IContextAccessor<HttpContext>>();
+            contextAccessor.Setup(a => a.Value).Returns(context.Object);
+            var helper = new SignInManager<TestUser>(manager.Object, contextAccessor.Object);
 
             // Act
             var result = await helper.PasswordSignInAsync(user.UserName, "bogus", false, false);
@@ -61,7 +72,8 @@ namespace Microsoft.AspNet.Identity.Security.Test
         {
             // Setup
             var user = new TestUser { UserName = "Foo" };
-            var manager = new Mock<UserManager<TestUser>>();
+            var store = new Mock<IUserStore<TestUser>>();
+            var manager = new Mock<UserManager<TestUser>>(new ServiceCollection().BuildServiceProvider(), store.Object);
             manager.Setup(m => m.IsLockedOutAsync(user, CancellationToken.None)).ReturnsAsync(false).Verifiable();
             manager.Setup(m => m.FindByNameAsync(user.UserName, CancellationToken.None)).ReturnsAsync(user).Verifiable();
             manager.Setup(m => m.CheckPasswordAsync(user, "password", CancellationToken.None)).ReturnsAsync(true).Verifiable();
@@ -70,7 +82,9 @@ namespace Microsoft.AspNet.Identity.Security.Test
             var response = new Mock<HttpResponse>();
             context.Setup(c => c.Response).Returns(response.Object).Verifiable();
             response.Setup(r => r.SignIn(It.IsAny<ClaimsIdentity>(), It.IsAny<AuthenticationProperties>())).Verifiable();
-            var helper = new SignInManager<TestUser> { UserManager = manager.Object, Context = context.Object };
+            var contextAccessor = new Mock<IContextAccessor<HttpContext>>();
+            contextAccessor.Setup(a => a.Value).Returns(context.Object);
+            var helper = new SignInManager<TestUser>(manager.Object, contextAccessor.Object);
 
             // Act
             var result = await helper.PasswordSignInAsync(user.UserName, "password", false, false);
@@ -86,11 +100,18 @@ namespace Microsoft.AspNet.Identity.Security.Test
         public void SignOutCallsContextResponseSignOut(string authenticationType)
         {
             // Setup
+            var store = new Mock<IUserStore<TestUser>>();
+            var manager = new Mock<UserManager<TestUser>>(new ServiceCollection().BuildServiceProvider(), store.Object);
             var context = new Mock<HttpContext>();
             var response = new Mock<HttpResponse>();
             context.Setup(c => c.Response).Returns(response.Object).Verifiable();
             response.Setup(r => r.SignOut(authenticationType)).Verifiable();
-            var helper = new SignInManager<TestUser> { Context = context.Object, AuthenticationType = authenticationType };
+            var contextAccessor = new Mock<IContextAccessor<HttpContext>>();
+            contextAccessor.Setup(a => a.Value).Returns(context.Object);
+            var helper = new SignInManager<TestUser>(manager.Object, contextAccessor.Object)
+            {
+                AuthenticationType = authenticationType
+            };
 
             // Act
             helper.SignOut();
@@ -105,12 +126,15 @@ namespace Microsoft.AspNet.Identity.Security.Test
         {
             // Setup
             var user = new TestUser { UserName = "Foo" };
-            var manager = new Mock<UserManager<TestUser>>();
+            var store = new Mock<IUserStore<TestUser>>();
+            var manager = new Mock<UserManager<TestUser>>(new ServiceCollection().BuildServiceProvider(), store.Object);
             manager.Setup(m => m.IsLockedOutAsync(user, CancellationToken.None)).ReturnsAsync(false).Verifiable();
             manager.Setup(m => m.FindByNameAsync(user.UserName, CancellationToken.None)).ReturnsAsync(user).Verifiable();
             manager.Setup(m => m.CheckPasswordAsync(user, "bogus", CancellationToken.None)).ReturnsAsync(false).Verifiable();
-            var helper = new SignInManager<TestUser> { UserManager = manager.Object };
-
+            var context = new Mock<HttpContext>();
+            var contextAccessor = new Mock<IContextAccessor<HttpContext>>();
+            contextAccessor.Setup(a => a.Value).Returns(context.Object);
+            var helper = new SignInManager<TestUser>(manager.Object, contextAccessor.Object);
             // Act
             var result = await helper.PasswordSignInAsync(user.UserName, "bogus", false, false);
 
@@ -124,9 +148,13 @@ namespace Microsoft.AspNet.Identity.Security.Test
         public async Task PasswordSignInFailsWithUnknownUser()
         {
             // Setup
-            var manager = new Mock<UserManager<TestUser>>();
+            var store = new Mock<IUserStore<TestUser>>();
+            var manager = new Mock<UserManager<TestUser>>(new ServiceCollection().BuildServiceProvider(), store.Object);
             manager.Setup(m => m.FindByNameAsync("bogus", CancellationToken.None)).ReturnsAsync(null).Verifiable();
-            var helper = new SignInManager<TestUser> { UserManager = manager.Object };
+            var context = new Mock<HttpContext>();
+            var contextAccessor = new Mock<IContextAccessor<HttpContext>>();
+            contextAccessor.Setup(a => a.Value).Returns(context.Object);
+            var helper = new SignInManager<TestUser>(manager.Object, contextAccessor.Object);
 
             // Act
             var result = await helper.PasswordSignInAsync("bogus", "bogus", false, false);
@@ -137,59 +165,12 @@ namespace Microsoft.AspNet.Identity.Security.Test
         }
 
         [Fact]
-        public async Task PasswordSignInFailsWithNoUserManager()
-        {
-            // Setup
-            var helper = new SignInManager<TestUser>();
-
-            // Act
-            var result = await helper.PasswordSignInAsync("bogus", "bogus", false, false);
-
-            // Assert
-            Assert.Equal(SignInStatus.Failure, result);
-        }
-
-        [Fact]
-        public async Task SignInWithNoContextDoesNotBlowUp()
-        {
-            // Setup
-            var helper = new SignInManager<TestUser>();
-
-            // Act
-            await helper.SignInAsync(null, false, false);
-        }
-
-        [Fact]
-        public void SignOutWithNoContextDoesNotBlowUp()
-        {
-            // Setup
-            var helper = new SignInManager<TestUser>();
-
-            // Act
-            helper.SignOut();
-        }
-
-        [Fact]
-        public async Task CreateUserIdentityReturnsNullNoUserManager()
-        {
-            // Setup
-            var user = new TestUser();
-            var helper = new SignInManager<TestUser>();
-
-            // Act
-            var result = await helper.CreateUserIdentityAsync(user);
-
-            // Assert
-            Assert.Null(result);
-        }
-
-
-        [Fact]
         public async Task PasswordSignInFailsWithWrongPasswordCanAccessFailedAndLockout()
         {
             // Setup
             var user = new TestUser { UserName = "Foo" };
-            var manager = new Mock<UserManager<TestUser>>();
+            var store = new Mock<IUserStore<TestUser>>();
+            var manager = new Mock<UserManager<TestUser>>(new ServiceCollection().BuildServiceProvider(), store.Object);
             var lockedout = false;
             manager.Setup(m => m.AccessFailedAsync(user, CancellationToken.None)).Returns(() =>
             {
@@ -199,7 +180,10 @@ namespace Microsoft.AspNet.Identity.Security.Test
             manager.Setup(m => m.IsLockedOutAsync(user, CancellationToken.None)).Returns(() => Task.FromResult(lockedout));
             manager.Setup(m => m.FindByNameAsync(user.UserName, CancellationToken.None)).ReturnsAsync(user).Verifiable();
             manager.Setup(m => m.CheckPasswordAsync(user, "bogus", CancellationToken.None)).ReturnsAsync(false).Verifiable();
-            var helper = new SignInManager<TestUser> { UserManager = manager.Object };
+            var context = new Mock<HttpContext>();
+            var contextAccessor = new Mock<IContextAccessor<HttpContext>>();
+            contextAccessor.Setup(a => a.Value).Returns(context.Object);
+            var helper = new SignInManager<TestUser>(manager.Object, contextAccessor.Object);
 
             // Act
             var result = await helper.PasswordSignInAsync(user.UserName, "bogus", false, true);

@@ -22,7 +22,7 @@ namespace Microsoft.AspNet.Identity.Test
         public async Task ValidateThrowsWithNullTest()
         {
             // Setup
-            var validator = new PasswordValidator();
+            var validator = new PasswordValidator(new IdentityOptions());
 
             // Act
             // Assert
@@ -37,7 +37,7 @@ namespace Microsoft.AspNet.Identity.Test
         public async Task FailsIfTooShortTests(string input)
         {
             const string error = "Passwords must be at least 6 characters.";
-            var valid = new PasswordValidator {RequiredLength = 6};
+            var valid = new PasswordValidator(new IdentityOptions()) {RequiredLength = 6};
             IdentityResultAssert.IsFailure(await valid.ValidateAsync(input), error);
         }
 
@@ -46,7 +46,7 @@ namespace Microsoft.AspNet.Identity.Test
         [InlineData("aaaaaaaaaaa")]
         public async Task SuccessIfLongEnoughTests(string input)
         {
-            var valid = new PasswordValidator {RequiredLength = 6};
+            var valid = new PasswordValidator(new IdentityOptions()) { RequiredLength = 6 };
             IdentityResultAssert.IsSuccess(await valid.ValidateAsync(input));
         }
 
@@ -55,7 +55,7 @@ namespace Microsoft.AspNet.Identity.Test
         [InlineData("aaaaaaaaaaa")]
         public async Task FailsWithoutRequiredNonAlphanumericTests(string input)
         {
-            var valid = new PasswordValidator {RequireNonLetterOrDigit = true};
+            var valid = new PasswordValidator(new IdentityOptions()) { RequireNonLetterOrDigit = true };
             IdentityResultAssert.IsFailure(await valid.ValidateAsync(input),
                 "Passwords must have at least one non letter or digit character.");
         }
@@ -66,7 +66,7 @@ namespace Microsoft.AspNet.Identity.Test
         [InlineData("!!!!!!")]
         public async Task SucceedsWithRequiredNonAlphanumericTests(string input)
         {
-            var valid = new PasswordValidator {RequireNonLetterOrDigit = true};
+            var valid = new PasswordValidator(new IdentityOptions()) { RequireNonLetterOrDigit = true };
             IdentityResultAssert.IsSuccess(await valid.ValidateAsync(input));
         }
 
@@ -84,7 +84,7 @@ namespace Microsoft.AspNet.Identity.Test
             const string lowerError = "Passwords must have at least one lowercase ('a'-'z').";
             const string digitError = "Passwords must have at least one digit ('0'-'9').";
             const string lengthError = "Passwords must be at least 6 characters.";
-            var valid = new PasswordValidator
+            var valid = new PasswordValidator(new IdentityOptions())
             {
                 RequireNonLetterOrDigit = true,
                 RequireDigit = true,

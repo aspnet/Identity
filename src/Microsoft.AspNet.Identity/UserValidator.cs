@@ -19,9 +19,14 @@ namespace Microsoft.AspNet.Identity
         /// <summary>
         ///     Constructor
         /// </summary>
-        public UserValidator()
+        public UserValidator(IdentityOptions options)
         {
-            AllowOnlyAlphanumericUserNames = true;
+            if (options == null)
+            {
+                throw new ArgumentNullException("options");
+            }
+            AllowOnlyAlphanumericUserNames = options.UsersAllowOnlyAlphanumericNames;
+            RequireUniqueEmail = options.UsersRequireUniqueEmail;
         }
 
         /// <summary>

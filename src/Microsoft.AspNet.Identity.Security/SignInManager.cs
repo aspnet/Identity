@@ -1,12 +1,36 @@
-﻿using Microsoft.AspNet.Abstractions;
+﻿using System;
+using Microsoft.AspNet.Abstractions;
 using Microsoft.AspNet.Abstractions.Security;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNet.DependencyInjection;
 
 namespace Microsoft.AspNet.Identity.Security
 {
-    public class SignInManager<TUser> where TUser : class
+    public class SignInManager<TUser> : SignInManager<UserManager<TUser>, TUser> where TUser : class
     {
+        public SignInManager(UserManager<TUser> userManager, IContextAccessor<HttpContext> contextAccessor)
+            : base(userManager, contextAccessor) { }
+    }
+
+
+    public class SignInManager<TManager, TUser> where TManager : UserManager<TUser> where TUser : class
+    {
+        public SignInManager(TManager userManager, IContextAccessor<HttpContext> contextAccessor)
+        {
+            if (userManager == null)
+            {
+                throw new ArgumentNullException("userManager");
+            }
+            if (contextAccessor == null || contextAccessor.Value == null)
+            {
+                throw new ArgumentNullException("contextAccessor");
+            }
+            UserManager = userManager;
+            Context = contextAccessor.Value;
+        }
+
+        // TODO: this should go into some kind of Options/setup
         private string _authType;
         public string AuthenticationType
         {
@@ -14,8 +38,8 @@ namespace Microsoft.AspNet.Identity.Security
             set { _authType = value; }
         }
 
-        public UserManager<TUser> UserManager { get; set; }
-        public HttpContext Context { get; set; }
+        public TManager UserManager { get; private set; }
+        public HttpContext Context { get; private set; }
 
         public virtual async Task<ClaimsIdentity> CreateUserIdentityAsync(TUser user)
         {

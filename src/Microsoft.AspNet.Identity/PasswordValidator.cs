@@ -12,6 +12,19 @@ namespace Microsoft.AspNet.Identity
     /// </summary>
     public class PasswordValidator : IPasswordValidator
     {
+        public PasswordValidator(IdentityOptions options)
+        {
+            if (options == null)
+            {
+                throw new ArgumentNullException("options");
+            }
+            RequireDigit = options.PasswordsRequireDigit;
+            RequiredLength = options.PasswordsRequiredLength;
+            RequireLowercase = options.PasswordsRequireLowercase;
+            RequireUppercase = options.PasswordsRequireUppercase;
+            RequireNonLetterOrDigit = options.PasswordsRequireNonLetterOrDigit;
+        }
+
         /// <summary>
         ///     Minimum required length
         /// </summary>

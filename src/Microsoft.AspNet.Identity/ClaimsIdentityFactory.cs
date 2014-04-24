@@ -13,19 +13,18 @@ namespace Microsoft.AspNet.Identity
         where TUser : class
     {
         /// <summary>
-        ///     ClaimType used for the security stamp by default
-        /// </summary>
-        public const string DefaultSecurityStampClaimType = "AspNet.Identity.SecurityStamp";
-
-        /// <summary>
         ///     Constructor
         /// </summary>
-        public ClaimsIdentityFactory()
+        public ClaimsIdentityFactory(IdentityOptions options)
         {
-            RoleClaimType = ClaimsIdentity.DefaultRoleClaimType;
-            UserIdClaimType = ClaimTypes.NameIdentifier;
-            UserNameClaimType = ClaimsIdentity.DefaultNameClaimType;
-            SecurityStampClaimType = DefaultSecurityStampClaimType;
+            if (options == null)
+            {
+                throw new ArgumentNullException("options");
+            }
+            RoleClaimType = options.ClaimTypeRole;
+            UserIdClaimType = options.ClaimTypeUserId;
+            UserNameClaimType = options.ClaimTypeUserName;
+            SecurityStampClaimType = options.ClaimTypeSecurityStamp;
         }
 
         /// <summary>
