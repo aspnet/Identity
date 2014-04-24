@@ -563,6 +563,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
             var mgr = CreateManager();
             mgr.Options.LockoutDefaultTimeSpan = TimeSpan.FromHours(1);
             mgr.Options.LockoutEnabledByDefault = true;
+            mgr.Options.LockoutMaxFailedAccessAttempts = 0;
             var user = new IdentityUser("fastLockout");
             IdentityResultAssert.IsSuccess(await mgr.CreateAsync(user));
             Assert.True(await mgr.GetLockoutEnabledAsync(user));
@@ -1436,7 +1437,14 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
             var services = new ServiceCollection();
             services.AddTransient<IUserValidator<IdentityUser>, UserValidator<IdentityUser>>();
             services.AddTransient<IPasswordValidator, PasswordValidator>();
-            services.AddTransient<IdentityOptions, IdentityOptions>();
+            var options = new IdentityOptions
+            {
+                PasswordsRequireDigit = false,
+                PasswordsRequireLowercase = false,
+                PasswordsRequireNonLetterOrDigit = false,
+                PasswordsRequireUppercase = false
+            };
+            services.AddInstance<IdentityOptions>(options);
             //services.AddInstance<IUserStore<IdentityUser>>(new InMemoryUserStore<IdentityUser>());
             //services.AddSingleton<UserManager<IdentityUser>, UserManager<IdentityUser>>();
             //return services.BuildServiceProvider().GetService<UserManager<IdentityUser>>();
