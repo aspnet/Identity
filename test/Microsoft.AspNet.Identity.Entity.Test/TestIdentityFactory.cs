@@ -86,7 +86,14 @@ namespace Microsoft.AspNet.Identity.Entity.Test
             services.AddTransient<IPasswordValidator, PasswordValidator>();
             services.AddInstance<IUserStore<EntityUser>>(new UserStore<EntityUser>(context));
             services.AddSingleton<UserManager<EntityUser>, UserManager<EntityUser>>();
-            services.AddTransient<IdentityOptions, IdentityOptions>();
+            var options = new IdentityOptions
+            {
+                PasswordsRequireDigit = false,
+                PasswordsRequireLowercase = false,
+                PasswordsRequireNonLetterOrDigit = false,
+                PasswordsRequireUppercase = false
+            };
+            services.AddInstance<IdentityOptions>(options);
             //return services.BuildServiceProvider().GetService<UserManager<EntityUser>>();
             return new UserManager<EntityUser>(services.BuildServiceProvider(), new UserStore<EntityUser>(context));
         }

@@ -47,7 +47,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
         public void CanOverrideDisableSetup()
         {
             IBuilder builder = new Builder(new ServiceCollection().BuildServiceProvider());
-            var myOptions = new IdentityOptions();
+            var myOptions = new IdentityOptions {PasswordsRequiredLength = 0};
             builder.UseServices(services =>
             {
                 services.AddIdentity<IdentityUser>(identityServices => { });
@@ -63,11 +63,6 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
             setup.Setup(optionsGetter.Options);
 
             Assert.Equal(myOptions, optionsGetter.Options);
-
-            Assert.False(myOptions.PasswordsRequireLowercase);
-            Assert.False(myOptions.PasswordsRequireDigit);
-            Assert.False(myOptions.PasswordsRequireNonLetterOrDigit);
-            Assert.False(myOptions.PasswordsRequireUppercase);
             Assert.Equal(0, myOptions.PasswordsRequiredLength);
         }
 

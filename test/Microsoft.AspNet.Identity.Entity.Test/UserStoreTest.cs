@@ -780,6 +780,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
             var mgr = TestIdentityFactory.CreateManager();
             mgr.Options.LockoutDefaultTimeSpan = TimeSpan.FromHours(1);
             mgr.Options.LockoutEnabledByDefault = true;
+            mgr.Options.LockoutMaxFailedAccessAttempts = 0;
             var user = new EntityUser("fastLockout");
             IdentityResultAssert.IsSuccess(await mgr.CreateAsync(user));
             Assert.True(await mgr.GetLockoutEnabledAsync(user));
