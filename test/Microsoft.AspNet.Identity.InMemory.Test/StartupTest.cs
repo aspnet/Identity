@@ -1,6 +1,7 @@
 using Microsoft.AspNet.Abstractions;
 using Microsoft.AspNet.DependencyInjection;
 using Microsoft.AspNet.DependencyInjection.Fallback;
+using Microsoft.AspNet.Identity.Test;
 using Microsoft.AspNet.PipelineCore;
 using System;
 using System.Threading.Tasks;
@@ -89,7 +90,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
 
         public class ApplicationUserManager : UserManager<ApplicationUser>
         {
-            public ApplicationUserManager(IServiceProvider services, IUserStore<ApplicationUser> store) : base(services, store) { }
+            public ApplicationUserManager(IServiceProvider services, IUserStore<ApplicationUser> store, IOptionsAccessor<IdentityOptions> options) : base(services, store, options) { }
         }
 
         public class ApplicationRoleManager : RoleManager<IdentityRole>

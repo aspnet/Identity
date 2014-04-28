@@ -16,7 +16,7 @@ namespace Microsoft.AspNet.Identity.Test
         public async Task CreateIdentityNullChecks()
         {
             var factory = new ClaimsIdentityFactory<TestUser>(new OptionsAccessor<IdentityOptions>(null));
-            var manager = new UserManager<TestUser>(new ServiceCollection().BuildServiceProvider(), new NoopUserStore());
+            var manager = MockHelpers.MockUserManager<TestUser>().Object;
             await Assert.ThrowsAsync<ArgumentNullException>("manager",
                 async () => await factory.CreateAsync(null, null, "whatever"));
             await Assert.ThrowsAsync<ArgumentNullException>("user",
@@ -35,8 +35,7 @@ namespace Microsoft.AspNet.Identity.Test
         public async Task EnsureClaimsIdentityHasExpectedClaims(bool supportRoles, bool supportClaims)
         {
             // Setup
-            var store = new Mock<IUserStore<TestUser>>();
-            var userManager = new Mock<UserManager<TestUser>>(new ServiceCollection().BuildServiceProvider(), store.Object);
+            var userManager = MockHelpers.MockUserManager<TestUser>();
             var user = new TestUser { UserName = "Foo" };
             userManager.Setup(m => m.SupportsUserRole).Returns(supportRoles);
             userManager.Setup(m => m.SupportsUserClaim).Returns(supportClaims);

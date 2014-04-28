@@ -31,7 +31,8 @@ namespace Microsoft.AspNet.Identity
         /// </summary>
         /// <param name="serviceProvider"></param>
         /// <param name="store"></param>
-        public UserManager(IServiceProvider serviceProvider, IUserStore<TUser> store)
+        /// <param name="optionsAccessor"></param>
+        public UserManager(IServiceProvider serviceProvider, IUserStore<TUser> store, IOptionsAccessor<IdentityOptions> optionsAccessor)
         {
             if (serviceProvider == null)
             {
@@ -41,13 +42,16 @@ namespace Microsoft.AspNet.Identity
             {
                 throw new ArgumentNullException("store");
             }
+            if (optionsAccessor == null || optionsAccessor.Options == null)
+            {
+                throw new ArgumentNullException("optionsAccessor");
+            }
             Store = store;
-            var options = serviceProvider.GetService<IOptionsAccessor<IdentityOptions>>() ?? new OptionsAccessor<IdentityOptions>(null);
-            Options = options.Options;
+            Options = optionsAccessor.Options;
             PasswordHasher = serviceProvider.GetService<IPasswordHasher>() ?? new PasswordHasher();
-            UserValidator = serviceProvider.GetService<IUserValidator<TUser>>() ?? new UserValidator<TUser>(options);
-            PasswordValidator = serviceProvider.GetService<IPasswordValidator>() ?? new PasswordValidator(options);
-            ClaimsIdentityFactory = serviceProvider.GetService<IClaimsIdentityFactory<TUser>>() ?? new ClaimsIdentityFactory<TUser>(options);
+            UserValidator = serviceProvider.GetService<IUserValidator<TUser>>() ?? new UserValidator<TUser>(optionsAccessor);
+            PasswordValidator = serviceProvider.GetService<IPasswordValidator>() ?? new PasswordValidator(optionsAccessor);
+            ClaimsIdentityFactory = serviceProvider.GetService<IClaimsIdentityFactory<TUser>>() ?? new ClaimsIdentityFactory<TUser>(optionsAccessor);
             // TODO: Email/Sms/Token services
         }
 

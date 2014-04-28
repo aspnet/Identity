@@ -12,7 +12,7 @@ namespace Microsoft.AspNet.Identity.Test
         public async Task ValidateThrowsWithNull()
         {
             // Setup
-            var manager = new UserManager<TestUser>(new ServiceCollection().BuildServiceProvider(), new NoopUserStore());
+            var manager = new UserManager<TestUser>(new ServiceCollection().BuildServiceProvider(), new NoopUserStore(), new OptionsAccessor<IdentityOptions>(null));
             var validator = new UserValidator<TestUser>(new OptionsAccessor<IdentityOptions>(null));
 
             // Act
@@ -27,7 +27,7 @@ namespace Microsoft.AspNet.Identity.Test
         public async Task ValidateFailsWithTooShortUserNames(string input)
         {
             // Setup
-            var manager = new UserManager<TestUser>(new ServiceCollection().BuildServiceProvider(), new NoopUserStore());
+            var manager = new UserManager<TestUser>(new ServiceCollection().BuildServiceProvider(), new NoopUserStore(), new OptionsAccessor<IdentityOptions>(null));
             var validator = new UserValidator<TestUser>(new OptionsAccessor<IdentityOptions>(null));
             var user = new TestUser {UserName = input};
 
@@ -47,7 +47,7 @@ namespace Microsoft.AspNet.Identity.Test
         public async Task DefaultAlphaNumericOnlyUserNameValidation(string userName, bool expectSuccess)
         {
             // Setup
-            var manager = new UserManager<TestUser>(new ServiceCollection().BuildServiceProvider(), new NoopUserStore());
+            var manager = new UserManager<TestUser>(new ServiceCollection().BuildServiceProvider(), new NoopUserStore(), new OptionsAccessor<IdentityOptions>(null));
             var validator = new UserValidator<TestUser>(new OptionsAccessor<IdentityOptions>(null));
             var user = new TestUser {UserName = userName};
 
@@ -74,7 +74,7 @@ namespace Microsoft.AspNet.Identity.Test
         public async Task CanAllowNonAlphaNumericUserName(string userName, bool expectSuccess)
         {
             // Setup
-            var manager = new UserManager<TestUser>(new ServiceCollection().BuildServiceProvider(), new NoopUserStore());
+            var manager = new UserManager<TestUser>(new ServiceCollection().BuildServiceProvider(), new NoopUserStore(), new OptionsAccessor<IdentityOptions>(null));
             var validator = new UserValidator<TestUser>(new OptionsAccessor<IdentityOptions>(null)) { AllowOnlyAlphanumericUserNames = false };
             var user = new TestUser {UserName = userName};
 

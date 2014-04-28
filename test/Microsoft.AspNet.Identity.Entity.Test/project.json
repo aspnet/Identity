@@ -22,9 +22,11 @@
     "xunit.core": "2.0.0-aspnet-*",
     "xunit.execution": "2.0.0-aspnet-*"
   },
+  "code": "**\\*.cs;..\\Shared\\*.cs",
   "configurations": {
     "net45": {
       "dependencies": {
+        "Moq" : "4.2.1312.1622",
         "System.Runtime": "",
         "System.Collections": "",
         "System.Data": ""

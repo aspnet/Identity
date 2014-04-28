@@ -109,9 +109,10 @@ namespace Microsoft.AspNet.Identity.Entity.Test
                 PasswordsRequireNonLetterOrDigit = false,
                 PasswordsRequireUppercase = false
             };
-            services.AddInstance<IOptionsAccessor<IdentityOptions>>(new OptionsAccessor<IdentityOptions>(new [] {new TestSetup(options) }));
+            var optionsAccessor = new OptionsAccessor<IdentityOptions>(new[] { new TestSetup(options) });
+            //services.AddInstance<IOptionsAccessor<IdentityOptions>>(new OptionsAccessor<IdentityOptions>(new[] { new TestSetup(options) }));
             //return services.BuildServiceProvider().GetService<UserManager<EntityUser>>();
-            return new UserManager<EntityUser>(services.BuildServiceProvider(), new UserStore<EntityUser>(context));
+            return new UserManager<EntityUser>(services.BuildServiceProvider(), new UserStore<EntityUser>(context), optionsAccessor);
         }
 
         public static UserManager<EntityUser> CreateManager()

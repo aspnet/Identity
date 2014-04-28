@@ -112,7 +112,8 @@ namespace Microsoft.AspNet.Identity
                 return;
             }
             ClaimTypeRole = options.ClaimTypeRole;
-            ClaimTypeSecurityStamp = options.ClaimTypeSecurityStamp;
+            ClaimTypeSecurityStamp = 
+                ClaimTypeSecurityStamp;
             ClaimTypeUserId = options.ClaimTypeUserId;
             ClaimTypeUserName = options.ClaimTypeUserName;
 
