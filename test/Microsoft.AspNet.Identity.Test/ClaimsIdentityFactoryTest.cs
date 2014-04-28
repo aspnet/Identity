@@ -15,7 +15,7 @@ namespace Microsoft.AspNet.Identity.Test
         [Fact]
         public async Task CreateIdentityNullChecks()
         {
-            var factory = new ClaimsIdentityFactory<TestUser>(new OptionsAccessor<IdentityOptions>(null));
+            var factory = new ClaimsIdentityFactory<TestUser>();
             var manager = MockHelpers.MockUserManager<TestUser>().Object;
             await Assert.ThrowsAsync<ArgumentNullException>("manager",
                 async () => await factory.CreateAsync(null, null, "whatever"));
@@ -45,23 +45,25 @@ namespace Microsoft.AspNet.Identity.Test
             userManager.Setup(m => m.GetRolesAsync(user, CancellationToken.None)).ReturnsAsync(roleClaims);
             var userClaims = new[] { new Claim("Whatever", "Value"), new Claim("Whatever2", "Value2") };
             userManager.Setup(m => m.GetClaimsAsync(user, CancellationToken.None)).ReturnsAsync(userClaims);
+            userManager.Object.Options = new IdentityOptions();
 
             const string authType = "Microsoft.AspNet.Identity";
-            var factory = new ClaimsIdentityFactory<TestUser>(new OptionsAccessor<IdentityOptions>(null));
+            var factory = new ClaimsIdentityFactory<TestUser>();
 
             // Act
             var identity = await factory.CreateAsync(userManager.Object, user, authType);
 
             // Assert
+            var manager = userManager.Object;
             Assert.NotNull(identity);
             Assert.Equal(authType, identity.AuthenticationType);
             var claims = identity.Claims.ToList();
             Assert.NotNull(claims);
             Assert.True(
-                claims.Any(c => c.Type == factory.UserNameClaimType && c.Value == user.UserName));
-            Assert.True(claims.Any(c => c.Type == factory.UserIdClaimType && c.Value == user.Id));
-            Assert.Equal(supportRoles, claims.Any(c => c.Type == factory.RoleClaimType && c.Value == "Admin"));
-            Assert.Equal(supportRoles, claims.Any(c => c.Type == factory.RoleClaimType && c.Value == "Local"));
+                claims.Any(c => c.Type == manager.Options.ClaimTypeUserName && c.Value == user.UserName));
+            Assert.True(claims.Any(c => c.Type == manager.Options.ClaimTypeUserId && c.Value == user.Id));
+            Assert.Equal(supportRoles, claims.Any(c => c.Type == manager.Options.ClaimTypeRole && c.Value == "Admin"));
+            Assert.Equal(supportRoles, claims.Any(c => c.Type == manager.Options.ClaimTypeRole && c.Value == "Local"));
             foreach (var cl in userClaims)
             {
                 Assert.Equal(supportClaims, claims.Any(c => c.Type == cl.Type && c.Value == cl.Value));

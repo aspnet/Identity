@@ -12,8 +12,8 @@ namespace Microsoft.AspNet.Identity.Test
         public async Task ValidateThrowsWithNull()
         {
             // Setup
-            var manager = new UserManager<TestUser>(new ServiceCollection().BuildServiceProvider(), new NoopUserStore(), new OptionsAccessor<IdentityOptions>(null));
-            var validator = new UserValidator<TestUser>(new OptionsAccessor<IdentityOptions>(null));
+            var manager = MockHelpers.TestUserManager(new NoopUserStore());
+            var validator = new UserValidator<TestUser>();
 
             // Act
             // Assert
@@ -27,8 +27,8 @@ namespace Microsoft.AspNet.Identity.Test
         public async Task ValidateFailsWithTooShortUserNames(string input)
         {
             // Setup
-            var manager = new UserManager<TestUser>(new ServiceCollection().BuildServiceProvider(), new NoopUserStore(), new OptionsAccessor<IdentityOptions>(null));
-            var validator = new UserValidator<TestUser>(new OptionsAccessor<IdentityOptions>(null));
+            var manager = MockHelpers.TestUserManager(new NoopUserStore());
+            var validator = new UserValidator<TestUser>();
             var user = new TestUser {UserName = input};
 
             // Act
@@ -47,8 +47,8 @@ namespace Microsoft.AspNet.Identity.Test
         public async Task DefaultAlphaNumericOnlyUserNameValidation(string userName, bool expectSuccess)
         {
             // Setup
-            var manager = new UserManager<TestUser>(new ServiceCollection().BuildServiceProvider(), new NoopUserStore(), new OptionsAccessor<IdentityOptions>(null));
-            var validator = new UserValidator<TestUser>(new OptionsAccessor<IdentityOptions>(null));
+            var manager = MockHelpers.TestUserManager(new NoopUserStore());
+            var validator = new UserValidator<TestUser>();
             var user = new TestUser {UserName = userName};
 
             // Act
@@ -74,8 +74,9 @@ namespace Microsoft.AspNet.Identity.Test
         public async Task CanAllowNonAlphaNumericUserName(string userName, bool expectSuccess)
         {
             // Setup
-            var manager = new UserManager<TestUser>(new ServiceCollection().BuildServiceProvider(), new NoopUserStore(), new OptionsAccessor<IdentityOptions>(null));
-            var validator = new UserValidator<TestUser>(new OptionsAccessor<IdentityOptions>(null)) { AllowOnlyAlphanumericUserNames = false };
+            var manager = MockHelpers.TestUserManager(new NoopUserStore());
+            manager.Options.UsersAllowOnlyAlphanumericNames = false;
+            var validator = new UserValidator<TestUser>();
             var user = new TestUser {UserName = userName};
 
             // Act

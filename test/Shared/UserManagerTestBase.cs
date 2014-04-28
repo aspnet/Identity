@@ -95,7 +95,7 @@ namespace Microsoft.AspNet.Identity.Test
         {
             var manager = CreateManager();
             var user = CreateTestUser();
-            manager.UserValidator = new UserValidator<TUser>(null) { RequireUniqueEmail = true };
+            manager.Options.UsersRequireUniqueEmail = true;
             IdentityResultAssert.IsFailure(await manager.CreateAsync(user), "Email cannot be null or empty.");
         }
 
@@ -107,7 +107,7 @@ namespace Microsoft.AspNet.Identity.Test
         {
             var manager = CreateManager();
             var user = new TUser() { UserName = "UpdateBlocked", Email = email };
-            manager.UserValidator = new UserValidator<TUser>(null) { RequireUniqueEmail = true };
+            manager.Options.UsersRequireUniqueEmail = true;
             IdentityResultAssert.IsFailure(await manager.CreateAsync(user), "Email '" + email + "' is invalid.");
         }
 #endif
@@ -308,7 +308,7 @@ namespace Microsoft.AspNet.Identity.Test
         public async Task AddDupeEmailFallsWhenUniqueEmailRequired()
         {
             var manager = CreateManager();
-            manager.UserValidator = new UserValidator<TUser>(new OptionsAccessor<IdentityOptions>(null)) { RequireUniqueEmail = true };
+            manager.Options.UsersRequireUniqueEmail = true;
             var user = new TUser() { UserName = "dupe", Email = "yup@yup.com" };
             var user2 = new TUser() { UserName = "dupeEmail", Email = "yup@yup.com" };
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
@@ -402,10 +402,10 @@ namespace Microsoft.AspNet.Identity.Test
             var claims = identity.Claims.ToList();
             Assert.NotNull(claims);
             Assert.True(
-                claims.Any(c => c.Type == claimsFactory.UserNameClaimType && c.Value == user.UserName));
-            Assert.True(claims.Any(c => c.Type == claimsFactory.UserIdClaimType && c.Value == user.Id));
-            Assert.True(claims.Any(c => c.Type == claimsFactory.RoleClaimType && c.Value == "Admin"));
-            Assert.True(claims.Any(c => c.Type == claimsFactory.RoleClaimType && c.Value == "Local"));
+                claims.Any(c => c.Type == manager.Options.ClaimTypeUserName && c.Value == user.UserName));
+            Assert.True(claims.Any(c => c.Type == manager.Options.ClaimTypeUserId && c.Value == user.Id));
+            Assert.True(claims.Any(c => c.Type == manager.Options.ClaimTypeRole && c.Value == "Admin"));
+            Assert.True(claims.Any(c => c.Type == manager.Options.ClaimTypeRole && c.Value == "Local"));
             foreach (var cl in userClaims)
             {
                 Assert.True(claims.Any(c => c.Type == cl.Type && c.Value == cl.Value));

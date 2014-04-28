@@ -49,9 +49,9 @@ namespace Microsoft.AspNet.Identity
             Store = store;
             Options = optionsAccessor.Options;
             PasswordHasher = serviceProvider.GetService<IPasswordHasher>() ?? new PasswordHasher();
-            UserValidator = serviceProvider.GetService<IUserValidator<TUser>>() ?? new UserValidator<TUser>(optionsAccessor);
+            UserValidator = serviceProvider.GetService<IUserValidator<TUser>>() ?? new UserValidator<TUser>();
             PasswordValidator = serviceProvider.GetService<IPasswordValidator>() ?? new PasswordValidator(optionsAccessor);
-            ClaimsIdentityFactory = serviceProvider.GetService<IClaimsIdentityFactory<TUser>>() ?? new ClaimsIdentityFactory<TUser>(optionsAccessor);
+            ClaimsIdentityFactory = serviceProvider.GetService<IClaimsIdentityFactory<TUser>>() ?? new ClaimsIdentityFactory<TUser>();
             // TODO: Email/Sms/Token services
         }
 

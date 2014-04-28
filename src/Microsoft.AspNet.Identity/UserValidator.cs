@@ -18,28 +18,6 @@ namespace Microsoft.AspNet.Identity
     public class UserValidator<TUser> : IUserValidator<TUser> where TUser : class
     {
         /// <summary>
-        ///     Constructor
-        /// </summary>
-        public UserValidator(IOptionsAccessor<IdentityOptions> options)
-        {
-            if (options != null && options.Options != null)
-            {
-                AllowOnlyAlphanumericUserNames = options.Options.UsersAllowOnlyAlphanumericNames;
-                RequireUniqueEmail = options.Options.UsersRequireUniqueEmail;
-            }
-        }
-
-        /// <summary>
-        ///     Only allow [A-Za-z0-9@_] in UserNames
-        /// </summary>
-        public bool AllowOnlyAlphanumericUserNames { get; set; }
-
-        /// <summary>
-        ///     If set, enforces that emails are non empty, valid, and unique
-        /// </summary>
-        public bool RequireUniqueEmail { get; set; }
-
-        /// <summary>
         ///     Validates a user before saving
         /// </summary>
         /// <param name="manager"></param>
@@ -58,7 +36,7 @@ namespace Microsoft.AspNet.Identity
             }
             var errors = new List<string>();
             await ValidateUserName(manager, user, errors);
-            if (RequireUniqueEmail)
+            if (manager.Options.UsersRequireUniqueEmail)
             {
                 await ValidateEmail(manager, user, errors);
             }
@@ -114,7 +92,7 @@ namespace Microsoft.AspNet.Identity
             {
                 errors.Add(String.Format(CultureInfo.CurrentCulture, Resources.PropertyTooShort, "UserName"));
             }
-            else if (AllowOnlyAlphanumericUserNames && !userName.All(IsAlphaNumeric))
+            else if (manager.Options.UsersAllowOnlyAlphanumericNames && !userName.All(IsAlphaNumeric))
             {
                 // If any characters are not letters or digits, its an illegal user name
                 errors.Add(String.Format(CultureInfo.CurrentCulture, Resources.InvalidUserName, userName));

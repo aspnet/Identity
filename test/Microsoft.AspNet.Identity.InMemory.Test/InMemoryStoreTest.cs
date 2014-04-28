@@ -21,7 +21,8 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
                 PasswordsRequireDigit = false,
                 PasswordsRequireLowercase = false,
                 PasswordsRequireNonLetterOrDigit = false,
-                PasswordsRequireUppercase = false
+                PasswordsRequireUppercase = false,
+                UsersAllowOnlyAlphanumericNames = false
             };
             var optionsAccessor = new OptionsAccessor<IdentityOptions>(new[] {new TestSetup(options)});
             //services.AddInstance<IOptionsAccessor<IdentityOptions>>(optionsAccessor);

@@ -17,13 +17,13 @@ namespace Microsoft.AspNet.Identity.Test
 
         public static UserManager<TUser> TestUserManager<TUser>() where TUser : class
         {
-            return TestUserManager<TUser>(new Mock<IUserStore<TUser>>().Object);
+            return TestUserManager(new Mock<IUserStore<TUser>>().Object);
         }
 
         public static UserManager<TUser> TestUserManager<TUser>(IUserStore<TUser> store) where TUser : class
         {
             var options = new OptionsAccessor<IdentityOptions>(null);
-            var validator = new Mock<UserValidator<TUser>>(options);
+            var validator = new Mock<UserValidator<TUser>>();
             var userManager = new UserManager<TUser>(new ServiceCollection().BuildServiceProvider(), store, options);
             validator.Setup(v => v.ValidateAsync(userManager, It.IsAny<TUser>(), CancellationToken.None)).Returns(Task.FromResult(IdentityResult.Success)).Verifiable();
             userManager.UserValidator = validator.Object;
