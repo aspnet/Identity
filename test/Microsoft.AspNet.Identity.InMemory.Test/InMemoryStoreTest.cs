@@ -82,7 +82,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
         {
             var manager = CreateManager();
             var user = new IdentityUser("UpdateBlocked") {Email = email};
-            manager.UserValidator = new UserValidator<IdentityUser>(new IdentityOptionsAccessor(new DefaultIdentitySetup())) { RequireUniqueEmail = true };
+            manager.UserValidator = new UserValidator<IdentityUser>(new OptionsAccessor<IdentityOptions>(new [] { new DefaultIdentitySetup() })) { RequireUniqueEmail = true };
             IdentityResultAssert.IsFailure(await manager.CreateAsync(user), "Email cannot be null or empty.");
         }
 
@@ -94,7 +94,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
         {
             var manager = CreateManager();
             var user = new IdentityUser("UpdateBlocked") {Email = email};
-            manager.UserValidator = new UserValidator<IdentityUser>(new IdentityOptionsAccessor(new DefaultIdentitySetup())) { RequireUniqueEmail = true };
+            manager.UserValidator = new UserValidator<IdentityUser>(new OptionsAccessor<IdentityOptions>(new [] { new DefaultIdentitySetup() })) { RequireUniqueEmail = true };
             IdentityResultAssert.IsFailure(await manager.CreateAsync(user), "Email '" + email + "' is invalid.");
         }
 #endif
@@ -295,7 +295,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
         public async Task AddDupeEmailFallsWhenUniqueEmailRequired()
         {
             var manager = CreateManager();
-            manager.UserValidator = new UserValidator<IdentityUser> (new IdentityOptionsAccessor(new DefaultIdentitySetup())) {RequireUniqueEmail = true};
+            manager.UserValidator = new UserValidator<IdentityUser> (new OptionsAccessor<IdentityOptions>(new [] { new DefaultIdentitySetup() })) {RequireUniqueEmail = true};
             var user = new IdentityUser("dupe") {Email = "yup@yup.com"};
             var user2 = new IdentityUser("dupeEmail") {Email = "yup@yup.com"};
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
@@ -1460,7 +1460,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
                 PasswordsRequireNonLetterOrDigit = false,
                 PasswordsRequireUppercase = false
             };
-            services.AddInstance<IOptionsAccessor<IdentityOptions>>(new IdentityOptionsAccessor(new TestSetup(options)));
+            services.AddInstance<IOptionsAccessor<IdentityOptions>>(new OptionsAccessor<IdentityOptions>(new [] {new TestSetup(options)}));
             //services.AddInstance<IUserStore<IdentityUser>>(new InMemoryUserStore<IdentityUser>());
             //services.AddSingleton<UserManager<IdentityUser>, UserManager<IdentityUser>>();
             //return services.BuildServiceProvider().GetService<UserManager<IdentityUser>>();

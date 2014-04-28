@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNet.DependencyInjection;
 using Xunit;
 
 namespace Microsoft.AspNet.Identity.Test
@@ -22,7 +23,7 @@ namespace Microsoft.AspNet.Identity.Test
         public async Task ValidateThrowsWithNullTest()
         {
             // Setup
-            var validator = new PasswordValidator(new IdentityOptionsAccessor(new DefaultIdentitySetup()));
+            var validator = new PasswordValidator(new OptionsAccessor<IdentityOptions>(new [] { new DefaultIdentitySetup()}));
 
             // Act
             // Assert
@@ -37,7 +38,7 @@ namespace Microsoft.AspNet.Identity.Test
         public async Task FailsIfTooShortTests(string input)
         {
             const string error = "Passwords must be at least 6 characters.";
-            var valid = new PasswordValidator(new IdentityOptionsAccessor(new DefaultIdentitySetup()))
+            var valid = new PasswordValidator(new OptionsAccessor<IdentityOptions>(new [] { new DefaultIdentitySetup()}))
             {
                 RequireNonLetterOrDigit = false,
                 RequireDigit = false,
@@ -52,7 +53,7 @@ namespace Microsoft.AspNet.Identity.Test
         [InlineData("aaaaaaaaaaa")]
         public async Task SuccessIfLongEnoughTests(string input)
         {
-            var valid = new PasswordValidator(new IdentityOptionsAccessor(new DefaultIdentitySetup()))
+            var valid = new PasswordValidator(new OptionsAccessor<IdentityOptions>(new [] { new DefaultIdentitySetup()}))
             {
                 RequireNonLetterOrDigit = false,
                 RequireDigit = false,
@@ -67,7 +68,7 @@ namespace Microsoft.AspNet.Identity.Test
         [InlineData("aaaaaaaaaaa")]
         public async Task FailsWithoutRequiredNonAlphanumericTests(string input)
         {
-            var valid = new PasswordValidator(new IdentityOptionsAccessor(new DefaultIdentitySetup()))
+            var valid = new PasswordValidator(new OptionsAccessor<IdentityOptions>(new [] { new DefaultIdentitySetup()}))
             {
                 RequireNonLetterOrDigit = true,
                 RequireDigit = false,
@@ -85,7 +86,7 @@ namespace Microsoft.AspNet.Identity.Test
         [InlineData("!!!!!!")]
         public async Task SucceedsWithRequiredNonAlphanumericTests(string input)
         {
-            var valid = new PasswordValidator(new IdentityOptionsAccessor(new DefaultIdentitySetup()))
+            var valid = new PasswordValidator(new OptionsAccessor<IdentityOptions>(new [] { new DefaultIdentitySetup()}))
             {
                 RequireNonLetterOrDigit = true,
                 RequireDigit = false,
@@ -110,7 +111,7 @@ namespace Microsoft.AspNet.Identity.Test
             const string lowerError = "Passwords must have at least one lowercase ('a'-'z').";
             const string digitError = "Passwords must have at least one digit ('0'-'9').";
             const string lengthError = "Passwords must be at least 6 characters.";
-            var valid = new PasswordValidator(new IdentityOptionsAccessor(new DefaultIdentitySetup()))
+            var valid = new PasswordValidator(new OptionsAccessor<IdentityOptions>(new [] { new DefaultIdentitySetup()}))
             {
                 RequireNonLetterOrDigit = true,
                 RequireDigit = true,

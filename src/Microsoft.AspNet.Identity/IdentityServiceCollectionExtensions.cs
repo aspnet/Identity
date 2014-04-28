@@ -1,7 +1,5 @@
 using Microsoft.AspNet.Identity;
 using System;
-using System.Linq;
-using System.Reflection;
 
 namespace Microsoft.AspNet.DependencyInjection
 {
@@ -13,7 +11,7 @@ namespace Microsoft.AspNet.DependencyInjection
         {
             services.Add(IdentityServices.GetDefaultUserServices<TUser>());
             services.Add(IdentityServices.GetDefaultRoleServices<TRole>());
-            services.AddSingleton<IOptionsAccessor<IdentityOptions>, IdentityOptionsAccessor>();
+            services.AddSingleton<IOptionsAccessor<IdentityOptions>, OptionsAccessor<IdentityOptions>>();
             services.AddSetup<DefaultIdentitySetup>(); // TODO: add overload which doesn't take setup?
             actionBuilder(new IdentityBuilder<TUser, TRole>(services));
             return services;
@@ -24,41 +22,5 @@ namespace Microsoft.AspNet.DependencyInjection
         {
             return services.AddIdentity<TUser, IdentityRole>(actionBuilder);
         }
-
-        // TODO: find a non identity home for this (DI?)
-        public static ServiceCollection AddSetup(this ServiceCollection services, Type type)
-        {
-#if NET45
-            // No GetInterfaces() in K
-            var setupTypes = type.GetInterfaces()
-                .Where(t => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IOptionsSetup<>));
-            foreach (var setupType in setupTypes)
-            {
-                // TODO: Make this register/add to the IEnumerable<IOptionsSetup<T>
-                services.Add(new ServiceDescriptor
-                {
-                    ServiceType = setupType,
-                    ImplementationType = type,
-                    Lifecycle = LifecycleKind.Transient
-                });
-            }
-#else
-#endif
-            return services;
-        }
-
-        // TODO: find a non identity home for this (DI?)
-        public static ServiceCollection AddSetup(this ServiceCollection services, object setupInstance)
-        {
-            return services.AddSetup(setupInstance.GetType());
-        }
-
-        // TODO: setups?
-        // TODO: find a non identity home for this (DI?)
-        public static ServiceCollection AddSetup<TSetup>(this ServiceCollection services) where TSetup : class
-        {
-            return services.AddSetup(typeof(TSetup));
-        }
-
     }
 }

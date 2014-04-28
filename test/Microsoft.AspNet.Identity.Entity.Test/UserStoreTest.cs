@@ -27,7 +27,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
             var services = new ServiceCollection();
             //var store = new UserStore(new IdentityContext());
             //services.AddSingleton<UserManager<EntityUser>, UserManager<EntityUser>>();
-            services.AddInstance<EntityContext>(new IdentityContext());
+            services.AddInstance<DbContext>(new IdentityContext());
             services.AddTransient<IUserStore<EntityUser>, UserStore>();
             services.AddSingleton<ApplicationUserManager, ApplicationUserManager>();
             var provider = services.BuildServiceProvider();
@@ -40,6 +40,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
         public async Task CanUseSingletonManagerInstance()
         {
             var services = new ServiceCollection();
+            // TODO: this needs to construct a new instance of InMemoryStore
             var store = new UserStore(new IdentityContext());
             services.AddIdentity<EntityUser, EntityRole>(s =>
             {
@@ -51,7 +52,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
             var provider = services.BuildServiceProvider();
             var manager = provider.GetService<ApplicationUserManager>();
             Assert.NotNull(manager);
-            IdentityResultAssert.IsSuccess(await manager.CreateAsync(new EntityUser("hello")));
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(new EntityUser("hello2")));
         }
 
         //[Fact]
@@ -294,7 +295,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
         {
             var manager = TestIdentityFactory.CreateManager();
             var user = new EntityUser("UpdateBlocked") { Email = email };
-            manager.UserValidator = new UserValidator<EntityUser> (new IdentityOptionsAccessor(new DefaultIdentitySetup())) { RequireUniqueEmail = true };
+            manager.UserValidator = new UserValidator<EntityUser> (new OptionsAccessor<IdentityOptions>(new [] { new DefaultIdentitySetup()})) { RequireUniqueEmail = true };
             IdentityResultAssert.IsFailure(await manager.CreateAsync(user), "Email cannot be null or empty.");
         }
 
@@ -306,7 +307,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
         {
             var manager = TestIdentityFactory.CreateManager();
             var user = new EntityUser("UpdateBlocked") { Email = email };
-            manager.UserValidator = new UserValidator<EntityUser> (new IdentityOptionsAccessor(new DefaultIdentitySetup())) { RequireUniqueEmail = true };
+            manager.UserValidator = new UserValidator<EntityUser> (new OptionsAccessor<IdentityOptions>(new [] { new DefaultIdentitySetup()})) { RequireUniqueEmail = true };
             IdentityResultAssert.IsFailure(await manager.CreateAsync(user), "Email '" + email + "' is invalid.");
         }
 #endif
@@ -509,7 +510,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
         public async Task AddDupeEmailFallsWhenUniqueEmailRequired()
         {
             var manager = TestIdentityFactory.CreateManager();
-            manager.UserValidator = new UserValidator<EntityUser> (new IdentityOptionsAccessor(new DefaultIdentitySetup())) { RequireUniqueEmail = true };
+            manager.UserValidator = new UserValidator<EntityUser> (new OptionsAccessor<IdentityOptions>(new [] { new DefaultIdentitySetup()})) { RequireUniqueEmail = true };
             var user = new EntityUser("dupe") { Email = "yup@yup.com" };
             var user2 = new EntityUser("dupeEmail") { Email = "yup@yup.com" };
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
