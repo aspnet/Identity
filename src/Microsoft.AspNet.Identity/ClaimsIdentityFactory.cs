@@ -18,14 +18,13 @@ namespace Microsoft.AspNet.Identity
         /// </summary>
         public ClaimsIdentityFactory(IOptionsAccessor<IdentityOptions> options)
         {
-            if (options == null || options.Options == null)
+            if (options != null && options.Options != null)
             {
-                throw new ArgumentNullException("options");
+                RoleClaimType = options.Options.ClaimTypeRole;
+                UserIdClaimType = options.Options.ClaimTypeUserId;
+                UserNameClaimType = options.Options.ClaimTypeUserName;
+                SecurityStampClaimType = options.Options.ClaimTypeSecurityStamp;
             }
-            RoleClaimType = options.Options.ClaimTypeRole;
-            UserIdClaimType = options.Options.ClaimTypeUserId;
-            UserNameClaimType = options.Options.ClaimTypeUserName;
-            SecurityStampClaimType = options.Options.ClaimTypeSecurityStamp;
         }
 
         /// <summary>

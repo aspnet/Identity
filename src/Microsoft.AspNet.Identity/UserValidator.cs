@@ -22,12 +22,11 @@ namespace Microsoft.AspNet.Identity
         /// </summary>
         public UserValidator(IOptionsAccessor<IdentityOptions> options)
         {
-            if (options == null || options.Options == null)
+            if (options != null && options.Options != null)
             {
-                throw new ArgumentNullException("options");
+                AllowOnlyAlphanumericUserNames = options.Options.UsersAllowOnlyAlphanumericNames;
+                RequireUniqueEmail = options.Options.UsersRequireUniqueEmail;
             }
-            AllowOnlyAlphanumericUserNames = options.Options.UsersAllowOnlyAlphanumericNames;
-            RequireUniqueEmail = options.Options.UsersRequireUniqueEmail;
         }
 
         /// <summary>

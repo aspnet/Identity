@@ -431,8 +431,9 @@ namespace Microsoft.AspNet.Identity.Test
             Assert.Throws<ArgumentNullException>("store",
                 () => new UserManager<TestUser>(provider, null));
             var manager = new UserManager<TestUser>(provider, new NotImplementedStore());
-            Assert.Throws<ArgumentNullException>(() => manager.ClaimsIdentityFactory = null);
-            Assert.Throws<ArgumentNullException>(() => manager.PasswordHasher = null);
+            Assert.Throws<ArgumentNullException>("value", () => manager.ClaimsIdentityFactory = null);
+            Assert.Throws<ArgumentNullException>("value", () => manager.PasswordHasher = null);
+            Assert.Throws<ArgumentNullException>("value", () => manager.Options = null);
             await
                 Assert.ThrowsAsync<ArgumentNullException>("user",
                     async () => await manager.CreateIdentityAsync(null, "whatever"));

@@ -3,7 +3,6 @@ using Microsoft.AspNet.DependencyInjection.Fallback;
 using Microsoft.AspNet.Testing;
 using Microsoft.Data.Entity;
 using Microsoft.Data.Entity.Metadata;
-using Microsoft.Data.Entity.Storage;
 using Microsoft.Data.InMemory;
 using System;
 using System.Linq;
@@ -37,7 +36,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
         }
 
         [Fact]
-        public async Task CanUseSingletonManagerInstance()
+        public async Task CanCreateUsingAddUserManager()
         {
             var services = new ServiceCollection();
             // TODO: this needs to construct a new instance of InMemoryStore

@@ -15,15 +15,14 @@ namespace Microsoft.AspNet.Identity
     {
         public PasswordValidator(IOptionsAccessor<IdentityOptions> options)
         {
-            if (options == null || options.Options == null)
+            if (options != null && options.Options != null)
             {
-                throw new ArgumentNullException("options");
+                RequireDigit = options.Options.PasswordsRequireDigit;
+                RequiredLength = options.Options.PasswordsRequiredLength;
+                RequireLowercase = options.Options.PasswordsRequireLowercase;
+                RequireUppercase = options.Options.PasswordsRequireUppercase;
+                RequireNonLetterOrDigit = options.Options.PasswordsRequireNonLetterOrDigit;
             }
-            RequireDigit = options.Options.PasswordsRequireDigit;
-            RequiredLength = options.Options.PasswordsRequiredLength;
-            RequireLowercase = options.Options.PasswordsRequireLowercase;
-            RequireUppercase = options.Options.PasswordsRequireUppercase;
-            RequireNonLetterOrDigit = options.Options.PasswordsRequireNonLetterOrDigit;
         }
 
         /// <summary>

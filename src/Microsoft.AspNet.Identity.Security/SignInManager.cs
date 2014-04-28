@@ -43,20 +43,11 @@ namespace Microsoft.AspNet.Identity.Security
 
         public virtual async Task<ClaimsIdentity> CreateUserIdentityAsync(TUser user)
         {
-            if (UserManager == null)
-            {
-                return null;
-            }
             return await UserManager.CreateIdentityAsync(user, AuthenticationType);
         }
 
         public virtual async Task SignInAsync(TUser user, bool isPersistent, bool rememberBrowser)
         {
-            if (Context == null)
-            {
-                return;
-            }
-
             // TODO: all the two factor logic/external/rememberBrowser
             var userIdentity = await CreateUserIdentityAsync(user);
             Context.Response.SignIn(userIdentity, new AuthenticationProperties { IsPersistent = isPersistent });
@@ -64,10 +55,6 @@ namespace Microsoft.AspNet.Identity.Security
 
         public virtual void SignOut()
         {
-            if (Context == null)
-            {
-                return;
-            }
             Context.Response.SignOut(AuthenticationType);
         }
 
@@ -158,10 +145,6 @@ namespace Microsoft.AspNet.Identity.Security
 
         public virtual async Task<SignInStatus> PasswordSignInAsync(string userName, string password, bool isPersistent, bool shouldLockout)
         {
-            if (UserManager == null)
-            {
-                return SignInStatus.Failure;
-            }
             var user = await UserManager.FindByNameAsync(userName);
             if (user == null)
             {

@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using Microsoft.AspNet.Abstractions;
 using Microsoft.AspNet.Abstractions.Security;
@@ -14,6 +15,15 @@ namespace Microsoft.AspNet.Identity.Security.Test
     {
 
 #if NET45
+        [Fact]
+        public void ConstructorNullChecks()
+        {
+            Assert.Throws<ArgumentNullException>("userManager", () => new SignInManager<IdentityUser>(null, null));
+            var store = new Mock<IUserStore<IdentityUser>>();
+            var userManager = new UserManager<IdentityUser>(new ServiceCollection().BuildServiceProvider(), store.Object);
+            Assert.Throws<ArgumentNullException>("contextAccessor", () => new SignInManager<IdentityUser>(userManager, null));
+        }
+
         //TODO: Mock fails in K (this works fine in net45)
         [Fact]
         public async Task EnsureClaimsIdentityFactoryCreateIdentityCalled()
