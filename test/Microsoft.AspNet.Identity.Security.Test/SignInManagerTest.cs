@@ -74,8 +74,10 @@ namespace Microsoft.AspNet.Identity.Security.Test
             manager.VerifyAll();
         }
 
-        [Fact]
-        public async Task CanPasswordSignIn()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task CanPasswordSignIn(bool isPersistent)
         {
             // Setup
             var user = new TestUser { UserName = "Foo" };
@@ -87,13 +89,13 @@ namespace Microsoft.AspNet.Identity.Security.Test
             var context = new Mock<HttpContext>();
             var response = new Mock<HttpResponse>();
             context.Setup(c => c.Response).Returns(response.Object).Verifiable();
-            response.Setup(r => r.SignIn(It.IsAny<ClaimsIdentity>(), It.IsAny<AuthenticationProperties>())).Verifiable();
+            response.Setup(r => r.SignIn(It.IsAny<ClaimsIdentity>(), It.Is<AuthenticationProperties>(v => v.IsPersistent == isPersistent))).Verifiable();
             var contextAccessor = new Mock<IContextAccessor<HttpContext>>();
             contextAccessor.Setup(a => a.Value).Returns(context.Object);
             var helper = new SignInManager<TestUser>(manager.Object, contextAccessor.Object);
 
             // Act
-            var result = await helper.PasswordSignInAsync(user.UserName, "password", false, false);
+            var result = await helper.PasswordSignInAsync(user.UserName, "password", isPersistent, false);
 
             // Assert
             Assert.Equal(SignInStatus.Success, result);
