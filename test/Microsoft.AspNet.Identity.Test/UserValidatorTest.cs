@@ -13,7 +13,7 @@ namespace Microsoft.AspNet.Identity.Test
         {
             // Setup
             var manager = new UserManager<TestUser>(new ServiceCollection().BuildServiceProvider(), new NoopUserStore());
-            var validator = new UserValidator<TestUser>(new OptionsAccessor<IdentityOptions>(new [] { new DefaultIdentitySetup()}));
+            var validator = new UserValidator<TestUser>(new OptionsAccessor<IdentityOptions>(null));
 
             // Act
             // Assert
@@ -28,7 +28,7 @@ namespace Microsoft.AspNet.Identity.Test
         {
             // Setup
             var manager = new UserManager<TestUser>(new ServiceCollection().BuildServiceProvider(), new NoopUserStore());
-            var validator = new UserValidator<TestUser>(new OptionsAccessor<IdentityOptions>(new [] { new DefaultIdentitySetup()}));
+            var validator = new UserValidator<TestUser>(new OptionsAccessor<IdentityOptions>(null));
             var user = new TestUser {UserName = input};
 
             // Act
@@ -48,7 +48,7 @@ namespace Microsoft.AspNet.Identity.Test
         {
             // Setup
             var manager = new UserManager<TestUser>(new ServiceCollection().BuildServiceProvider(), new NoopUserStore());
-            var validator = new UserValidator<TestUser>(new OptionsAccessor<IdentityOptions>(new [] { new DefaultIdentitySetup()}));
+            var validator = new UserValidator<TestUser>(new OptionsAccessor<IdentityOptions>(null));
             var user = new TestUser {UserName = userName};
 
             // Act
@@ -75,7 +75,7 @@ namespace Microsoft.AspNet.Identity.Test
         {
             // Setup
             var manager = new UserManager<TestUser>(new ServiceCollection().BuildServiceProvider(), new NoopUserStore());
-            var validator = new UserValidator<TestUser>(new OptionsAccessor<IdentityOptions>(new [] { new DefaultIdentitySetup()})) { AllowOnlyAlphanumericUserNames = false };
+            var validator = new UserValidator<TestUser>(new OptionsAccessor<IdentityOptions>(null)) { AllowOnlyAlphanumericUserNames = false };
             var user = new TestUser {UserName = userName};
 
             // Act

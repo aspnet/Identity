@@ -295,7 +295,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
         {
             var manager = TestIdentityFactory.CreateManager();
             var user = new EntityUser("UpdateBlocked") { Email = email };
-            manager.UserValidator = new UserValidator<EntityUser> (new OptionsAccessor<IdentityOptions>(new [] { new DefaultIdentitySetup()})) { RequireUniqueEmail = true };
+            manager.UserValidator = new UserValidator<EntityUser> (new OptionsAccessor<IdentityOptions>(null)) { RequireUniqueEmail = true };
             IdentityResultAssert.IsFailure(await manager.CreateAsync(user), "Email cannot be null or empty.");
         }
 
@@ -307,7 +307,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
         {
             var manager = TestIdentityFactory.CreateManager();
             var user = new EntityUser("UpdateBlocked") { Email = email };
-            manager.UserValidator = new UserValidator<EntityUser> (new OptionsAccessor<IdentityOptions>(new [] { new DefaultIdentitySetup()})) { RequireUniqueEmail = true };
+            manager.UserValidator = new UserValidator<EntityUser> (new OptionsAccessor<IdentityOptions>(null)) { RequireUniqueEmail = true };
             IdentityResultAssert.IsFailure(await manager.CreateAsync(user), "Email '" + email + "' is invalid.");
         }
 #endif
@@ -510,7 +510,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
         public async Task AddDupeEmailFallsWhenUniqueEmailRequired()
         {
             var manager = TestIdentityFactory.CreateManager();
-            manager.UserValidator = new UserValidator<EntityUser> (new OptionsAccessor<IdentityOptions>(new [] { new DefaultIdentitySetup()})) { RequireUniqueEmail = true };
+            manager.UserValidator = new UserValidator<EntityUser> (new OptionsAccessor<IdentityOptions>(null)) { RequireUniqueEmail = true };
             var user = new EntityUser("dupe") { Email = "yup@yup.com" };
             var user2 = new EntityUser("dupeEmail") { Email = "yup@yup.com" };
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));

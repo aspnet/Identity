@@ -42,7 +42,7 @@ namespace Microsoft.AspNet.Identity
                 throw new ArgumentNullException("store");
             }
             Store = store;
-            var options = serviceProvider.GetService<IOptionsAccessor<IdentityOptions>>() ?? new OptionsAccessor<IdentityOptions>(new [] { new DefaultIdentitySetup()} );
+            var options = serviceProvider.GetService<IOptionsAccessor<IdentityOptions>>() ?? new OptionsAccessor<IdentityOptions>(null);
             Options = options.Options;
             PasswordHasher = serviceProvider.GetService<IPasswordHasher>() ?? new PasswordHasher();
             UserValidator = serviceProvider.GetService<IUserValidator<TUser>>() ?? new UserValidator<TUser>(options);

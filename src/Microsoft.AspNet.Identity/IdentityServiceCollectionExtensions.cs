@@ -12,7 +12,6 @@ namespace Microsoft.AspNet.DependencyInjection
             services.Add(IdentityServices.GetDefaultUserServices<TUser>());
             services.Add(IdentityServices.GetDefaultRoleServices<TRole>());
             services.AddSingleton<IOptionsAccessor<IdentityOptions>, OptionsAccessor<IdentityOptions>>();
-            services.AddSetup<DefaultIdentitySetup>(); // TODO: add overload which doesn't take setup?
             actionBuilder(new IdentityBuilder<TUser, TRole>(services));
             return services;
         }

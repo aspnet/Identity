@@ -15,7 +15,7 @@ namespace Microsoft.AspNet.Identity.Test
         [Fact]
         public async Task CreateIdentityNullChecks()
         {
-            var factory = new ClaimsIdentityFactory<TestUser>(new OptionsAccessor<IdentityOptions>(new [] { new DefaultIdentitySetup()}));
+            var factory = new ClaimsIdentityFactory<TestUser>(new OptionsAccessor<IdentityOptions>(null));
             var manager = new UserManager<TestUser>(new ServiceCollection().BuildServiceProvider(), new NoopUserStore());
             await Assert.ThrowsAsync<ArgumentNullException>("manager",
                 async () => await factory.CreateAsync(null, null, "whatever"));
@@ -48,7 +48,7 @@ namespace Microsoft.AspNet.Identity.Test
             userManager.Setup(m => m.GetClaimsAsync(user, CancellationToken.None)).ReturnsAsync(userClaims);
 
             const string authType = "Microsoft.AspNet.Identity";
-            var factory = new ClaimsIdentityFactory<TestUser>(new OptionsAccessor<IdentityOptions>(new [] { new DefaultIdentitySetup()}));
+            var factory = new ClaimsIdentityFactory<TestUser>(new OptionsAccessor<IdentityOptions>(null));
 
             // Act
             var identity = await factory.CreateAsync(userManager.Object, user, authType);
