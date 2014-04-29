@@ -16,7 +16,7 @@ namespace Microsoft.AspNet.Identity
 
         public IdentityBuilder<TUser, TRole> AddInstance<T>(Func<T> func)
         {
-            Services.AddInstance<T>(func());
+            Services.AddInstance(func());
             return this;
         }
 
@@ -30,7 +30,7 @@ namespace Microsoft.AspNet.Identity
             return AddInstance(func);
         }
 
-        public IdentityBuilder<TUser, TRole> AddPasswordValidator(Func<IPasswordValidator> func)
+        public IdentityBuilder<TUser, TRole> AddPasswordValidator(Func<IPasswordValidator<TUser>> func)
         {
             return AddInstance(func);
         }
@@ -42,13 +42,13 @@ namespace Microsoft.AspNet.Identity
 
         public IdentityBuilder<TUser, TRole> AddUserManager<TManager>() where TManager : UserManager<TUser>
         {
-            Services.AddScoped<TManager, TManager>();
+            Services.AddScoped<TManager>();
             return this;
         }
 
         public IdentityBuilder<TUser, TRole> AddRoleManager<TManager>() where TManager : RoleManager<TRole>
         {
-            Services.AddScoped<TManager, TManager>();
+            Services.AddScoped<TManager>();
             return this;
         }
 

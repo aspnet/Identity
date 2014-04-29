@@ -4,6 +4,7 @@ using Microsoft.AspNet.DependencyInjection;
 using Microsoft.AspNet.DependencyInjection.Fallback;
 using Microsoft.AspNet.Identity.Test;
 using Microsoft.Data.Entity;
+using Microsoft.Data.InMemory;
 using Xunit;
 
 namespace Microsoft.AspNet.Identity.Entity.Test
@@ -19,6 +20,11 @@ namespace Microsoft.AspNet.Identity.Entity.Test
         public async Task CanCreateUsingAddRoleManager()
         {
             var services = new ServiceCollection();
+#if NET45
+            //            services.AddEntityFramework(s => s.AddSqlServer());
+            //#else
+            services.AddEntityFramework(s => s.AddInMemoryStore());
+#endif
             // TODO: this should construct a new instance of InMemoryStore
             var store = new RoleStore<EntityRole>(new IdentityContext());
             services.AddIdentity<EntityUser, EntityRole>(s =>
@@ -36,9 +42,15 @@ namespace Microsoft.AspNet.Identity.Entity.Test
         public async Task CanCreateRoleWithSingletonManager()
         {
             var services = new ServiceCollection();
-            services.AddInstance<DbContext>(new IdentityContext());
+#if NET45
+//            services.AddEntityFramework(s => s.AddSqlServer());
+//#else
+            services.AddEntityFramework(s => s.AddInMemoryStore());
+#endif
+            services.AddTransient<DbContext, IdentityContext>();
             services.AddTransient<IRoleStore<EntityRole>, RoleStore<EntityRole>>();
             //todo: services.AddSingleton<RoleManager<EntityRole>, RoleManager<EntityRole>>();
+            // TODO: How to configure SqlServer?
             services.AddSingleton<ApplicationRoleManager, ApplicationRoleManager>();
             var provider = services.BuildServiceProvider();
             var manager = provider.GetService<ApplicationRoleManager>();
