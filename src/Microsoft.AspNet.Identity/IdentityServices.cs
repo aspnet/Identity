@@ -1,4 +1,4 @@
-//using Microsoft.AspNet.ConfigurationModel;
+using Microsoft.AspNet.ConfigurationModel;
 using Microsoft.AspNet.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -13,13 +13,12 @@ namespace Microsoft.AspNet.Identity
 
         public static IEnumerable<IServiceDescriptor> GetDefaultUserServices<TUser>() where TUser : class
         {
-        //    return GetDefaultUserServices<TUser>(new Configuration());
-        //}
+            return GetDefaultUserServices<TUser>(new Configuration());
+        }
 
-        //public static IEnumerable<IServiceDescriptor> GetDefaultUserServices<TUser>(IConfiguration configuration) where TUser : class
-        //{
-        //    var describe = new ServiceDescriber(configuration);
-            var describe = new ServiceDescriber();
+        public static IEnumerable<IServiceDescriptor> GetDefaultUserServices<TUser>(IConfiguration configuration) where TUser : class
+        {
+            var describe = new ServiceDescriber(configuration);
 
             // TODO: review defaults for validators should get picked up from config?
             yield return describe.Transient<IUserValidator<TUser>, UserValidator<TUser>>();
@@ -32,13 +31,12 @@ namespace Microsoft.AspNet.Identity
 
         public static IEnumerable<IServiceDescriptor> GetDefaultRoleServices<TRole>() where TRole : class
         {
-        //    return GetDefaultRoleServices<TRole>(new Configuration());
-        //}
+            return GetDefaultRoleServices<TRole>(new Configuration());
+        }
 
-        //public static IEnumerable<IServiceDescriptor> GetDefaultRoleServices<TRole>(IConfiguration configuration) where TRole : class
-        //{
-        //    var describe = new ServiceDescriber(configuration);
-            var describe = new ServiceDescriber();
+        public static IEnumerable<IServiceDescriptor> GetDefaultRoleServices<TRole>(IConfiguration configuration) where TRole : class
+        {
+            var describe = new ServiceDescriber(configuration);
 
             // TODO: review defaults for validators should get picked up from config?
             yield return describe.Instance<IRoleValidator<TRole>>(new RoleValidator<TRole>());
