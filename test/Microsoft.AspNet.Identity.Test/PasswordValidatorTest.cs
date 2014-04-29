@@ -23,11 +23,12 @@ namespace Microsoft.AspNet.Identity.Test
         public async Task ValidateThrowsWithNullTest()
         {
             // Setup
-            var validator = new PasswordValidator(new OptionsAccessor<IdentityOptions>(null));
+            var validator = new PasswordValidator<IdentityUser>();
 
             // Act
             // Assert
-            await Assert.ThrowsAsync<ArgumentNullException>(() => validator.ValidateAsync(null));
+            await Assert.ThrowsAsync<ArgumentNullException>("password", () => validator.ValidateAsync(null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>("manager", () => validator.ValidateAsync("foo", null));
         }
 
 
@@ -38,14 +39,13 @@ namespace Microsoft.AspNet.Identity.Test
         public async Task FailsIfTooShortTests(string input)
         {
             const string error = "Passwords must be at least 6 characters.";
-            var valid = new PasswordValidator(new OptionsAccessor<IdentityOptions>(null))
-            {
-                RequireNonLetterOrDigit = false,
-                RequireDigit = false,
-                RequireLowercase = false,
-                RequireUppercase = false,
-            };
-            IdentityResultAssert.IsFailure(await valid.ValidateAsync(input), error);
+            var manager = MockHelpers.TestUserManager<IdentityUser>();
+            var valid = new PasswordValidator<IdentityUser>();
+            manager.Options.PasswordsRequireUppercase = false;
+            manager.Options.PasswordsRequireNonLetterOrDigit = false;
+            manager.Options.PasswordsRequireLowercase = false;
+            manager.Options.PasswordsRequireDigit = false;
+            IdentityResultAssert.IsFailure(await valid.ValidateAsync(input, manager), error);
         }
 
         [Theory]
@@ -53,14 +53,13 @@ namespace Microsoft.AspNet.Identity.Test
         [InlineData("aaaaaaaaaaa")]
         public async Task SuccessIfLongEnoughTests(string input)
         {
-            var valid = new PasswordValidator(new OptionsAccessor<IdentityOptions>(null))
-            {
-                RequireNonLetterOrDigit = false,
-                RequireDigit = false,
-                RequireLowercase = false,
-                RequireUppercase = false,
-            };
-            IdentityResultAssert.IsSuccess(await valid.ValidateAsync(input));
+            var manager = MockHelpers.TestUserManager<IdentityUser>();
+            var valid = new PasswordValidator<IdentityUser>();
+            manager.Options.PasswordsRequireUppercase = false;
+            manager.Options.PasswordsRequireNonLetterOrDigit = false;
+            manager.Options.PasswordsRequireLowercase = false;
+            manager.Options.PasswordsRequireDigit = false;
+            IdentityResultAssert.IsSuccess(await valid.ValidateAsync(input, manager));
         }
 
         [Theory]
@@ -68,15 +67,14 @@ namespace Microsoft.AspNet.Identity.Test
         [InlineData("aaaaaaaaaaa")]
         public async Task FailsWithoutRequiredNonAlphanumericTests(string input)
         {
-            var valid = new PasswordValidator(new OptionsAccessor<IdentityOptions>(null))
-            {
-                RequireNonLetterOrDigit = true,
-                RequireDigit = false,
-                RequireLowercase = false,
-                RequireUppercase = false,
-                RequiredLength = 0
-            };
-            IdentityResultAssert.IsFailure(await valid.ValidateAsync(input),
+            var manager = MockHelpers.TestUserManager<IdentityUser>();
+            var valid = new PasswordValidator<IdentityUser>();
+            manager.Options.PasswordsRequireUppercase = false;
+            manager.Options.PasswordsRequireNonLetterOrDigit = true;
+            manager.Options.PasswordsRequireLowercase = false;
+            manager.Options.PasswordsRequireDigit = false;
+            manager.Options.PasswordsRequiredLength = 0;
+            IdentityResultAssert.IsFailure(await valid.ValidateAsync(input, manager),
                 "Passwords must have at least one non letter or digit character.");
         }
 
@@ -86,15 +84,14 @@ namespace Microsoft.AspNet.Identity.Test
         [InlineData("!!!!!!")]
         public async Task SucceedsWithRequiredNonAlphanumericTests(string input)
         {
-            var valid = new PasswordValidator(new OptionsAccessor<IdentityOptions>(null))
-            {
-                RequireNonLetterOrDigit = true,
-                RequireDigit = false,
-                RequireLowercase = false,
-                RequireUppercase = false,
-                RequiredLength = 0
-            };
-            IdentityResultAssert.IsSuccess(await valid.ValidateAsync(input));
+            var manager = MockHelpers.TestUserManager<IdentityUser>();
+            var valid = new PasswordValidator<IdentityUser>();
+            manager.Options.PasswordsRequireUppercase = false;
+            manager.Options.PasswordsRequireNonLetterOrDigit = true;
+            manager.Options.PasswordsRequireLowercase = false;
+            manager.Options.PasswordsRequireDigit = false;
+            manager.Options.PasswordsRequiredLength = 0;
+            IdentityResultAssert.IsSuccess(await valid.ValidateAsync(input, manager));
         }
 
         [Theory]
@@ -111,14 +108,8 @@ namespace Microsoft.AspNet.Identity.Test
             const string lowerError = "Passwords must have at least one lowercase ('a'-'z').";
             const string digitError = "Passwords must have at least one digit ('0'-'9').";
             const string lengthError = "Passwords must be at least 6 characters.";
-            var valid = new PasswordValidator(new OptionsAccessor<IdentityOptions>(null))
-            {
-                RequireNonLetterOrDigit = true,
-                RequireDigit = true,
-                RequireLowercase = true,
-                RequireUppercase = true,
-                RequiredLength = 6
-            };
+            var manager = MockHelpers.TestUserManager<IdentityUser>();
+            var valid = new PasswordValidator<IdentityUser>();
             var errors = new List<string>();
             if ((errorMask & Errors.Length) != Errors.None)
             {
@@ -142,11 +133,11 @@ namespace Microsoft.AspNet.Identity.Test
             }
             if (errors.Count == 0)
             {
-                IdentityResultAssert.IsSuccess(await valid.ValidateAsync(input));
+                IdentityResultAssert.IsSuccess(await valid.ValidateAsync(input, manager));
             }
             else
             {
-                IdentityResultAssert.IsFailure(await valid.ValidateAsync(input), string.Join(" ", errors));
+                IdentityResultAssert.IsFailure(await valid.ValidateAsync(input, manager), string.Join(" ", errors));
             }
         }
     }

@@ -753,11 +753,11 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         private class AlwaysBadValidator : IUserValidator<TUser>, IRoleValidator<TRole>,
-            IPasswordValidator
+            IPasswordValidator<TUser>
         {
             public const string ErrorMessage = "I'm Bad.";
 
-            public Task<IdentityResult> ValidateAsync(string password, CancellationToken cancellationToken = default(CancellationToken))
+            public Task<IdentityResult> ValidateAsync(string password, UserManager<TUser> manager, CancellationToken cancellationToken = default(CancellationToken))
             {
                 return Task.FromResult(IdentityResult.Failed(ErrorMessage));
             }

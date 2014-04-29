@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Microsoft.AspNet.DependencyInjection;
 using Microsoft.AspNet.DependencyInjection.Fallback;
 using Xunit;
@@ -20,9 +19,9 @@ namespace Microsoft.AspNet.Identity.Test
         public void CanSpecifyPasswordValidatorInstance()
         {
             var services = new ServiceCollection();
-            var validator = new PasswordValidator(new OptionsAccessor<IdentityOptions>(null));
+            var validator = new PasswordValidator<IdentityUser>();
             services.AddIdentity<IdentityUser>(b => b.AddPasswordValidator(() => validator));
-            Assert.Equal(validator, services.BuildServiceProvider().GetService<IPasswordValidator>());
+            Assert.Equal(validator, services.BuildServiceProvider().GetService<IPasswordValidator<IdentityUser>>());
         }
 
         [Fact]
@@ -47,7 +46,7 @@ namespace Microsoft.AspNet.Identity.Test
             var userValidator = provider.GetService<IUserValidator<IdentityUser>>() as UserValidator<IdentityUser>;
             Assert.NotNull(userValidator);
 
-            var pwdValidator = provider.GetService<IPasswordValidator>() as PasswordValidator;
+            var pwdValidator = provider.GetService<IPasswordValidator<IdentityUser>>() as PasswordValidator<IdentityUser>;
             Assert.NotNull(pwdValidator);
 
             var hasher = provider.GetService<IPasswordHasher>() as PasswordHasher;

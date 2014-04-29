@@ -50,7 +50,7 @@ namespace Microsoft.AspNet.Identity
             Options = optionsAccessor.Options;
             PasswordHasher = serviceProvider.GetService<IPasswordHasher>() ?? new PasswordHasher();
             UserValidator = serviceProvider.GetService<IUserValidator<TUser>>() ?? new UserValidator<TUser>();
-            PasswordValidator = serviceProvider.GetService<IPasswordValidator>() ?? new PasswordValidator(optionsAccessor);
+            PasswordValidator = serviceProvider.GetService<IPasswordValidator<TUser>>() ?? new PasswordValidator<TUser>();
             ClaimsIdentityFactory = serviceProvider.GetService<IClaimsIdentityFactory<TUser>>() ?? new ClaimsIdentityFactory<TUser>();
             // TODO: Email/Sms/Token services
         }
@@ -89,7 +89,7 @@ namespace Microsoft.AspNet.Identity
         /// <summary>
         ///     Used to validate passwords before persisting changes
         /// </summary>
-        public IPasswordValidator PasswordValidator { get; set; }
+        public IPasswordValidator<TUser> PasswordValidator { get; set; }
 
         /// <summary>
         ///     Used to create claims identities from users
@@ -631,7 +631,7 @@ namespace Microsoft.AspNet.Identity
         {
             if (PasswordValidator != null)
             {
-                var result = await PasswordValidator.ValidateAsync(newPassword, cancellationToken);
+                var result = await PasswordValidator.ValidateAsync(newPassword, this, cancellationToken);
                 if (!result.Succeeded)
                 {
                     return result;

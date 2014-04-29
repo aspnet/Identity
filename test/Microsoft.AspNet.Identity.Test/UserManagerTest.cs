@@ -409,10 +409,10 @@ namespace Microsoft.AspNet.Identity.Test
             // TODO: Can switch to Mock eventually
             var manager = new UserManager<TestUser>(new ServiceCollection().BuildServiceProvider(), new EmptyStore(), new OptionsAccessor<IdentityOptions>(null))
             {
-                PasswordValidator = new BadPasswordValidtor()
+                PasswordValidator = new BadPasswordValidator<TestUser>()
             };
             IdentityResultAssert.IsFailure(await manager.CreateAsync(new TestUser(), "password"),
-                BadPasswordValidtor.ErrorMessage);
+                BadPasswordValidator<TestUser>.ErrorMessage);
         }
 
         [Fact]
@@ -600,11 +600,11 @@ namespace Microsoft.AspNet.Identity.Test
             await Assert.ThrowsAsync<ObjectDisposedException>(() => manager.ConfirmEmailAsync(null, null));
         }
 
-        private class BadPasswordValidtor : IPasswordValidator
+        private class BadPasswordValidator<TUser> : IPasswordValidator<TUser> where TUser : class
         {
             public const string ErrorMessage = "I'm Bad.";
 
-            public Task<IdentityResult> ValidateAsync(string password, CancellationToken cancellationToken = default(CancellationToken))
+            public Task<IdentityResult> ValidateAsync(string password, UserManager<TUser> manager, CancellationToken cancellationToken = default(CancellationToken))
             {
                 return Task.FromResult(IdentityResult.Failed(ErrorMessage));
             }

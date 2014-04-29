@@ -15,7 +15,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
         {
             var services = new ServiceCollection();
             services.AddTransient<IUserValidator<IdentityUser>, UserValidator<IdentityUser>>();
-            services.AddTransient<IPasswordValidator, PasswordValidator>();
+            services.AddTransient<IPasswordValidator<IdentityUser>, PasswordValidator<IdentityUser>>();
             var options = new IdentityOptions
             {
                 PasswordsRequireDigit = false,

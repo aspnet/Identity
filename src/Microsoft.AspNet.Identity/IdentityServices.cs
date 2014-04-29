@@ -23,7 +23,7 @@ namespace Microsoft.AspNet.Identity
 
             // TODO: review defaults for validators should get picked up from config?
             yield return describe.Transient<IUserValidator<TUser>, UserValidator<TUser>>();
-            yield return describe.Transient<IPasswordValidator, PasswordValidator>();
+            yield return describe.Transient<IPasswordValidator<TUser>, PasswordValidator<TUser>>();
             yield return describe.Transient<IPasswordHasher, PasswordHasher>();
             yield return describe.Transient<IClaimsIdentityFactory<TUser>, ClaimsIdentityFactory<TUser>>();
 
