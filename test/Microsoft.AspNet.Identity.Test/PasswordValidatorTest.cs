@@ -40,10 +40,10 @@ namespace Microsoft.AspNet.Identity.Test
             const string error = "Passwords must be at least 6 characters.";
             var manager = MockHelpers.TestUserManager<IdentityUser>();
             var valid = new PasswordValidator<IdentityUser>();
-            manager.Options.PasswordsRequireUppercase = false;
-            manager.Options.PasswordsRequireNonLetterOrDigit = false;
-            manager.Options.PasswordsRequireLowercase = false;
-            manager.Options.PasswordsRequireDigit = false;
+            manager.Options.Password.RequireUppercase = false;
+            manager.Options.Password.RequireNonLetterOrDigit = false;
+            manager.Options.Password.RequireLowercase = false;
+            manager.Options.Password.RequireDigit = false;
             IdentityResultAssert.IsFailure(await valid.ValidateAsync(input, manager), error);
         }
 
@@ -54,10 +54,10 @@ namespace Microsoft.AspNet.Identity.Test
         {
             var manager = MockHelpers.TestUserManager<IdentityUser>();
             var valid = new PasswordValidator<IdentityUser>();
-            manager.Options.PasswordsRequireUppercase = false;
-            manager.Options.PasswordsRequireNonLetterOrDigit = false;
-            manager.Options.PasswordsRequireLowercase = false;
-            manager.Options.PasswordsRequireDigit = false;
+            manager.Options.Password.RequireUppercase = false;
+            manager.Options.Password.RequireNonLetterOrDigit = false;
+            manager.Options.Password.RequireLowercase = false;
+            manager.Options.Password.RequireDigit = false;
             IdentityResultAssert.IsSuccess(await valid.ValidateAsync(input, manager));
         }
 
@@ -68,11 +68,11 @@ namespace Microsoft.AspNet.Identity.Test
         {
             var manager = MockHelpers.TestUserManager<IdentityUser>();
             var valid = new PasswordValidator<IdentityUser>();
-            manager.Options.PasswordsRequireUppercase = false;
-            manager.Options.PasswordsRequireNonLetterOrDigit = true;
-            manager.Options.PasswordsRequireLowercase = false;
-            manager.Options.PasswordsRequireDigit = false;
-            manager.Options.PasswordsRequiredLength = 0;
+            manager.Options.Password.RequireUppercase = false;
+            manager.Options.Password.RequireNonLetterOrDigit = true;
+            manager.Options.Password.RequireLowercase = false;
+            manager.Options.Password.RequireDigit = false;
+            manager.Options.Password.RequiredLength = 0;
             IdentityResultAssert.IsFailure(await valid.ValidateAsync(input, manager),
                 "Passwords must have at least one non letter or digit character.");
         }
@@ -85,11 +85,11 @@ namespace Microsoft.AspNet.Identity.Test
         {
             var manager = MockHelpers.TestUserManager<IdentityUser>();
             var valid = new PasswordValidator<IdentityUser>();
-            manager.Options.PasswordsRequireUppercase = false;
-            manager.Options.PasswordsRequireNonLetterOrDigit = true;
-            manager.Options.PasswordsRequireLowercase = false;
-            manager.Options.PasswordsRequireDigit = false;
-            manager.Options.PasswordsRequiredLength = 0;
+            manager.Options.Password.RequireUppercase = false;
+            manager.Options.Password.RequireNonLetterOrDigit = true;
+            manager.Options.Password.RequireLowercase = false;
+            manager.Options.Password.RequireDigit = false;
+            manager.Options.Password.RequiredLength = 0;
             IdentityResultAssert.IsSuccess(await valid.ValidateAsync(input, manager));
         }
 

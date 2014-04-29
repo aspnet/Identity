@@ -64,10 +64,13 @@ namespace Microsoft.AspNet.Identity.Entity.Test
             services.AddSingleton<UserManager<EntityUser>, UserManager<EntityUser>>();
             var options = new IdentityOptions
             {
-                PasswordsRequireDigit = false,
-                PasswordsRequireLowercase = false,
-                PasswordsRequireNonLetterOrDigit = false,
-                PasswordsRequireUppercase = false
+                Password = new PasswordOptions
+                {
+                    RequireDigit = false,
+                    RequireLowercase = false,
+                    RequireNonLetterOrDigit = false,
+                    RequireUppercase = false
+                }
             };
             var optionsAccessor = new OptionsAccessor<IdentityOptions>(new[] { new TestSetup(options) });
             //services.AddInstance<IOptionsAccessor<IdentityOptions>>(new OptionsAccessor<IdentityOptions>(new[] { new TestSetup(options) }));

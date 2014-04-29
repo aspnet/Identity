@@ -34,19 +34,19 @@ namespace Microsoft.AspNet.Identity
             }
             var userId = await manager.GetUserIdAsync(user, cancellationToken);
             var userName = await manager.GetUserNameAsync(user, cancellationToken);
-            var id = new ClaimsIdentity(authenticationType, manager.Options.ClaimTypeUserName, manager.Options.ClaimTypeRole);
-            id.AddClaim(new Claim(manager.Options.ClaimTypeUserId, userId));
-            id.AddClaim(new Claim(manager.Options.ClaimTypeUserName, userName, ClaimValueTypes.String));
+            var id = new ClaimsIdentity(authenticationType, manager.Options.ClaimType.UserName, manager.Options.ClaimType.Role);
+            id.AddClaim(new Claim(manager.Options.ClaimType.UserId, userId));
+            id.AddClaim(new Claim(manager.Options.ClaimType.UserName, userName, ClaimValueTypes.String));
             if (manager.SupportsUserSecurityStamp)
             {
-                id.AddClaim(new Claim(manager.Options.ClaimTypeSecurityStamp, await manager.GetSecurityStampAsync(user, cancellationToken)));
+                id.AddClaim(new Claim(manager.Options.ClaimType.SecurityStamp, await manager.GetSecurityStampAsync(user, cancellationToken)));
             }
             if (manager.SupportsUserRole)
             {
                 var roles = await manager.GetRolesAsync(user, cancellationToken);
                 foreach (var roleName in roles)
                 {
-                    id.AddClaim(new Claim(manager.Options.ClaimTypeRole, roleName, ClaimValueTypes.String));
+                    id.AddClaim(new Claim(manager.Options.ClaimType.Role, roleName, ClaimValueTypes.String));
                 }
             }
             if (manager.SupportsUserClaim)

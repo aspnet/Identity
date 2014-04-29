@@ -18,11 +18,15 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
             services.AddTransient<IPasswordValidator<IdentityUser>, PasswordValidator<IdentityUser>>();
             var options = new IdentityOptions
             {
-                PasswordsRequireDigit = false,
-                PasswordsRequireLowercase = false,
-                PasswordsRequireNonLetterOrDigit = false,
-                PasswordsRequireUppercase = false,
-                UsersAllowOnlyAlphanumericNames = false
+                Password = new PasswordOptions {
+                    RequireDigit = false,
+                    RequireLowercase = false,
+                    RequireNonLetterOrDigit = false,
+                    RequireUppercase = false
+                },
+                User = new UserOptions {
+                    AllowOnlyAlphanumericNames = false
+                }
             };
             var optionsAccessor = new OptionsAccessor<IdentityOptions>(new[] {new TestSetup(options)});
             //services.AddInstance<IOptionsAccessor<IdentityOptions>>(optionsAccessor);

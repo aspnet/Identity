@@ -30,23 +30,24 @@ namespace Microsoft.AspNet.Identity
                 throw new ArgumentNullException("manager");
             }
             var errors = new List<string>();
-            if (string.IsNullOrWhiteSpace(password) || password.Length < manager.Options.PasswordsRequiredLength)
+            var options = manager.Options.Password;
+            if (string.IsNullOrWhiteSpace(password) || password.Length < options.RequiredLength)
             {
-                errors.Add(String.Format(CultureInfo.CurrentCulture, Resources.PasswordTooShort, manager.Options.PasswordsRequiredLength));
+                errors.Add(String.Format(CultureInfo.CurrentCulture, Resources.PasswordTooShort, options.RequiredLength));
             }
-            if (manager.Options.PasswordsRequireNonLetterOrDigit && password.All(IsLetterOrDigit))
+            if (options.RequireNonLetterOrDigit && password.All(IsLetterOrDigit))
             {
                 errors.Add(Resources.PasswordRequireNonLetterOrDigit);
             }
-            if (manager.Options.PasswordsRequireDigit && !password.Any(IsDigit))
+            if (options.RequireDigit && !password.Any(IsDigit))
             {
                 errors.Add(Resources.PasswordRequireDigit);
             }
-            if (manager.Options.PasswordsRequireLowercase && !password.Any(IsLower))
+            if (options.RequireLowercase && !password.Any(IsLower))
             {
                 errors.Add(Resources.PasswordRequireLower);
             }
-            if (manager.Options.PasswordsRequireUppercase && !password.Any(IsUpper))
+            if (options.RequireUppercase && !password.Any(IsUpper))
             {
                 errors.Add(Resources.PasswordRequireUpper);
             }

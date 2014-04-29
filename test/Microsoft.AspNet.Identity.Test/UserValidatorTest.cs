@@ -75,7 +75,7 @@ namespace Microsoft.AspNet.Identity.Test
         {
             // Setup
             var manager = MockHelpers.TestUserManager(new NoopUserStore());
-            manager.Options.UsersAllowOnlyAlphanumericNames = false;
+            manager.Options.User.AllowOnlyAlphanumericNames = false;
             var validator = new UserValidator<TestUser>();
             var user = new TestUser {UserName = userName};
 

@@ -16,7 +16,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
             public int Order { get { return 0; } }
             public void Setup(IdentityOptions options)
             {
-                options.PasswordsRequiredLength = -1;
+                options.Password.RequiredLength = -1;
             }
         }
 
@@ -36,11 +36,11 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
             setup.Setup(optionsGetter.Options);
 
             var myOptions = optionsGetter.Options;
-            Assert.True(myOptions.PasswordsRequireLowercase);
-            Assert.True(myOptions.PasswordsRequireDigit);
-            Assert.True(myOptions.PasswordsRequireNonLetterOrDigit);
-            Assert.True(myOptions.PasswordsRequireUppercase);
-            Assert.Equal(-1, myOptions.PasswordsRequiredLength);
+            Assert.True(myOptions.Password.RequireLowercase);
+            Assert.True(myOptions.Password.RequireDigit);
+            Assert.True(myOptions.Password.RequireNonLetterOrDigit);
+            Assert.True(myOptions.Password.RequireUppercase);
+            Assert.Equal(-1, myOptions.Password.RequiredLength);
         }
 
         [Fact]

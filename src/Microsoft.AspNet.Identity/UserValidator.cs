@@ -35,7 +35,7 @@ namespace Microsoft.AspNet.Identity
             }
             var errors = new List<string>();
             await ValidateUserName(manager, user, errors);
-            if (manager.Options.UsersRequireUniqueEmail)
+            if (manager.Options.User.RequireUniqueEmail)
             {
                 await ValidateEmail(manager, user, errors);
             }
@@ -91,7 +91,7 @@ namespace Microsoft.AspNet.Identity
             {
                 errors.Add(String.Format(CultureInfo.CurrentCulture, Resources.PropertyTooShort, "UserName"));
             }
-            else if (manager.Options.UsersAllowOnlyAlphanumericNames && !userName.All(IsAlphaNumeric))
+            else if (manager.Options.User.AllowOnlyAlphanumericNames && !userName.All(IsAlphaNumeric))
             {
                 // If any characters are not letters or digits, its an illegal user name
                 errors.Add(String.Format(CultureInfo.CurrentCulture, Resources.InvalidUserName, userName));

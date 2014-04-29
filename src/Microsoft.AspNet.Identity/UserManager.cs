@@ -338,7 +338,7 @@ namespace Microsoft.AspNet.Identity
             {
                 return result;
             }
-            if (Options.LockoutEnabledByDefault && SupportsUserLockout)
+            if (Options.Lockout.EnabledByDefault && SupportsUserLockout)
             {
                 await GetUserLockoutStore().SetLockoutEnabledAsync(user, true, cancellationToken);
             }
@@ -1715,12 +1715,12 @@ namespace Microsoft.AspNet.Identity
             }
             // If this puts the user over the threshold for lockout, lock them out and reset the access failed count
             var count = await store.IncrementAccessFailedCountAsync(user, cancellationToken);
-            if (count < Options.LockoutMaxFailedAccessAttempts)
+            if (count < Options.Lockout.MaxFailedAccessAttempts)
             {
                 return await UpdateAsync(user, cancellationToken);
             }
             await
-                store.SetLockoutEndDateAsync(user, DateTimeOffset.UtcNow.Add(Options.LockoutDefaultTimeSpan), cancellationToken);
+                store.SetLockoutEndDateAsync(user, DateTimeOffset.UtcNow.Add(Options.Lockout.DefaultLockoutTimeSpan), cancellationToken);
             await store.ResetAccessFailedCountAsync(user, cancellationToken);
             return await UpdateAsync(user, cancellationToken);
         }

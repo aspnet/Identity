@@ -60,10 +60,10 @@ namespace Microsoft.AspNet.Identity.Test
             var claims = identity.Claims.ToList();
             Assert.NotNull(claims);
             Assert.True(
-                claims.Any(c => c.Type == manager.Options.ClaimTypeUserName && c.Value == user.UserName));
-            Assert.True(claims.Any(c => c.Type == manager.Options.ClaimTypeUserId && c.Value == user.Id));
-            Assert.Equal(supportRoles, claims.Any(c => c.Type == manager.Options.ClaimTypeRole && c.Value == "Admin"));
-            Assert.Equal(supportRoles, claims.Any(c => c.Type == manager.Options.ClaimTypeRole && c.Value == "Local"));
+                claims.Any(c => c.Type == manager.Options.ClaimType.UserName && c.Value == user.UserName));
+            Assert.True(claims.Any(c => c.Type == manager.Options.ClaimType.UserId && c.Value == user.Id));
+            Assert.Equal(supportRoles, claims.Any(c => c.Type == manager.Options.ClaimType.Role && c.Value == "Admin"));
+            Assert.Equal(supportRoles, claims.Any(c => c.Type == manager.Options.ClaimType.Role && c.Value == "Local"));
             foreach (var cl in userClaims)
             {
                 Assert.Equal(supportClaims, claims.Any(c => c.Type == cl.Type && c.Value == cl.Value));

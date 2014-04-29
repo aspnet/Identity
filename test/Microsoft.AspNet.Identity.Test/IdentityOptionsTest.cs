@@ -10,23 +10,23 @@ namespace Microsoft.AspNet.Identity.Test
         public void VerifyDefaultOptions()
         {
             var options = new IdentityOptions();
-            Assert.False(options.LockoutEnabledByDefault);
-            Assert.Equal(TimeSpan.FromMinutes(5), options.LockoutDefaultTimeSpan);
-            Assert.Equal(5, options.LockoutMaxFailedAccessAttempts);
+            Assert.False(options.Lockout.EnabledByDefault);
+            Assert.Equal(TimeSpan.FromMinutes(5), options.Lockout.DefaultLockoutTimeSpan);
+            Assert.Equal(5, options.Lockout.MaxFailedAccessAttempts);
 
-            Assert.True(options.PasswordsRequireDigit);
-            Assert.True(options.PasswordsRequireLowercase);
-            Assert.True(options.PasswordsRequireNonLetterOrDigit);
-            Assert.True(options.PasswordsRequireUppercase);
-            Assert.Equal(6, options.PasswordsRequiredLength);
+            Assert.True(options.Password.RequireDigit);
+            Assert.True(options.Password.RequireLowercase);
+            Assert.True(options.Password.RequireNonLetterOrDigit);
+            Assert.True(options.Password.RequireUppercase);
+            Assert.Equal(6, options.Password.RequiredLength);
 
-            Assert.True(options.UsersAllowOnlyAlphanumericNames);
-            Assert.False(options.UsersRequireUniqueEmail);
+            Assert.True(options.User.AllowOnlyAlphanumericNames);
+            Assert.False(options.User.RequireUniqueEmail);
 
-            Assert.Equal(ClaimTypes.Role, options.ClaimTypeRole);
-            Assert.Equal(ClaimTypes.Name, options.ClaimTypeUserName);
-            Assert.Equal(ClaimTypes.NameIdentifier, options.ClaimTypeUserId);
-            Assert.Equal(IdentityOptions.DefaultSecurityStampClaimType, options.ClaimTypeSecurityStamp);
+            Assert.Equal(ClaimTypes.Role, options.ClaimType.Role);
+            Assert.Equal(ClaimTypes.Name, options.ClaimType.UserName);
+            Assert.Equal(ClaimTypes.NameIdentifier, options.ClaimType.UserId);
+            Assert.Equal(ClaimTypeOptions.DefaultSecurityStampClaimType, options.ClaimType.SecurityStamp);
         }
 
         [Fact]
