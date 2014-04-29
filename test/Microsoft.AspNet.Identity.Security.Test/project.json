@@ -2,7 +2,7 @@
   "version": "0.1-alpha-*",
   "dependencies": {
     "Microsoft.AspNet.Abstractions" : "0.1-alpha-*",
-    "Microsoft.AspNet.ConfigurationModel" : "0.1-alpha-*",
+    "Microsoft.AspNet.ConfigurationModel": "0.1-alpha-*",
     "Microsoft.AspNet.DependencyInjection" : "0.1-alpha-*",
     "Microsoft.AspNet.Identity" : "",
     "Microsoft.AspNet.Identity.Security" : "",
@@ -14,6 +14,7 @@
     "xunit.core": "2.0.0-aspnet-*",
     "xunit.execution": "2.0.0-aspnet-*"
   },
+  "code": "**\\*.cs;..\\Shared\\*.cs",
   "configurations": {
     "net45": {
       "dependencies": {

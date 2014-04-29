@@ -2,6 +2,8 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNet.DependencyInjection;
+using Microsoft.AspNet.DependencyInjection.Fallback;
 using Xunit;
 
 namespace Microsoft.AspNet.Identity.Test
@@ -9,15 +11,9 @@ namespace Microsoft.AspNet.Identity.Test
     public class RoleManagerTest
     {
         [Fact]
-        public void ConstructorThrowsWithNullStore()
-        {
-            Assert.Throws<ArgumentNullException>("store", () => new RoleManager<TestRole>((IRoleStore<TestRole>)null));
-        }
-
-        [Fact]
         public void RolesQueryableFailWhenStoreNotImplemented()
         {
-            var manager = new RoleManager<TestRole>(new NoopRoleStore());
+            var manager = new RoleManager<TestRole>(new ServiceCollection().BuildServiceProvider(), new NoopRoleStore());
             Assert.False(manager.SupportsQueryableRoles);
             Assert.Throws<NotSupportedException>(() => manager.Roles.Count());
         }
@@ -25,7 +21,7 @@ namespace Microsoft.AspNet.Identity.Test
         [Fact]
         public void DisposeAfterDisposeDoesNotThrow()
         {
-            var manager = new RoleManager<TestRole>(new NoopRoleStore());
+            var manager = new RoleManager<TestRole>(new ServiceCollection().BuildServiceProvider(), new NoopRoleStore());
             manager.Dispose();
             manager.Dispose();
         }
@@ -33,10 +29,12 @@ namespace Microsoft.AspNet.Identity.Test
         [Fact]
         public async Task RoleManagerPublicNullChecks()
         {
+            var provider = new ServiceCollection().BuildServiceProvider();
             Assert.Throws<ArgumentNullException>("store",
-                () => new RoleManager<TestRole>((IRoleStore<TestRole>)null));
-            var manager = new RoleManager<TestRole>(new NotImplementedStore());
-            Assert.Throws<ArgumentNullException>("services", () => manager.Initialize(null));
+                () => new RoleManager<TestRole>(provider, null));
+            Assert.Throws<ArgumentNullException>("services",
+                () => new RoleManager<TestRole>(null, new NotImplementedStore()));
+            var manager = new RoleManager<TestRole>(provider, new NotImplementedStore());
             await Assert.ThrowsAsync<ArgumentNullException>("role", async () => await manager.CreateAsync(null));
             await Assert.ThrowsAsync<ArgumentNullException>("role", async () => await manager.UpdateAsync(null));
             await Assert.ThrowsAsync<ArgumentNullException>("role", async () => await manager.DeleteAsync(null));
@@ -47,7 +45,7 @@ namespace Microsoft.AspNet.Identity.Test
         [Fact]
         public async Task RoleStoreMethodsThrowWhenDisposed()
         {
-            var manager = new RoleManager<TestRole>(new NoopRoleStore());
+            var manager = new RoleManager<TestRole>(new ServiceCollection().BuildServiceProvider(), new NoopRoleStore());
             manager.Dispose();
             await Assert.ThrowsAsync<ObjectDisposedException>(() => manager.FindByIdAsync(null));
             await Assert.ThrowsAsync<ObjectDisposedException>(() => manager.FindByNameAsync(null));

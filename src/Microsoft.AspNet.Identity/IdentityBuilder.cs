@@ -5,55 +5,50 @@ namespace Microsoft.AspNet.Identity
 {
     public class IdentityBuilder<TUser, TRole> where TUser : class where TRole : class
     {
-        private ServiceCollection Services { get; set; }
+        public ServiceCollection Services { get; private set; }
 
         public IdentityBuilder(ServiceCollection services)
         {
             Services = services;
         }
 
-        public IdentityBuilder<TUser, TRole> Use<T>(Func<T> func)
+        // Rename to Add
+
+        public IdentityBuilder<TUser, TRole> AddInstance<T>(Func<T> func)
         {
-            Services.AddInstance<T>(func());
+            Services.AddInstance(func());
             return this;
         }
 
-        public IdentityBuilder<TUser, TRole> UseIdentity()
+        public IdentityBuilder<TUser, TRole> AddUserStore(Func<IUserStore<TUser>> func)
         {
-            Services.Add(IdentityServices.GetDefaultUserServices<TUser>());
-            Services.Add(IdentityServices.GetDefaultRoleServices<TRole>());
+            return AddInstance(func);
+        }
+
+        public IdentityBuilder<TUser, TRole> AddRoleStore(Func<IRoleStore<TRole>> func)
+        {
+            return AddInstance(func);
+        }
+
+        public IdentityBuilder<TUser, TRole> AddPasswordValidator(Func<IPasswordValidator<TUser>> func)
+        {
+            return AddInstance(func);
+        }
+
+        public IdentityBuilder<TUser, TRole> AddUserValidator(Func<IUserValidator<TUser>> func)
+        {
+            return AddInstance(func);
+        }
+
+        public IdentityBuilder<TUser, TRole> AddUserManager<TManager>() where TManager : UserManager<TUser>
+        {
+            Services.AddScoped<TManager>();
             return this;
         }
 
-        public IdentityBuilder<TUser, TRole> UseUserStore(Func<IUserStore<TUser>> func)
+        public IdentityBuilder<TUser, TRole> AddRoleManager<TManager>() where TManager : RoleManager<TRole>
         {
-            return Use(func);
-        }
-
-        public IdentityBuilder<TUser, TRole> UseRoleStore(Func<IRoleStore<TRole>> func)
-        {
-            return Use(func);
-        }
-
-        public IdentityBuilder<TUser, TRole> UsePasswordValidator(Func<IPasswordValidator> func)
-        {
-            return Use(func);
-        }
-
-        public IdentityBuilder<TUser, TRole> UseUserValidator(Func<IUserValidator<TUser>> func)
-        {
-            return Use(func);
-        }
-
-        public IdentityBuilder<TUser, TRole> UseUserManager<TManager>() where TManager : UserManager<TUser>
-        {
-            Services.AddScoped<TManager, TManager>();
-            return this;
-        }
-
-        public IdentityBuilder<TUser, TRole> UseRoleManager<TManager>() where TManager : RoleManager<TRole>
-        {
-            Services.AddScoped<TManager, TManager>();
+            Services.AddScoped<TManager>();
             return this;
         }
 
@@ -61,11 +56,6 @@ namespace Microsoft.AspNet.Identity
         //{
         //    return Use(func);
         //}
-
-        public IdentityBuilder<TUser, TRole> UseLockoutPolicy(Func<LockoutPolicy> func)
-        {
-            return Use(func);
-        }
 
     }
 }

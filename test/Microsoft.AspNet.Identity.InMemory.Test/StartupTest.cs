@@ -1,6 +1,7 @@
 using Microsoft.AspNet.Abstractions;
 using Microsoft.AspNet.DependencyInjection;
 using Microsoft.AspNet.DependencyInjection.Fallback;
+using Microsoft.AspNet.Identity.Test;
 using Microsoft.AspNet.PipelineCore;
 using System;
 using System.Threading.Tasks;
@@ -10,23 +11,58 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
 {
     public class StartupTest
     {
+        public class PasswordsNegativeLengthSetup : IOptionsSetup<IdentityOptions>
+        {
+            public int Order { get { return 0; } }
+            public void Setup(IdentityOptions options)
+            {
+                options.Password.RequiredLength = -1;
+            }
+        }
+
+        [Fact]
+        public void CanCustomizeIdentityOptions()
+        {
+            IBuilder builder = new Builder(new ServiceCollection().BuildServiceProvider());
+            builder.UseServices(services => {
+                services.AddIdentity<IdentityUser>(identityServices => { });
+                services.AddSetup<PasswordsNegativeLengthSetup>();
+            });
+
+            var setup = builder.ApplicationServices.GetService<IOptionsSetup<IdentityOptions>>();
+            Assert.IsType(typeof(PasswordsNegativeLengthSetup), setup);
+            var optionsGetter = builder.ApplicationServices.GetService<IOptionsAccessor<IdentityOptions>>();
+            Assert.NotNull(optionsGetter);
+            setup.Setup(optionsGetter.Options);
+
+            var myOptions = optionsGetter.Options;
+            Assert.True(myOptions.Password.RequireLowercase);
+            Assert.True(myOptions.Password.RequireDigit);
+            Assert.True(myOptions.Password.RequireNonLetterOrDigit);
+            Assert.True(myOptions.Password.RequireUppercase);
+            Assert.Equal(-1, myOptions.Password.RequiredLength);
+        }
 
         [Fact]
         public async Task EnsureStartupUsageWorks()
         {
             IBuilder builder = new Builder(new ServiceCollection().BuildServiceProvider());
 
+            //builder.UseServices(services => services.AddIdentity<ApplicationUser>(s =>
+            //    s.AddEntity<ApplicationDbContext>()
+            //{
+                
             builder.UseServices(services => services.AddIdentity<ApplicationUser>(s =>
             {
-                s.UseUserStore(() => new InMemoryUserStore<ApplicationUser>());
-                s.UseUserManager<ApplicationUserManager>();
-                s.UseRoleStore(() => new InMemoryRoleStore<IdentityRole>());
-                s.UseRoleManager<ApplicationRoleManager>();
+                s.AddInMemory();
+                s.AddUserManager<ApplicationUserManager>();
+                s.AddRoleManager<ApplicationRoleManager>();
             }));
 
             var userStore = builder.ApplicationServices.GetService<IUserStore<ApplicationUser>>();
             var roleStore = builder.ApplicationServices.GetService<IRoleStore<IdentityRole>>();
             var userManager = builder.ApplicationServices.GetService<ApplicationUserManager>();
+            //TODO: var userManager = builder.ApplicationServices.GetService<UserManager<IdentityUser>();
             var roleManager = builder.ApplicationServices.GetService<ApplicationRoleManager>();
 
             Assert.NotNull(userStore);
@@ -54,12 +90,12 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
 
         public class ApplicationUserManager : UserManager<ApplicationUser>
         {
-            public ApplicationUserManager(IServiceProvider services) : base(services) { }
+            public ApplicationUserManager(IServiceProvider services, IUserStore<ApplicationUser> store, IOptionsAccessor<IdentityOptions> options) : base(services, store, options) { }
         }
 
         public class ApplicationRoleManager : RoleManager<IdentityRole>
         {
-            public ApplicationRoleManager(IServiceProvider services) : base(services) { }
+            public ApplicationRoleManager(IServiceProvider services, IRoleStore<IdentityRole> store) : base(services, store) { }
         }
 
         public class ApplicationUser : IdentityUser
