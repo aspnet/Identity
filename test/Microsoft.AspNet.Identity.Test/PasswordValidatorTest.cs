@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.AspNet.DependencyInjection;
 using Xunit;
 
 namespace Microsoft.AspNet.Identity.Test

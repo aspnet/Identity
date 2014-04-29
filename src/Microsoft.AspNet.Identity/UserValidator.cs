@@ -1,5 +1,4 @@
 using System.Threading;
-using Microsoft.AspNet.DependencyInjection;
 #if NET45
 using System.Net.Mail;
 #endif
