@@ -24,19 +24,19 @@ using Microsoft.Data.Entity;
 
 namespace Microsoft.AspNet.Identity.Entity
 {
-    public class RoleStore<TRole> : RoleStore<TRole, string> where TRole : EntityRole
+    public class EntityRoleStore<TRole> : EntityRoleStore<TRole, string> where TRole : EntityRole
     {
-        public RoleStore(DbContext context) : base(context) { }
+        public EntityRoleStore(DbContext context) : base(context) { }
     }
 
-    public class RoleStore<TRole, TKey> : 
+    public class EntityRoleStore<TRole, TKey> : 
         IQueryableRoleStore<TRole>
         where TRole : EntityRole
         where TKey : IEquatable<TKey>
     {
         private bool _disposed;
 
-        public RoleStore(DbContext context)
+        public EntityRoleStore(DbContext context)
         {
             if (context == null)
             {

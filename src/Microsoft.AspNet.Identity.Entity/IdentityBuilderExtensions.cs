@@ -9,9 +9,9 @@ namespace Microsoft.AspNet.Identity
             where TUser : EntityUser
             where TRole : EntityRole
         {
-            builder.Services.AddScoped<IUserStore<TUser>, UserStore<TUser>>();
+            builder.Services.AddScoped<IUserStore<TUser>, EntityUserStore<TUser>>();
             builder.Services.AddScoped<UserManager<TUser>, UserManager<TUser>>();
-            builder.Services.AddScoped<IRoleStore<TRole>, RoleStore<TRole>>();
+            builder.Services.AddScoped<IRoleStore<TRole>, EntityRoleStore<TRole>>();
             builder.Services.AddScoped<RoleManager<TRole>, RoleManager<TRole>>();
             return builder;
         }
