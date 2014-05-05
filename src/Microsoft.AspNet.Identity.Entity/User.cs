@@ -29,6 +29,11 @@ namespace Microsoft.AspNet.Identity.Entity
             PasswordHash = "";
         }
 
+        public User(string userName) : this()
+        {
+            UserName = userName;
+        }
+
         public virtual string Id { get; set; }
         public virtual string UserName { get; set; }
 

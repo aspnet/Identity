@@ -46,7 +46,7 @@ namespace Microsoft.AspNet.Identity.Entity
         protected override void OnConfiguring(EntityConfigurationBuilder builder)
         {
             // TODO: pull connection string from config
-            builder.SqlServerConnectionString(@"Server=(localdb)\v11.0;Database=SimpleIdentity2;Trusted_Connection=True;");
+            builder.SqlServerConnectionString(@"Server=(localdb)\v11.0;Database=SimpleIdentity3;Trusted_Connection=True;");
         }
 
         protected override void OnModelCreating(ModelBuilder builder)

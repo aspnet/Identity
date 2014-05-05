@@ -15,5 +15,13 @@ namespace Microsoft.AspNet.Identity
             builder.Services.AddScoped<RoleManager<TRole>, RoleManager<TRole>>();
             return builder;
         }
+
+        public static IdentityBuilder<TUser, IdentityRole> AddEntity<TUser>(this IdentityBuilder<TUser, IdentityRole> builder)
+            where TUser : User
+        {
+            builder.Services.AddScoped<IUserStore<TUser>, UserStore<TUser>>();
+            builder.Services.AddScoped<UserManager<TUser>>();
+            return builder;
+        }
     }
 }

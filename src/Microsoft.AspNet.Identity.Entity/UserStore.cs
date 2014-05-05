@@ -27,6 +27,7 @@ using Microsoft.Data.Entity;
 
 namespace Microsoft.AspNet.Identity.Entity
 {
+    // Real Sql implementation
     public class UserStore :
         UserStore<User>
     {
