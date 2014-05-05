@@ -43,7 +43,7 @@ namespace Microsoft.AspNet.Identity.Entity
 
         public IdentityEntityContext() { }
 
-        protected override void OnConfiguring(EntityConfigurationBuilder builder)
+        protected override void OnConfiguring(DbContextOptions builder)
         {
             // TODO: pull connection string from config
             builder.SqlServerConnectionString(@"Server=(localdb)\v11.0;Database=SimpleIdentity3;Trusted_Connection=True;");
