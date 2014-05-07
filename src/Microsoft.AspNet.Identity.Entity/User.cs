@@ -15,30 +15,32 @@
 // See the Apache 2 License for the specific language governing
 // permissions and limitations under the License.
 
-using System.Linq;
-using Xunit;
+using System;
 
-namespace Microsoft.AspNet.Identity.InMemory.Test
+namespace Microsoft.AspNet.Identity.Entity
 {
-    public static class IdentityResultAssert
+    public class User
     {
-        public static void IsSuccess(IdentityResult result)
+        public User()
         {
-            Assert.NotNull(result);
-            Assert.True(result.Succeeded);
+            Id = Guid.NewGuid().ToString();
+            // TODO: remove when bug is fixed
+            UserName = "";
+            PasswordHash = "";
         }
 
-        public static void IsFailure(IdentityResult result)
+        public User(string userName) : this()
         {
-            Assert.NotNull(result);
-            Assert.False(result.Succeeded);
+            UserName = userName;
         }
 
-        public static void IsFailure(IdentityResult result, string error)
-        {
-            Assert.NotNull(result);
-            Assert.False(result.Succeeded);
-            Assert.Equal(error, result.Errors.First());
-        }
+        public virtual string Id { get; set; }
+        public virtual string UserName { get; set; }
+
+        /// <summary>
+        ///     The salted/hashed form of the user password
+        /// </summary>
+        public virtual string PasswordHash { get; set; }
     }
 }
+
