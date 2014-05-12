@@ -18,7 +18,7 @@ using Microsoft.AspNet.Builder;
 
 namespace Microsoft.AspNet.Identity.Security.Test
 {
-    public class HttpHttpSignInManagerTest
+    public class HttpSignInManagerTest
     {
 #if NET45
         [Theory]
