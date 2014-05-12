@@ -9,7 +9,6 @@ using Microsoft.AspNet.Identity.Test;
 using Microsoft.AspNet.Security.Cookies;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.DependencyInjection.Fallback;
-using Microsoft.Framework.Logging;
 using Moq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -18,6 +17,8 @@ using Microsoft.AspNet.Builder;
 
 namespace Microsoft.AspNet.Identity.Security.Test
 {
+    public class ApplicationUser : IdentityUser { }
+
     public class HttpSignInManagerTest
     {
 #if NET45
@@ -256,7 +257,6 @@ namespace Microsoft.AspNet.Identity.Security.Test
             Assert.Equal(SignInStatus.Failure, result);
             manager.VerifyAll();
         }
-
 
         [Fact]
         public async Task PasswordSignInFailsWithUnknownUser()
