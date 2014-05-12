@@ -306,30 +306,5 @@ namespace Microsoft.AspNet.Identity.Security.Test
             manager.VerifyAll();
         }
 #endif
-        public class ApplicationHttpSignInManager : HttpSignInManager<ApplicationUser>
-        {
-            public ApplicationHttpSignInManager(ApplicationUserManager manager, IContextAccessor<HttpContext> contextAccessor)
-                : base(manager, contextAccessor)
-            {
-                AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie;
-            }
-        }
-
-        public class NullLoggerFactory : ILoggerFactory
-        {
-            public ILogger Create(string name)
-            {
-                return new NullLogger();
-            }
-        }
-
-        public class NullLogger : ILogger
-        {
-            public bool WriteCore(TraceType eventType, int eventId, object state, Exception exception, Func<object, Exception, string> formatter)
-            {
-                return false;
-            }
-        }
-
     }
 }
