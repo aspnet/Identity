@@ -10,53 +10,35 @@ using Microsoft.Framework.DependencyInjection;
 
 namespace Microsoft.AspNet.Identity.Security
 {
-    public class SignInManager<TUser> : SignInManager<UserManager<TUser>, TUser> where TUser : class
+    public class HttpSignInManager<TUser> : HttpSignInManager<UserManager<TUser>, TUser> where TUser : class
     {
-        public SignInManager(UserManager<TUser> userManager, IContextAccessor<HttpContext> contextAccessor)
+        public HttpSignInManager(UserManager<TUser> userManager, IContextAccessor<HttpContext> contextAccessor)
             : base(userManager, contextAccessor) { }
     }
 
 
-    public class SignInManager<TManager, TUser> where TManager : UserManager<TUser> where TUser : class
+    public class HttpSignInManager<TManager, TUser> : SignInManager<TManager, TUser> where TManager : UserManager<TUser> where TUser : class
     {
-        public SignInManager(TManager userManager, IContextAccessor<HttpContext> contextAccessor)
+        public HttpSignInManager(TManager userManager, IContextAccessor<HttpContext> contextAccessor) : base(userManager)
         {
-            if (userManager == null)
-            {
-                throw new ArgumentNullException("userManager");
-            }
             if (contextAccessor == null || contextAccessor.Value == null)
             {
                 throw new ArgumentNullException("contextAccessor");
             }
-            UserManager = userManager;
             Context = contextAccessor.Value;
+            AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie;
         }
 
-        // TODO: this should go into some kind of Options/setup
-        private string _authType;
-        public string AuthenticationType
-        {
-            get { return _authType ?? DefaultAuthenticationTypes.ApplicationCookie; }
-            set { _authType = value; }
-        }
-
-        public TManager UserManager { get; private set; }
         public HttpContext Context { get; private set; }
 
-        public virtual async Task<ClaimsIdentity> CreateUserIdentityAsync(TUser user)
-        {
-            return await UserManager.CreateIdentityAsync(user, AuthenticationType);
-        }
-
-        public virtual async Task SignInAsync(TUser user, bool isPersistent, bool rememberBrowser)
+        public override async Task SignInAsync(TUser user, bool isPersistent, bool rememberBrowser)
         {
             // TODO: all the two factor logic/external/rememberBrowser
             var userIdentity = await CreateUserIdentityAsync(user);
             Context.Response.SignIn(userIdentity, new AuthenticationProperties { IsPersistent = isPersistent });
         }
 
-        public virtual void SignOut()
+        public override void SignOut()
         {
             Context.Response.SignOut(AuthenticationType);
         }
@@ -145,34 +127,5 @@ namespace Microsoft.AspNet.Identity.Security
         //    await SignIn(user, isPersistent, false);
         //    return SignInStatus.Success;
         //}
-
-        public virtual async Task<SignInStatus> PasswordSignInAsync(string userName, string password, bool isPersistent, bool shouldLockout)
-        {
-            var user = await UserManager.FindByNameAsync(userName);
-            if (user == null)
-            {
-                return SignInStatus.Failure;
-            }
-            if (UserManager.SupportsUserLockout && await UserManager.IsLockedOutAsync(user))
-            {
-                return SignInStatus.LockedOut;
-            }
-            if (await UserManager.CheckPasswordAsync(user, password))
-            {
-                await SignInAsync(user, isPersistent, false);
-                return SignInStatus.Success;
-                //TODO: return await SignInOrTwoFactor(user, isPersistent);
-            }
-            if (UserManager.SupportsUserLockout && shouldLockout)
-            {
-                // If lockout is requested, increment access failed count which might lock out the user
-                await UserManager.AccessFailedAsync(user);
-                if (await UserManager.IsLockedOutAsync(user))
-                {
-                    return SignInStatus.LockedOut;
-                }
-            }
-            return SignInStatus.Failure;
-        }
     }
 }

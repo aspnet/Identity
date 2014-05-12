@@ -5,10 +5,7 @@ using System;
 using System.Threading;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Http.Security;
-using Microsoft.AspNet.Identity.InMemory;
 using Microsoft.AspNet.Identity.Test;
-using Microsoft.AspNet.PipelineCore;
-using Microsoft.AspNet.FeatureModel;
 using Microsoft.AspNet.Security.Cookies;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.DependencyInjection.Fallback;
@@ -21,7 +18,7 @@ using Microsoft.AspNet.Builder;
 
 namespace Microsoft.AspNet.Identity.Security.Test
 {
-    public class SignInManagerTest
+    public class HttpHttpSignInManagerTest
     {
 #if NET45
         [Theory]
@@ -44,11 +41,12 @@ namespace Microsoft.AspNet.Identity.Security.Test
             app.UseServices(services =>
             {
                 services.AddInstance(contextAccessor.Object);
-                services.AddInstance<ILoggerFactory>(new NullLoggerFactory());
                 services.AddIdentity<ApplicationUser, IdentityRole>(s =>
                 {
                     s.AddInMemory();
                 }).AddHttpSignIn<ApplicationUser>();
+                    s.AddSecurity();
+                });
             });
 
             // Act
@@ -58,7 +56,7 @@ namespace Microsoft.AspNet.Identity.Security.Test
             };
             const string password = "Yol0Sw@g!";
             var userManager = app.ApplicationServices.GetService<UserManager<ApplicationUser>>();
-            var signInManager = app.ApplicationServices.GetService<SignInManager<ApplicationUser>>();
+            var signInManager = app.ApplicationServices.GetService<HttpSignInManager<ApplicationUser>>();
 
             IdentityResultAssert.IsSuccess(await userManager.CreateAsync(user, password));
             var result = await signInManager.PasswordSignInAsync(user.UserName, password, isPersistent, false);
@@ -96,7 +94,7 @@ namespace Microsoft.AspNet.Identity.Security.Test
         //            s.AddRoleStore(() => new InMemoryRoleStore<IdentityRole>());
         //            s.AddRoleManager<ApplicationRoleManager>();
         //        });
-        //        services.AddTransient<ApplicationSignInManager>();
+        //        services.AddTransient<ApplicationHttpSignInManager>();
         //    });
 
         //    // Act
@@ -106,10 +104,10 @@ namespace Microsoft.AspNet.Identity.Security.Test
         //    };
         //    const string password = "Yol0Sw@g!";
         //    var userManager = app.ApplicationServices.GetService<ApplicationUserManager>();
-        //    var signInManager = app.ApplicationServices.GetService<ApplicationSignInManager>();
+        //    var HttpSignInManager = app.ApplicationServices.GetService<ApplicationHttpSignInManager>();
 
         //    IdentityResultAssert.IsSuccess(await userManager.CreateAsync(user, password));
-        //    var result = await signInManager.PasswordSignInAsync(user.UserName, password, isPersistent, false);
+        //    var result = await HttpSignInManager.PasswordSignInAsync(user.UserName, password, isPersistent, false);
 
         //    // Assert
         //    Assert.Equal(SignInStatus.Success, result);
@@ -119,9 +117,9 @@ namespace Microsoft.AspNet.Identity.Security.Test
         [Fact]
         public void ConstructorNullChecks()
         {
-            Assert.Throws<ArgumentNullException>("userManager", () => new SignInManager<IdentityUser>(null, null));
+            Assert.Throws<ArgumentNullException>("userManager", () => new HttpSignInManager<IdentityUser>(null, null));
             var userManager = MockHelpers.MockUserManager<IdentityUser>().Object;
-            Assert.Throws<ArgumentNullException>("contextAccessor", () => new SignInManager<IdentityUser>(userManager, null));
+            Assert.Throws<ArgumentNullException>("contextAccessor", () => new HttpSignInManager<IdentityUser>(userManager, null));
         }
 
         //TODO: Mock fails in K (this works fine in net45)
@@ -142,7 +140,7 @@ namespace Microsoft.AspNet.Identity.Security.Test
             response.Setup(r => r.SignIn(testIdentity, It.IsAny<AuthenticationProperties>())).Verifiable();
             var contextAccessor = new Mock<IContextAccessor<HttpContext>>();
             contextAccessor.Setup(a => a.Value).Returns(context.Object);
-            var helper = new SignInManager<TestUser>(userManager, contextAccessor.Object)
+            var helper = new HttpSignInManager<TestUser>(userManager, contextAccessor.Object)
             {
                 AuthenticationType = authType
             };
@@ -169,7 +167,7 @@ namespace Microsoft.AspNet.Identity.Security.Test
             var context = new Mock<HttpContext>();
             var contextAccessor = new Mock<IContextAccessor<HttpContext>>();
             contextAccessor.Setup(a => a.Value).Returns(context.Object);
-            var helper = new SignInManager<TestUser>(manager.Object, contextAccessor.Object);
+            var helper = new HttpSignInManager<TestUser>(manager.Object, contextAccessor.Object);
 
             // Act
             var result = await helper.PasswordSignInAsync(user.UserName, "bogus", false, false);
@@ -198,7 +196,7 @@ namespace Microsoft.AspNet.Identity.Security.Test
             response.Setup(r => r.SignIn(It.IsAny<ClaimsIdentity>(), It.Is<AuthenticationProperties>(v => v.IsPersistent == isPersistent))).Verifiable();
             var contextAccessor = new Mock<IContextAccessor<HttpContext>>();
             contextAccessor.Setup(a => a.Value).Returns(context.Object);
-            var helper = new SignInManager<TestUser>(manager.Object, contextAccessor.Object);
+            var helper = new HttpSignInManager<TestUser>(manager.Object, contextAccessor.Object);
 
             // Act
             var result = await helper.PasswordSignInAsync(user.UserName, "password", isPersistent, false);
@@ -224,7 +222,7 @@ namespace Microsoft.AspNet.Identity.Security.Test
             response.Setup(r => r.SignOut(authenticationType)).Verifiable();
             var contextAccessor = new Mock<IContextAccessor<HttpContext>>();
             contextAccessor.Setup(a => a.Value).Returns(context.Object);
-            var helper = new SignInManager<TestUser>(manager.Object, contextAccessor.Object)
+            var helper = new HttpSignInManager<TestUser>(manager.Object, contextAccessor.Object)
             {
                 AuthenticationType = authenticationType
             };
@@ -250,7 +248,7 @@ namespace Microsoft.AspNet.Identity.Security.Test
             var context = new Mock<HttpContext>();
             var contextAccessor = new Mock<IContextAccessor<HttpContext>>();
             contextAccessor.Setup(a => a.Value).Returns(context.Object);
-            var helper = new SignInManager<TestUser>(manager.Object, contextAccessor.Object);
+            var helper = new HttpSignInManager<TestUser>(manager.Object, contextAccessor.Object);
             // Act
             var result = await helper.PasswordSignInAsync(user.UserName, "bogus", false, false);
 
@@ -269,7 +267,7 @@ namespace Microsoft.AspNet.Identity.Security.Test
             var context = new Mock<HttpContext>();
             var contextAccessor = new Mock<IContextAccessor<HttpContext>>();
             contextAccessor.Setup(a => a.Value).Returns(context.Object);
-            var helper = new SignInManager<TestUser>(manager.Object, contextAccessor.Object);
+            var helper = new HttpSignInManager<TestUser>(manager.Object, contextAccessor.Object);
 
             // Act
             var result = await helper.PasswordSignInAsync("bogus", "bogus", false, false);
@@ -298,7 +296,7 @@ namespace Microsoft.AspNet.Identity.Security.Test
             var context = new Mock<HttpContext>();
             var contextAccessor = new Mock<IContextAccessor<HttpContext>>();
             contextAccessor.Setup(a => a.Value).Returns(context.Object);
-            var helper = new SignInManager<TestUser>(manager.Object, contextAccessor.Object);
+            var helper = new HttpSignInManager<TestUser>(manager.Object, contextAccessor.Object);
 
             // Act
             var result = await helper.PasswordSignInAsync(user.UserName, "bogus", false, true);
@@ -308,9 +306,9 @@ namespace Microsoft.AspNet.Identity.Security.Test
             manager.VerifyAll();
         }
 #endif
-        public class ApplicationSignInManager : SignInManager<ApplicationUser>
+        public class ApplicationHttpSignInManager : HttpSignInManager<ApplicationUser>
         {
-            public ApplicationSignInManager(ApplicationUserManager manager, IContextAccessor<HttpContext> contextAccessor)
+            public ApplicationHttpSignInManager(ApplicationUserManager manager, IContextAccessor<HttpContext> contextAccessor)
                 : base(manager, contextAccessor)
             {
                 AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie;
