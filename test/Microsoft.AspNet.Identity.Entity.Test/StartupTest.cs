@@ -3,7 +3,6 @@
 
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Identity.Test;
-using Microsoft.Data.Entity;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.DependencyInjection.Fallback;
 using System;
@@ -56,7 +55,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
         [Fact]
         public void CanSetupIdentityOptions()
         {
-            IBuilder app = new Microsoft.AspNet.Builder.Builder(new ServiceCollection().BuildServiceProvider());
+            IBuilder app = new Builder.Builder(new ServiceCollection().BuildServiceProvider());
             app.UseServices(services => services.AddIdentity<IdentityUser>(identityServices => identityServices.SetupOptions(options => options.User.RequireUniqueEmail = true)));
 
             var optionsGetter = app.ApplicationServices.GetService<IOptionsAccessor<IdentityOptions>>();
@@ -69,16 +68,16 @@ namespace Microsoft.AspNet.Identity.Entity.Test
         [Fact]
         public async Task EnsureStartupUsageWorks()
         {
-            IBuilder builder = new Microsoft.AspNet.Builder.Builder(new ServiceCollection().BuildServiceProvider());
+            EnsureDatabase();
 
+            IBuilder builder = new Builder.Builder(new ServiceCollection().BuildServiceProvider());
 
             builder.UseServices(services =>
             {
-                services.AddEntityFramework();
-                services.AddInstance<DbContext>(CreateAppContext());
+                services.AddEntityFramework().AddInMemoryStore();
                 services.AddIdentity<ApplicationUser, EntityRole>(s =>
                 {
-                    s.AddEntity();
+                    s.AddEntity<ApplicationUser, EntityRole, ApplicationDbContext>();
                 });
             });
 
@@ -109,7 +108,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
             IdentityResultAssert.IsSuccess(await userManager.AddToRoleAsync(user, roleName));
         }
 
-        public static ApplicationDbContext CreateAppContext()
+        public static void EnsureDatabase()
         {
             var services = new ServiceCollection();
             services.AddEntityFramework().AddInMemoryStore();
@@ -122,9 +121,6 @@ namespace Microsoft.AspNet.Identity.Entity.Test
             {
                 db.Database.Create();
             }
-
-            // TODO: CreateAsync DB?
-            return db;
         }
     }
 }

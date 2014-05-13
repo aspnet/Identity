@@ -1,19 +1,9 @@
 // Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using Microsoft.AspNet.Testing;
 using Microsoft.Data.Entity;
-using Microsoft.Data.Entity.Metadata;
-using Microsoft.Data.Entity.Storage;
-using Microsoft.Data.Entity.InMemory;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.DependencyInjection.Fallback;
-using System;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace Microsoft.AspNet.Identity.Entity.Test
 {
@@ -22,39 +12,14 @@ namespace Microsoft.AspNet.Identity.Entity.Test
         public static IdentityContext CreateContext()
         {
             var services = new ServiceCollection();
-            
-//#if NET45
-//            services.AddEntityFramework().AddSqlServer();
-//#else
             services.AddEntityFramework().AddInMemoryStore();
-//#endif
             var serviceProvider = services.BuildServiceProvider();
 
             var db = new IdentityContext(serviceProvider);
-             
-            // TODO: Recreate DB, doesn't support String ID or Identity context yet
             db.Database.EnsureCreated();
 
-            // TODO: CreateAsync DB?
             return db;
         }
-
-        public class TestSetup : IOptionsSetup<IdentityOptions>
-        {
-            private readonly IdentityOptions _options;
-
-            public TestSetup(IdentityOptions options)
-            {
-                _options = options;
-            }
-
-            public int Order { get { return 0; } }
-            public void Setup(IdentityOptions options)
-            {
-                options.Copy(_options);
-            }
-        }
-
 
         public static UserManager<EntityUser> CreateManager(DbContext context)
         {
@@ -62,21 +27,17 @@ namespace Microsoft.AspNet.Identity.Entity.Test
             services.AddTransient<IUserValidator<EntityUser>, UserValidator<EntityUser>>();
             services.AddTransient<IPasswordValidator<IdentityUser>, PasswordValidator<IdentityUser>>();
             services.AddInstance<IUserStore<EntityUser>>(new InMemoryUserStore<EntityUser>(context));
-            services.AddSingleton<UserManager<EntityUser>, UserManager<EntityUser>>();
-            var options = new IdentityOptions
+            services.AddSingleton<UserManager<EntityUser>>();
+            services.SetupOptions<IdentityOptions>(options =>
             {
-                Password = new PasswordOptions
-                {
-                    RequireDigit = false,
-                    RequireLowercase = false,
-                    RequireNonLetterOrDigit = false,
-                    RequireUppercase = false
-                }
-            };
-            var optionsAccessor = new OptionsAccessor<IdentityOptions>(new[] { new TestSetup(options) });
-            //services.AddInstance<IOptionsAccessor<IdentityOptions>>(new OptionsAccessor<IdentityOptions>(new[] { new TestSetup(options) }));
-            //return services.BuildServiceProvider().GetService<UserManager<EntityUser>>();
-            return new UserManager<EntityUser>(services.BuildServiceProvider(), new InMemoryUserStore<EntityUser>(context), optionsAccessor);
+                options.Password.RequireDigit = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireNonLetterOrDigit = false;
+                options.Password.RequireUppercase = false;
+                options.User.AllowOnlyAlphanumericNames = false;
+            });
+            services.AddSingleton<IOptionsAccessor<IdentityOptions>, OptionsAccessor<IdentityOptions>>();
+            return services.BuildServiceProvider().GetService<UserManager<EntityUser>>();
         }
 
         public static UserManager<EntityUser> CreateManager()
