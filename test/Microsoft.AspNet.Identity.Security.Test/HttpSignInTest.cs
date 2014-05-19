@@ -118,7 +118,7 @@ namespace Microsoft.AspNet.Identity.Security.Test
         {
             Assert.Throws<ArgumentNullException>("userManager", () => new SignInManager<IdentityUser>(null, null));
             var userManager = MockHelpers.MockUserManager<IdentityUser>().Object;
-            Assert.Throws<ArgumentNullException>("signInService", () => new SignInManager<IdentityUser>(userManager, null));
+            Assert.Throws<ArgumentNullException>("authenticationManager", () => new SignInManager<IdentityUser>(userManager, null));
         }
 
         //TODO: Mock fails in K (this works fine in net45)
@@ -139,7 +139,7 @@ namespace Microsoft.AspNet.Identity.Security.Test
         //    response.Setup(r => r.SignIn(testIdentity, It.IsAny<AuthenticationProperties>())).Verifiable();
         //    var contextAccessor = new Mock<IContextAccessor<HttpContext>>();
         //    contextAccessor.Setup(a => a.Value).Returns(context.Object);
-        //    var helper = new HttpSignInService(contextAccessor.Object);
+        //    var helper = new HttpAuthenticationManager(contextAccessor.Object);
 
         //    // Act
         //    helper.SignIn(user, false);
@@ -163,7 +163,7 @@ namespace Microsoft.AspNet.Identity.Security.Test
             var context = new Mock<HttpContext>();
             var contextAccessor = new Mock<IContextAccessor<HttpContext>>();
             contextAccessor.Setup(a => a.Value).Returns(context.Object);
-            var helper = new SignInManager<TestUser>(manager.Object, new HttpSignInService(contextAccessor.Object));
+            var helper = new SignInManager<TestUser>(manager.Object, new HttpAuthenticationManager(contextAccessor.Object));
 
             // Act
             var result = await helper.PasswordSignInAsync(user.UserName, "bogus", false, false);
@@ -192,7 +192,7 @@ namespace Microsoft.AspNet.Identity.Security.Test
             response.Setup(r => r.SignIn(It.IsAny<ClaimsIdentity>(), It.Is<AuthenticationProperties>(v => v.IsPersistent == isPersistent))).Verifiable();
             var contextAccessor = new Mock<IContextAccessor<HttpContext>>();
             contextAccessor.Setup(a => a.Value).Returns(context.Object);
-            var helper = new SignInManager<TestUser>(manager.Object, new HttpSignInService(contextAccessor.Object));
+            var helper = new SignInManager<TestUser>(manager.Object, new HttpAuthenticationManager(contextAccessor.Object));
 
             // Act
             var result = await helper.PasswordSignInAsync(user.UserName, "password", isPersistent, false);
@@ -223,7 +223,7 @@ namespace Microsoft.AspNet.Identity.Security.Test
             context.Setup(c => c.Response).Returns(response.Object).Verifiable();
             var contextAccessor = new Mock<IContextAccessor<HttpContext>>();
             contextAccessor.Setup(a => a.Value).Returns(context.Object);
-            var helper = new SignInManager<TestUser>(manager.Object, new HttpSignInService(contextAccessor.Object));
+            var helper = new SignInManager<TestUser>(manager.Object, new HttpAuthenticationManager(contextAccessor.Object));
 
             // Act
             var result = await helper.PasswordSignInAsync(user.UserName, "password", false, false);
@@ -253,13 +253,13 @@ namespace Microsoft.AspNet.Identity.Security.Test
             var response = new Mock<HttpResponse>();
             response.Setup(r => r.SignIn(It.IsAny<ClaimsIdentity>(), It.Is<AuthenticationProperties>(v => v.IsPersistent == isPersistent))).Verifiable();
             context.Setup(c => c.Response).Returns(response.Object).Verifiable();
-            var id = new ClaimsIdentity(HttpSignInService.TwoFactorUserIdAuthenticationType);
+            var id = new ClaimsIdentity(HttpAuthenticationManager.TwoFactorUserIdAuthenticationType);
             id.AddClaim(new Claim(ClaimTypes.Name, user.Id));
             var authResult = new AuthenticationResult(id, new AuthenticationProperties(), new AuthenticationDescription());
-            context.Setup(c => c.AuthenticateAsync(HttpSignInService.TwoFactorUserIdAuthenticationType)).ReturnsAsync(authResult).Verifiable();
+            context.Setup(c => c.AuthenticateAsync(HttpAuthenticationManager.TwoFactorUserIdAuthenticationType)).ReturnsAsync(authResult).Verifiable();
             var contextAccessor = new Mock<IContextAccessor<HttpContext>>();
             contextAccessor.Setup(a => a.Value).Returns(context.Object);
-            var helper = new SignInManager<TestUser>(manager.Object, new HttpSignInService(contextAccessor.Object));
+            var helper = new SignInManager<TestUser>(manager.Object, new HttpAuthenticationManager(contextAccessor.Object));
 
             // Act
             var result = await helper.TwoFactorSignInAsync(provider, code, isPersistent);
@@ -280,13 +280,13 @@ namespace Microsoft.AspNet.Identity.Security.Test
             var context = new Mock<HttpContext>();
             var response = new Mock<HttpResponse>();
             context.Setup(c => c.Response).Returns(response.Object).Verifiable();
-            response.Setup(r => r.SignIn(It.Is<ClaimsIdentity>(i => i.AuthenticationType == HttpSignInService.TwoFactorRememberedAuthenticationType))).Verifiable();
-            var id = new ClaimsIdentity(HttpSignInService.TwoFactorRememberedAuthenticationType);
+            response.Setup(r => r.SignIn(It.Is<ClaimsIdentity>(i => i.AuthenticationType == HttpAuthenticationManager.TwoFactorRememberedAuthenticationType))).Verifiable();
+            var id = new ClaimsIdentity(HttpAuthenticationManager.TwoFactorRememberedAuthenticationType);
             id.AddClaim(new Claim(ClaimTypes.Name, user.Id));
             var authResult = new AuthenticationResult(id, new AuthenticationProperties(), new AuthenticationDescription());
             var contextAccessor = new Mock<IContextAccessor<HttpContext>>();
             contextAccessor.Setup(a => a.Value).Returns(context.Object);
-            var signInService = new HttpSignInService(contextAccessor.Object);
+            var signInService = new HttpAuthenticationManager(contextAccessor.Object);
 
             // Act
             signInService.RememberClient(user.Id);
@@ -316,13 +316,13 @@ namespace Microsoft.AspNet.Identity.Security.Test
             var response = new Mock<HttpResponse>();
             context.Setup(c => c.Response).Returns(response.Object).Verifiable();
             response.Setup(r => r.SignIn(It.Is<ClaimsIdentity>(i => i.AuthenticationType == DefaultAuthenticationTypes.ApplicationCookie), It.Is<AuthenticationProperties>(v => v.IsPersistent == isPersistent))).Verifiable();
-            var id = new ClaimsIdentity(HttpSignInService.TwoFactorRememberedAuthenticationType);
+            var id = new ClaimsIdentity(HttpAuthenticationManager.TwoFactorRememberedAuthenticationType);
             id.AddClaim(new Claim(ClaimTypes.Name, user.Id));
             var authResult = new AuthenticationResult(id, new AuthenticationProperties(), new AuthenticationDescription());
-            context.Setup(c => c.AuthenticateAsync(HttpSignInService.TwoFactorRememberedAuthenticationType)).ReturnsAsync(authResult).Verifiable();
+            context.Setup(c => c.AuthenticateAsync(HttpAuthenticationManager.TwoFactorRememberedAuthenticationType)).ReturnsAsync(authResult).Verifiable();
             var contextAccessor = new Mock<IContextAccessor<HttpContext>>();
             contextAccessor.Setup(a => a.Value).Returns(context.Object);
-            var signInService = new HttpSignInService(contextAccessor.Object);
+            var signInService = new HttpAuthenticationManager(contextAccessor.Object);
             var helper = new SignInManager<TestUser>(manager.Object, signInService);
 
             // Act
@@ -349,7 +349,7 @@ namespace Microsoft.AspNet.Identity.Security.Test
             response.Setup(r => r.SignOut(authenticationType)).Verifiable();
             var contextAccessor = new Mock<IContextAccessor<HttpContext>>();
             contextAccessor.Setup(a => a.Value).Returns(context.Object);
-            var helper = new SignInManager<TestUser>(manager.Object, new HttpSignInService(contextAccessor.Object))
+            var helper = new SignInManager<TestUser>(manager.Object, new HttpAuthenticationManager(contextAccessor.Object))
             {
                 AuthenticationType = authenticationType
             };
@@ -375,7 +375,7 @@ namespace Microsoft.AspNet.Identity.Security.Test
             var context = new Mock<HttpContext>();
             var contextAccessor = new Mock<IContextAccessor<HttpContext>>();
             contextAccessor.Setup(a => a.Value).Returns(context.Object);
-            var helper = new SignInManager<TestUser>(manager.Object, new HttpSignInService(contextAccessor.Object));
+            var helper = new SignInManager<TestUser>(manager.Object, new HttpAuthenticationManager(contextAccessor.Object));
             // Act
             var result = await helper.PasswordSignInAsync(user.UserName, "bogus", false, false);
 
@@ -393,7 +393,7 @@ namespace Microsoft.AspNet.Identity.Security.Test
             var context = new Mock<HttpContext>();
             var contextAccessor = new Mock<IContextAccessor<HttpContext>>();
             contextAccessor.Setup(a => a.Value).Returns(context.Object);
-            var helper = new SignInManager<TestUser>(manager.Object, new HttpSignInService(contextAccessor.Object));
+            var helper = new SignInManager<TestUser>(manager.Object, new HttpAuthenticationManager(contextAccessor.Object));
 
             // Act
             var result = await helper.PasswordSignInAsync("bogus", "bogus", false, false);
@@ -422,7 +422,7 @@ namespace Microsoft.AspNet.Identity.Security.Test
             var context = new Mock<HttpContext>();
             var contextAccessor = new Mock<IContextAccessor<HttpContext>>();
             contextAccessor.Setup(a => a.Value).Returns(context.Object);
-            var helper = new SignInManager<TestUser>(manager.Object, new HttpSignInService(contextAccessor.Object));
+            var helper = new SignInManager<TestUser>(manager.Object, new HttpAuthenticationManager(contextAccessor.Object));
 
             // Act
             var result = await helper.PasswordSignInAsync(user.UserName, "bogus", false, true);

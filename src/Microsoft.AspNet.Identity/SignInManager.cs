@@ -2,46 +2,29 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Microsoft.AspNet.Identity
 {
-    public interface ISignInService
-    {
-        void SignIn(ClaimsIdentity identity, bool isPersistent);
-        void SignOut(string authenticationType);
-
-        // remember browser for two factor
-        void ForgetClient();
-        void RememberClient(string userId);
-        Task<bool> IsClientRememeberedAsync(string userId);
-
-        // half cookie
-        Task StoreUserId(string userId);
-        Task<string> RetrieveUserId();
-    }
-
     /// <summary>
     ///     Interface that manages SignIn operations for a user
     /// </summary>
     /// <typeparam name="TUser"></typeparam>
     public class SignInManager<TUser> where TUser : class
     {
-        public SignInManager(UserManager<TUser> userManager, ISignInService signInService)
+        public SignInManager(UserManager<TUser> userManager, IAuthenticationManager authenticationManager)
         {
             if (userManager == null)
             {
                 throw new ArgumentNullException("userManager");
             }
-            if (signInService == null)
+            if (authenticationManager == null)
             {
-                throw new ArgumentNullException("signInService");
+                throw new ArgumentNullException("authenticationManager");
             }
             UserManager = userManager;
-            SignInService = signInService;
+            AuthenticationManager = authenticationManager;
             AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie;
         }
 
@@ -49,7 +32,7 @@ namespace Microsoft.AspNet.Identity
         public string AuthenticationType { get; set; }
 
         public UserManager<TUser> UserManager { get; private set; }
-        public ISignInService SignInService { get; private set; }
+        public IAuthenticationManager AuthenticationManager { get; private set; }
 
         // Should this be a func?
         public virtual async Task<ClaimsIdentity> CreateUserIdentityAsync(TUser user)
@@ -60,13 +43,13 @@ namespace Microsoft.AspNet.Identity
         public virtual async Task SignInAsync(TUser user, bool isPersistent)
         {
             var userIdentity = await CreateUserIdentityAsync(user);
-            SignInService.SignIn(userIdentity, isPersistent);
+            AuthenticationManager.SignIn(userIdentity, isPersistent);
         }
 
         // TODO: Should this be async?
         public void SignOut()
         {
-            SignInService.SignOut(AuthenticationType);
+            AuthenticationManager.SignOut(AuthenticationType);
         }
 
         public virtual async Task<SignInStatus> PasswordSignInAsync(string userName, string password, bool isPersistent, bool shouldLockout)
@@ -98,7 +81,7 @@ namespace Microsoft.AspNet.Identity
 
         public virtual async Task<bool> SendTwoFactorCode(string provider)
         {
-            var userId = await SignInService.RetrieveUserId();
+            var userId = await AuthenticationManager.RetrieveUserId();
             if (userId == null)
             {
                 return false;
@@ -123,18 +106,18 @@ namespace Microsoft.AspNet.Identity
         public virtual async Task RememberTwoFactorClient(TUser user)
         {
             var userId = await UserManager.GetUserIdAsync(user);
-            SignInService.RememberClient(userId);
+            AuthenticationManager.RememberClient(userId);
         }
 
         public virtual Task ForgetTwoFactorClientAsync()
         {
-            SignInService.ForgetClient();
+            AuthenticationManager.ForgetClient();
             return Task.FromResult(0);
         }
 
         public virtual async Task<SignInStatus> TwoFactorSignInAsync(string provider, string code, bool isPersistent)
         {
-            var userId = await SignInService.RetrieveUserId();
+            var userId = await AuthenticationManager.RetrieveUserId();
             if (userId == null)
             {
                 return SignInStatus.Failure;
@@ -179,10 +162,10 @@ namespace Microsoft.AspNet.Identity
             if (await UserManager.GetTwoFactorEnabledAsync(user))
             {
                 var userId = await UserManager.GetUserIdAsync(user);
-                if (!await SignInService.IsClientRememeberedAsync(userId))
+                if (!await AuthenticationManager.IsClientRememeberedAsync(userId))
                 {
                     // Store the userId for use after two factor check
-                    await SignInService.StoreUserId(userId);
+                    await AuthenticationManager.StoreUserId(userId);
                     return SignInStatus.RequiresVerification;
                 }
             }

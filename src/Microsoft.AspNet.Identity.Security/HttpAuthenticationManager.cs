@@ -10,12 +10,12 @@ using Microsoft.Framework.DependencyInjection;
 
 namespace Microsoft.AspNet.Identity.Security
 {
-    public class HttpSignInService : ISignInService
+    public class HttpAuthenticationManager : IAuthenticationManager
     {
         public static readonly string TwoFactorUserIdAuthenticationType = "Microsoft.AspNet.Identity.TwoFactor.UserId";
         public static readonly string TwoFactorRememberedAuthenticationType = "Microsoft.AspNet.Identity.TwoFactor.Remembered";
 
-        public HttpSignInService(IContextAccessor<HttpContext> contextAccessor)
+        public HttpAuthenticationManager(IContextAccessor<HttpContext> contextAccessor)
         {
             Context = contextAccessor.Value;
         }

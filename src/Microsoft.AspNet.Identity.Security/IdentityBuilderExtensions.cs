@@ -12,7 +12,7 @@ namespace Microsoft.AspNet.Identity
             where TUser : class
         {
             // todo: review should this be scoped?
-            builder.Services.AddTransient<ISignInService, HttpSignInService>();
+            builder.Services.AddTransient<IAuthenticationManager, HttpAuthenticationManager>();
             return builder;
         }
     }
