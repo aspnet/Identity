@@ -7,7 +7,7 @@ namespace Microsoft.AspNet.Identity
     {
         Success,
         LockedOut,
-        RequiresTwoFactorAuthentication,
+        RequiresVerification,
         Failure
     }
 }

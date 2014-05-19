@@ -15,6 +15,7 @@ namespace Microsoft.Framework.DependencyInjection
             services.Add(IdentityServices.GetDefaultUserServices<TUser>());
             services.Add(IdentityServices.GetDefaultRoleServices<TRole>());
             services.AddScoped<UserManager<TUser>>();
+            services.AddScoped<SignInManager<TUser>>();
             services.AddScoped<RoleManager<TRole>>();
             services.AddTransient<IOptionsSetup<IdentityOptions>, IdentityOptionsSetup>();
             services.AddSingleton<IOptionsAccessor<IdentityOptions>, OptionsAccessor<IdentityOptions>>();

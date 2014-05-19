@@ -14,6 +14,136 @@ using Microsoft.Framework.DependencyInjection.Fallback;
 
 namespace Microsoft.AspNet.Identity
 {
+    public interface IUserStore
+    {
+        /// <summary>
+        ///     Returns the user id for a user
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task<string> GetUserIdAsync(object user, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// Returns the user's name
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task<string> GetUserNameAsync(object user, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        ///     Set the user name
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="userName"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task SetUserNameAsync(object user, string userName, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        ///     Insert a new user
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task CreateAsync(object user, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        ///     UpdateAsync a user
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task UpdateAsync(object user, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        ///     DeleteAsync a user
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task DeleteAsync(object user, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        ///     Finds a user
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task<object> FindByIdAsync(string userId, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        ///     Returns the user associated with this name
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task<object> FindByNameAsync(string name, CancellationToken cancellationToken = default(CancellationToken));
+    }
+
+    public class UserManager
+    {
+        public UserManager(IServiceProvider serviceProvider, IUserStore store, IOptionsAccessor<IdentityOptions> optionsAccessor)
+        {
+            Store = store;
+        }
+
+        protected internal IUserStore Store { get; set; }
+
+        /// <summary>
+        ///     Create a user with no password
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public virtual async Task<IdentityResult> CreateAsync(object user, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            //ThrowIfDisposed();
+            //await UpdateSecurityStampInternal(user, cancellationToken);
+            //var result = await ValidateUserInternal(user, cancellationToken);
+            //if (!result.Succeeded)
+            //{
+            //    return result;
+            //}
+            //if (Options.Lockout.EnabledByDefault && SupportsUserLockout)
+            //{
+            //    await GetUserLockoutStore().SetLockoutEnabledAsync(user, true, cancellationToken);
+            //}
+            await Store.CreateAsync(user, cancellationToken);
+            return IdentityResult.Success;
+        }
+
+        /// <summary>
+        ///     Find a user by id
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public virtual Task<object> FindByIdAsync(string userId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            //ThrowIfDisposed();
+            return Store.FindByIdAsync(userId, cancellationToken);
+        }
+
+    }
+
+    //public class UM<TUser> : UserManager where TUser : class
+    //{
+    //    /// <summary>
+    //    ///     Find a user by id
+    //    /// </summary>
+    //    /// <param name="userId"></param>
+    //    /// <param name="cancellationToken"></param>
+    //    /// <returns></returns>
+    //    public override async Task<TUser> FindByIdAsync(string userId, CancellationToken cancellationToken = default(CancellationToken))
+    //    {
+    //        var user = await FindByIdAsync(userId, cancellationToken);
+    //        return user as TUser;
+    //    }
+
+    //}
+
     /// <summary>
     ///     Exposes user related api which will automatically save changes to the UserStore
     /// </summary>
