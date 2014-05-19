@@ -23,5 +23,4 @@ nuget.exe
 *.ncrunchsolution
 *.*sdf
 *.ipch
-*.ide
 *.sln.ide
