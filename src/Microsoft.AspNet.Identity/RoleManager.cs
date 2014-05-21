@@ -2,11 +2,12 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Framework.DependencyInjection;
-using Microsoft.Framework.DependencyInjection.Fallback;
 
 namespace Microsoft.AspNet.Identity
 {
@@ -235,6 +236,76 @@ namespace Microsoft.AspNet.Identity
             }
 
             return await Store.FindByNameAsync(roleName, cancellationToken);
+        }
+
+        // IRoleClaimStore methods
+        private IRoleClaimStore<TRole> GetClaimStore()
+        {
+            var cast = Store as IRoleClaimStore<TRole>;
+            if (cast == null)
+            {
+                throw new NotSupportedException(Resources.StoreNotIRoleClaimStore);
+            }
+            return cast;
+        }
+
+        /// <summary>
+        ///     Add a user claim
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="claim"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public virtual async Task<IdentityResult> AddClaimAsync(TRole user, Claim claim, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            ThrowIfDisposed();
+            var claimStore = GetClaimStore();
+            if (claim == null)
+            {
+                throw new ArgumentNullException("claim");
+            }
+            if (user == null)
+            {
+                throw new ArgumentNullException("user");
+            }
+            await claimStore.AddClaimAsync(user, claim, cancellationToken);
+            return await UpdateAsync(user, cancellationToken);
+        }
+
+        /// <summary>
+        ///     Remove a user claim
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="claim"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public virtual async Task<IdentityResult> RemoveClaimAsync(TRole user, Claim claim, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            ThrowIfDisposed();
+            var claimStore = GetClaimStore();
+            if (user == null)
+            {
+                throw new ArgumentNullException("user");
+            }
+            await claimStore.RemoveClaimAsync(user, claim, cancellationToken);
+            return await UpdateAsync(user, cancellationToken);
+        }
+
+        /// <summary>
+        ///     Get a users's claims
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public virtual async Task<IList<Claim>> GetClaimsAsync(TRole user, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            ThrowIfDisposed();
+            var claimStore = GetClaimStore();
+            if (user == null)
+            {
+                throw new ArgumentNullException("user");
+            }
+            return await claimStore.GetClaimsAsync(user, cancellationToken);
         }
 
         private void ThrowIfDisposed()
