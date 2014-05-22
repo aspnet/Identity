@@ -71,10 +71,9 @@ namespace Microsoft.AspNet.Identity.Test
             Assert.Equal(roleClaimType, config.Get("identity:claimtype:role"));
 
             var setup = new IdentityOptionsSetup(config);
-            var services = new ServiceCollection();
+            var services = new ServiceCollection {OptionsServices.GetDefaultServices()};
             services.AddInstance<IConfiguration>(config);
-            services.AddTransient<IOptionsSetup<IdentityOptions>, IdentityOptionsSetup>();
-            services.AddTransient<IOptionsAccessor<IdentityOptions>, OptionsAccessor<IdentityOptions>>();
+            services.AddInstance<IOptionsSetup<IdentityOptions>>(new ConfigOptionsSetup<IdentityOptions>());
             var accessor = services.BuildServiceProvider().GetService<IOptionsAccessor<IdentityOptions>>();
             Assert.NotNull(accessor);
             var options = accessor.Options;

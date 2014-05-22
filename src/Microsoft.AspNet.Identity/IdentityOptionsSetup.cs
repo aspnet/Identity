@@ -6,25 +6,20 @@ using Microsoft.Framework.OptionsModel;
 
 namespace Microsoft.AspNet.Identity
 {
-    public class IdentityOptionsSetup : IOptionsSetup<IdentityOptions>
+    public class IdentityOptionsSetup : ConfigOptionsSetup<IdentityOptions>
     {
         private readonly IConfiguration _config;
 
-        public IdentityOptionsSetup(IConfiguration config)
+        public IdentityOptionsSetup(IConfiguration config) : base(config)
         {
             _config = config;
         }
 
-        public int Order { get; set; }
-
-        public void Setup(IdentityOptions options)
+        public override void Setup(IdentityOptions options)
         {
             if (_config != null)
             {
-                OptionsServices.ReadProperties(options.ClaimType, _config.GetSubKey("identity:claimtype"));
-                OptionsServices.ReadProperties(options.User, _config.GetSubKey("identity:user"));
-                OptionsServices.ReadProperties(options.Password, _config.GetSubKey("identity:password"));
-                OptionsServices.ReadProperties(options.Lockout, _config.GetSubKey("identity:lockout"));
+                OptionsServices.ReadProperties(options, _config.GetSubKey("identity"));
             }
         }
     }

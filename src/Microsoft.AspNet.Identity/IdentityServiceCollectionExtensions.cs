@@ -3,6 +3,7 @@
 
 using Microsoft.AspNet.Identity;
 using Microsoft.Framework.OptionsModel;
+using Microsoft.Framework.ConfigurationModel;
 using System;
 
 namespace Microsoft.Framework.DependencyInjection
@@ -26,6 +27,17 @@ namespace Microsoft.Framework.DependencyInjection
             where TUser : class
             where TRole : class
         {
+            services.AddIdentity<TUser, TRole>();
+            var builder = new IdentityBuilder<TUser, TRole>(services);
+            actionBuilder(builder);
+            return builder;
+        }
+
+        public static IdentityBuilder<TUser, TRole> AddIdentity<TUser, TRole>(this ServiceCollection services, IConfiguration identityConfig, Action<IdentityBuilder<TUser, TRole>> actionBuilder)
+            where TUser : class
+            where TRole : class
+        {
+            services.AddConfigOptionsSetup<IdentityOptions>(identityConfig);
             services.AddIdentity<TUser, TRole>();
             var builder = new IdentityBuilder<TUser, TRole>(services);
             actionBuilder(builder);
