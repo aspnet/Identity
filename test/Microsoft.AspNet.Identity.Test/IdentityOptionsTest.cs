@@ -70,10 +70,8 @@ namespace Microsoft.AspNet.Identity.Test
             var config = new Configuration { new MemoryConfigurationSource(dic) };
             Assert.Equal(roleClaimType, config.Get("identity:claimtype:role"));
 
-            var setup = new IdentityOptionsSetup(config);
             var services = new ServiceCollection {OptionsServices.GetDefaultServices()};
-            services.AddInstance<IConfiguration>(config);
-            services.AddInstance<IOptionsSetup<IdentityOptions>>(new ConfigOptionsSetup<IdentityOptions>());
+            services.AddIdentity(config.GetSubKey("identity"));
             var accessor = services.BuildServiceProvider().GetService<IOptionsAccessor<IdentityOptions>>();
             Assert.NotNull(accessor);
             var options = accessor.Options;
