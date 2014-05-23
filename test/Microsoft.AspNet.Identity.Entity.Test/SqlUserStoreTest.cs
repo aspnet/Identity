@@ -68,7 +68,6 @@ namespace Microsoft.AspNet.Identity.Entity.Test
 
             var db = new IdentitySqlContext(serviceProvider);
             db.Database.EnsureCreated();
-
             return db;
         }
 
@@ -79,16 +78,13 @@ namespace Microsoft.AspNet.Identity.Entity.Test
 
         public static ApplicationDbContext CreateAppContext()
         {
+            CreateContext();
             var services = new ServiceCollection();
             services.AddEntityFramework().AddSqlServer();
             var serviceProvider = services.BuildServiceProvider();
 
             var db = new ApplicationDbContext(serviceProvider);
-
-            // TODO: Recreate DB, doesn't support String ID or Identity context yet
             db.Database.EnsureCreated();
-
-            // TODO: CreateAsync DB?
             return db;
         }
 
@@ -97,27 +93,18 @@ namespace Microsoft.AspNet.Identity.Entity.Test
             var services = new ServiceCollection();
             services.AddTransient<IUserValidator<User>, UserValidator<User>>();
             services.AddTransient<IPasswordValidator<User>, PasswordValidator<User>>();
-            //services.AddInstance<IUserStore<User>>(new UserStore<User>(context));
-            //services.AddSingleton<UserManager<User>>();
-            var options = new IdentityOptions
+            services.AddInstance<IUserStore<User>>(new UserStore<User>(context));
+            services.AddSingleton<UserManager<User>>();
+            services.SetupOptions<IdentityOptions>(options =>
             {
-                Password = new PasswordOptions
-                {
-                    RequireDigit = false,
-                    RequireLowercase = false,
-                    RequireNonLetterOrDigit = false,
-                    RequireUppercase = false
-                },
-                User = new UserOptions
-                {
-                    AllowOnlyAlphanumericNames = false
-                }
-
-            };
-            var optionsAccessor = new OptionsAccessor<IdentityOptions>(new[] { new TestIdentityFactory.TestSetup(options) });
-            //services.AddInstance<IOptionsAccessor<IdentityOptions>>(new OptionsAccessor<IdentityOptions>(new[] { new TestSetup(options) }));
-            //return services.BuildServiceProvider().GetService<UserManager<User>>();
-            return new UserManager<User>(services.BuildServiceProvider(), new UserStore<User>(context), optionsAccessor);
+                options.Password.RequireDigit = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireNonLetterOrDigit = false;
+                options.Password.RequireUppercase = false;
+                options.User.AllowOnlyAlphanumericNames = false;
+            });
+            services.AddSingleton<IOptionsAccessor<IdentityOptions>, OptionsAccessor<IdentityOptions>>();
+            return services.BuildServiceProvider().GetService<UserManager<User>>();
         }
 
         public static UserManager<User> CreateManager()

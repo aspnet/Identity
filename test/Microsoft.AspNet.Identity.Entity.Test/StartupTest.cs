@@ -3,7 +3,6 @@
 
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Identity.Test;
-using Microsoft.Data.Entity;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.DependencyInjection.Fallback;
 using System;
@@ -15,15 +14,11 @@ namespace Microsoft.AspNet.Identity.Entity.Test
     public class StartupTest
     {
         public class ApplicationUser : EntityUser { }
-        public class ApplicationUserManager : UserManager<ApplicationUser>
-        {
-            public ApplicationUserManager(IServiceProvider services, IUserStore<ApplicationUser> store, IOptionsAccessor<IdentityOptions> options) : base(services, store, options) { }
-        }
-        public class ApplicationRoleManager : RoleManager<EntityRole>
-        {
-            public ApplicationRoleManager(IServiceProvider services, IRoleStore<EntityRole> store) : base(services, store) { }
-        }
 
+        public class ApplicationDbContext : IdentityContext<ApplicationUser>
+        {
+            public ApplicationDbContext(IServiceProvider services) : base(services) { }
+        }
 
         public class PasswordsNegativeLengthSetup : IOptionsSetup<IdentityOptions>
         {
@@ -60,7 +55,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
         [Fact]
         public void CanSetupIdentityOptions()
         {
-            IBuilder app = new Microsoft.AspNet.Builder.Builder(new ServiceCollection().BuildServiceProvider());
+            IBuilder app = new Builder.Builder(new ServiceCollection().BuildServiceProvider());
             app.UseServices(services => services.AddIdentity<IdentityUser>(identityServices => identityServices.SetupOptions(options => options.User.RequireUniqueEmail = true)));
 
             var optionsGetter = app.ApplicationServices.GetService<IOptionsAccessor<IdentityOptions>>();
@@ -73,36 +68,30 @@ namespace Microsoft.AspNet.Identity.Entity.Test
         [Fact]
         public async Task EnsureStartupUsageWorks()
         {
-            IBuilder builder = new Microsoft.AspNet.Builder.Builder(new ServiceCollection().BuildServiceProvider());
+            EnsureDatabase();
 
-            //builder.UseServices(services => services.AddIdentity<ApplicationUser>(s =>
-            //    s.AddEntity<ApplicationDbContext>()
-            //{
+            IBuilder builder = new Builder.Builder(new ServiceCollection().BuildServiceProvider());
 
             builder.UseServices(services =>
             {
-                services.AddEntityFramework();
-                services.AddTransient<DbContext, IdentityContext>();
+                services.AddEntityFramework().AddInMemoryStore();
                 services.AddIdentity<ApplicationUser, EntityRole>(s =>
                 {
-                    s.AddEntity();
-                    s.AddUserManager<ApplicationUserManager>();
-                    s.AddRoleManager<ApplicationRoleManager>();
+                    s.AddEntity<ApplicationUser, EntityRole, ApplicationDbContext>();
                 });
             });
 
             var userStore = builder.ApplicationServices.GetService<IUserStore<ApplicationUser>>();
             var roleStore = builder.ApplicationServices.GetService<IRoleStore<EntityRole>>();
-            var userManager = builder.ApplicationServices.GetService<ApplicationUserManager>();
-            //TODO: var userManager = builder.ApplicationServices.GetService<UserManager<IdentityUser>();
-            var roleManager = builder.ApplicationServices.GetService<ApplicationRoleManager>();
+            var userManager = builder.ApplicationServices.GetService<UserManager<ApplicationUser>>();
+            var roleManager = builder.ApplicationServices.GetService<RoleManager<EntityRole>>();
 
             Assert.NotNull(userStore);
             Assert.NotNull(userManager);
             Assert.NotNull(roleStore);
             Assert.NotNull(roleManager);
 
-            //await CreateAdminUser(builder.ApplicationServices);
+            await CreateAdminUser(builder.ApplicationServices);
         }
 
         private static async Task CreateAdminUser(IServiceProvider serviceProvider)
@@ -110,13 +99,28 @@ namespace Microsoft.AspNet.Identity.Entity.Test
             const string userName = "admin";
             const string roleName = "Admins";
             const string password = "1qaz@WSX";
-            var userManager = serviceProvider.GetService<ApplicationUserManager>();
-            var roleManager = serviceProvider.GetService<ApplicationRoleManager>();
+            var userManager = serviceProvider.GetService<UserManager<ApplicationUser>>();
+            var roleManager = serviceProvider.GetService<RoleManager<EntityRole>>();
 
             var user = new ApplicationUser { UserName = userName };
             IdentityResultAssert.IsSuccess(await userManager.CreateAsync(user, password));
             IdentityResultAssert.IsSuccess(await roleManager.CreateAsync(new EntityRole { Name = roleName }));
             IdentityResultAssert.IsSuccess(await userManager.AddToRoleAsync(user, roleName));
+        }
+
+        public static void EnsureDatabase()
+        {
+            var services = new ServiceCollection();
+            services.AddEntityFramework().AddInMemoryStore();
+            var serviceProvider = services.BuildServiceProvider();
+
+            var db = new ApplicationDbContext(serviceProvider);
+
+            // TODO: Recreate DB, doesn't support String ID or Identity context yet
+            if (!db.Database.Exists())
+            {
+                db.Database.Create();
+            }
         }
     }
 }

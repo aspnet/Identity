@@ -9,6 +9,15 @@ namespace Microsoft.AspNet.Identity
 {
     public static class IdentityBuilderExtensions
     {
+        public static IdentityBuilder<TUser, TRole> AddEntity<TUser, TRole, TDbContext>(this IdentityBuilder<TUser, TRole> builder)
+            where TUser : EntityUser
+            where TRole : EntityRole
+            where TDbContext : DbContext
+        {
+            builder.Services.AddScoped<DbContext, TDbContext>();
+            return builder.AddEntity<TUser, TRole>();
+        }
+
         public static IdentityBuilder<TUser, TRole> AddEntity<TUser, TRole>(this IdentityBuilder<TUser, TRole> builder)
             where TUser : EntityUser
             where TRole : EntityRole
@@ -23,16 +32,6 @@ namespace Microsoft.AspNet.Identity
         {
             builder.Services.AddScoped<IUserStore<TUser>, UserStore<TUser>>();
             builder.Services.AddScoped<UserManager<TUser>>();
-            return builder;
-        }
-
-        // todo: remove
-        public static IdentityBuilder<TUser, IdentityRole> AddEntity<TUser, TContext>(this IdentityBuilder<TUser, IdentityRole> builder)
-            where TUser : User where TContext : DbContext
-        {
-            builder.Services.AddScoped<IUserStore<TUser>, UserStore<TUser, TContext>>();
-            builder.Services.AddScoped<UserManager<TUser>>();
-            builder.Services.AddScoped<TContext>();
             return builder;
         }
 
