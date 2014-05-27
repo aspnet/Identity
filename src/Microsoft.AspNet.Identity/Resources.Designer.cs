@@ -245,6 +245,17 @@ namespace Microsoft.AspNet.Identity {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Store does not implement IQueryableUserStore&lt;TUser&gt;..
+        /// </summary>
+        internal static string StoreNotIRoleClaimStore
+        {
+            get
+            {
+                return ResourceManager.GetString("StoreNotIRoleClaimStore", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Store does not implement IUserClaimStore&lt;TUser&gt;..
         /// </summary>
         internal static string StoreNotIUserClaimStore {

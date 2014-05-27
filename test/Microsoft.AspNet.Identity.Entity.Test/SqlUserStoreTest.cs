@@ -152,6 +152,20 @@ namespace Microsoft.AspNet.Identity.Entity.Test
         }
 
         [Fact]
+        public async Task CanUpdatePasswordUsingHasher()
+        {
+            var manager = CreateManager();
+            var user = new User("Update");
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user, "password"));
+            Assert.True(await manager.CheckPasswordAsync(user, "password"));
+            user.PasswordHash = manager.PasswordHasher.HashPassword("New");
+            IdentityResultAssert.IsSuccess(await manager.UpdateAsync(user));
+            Assert.False(await manager.CheckPasswordAsync(user, "password"));
+            Assert.True(await manager.CheckPasswordAsync(user, "New"));
+            IdentityResultAssert.IsSuccess(await manager.DeleteAsync(user));
+        }
+
+        [Fact]
         public async Task CanSetUserName()
         {
             var manager = CreateManager();

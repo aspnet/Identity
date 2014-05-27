@@ -2,8 +2,10 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Data.Entity;
@@ -16,7 +18,8 @@ namespace Microsoft.AspNet.Identity.Entity
     }
 
     public class RoleStore<TRole, TKey> : 
-        IQueryableRoleStore<TRole>
+        IQueryableRoleStore<TRole>,
+        IRoleClaimStore<TRole>
         where TRole : EntityRole
         where TKey : IEquatable<TKey>
     {
@@ -49,8 +52,7 @@ namespace Microsoft.AspNet.Identity.Entity
 
         public virtual Task<TRole> GetRoleAggregate(Expression<Func<TRole, bool>> filter, CancellationToken cancellationToken = default(CancellationToken))
         {
-            // TODO: return Roles.SingleOrDefaultAsync(filter, cancellationToken);
-            return Task.FromResult(Roles.SingleOrDefault(filter));
+            return Roles.SingleOrDefaultAsync(filter, cancellationToken);
         }
 
         public async virtual Task CreateAsync(TRole role, CancellationToken cancellationToken = default(CancellationToken))
@@ -123,7 +125,6 @@ namespace Microsoft.AspNet.Identity.Entity
             return Task.FromResult(0);
         }
 
-
         public virtual TKey ConvertId(string userId)
         {
             return (TKey)Convert.ChangeType(userId, typeof(TKey));
@@ -170,6 +171,21 @@ namespace Microsoft.AspNet.Identity.Entity
         public void Dispose()
         {
             _disposed = true;
+        }
+
+        public Task<IList<Claim>> GetClaimsAsync(TRole role, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task AddClaimAsync(TRole role, Claim claim, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task RemoveClaimAsync(TRole role, Claim claim, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            throw new NotImplementedException();
         }
 
         public IQueryable<TRole> Roles

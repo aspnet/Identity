@@ -62,6 +62,19 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        public async Task CanUpdatePasswordUsingHasher()
+        {
+            var manager = CreateManager();
+            var user = new TUser() { UserName = "UpdatePassword" };
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user, "password"));
+            Assert.True(await manager.CheckPasswordAsync(user, "password"));
+            user.PasswordHash = manager.PasswordHasher.HashPassword("New");
+            IdentityResultAssert.IsSuccess(await manager.UpdateAsync(user));
+            Assert.False(await manager.CheckPasswordAsync(user, "password"));
+            Assert.True(await manager.CheckPasswordAsync(user, "New"));
+        }
+
+        [Fact]
         public async Task CanFindById()
         {
             var manager = CreateManager();
@@ -806,6 +819,30 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        public async Task CanAddRemoveRoleClaim()
+        {
+            var manager = CreateRoleManager();
+            var role = CreateRole("ClaimsAddRemove");
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(role));
+            Claim[] claims = { new Claim("c", "v"), new Claim("c2", "v2"), new Claim("c2", "v3") };
+            foreach (Claim c in claims)
+            {
+                IdentityResultAssert.IsSuccess(await manager.AddClaimAsync(role, c));
+            }
+            var roleClaims = await manager.GetClaimsAsync(role);
+            Assert.Equal(3, roleClaims.Count);
+            IdentityResultAssert.IsSuccess(await manager.RemoveClaimAsync(role, claims[0]));
+            roleClaims = await manager.GetClaimsAsync(role);
+            Assert.Equal(2, roleClaims.Count);
+            IdentityResultAssert.IsSuccess(await manager.RemoveClaimAsync(role, claims[1]));
+            roleClaims = await manager.GetClaimsAsync(role);
+            Assert.Equal(1, roleClaims.Count);
+            IdentityResultAssert.IsSuccess(await manager.RemoveClaimAsync(role, claims[2]));
+            roleClaims = await manager.GetClaimsAsync(role);
+            Assert.Equal(0, roleClaims.Count);
+        }
+
+        [Fact]
         public async Task CanRoleFindByIdTest()
         {
             var manager = CreateRoleManager();
@@ -967,7 +1004,6 @@ namespace Microsoft.AspNet.Identity.Test
                 }
             }
         }
-
 
         [Fact]
         public async Task RemoveUserFromRoleWithMultipleRoles()
