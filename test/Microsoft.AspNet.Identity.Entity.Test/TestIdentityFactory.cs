@@ -25,10 +25,8 @@ namespace Microsoft.AspNet.Identity.Entity.Test
         public static UserManager<EntityUser> CreateManager(DbContext context)
         {
             var services = new ServiceCollection();
-            services.AddTransient<IUserValidator<EntityUser>, UserValidator<EntityUser>>();
-            services.AddTransient<IPasswordValidator<IdentityUser>, PasswordValidator<IdentityUser>>();
-            services.AddInstance<IUserStore<EntityUser>>(new InMemoryUserStore<EntityUser>(context));
-            services.AddSingleton<UserManager<EntityUser>>();
+            services.Add(OptionsServices.GetDefaultServices());
+            services.AddIdentity<EntityUser>(b => b.AddUserStore(() => new InMemoryUserStore<EntityUser>(context)));
             services.SetupOptions<IdentityOptions>(options =>
             {
                 options.Password.RequireDigit = false;
@@ -37,7 +35,6 @@ namespace Microsoft.AspNet.Identity.Entity.Test
                 options.Password.RequireUppercase = false;
                 options.User.AllowOnlyAlphanumericNames = false;
             });
-            services.AddSingleton<IOptionsAccessor<IdentityOptions>, OptionsAccessor<IdentityOptions>>();
             return services.BuildServiceProvider().GetService<UserManager<EntityUser>>();
         }
 
@@ -49,8 +46,8 @@ namespace Microsoft.AspNet.Identity.Entity.Test
         public static RoleManager<EntityRole> CreateRoleManager(DbContext context)
         {
             var services = new ServiceCollection();
-            services.AddTransient<IRoleValidator<EntityRole>, RoleValidator<EntityRole>>();
-            services.AddInstance<IRoleStore<EntityRole>>(new EntityRoleStore<EntityRole, string>(context));
+            services.Add(OptionsServices.GetDefaultServices());
+            services.AddIdentity<EntityUser, EntityRole>(b => b.AddRoleStore(() => new EntityRoleStore<EntityRole, string>(context)));
             return services.BuildServiceProvider().GetService<RoleManager<EntityRole>>();
         }
 

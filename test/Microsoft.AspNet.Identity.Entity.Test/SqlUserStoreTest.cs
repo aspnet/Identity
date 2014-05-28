@@ -34,7 +34,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
             {
                 services.Add(OptionsServices.GetDefaultServices());
                 services.AddEntityFramework().AddSqlServer();
-                services.AddIdentityEntityFramework<ApplicationDbContext, ApplicationUser>();
+                services.AddIdentity<ApplicationUser>().AddEntityFramework<ApplicationUser, ApplicationDbContext>();
             });
 
             var userStore = builder.ApplicationServices.GetService<IUserStore<ApplicationUser>>();
@@ -98,10 +98,9 @@ namespace Microsoft.AspNet.Identity.Entity.Test
         public static UserManager<User> CreateManager(DbContext context)
         {
             var services = new ServiceCollection();
-            services.AddTransient<IUserValidator<User>, UserValidator<User>>();
-            services.AddTransient<IPasswordValidator<User>, PasswordValidator<User>>();
-            services.AddInstance<IUserStore<User>>(new UserStore<User>(context));
-            services.AddSingleton<UserManager<User>>();
+
+            services.Add(OptionsServices.GetDefaultServices());
+            services.AddIdentity<User>(b => b.AddUserStore(() => new UserStore<User>(context)));
             services.SetupOptions<IdentityOptions>(options =>
             {
                 options.Password.RequireDigit = false;
@@ -110,7 +109,6 @@ namespace Microsoft.AspNet.Identity.Entity.Test
                 options.Password.RequireUppercase = false;
                 options.User.AllowOnlyAlphanumericNames = false;
             });
-            services.AddSingleton<IOptionsAccessor<IdentityOptions>, OptionsAccessor<IdentityOptions>>();
             return services.BuildServiceProvider().GetService<UserManager<User>>();
         }
 
