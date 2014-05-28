@@ -1,13 +1,13 @@
 // Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System;
-using System.Threading.Tasks;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Identity.Test;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.DependencyInjection.Fallback;
 using Microsoft.Framework.OptionsModel;
+using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Microsoft.AspNet.Identity.InMemory.Test
@@ -116,6 +116,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
             var userManager2 = builder.ApplicationServices.GetService<UserManager<ApplicationUser>>();
             var roleManager2 = builder.ApplicationServices.GetService<RoleManager<IdentityRole>>();
 
+            // Stores are singleton, managers are scoped
             Assert.Equal(userStore, userStore2);
             Assert.Equal(userManager, userManager2);
             Assert.Equal(roleStore, roleStore2);

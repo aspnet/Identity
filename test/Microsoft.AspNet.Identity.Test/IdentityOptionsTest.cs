@@ -38,13 +38,6 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
-        public void CopyNullIsNoop()
-        {
-            var options = new IdentityOptions();
-            options.Copy(null);
-        }
-
-        [Fact]
         public void IdentityOptionsFromConfig()
         {
             const string roleClaimType = "rolez";

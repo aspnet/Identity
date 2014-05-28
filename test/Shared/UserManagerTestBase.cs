@@ -1443,21 +1443,5 @@ namespace Microsoft.AspNet.Identity.Test
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
             Assert.False(await manager.VerifyTwoFactorTokenAsync(user, factorId, "bogus"));
         }
-
-        public class TestSetup : IOptionsSetup<IdentityOptions>
-        {
-            private readonly IdentityOptions _options;
-
-            public TestSetup(IdentityOptions options)
-            {
-                _options = options;
-            }
-
-            public int Order { get { return 0; } }
-            public void Setup(IdentityOptions options)
-            {
-                options.Copy(_options);
-            }
-        }
     }
 }
