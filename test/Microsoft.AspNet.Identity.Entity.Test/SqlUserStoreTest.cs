@@ -97,19 +97,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
 
         public static UserManager<User> CreateManager(DbContext context)
         {
-            var services = new ServiceCollection();
-
-            services.Add(OptionsServices.GetDefaultServices());
-            services.AddIdentity<User>(b => b.AddUserStore(() => new UserStore<User>(context)));
-            services.SetupOptions<IdentityOptions>(options =>
-            {
-                options.Password.RequireDigit = false;
-                options.Password.RequireLowercase = false;
-                options.Password.RequireNonLetterOrDigit = false;
-                options.Password.RequireUppercase = false;
-                options.User.AllowOnlyAlphanumericNames = false;
-            });
-            return services.BuildServiceProvider().GetService<UserManager<User>>();
+            return MockHelpers.CreateManager<User>(() => new UserStore<User>(context));
         }
 
         public static UserManager<User> CreateManager()

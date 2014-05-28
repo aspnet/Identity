@@ -1,10 +1,12 @@
 // Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using Microsoft.AspNet.Identity.Test;
 using Microsoft.Data.Entity;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.DependencyInjection.Fallback;
 using Microsoft.Framework.OptionsModel;
+using System;
 
 namespace Microsoft.AspNet.Identity.Entity.Test
 {
@@ -24,18 +26,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
 
         public static UserManager<EntityUser> CreateManager(DbContext context)
         {
-            var services = new ServiceCollection();
-            services.Add(OptionsServices.GetDefaultServices());
-            services.AddIdentity<EntityUser>(b => b.AddUserStore(() => new InMemoryUserStore<EntityUser>(context)));
-            services.SetupOptions<IdentityOptions>(options =>
-            {
-                options.Password.RequireDigit = false;
-                options.Password.RequireLowercase = false;
-                options.Password.RequireNonLetterOrDigit = false;
-                options.Password.RequireUppercase = false;
-                options.User.AllowOnlyAlphanumericNames = false;
-            });
-            return services.BuildServiceProvider().GetService<UserManager<EntityUser>>();
+            return MockHelpers.CreateManager<EntityUser>(() => new InMemoryUserStore<EntityUser>(context));
         }
 
         public static UserManager<EntityUser> CreateManager()
