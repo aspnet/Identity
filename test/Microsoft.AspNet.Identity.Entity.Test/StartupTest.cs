@@ -84,7 +84,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
                 services.AddEntityFramework().AddInMemoryStore();
                 services.AddIdentity<ApplicationUser, EntityRole>(s =>
                 {
-                    s.AddEntity<ApplicationUser, EntityRole, ApplicationDbContext>();
+                    s.AddEntityFramework<ApplicationUser, EntityRole, ApplicationDbContext>();
                 });
             });
 
