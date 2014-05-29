@@ -9,21 +9,14 @@ namespace Microsoft.AspNet.Identity
 {
     public static class IdentityBuilderExtensions
     {
-        public static IdentityBuilder<TUser, TRole> AddEntityFramework<TUser, TRole, TDbContext>(this IdentityBuilder<TUser, TRole> builder)
+        public static IdentityBuilder<TUser, TRole> AddEntityFrameworkInMemory<TUser, TRole, TDbContext>(this IdentityBuilder<TUser, TRole> builder)
             where TUser : EntityUser
             where TRole : EntityRole
             where TDbContext : DbContext
         {
             builder.Services.AddScoped<TDbContext>();
-            return builder.AddEntityFramework();
-        }
-
-        public static IdentityBuilder<TUser, TRole> AddEntityFramework<TUser, TRole>(this IdentityBuilder<TUser, TRole> builder)
-            where TUser : EntityUser
-            where TRole : EntityRole
-        {
-            builder.Services.AddScoped<IUserStore<TUser>, InMemoryUserStore<TUser>>();
-            builder.Services.AddScoped<IRoleStore<TRole>, EntityRoleStore<TRole>>();
+            builder.Services.AddScoped<IUserStore<TUser>, InMemoryUserStore<TUser, TDbContext>>();
+            builder.Services.AddScoped<IRoleStore<TRole>, EntityRoleStore<TRole, TDbContext>>();
             return builder;
         }
 

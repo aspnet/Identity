@@ -80,11 +80,10 @@ namespace Microsoft.AspNet.Identity.Entity.Test
             builder.UseServices(services =>
             {
                 services.Add(OptionsServices.GetDefaultServices());
-                services.AddEntityFramework();
                 services.AddEntityFramework().AddInMemoryStore();
                 services.AddIdentity<ApplicationUser, EntityRole>(s =>
                 {
-                    s.AddEntityFramework<ApplicationUser, EntityRole, ApplicationDbContext>();
+                    s.AddEntityFrameworkInMemory<ApplicationUser, EntityRole, ApplicationDbContext>();
                 });
             });
 

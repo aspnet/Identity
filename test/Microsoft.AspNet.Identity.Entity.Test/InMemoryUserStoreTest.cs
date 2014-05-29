@@ -19,10 +19,6 @@ namespace Microsoft.AspNet.Identity.Entity.Test
 {
     public class InMemoryUserStoreTest
     {
-        class ApplicationUserManager : UserManager<EntityUser>
-        {
-            public ApplicationUserManager(IServiceProvider services, IUserStore<EntityUser> store, IOptionsAccessor<IdentityOptions> options) : base(services, store, options) { }
-        }
 
         [Fact]
         public async Task CanUseAddedManagerInstance()
@@ -30,11 +26,11 @@ namespace Microsoft.AspNet.Identity.Entity.Test
             var services = new ServiceCollection();
             services.AddEntityFramework().AddInMemoryStore();
             services.AddSingleton<IOptionsAccessor<IdentityOptions>, OptionsAccessor<IdentityOptions>>();
-            services.AddInstance<DbContext>(new IdentityContext());
+            services.AddInstance<IdentityContext>(new IdentityContext());
             services.AddTransient<IUserStore<EntityUser>, InMemoryUserStore>();
-            services.AddSingleton<ApplicationUserManager, ApplicationUserManager>();
+            services.AddSingleton<UserManager<EntityUser>>();
             var provider = services.BuildServiceProvider();
-            var manager = provider.GetService<ApplicationUserManager>();
+            var manager = provider.GetService<UserManager<EntityUser>>();
             Assert.NotNull(manager);
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(new EntityUser("hello")));
         }
@@ -51,11 +47,10 @@ namespace Microsoft.AspNet.Identity.Entity.Test
             services.AddIdentity<EntityUser, EntityRole>(s =>
             {
                 s.AddUserStore(() => store);
-                s.AddUserManager<ApplicationUserManager>();
             });
 
             var provider = services.BuildServiceProvider();
-            var manager = provider.GetService<ApplicationUserManager>();
+            var manager = provider.GetService<UserManager<EntityUser>>();
             Assert.NotNull(manager);
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(new EntityUser("hello2")));
         }

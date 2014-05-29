@@ -34,11 +34,11 @@ namespace Microsoft.AspNet.Identity.Entity.Test
             return CreateManager(CreateContext());
         }
 
-        public static RoleManager<EntityRole> CreateRoleManager(DbContext context)
+        public static RoleManager<EntityRole> CreateRoleManager(IdentityContext context)
         {
             var services = new ServiceCollection();
             services.Add(OptionsServices.GetDefaultServices());
-            services.AddIdentity<EntityUser, EntityRole>(b => b.AddRoleStore(() => new EntityRoleStore<EntityRole, string>(context)));
+            services.AddIdentity<EntityUser, EntityRole>(b => b.AddRoleStore(() => new EntityRoleStore<EntityRole>(context)));
             return services.BuildServiceProvider().GetService<RoleManager<EntityRole>>();
         }
 
