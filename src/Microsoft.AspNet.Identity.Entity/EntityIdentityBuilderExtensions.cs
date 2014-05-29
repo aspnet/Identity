@@ -7,7 +7,7 @@ using Microsoft.Framework.DependencyInjection;
 
 namespace Microsoft.AspNet.Identity
 {
-    public static class IdentityBuilderExtensions
+    public static class EntityIdentityBuilderExtensions
     {
         public static IdentityBuilder<TUser, TRole> AddEntityFrameworkInMemory<TUser, TRole, TDbContext>(this IdentityBuilder<TUser, TRole> builder)
             where TUser : EntityUser
