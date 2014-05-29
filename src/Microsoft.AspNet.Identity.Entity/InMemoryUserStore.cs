@@ -13,10 +13,15 @@ using Microsoft.Data.Entity;
 
 namespace Microsoft.AspNet.Identity.Entity
 {
-    public class InMemoryInMemoryUserStore :
-        InMemoryUserStore<EntityUser, IdentityContext>
+    public class InMemoryUserStore : InMemoryUserStore<EntityUser, IdentityContext>
     {
-        public InMemoryInMemoryUserStore(IdentityContext context) : base(context) { }
+        public InMemoryUserStore(IdentityContext context) : base(context) { }
+    }
+
+    public class InMemoryUserStore<TUser> : InMemoryUserStore<TUser, IdentityContext>
+        where TUser : EntityUser
+    {
+        public InMemoryUserStore(IdentityContext context) : base(context) { }
     }
 
     public class InMemoryUserStore<TUser, TContext> : InMemoryUserStore<TUser, EntityRole, string, IdentityUserLogin, IdentityUserRole, IdentityUserClaim, TContext> 

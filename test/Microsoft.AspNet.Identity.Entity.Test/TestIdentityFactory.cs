@@ -24,7 +24,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
             return db;
         }
 
-        public static UserManager<EntityUser> CreateManager(DbContext context)
+        public static UserManager<EntityUser> CreateManager(IdentityContext context)
         {
             return MockHelpers.CreateManager<EntityUser>(() => new InMemoryUserStore<EntityUser>(context));
         }
