@@ -466,7 +466,7 @@ namespace Microsoft.AspNet.Identity.Test
             Assert.NotNull(stamp);
             var token = await manager.GeneratePasswordResetTokenAsync(user);
             Assert.NotNull(token);
-            IdentityResultAssert.IsSuccess(await manager.ResetPassword(user, token, newPassword));
+            IdentityResultAssert.IsSuccess(await manager.ResetPasswordAsync(user, token, newPassword));
             Assert.Null(await manager.FindByUserNamePasswordAsync(user.UserName, password));
             Assert.Equal(user, await manager.FindByUserNamePasswordAsync(user.UserName, newPassword));
             Assert.NotEqual(stamp, user.SecurityStamp);
@@ -486,7 +486,7 @@ namespace Microsoft.AspNet.Identity.Test
             var token = await manager.GeneratePasswordResetTokenAsync(user);
             Assert.NotNull(token);
             manager.PasswordValidator = new AlwaysBadValidator();
-            IdentityResultAssert.IsFailure(await manager.ResetPassword(user, token, newPassword),
+            IdentityResultAssert.IsFailure(await manager.ResetPasswordAsync(user, token, newPassword),
                 AlwaysBadValidator.ErrorMessage);
             Assert.NotNull(await manager.FindByUserNamePasswordAsync(user.UserName, password));
             Assert.Equal(user, await manager.FindByUserNamePasswordAsync(user.UserName, password));
@@ -504,7 +504,7 @@ namespace Microsoft.AspNet.Identity.Test
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user, password));
             var stamp = user.SecurityStamp;
             Assert.NotNull(stamp);
-            IdentityResultAssert.IsFailure(await manager.ResetPassword(user, "bogus", newPassword), "Invalid token.");
+            IdentityResultAssert.IsFailure(await manager.ResetPasswordAsync(user, "bogus", newPassword), "Invalid token.");
             Assert.NotNull(await manager.FindByUserNamePasswordAsync(user.UserName, password));
             Assert.Equal(user, await manager.FindByUserNamePasswordAsync(user.UserName, password));
             Assert.Equal(stamp, user.SecurityStamp);
