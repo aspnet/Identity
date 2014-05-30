@@ -26,7 +26,6 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
                 options.Password.RequireUppercase = false;
                 options.User.AllowOnlyAlphanumericNames = false;
             });
-            services.AddSingleton<IOptionsAccessor<IdentityOptions>, OptionsAccessor<IdentityOptions>>();
             return services.BuildServiceProvider().GetService<UserManager<IdentityUser>>();
         }
 

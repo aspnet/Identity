@@ -55,23 +55,6 @@ namespace Microsoft.AspNet.Identity.Entity.Test
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(new EntityUser("hello2")));
         }
 
-        //[Fact]
-        //public async Task CanUseSingletonGenericManagerInstance()
-        //{
-        //    var services = new ServiceCollection();
-        //    var store = new EntityUserStore(new IdentityContext());
-        //    services.AddIdentity<EntityUser>(s =>
-        //    {
-        //        s.UseStore(() => store);
-        //        s.UseManager<UserManager<EntityUser>>();
-        //    });
-
-        //    var provider = services.BuildServiceProvider();
-        //    var manager = provider.GetService<UserManager<EntityUser>>();
-        //    Assert.NotNull(manager);
-        //    IdentityResultAssert.IsSuccess(await manager.CreateAsync(new EntityUser("hello")));
-        //}
-
         [Fact]
         public async Task EntityUserStoreMethodsThrowWhenDisposedTest()
         {

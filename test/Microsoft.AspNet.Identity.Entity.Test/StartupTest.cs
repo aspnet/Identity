@@ -22,22 +22,6 @@ namespace Microsoft.AspNet.Identity.Entity.Test
         }
 
         [Fact]
-        public void CanSetupIdentityOptions()
-        {
-            IBuilder app = new Builder.Builder(new ServiceCollection().BuildServiceProvider());
-            app.UseServices(services => {
-                services.Add(OptionsServices.GetDefaultServices());
-                services.AddIdentity<IdentityUser>(identityServices => identityServices.SetupOptions(options => options.User.RequireUniqueEmail = true));
-            });
-
-            var optionsGetter = app.ApplicationServices.GetService<IOptionsAccessor<IdentityOptions>>();
-            Assert.NotNull(optionsGetter);
-
-            var myOptions = optionsGetter.Options;
-            Assert.True(myOptions.User.RequireUniqueEmail);
-        }
-
-        [Fact]
         public async Task EnsureStartupUsageWorks()
         {
             EnsureDatabase();
