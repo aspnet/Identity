@@ -17,11 +17,20 @@ namespace Microsoft.AspNet.Identity.Entity.Test
 {
     public class SqlUserStoreTest
     {
+        private const string ConnectionString = @"Server=(localdb)\v11.0;Database=SqlUserStoreTest;Trusted_Connection=True;";
+
         public class ApplicationUser : User { }
 
         public class ApplicationDbContext : IdentitySqlContext<ApplicationUser>
         {
-            public ApplicationDbContext(IServiceProvider services) : base(services) { }
+            public ApplicationDbContext(IServiceProvider services, IOptionsAccessor<DbContextOptions> options) : base(services, options.Options) { }
+        }
+
+        [TestPriority(0)]
+        [Fact]
+        public void RecreateDatabase()
+        {
+            CreateContext(true);
         }
 
         [Fact]
@@ -35,6 +44,8 @@ namespace Microsoft.AspNet.Identity.Entity.Test
                 services.Add(OptionsServices.GetDefaultServices());
                 services.AddEntityFramework().AddSqlServer();
                 services.AddIdentity<ApplicationUser>().AddEntityFramework<ApplicationUser, ApplicationDbContext>();
+                services.SetupOptions<DbContextOptions>(options => 
+                    options.UseSqlServer(ConnectionString));
             });
 
             var userStore = builder.ApplicationServices.GetService<IUserStore<ApplicationUser>>();
@@ -69,7 +80,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
             services.AddEntityFramework().AddSqlServer();
             var serviceProvider = services.BuildServiceProvider();
 
-            var db = new IdentitySqlContext(serviceProvider);
+            var db = new IdentitySqlContext(serviceProvider, ConnectionString);
             if (delete)
             {
                 db.Database.Delete();
@@ -88,16 +99,17 @@ namespace Microsoft.AspNet.Identity.Entity.Test
             CreateContext();
             var services = new ServiceCollection();
             services.AddEntityFramework().AddSqlServer();
+            services.Add(OptionsServices.GetDefaultServices());
             var serviceProvider = services.BuildServiceProvider();
 
-            var db = new ApplicationDbContext(serviceProvider);
+            var db = new ApplicationDbContext(serviceProvider, serviceProvider.GetService<IOptionsAccessor<DbContextOptions>>());
             db.Database.EnsureCreated();
             return db;
         }
 
         public static UserManager<User> CreateManager(DbContext context)
         {
-            return MockHelpers.CreateManager<User>(() => new UserStore<User>(context));
+            return MockHelpers.CreateManager(() => new UserStore<User>(context));
         }
 
         public static UserManager<User> CreateManager()
