@@ -82,7 +82,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
             var db = new IdentitySqlContext(serviceProvider, ConnectionString);
             if (delete)
             {
-                db.Database.Delete();
+                db.Database.EnsureDeleted();
             }
             db.Database.EnsureCreated();
             return db;

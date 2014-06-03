@@ -71,12 +71,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
             var serviceProvider = services.BuildServiceProvider();
 
             var db = new ApplicationDbContext(serviceProvider);
-
-            // TODO: Recreate DB, doesn't support String ID or Identity context yet
-            if (!db.Database.Exists())
-            {
-                db.Database.Create();
-            }
+            db.Database.EnsureCreated();
         }
     }
 }
