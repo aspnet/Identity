@@ -23,7 +23,6 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
 
             builder.UseServices(services => services.AddIdentity<ApplicationUser>(s =>
             {
-                services.Add(OptionsServices.GetDefaultServices());
                 s.AddInMemory();
             }));
 
@@ -46,7 +45,6 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
             var builder = new Builder.Builder(new ServiceCollection().BuildServiceProvider());
             builder.UseServices(services =>
             {
-                services.Add(OptionsServices.GetDefaultServices());
                 services.AddIdentity<ApplicationUser>(s => s.AddInMemory());
 
             });

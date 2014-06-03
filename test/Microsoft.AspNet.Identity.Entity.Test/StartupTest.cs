@@ -30,7 +30,6 @@ namespace Microsoft.AspNet.Identity.Entity.Test
 
             builder.UseServices(services =>
             {
-                services.Add(OptionsServices.GetDefaultServices());
                 services.AddEntityFramework().AddInMemoryStore();
                 services.AddIdentity<ApplicationUser, EntityRole>(s =>
                 {
