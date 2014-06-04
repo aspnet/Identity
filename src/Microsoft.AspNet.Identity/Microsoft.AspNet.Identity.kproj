@@ -30,7 +30,6 @@
     <Compile Include="IdentityBuilder.cs" />
     <Compile Include="IdentityMessage.cs" />
     <Compile Include="IdentityOptions.cs" />
-    <Compile Include="IdentityOptionsSetup.cs" />
     <Compile Include="IdentityResult.cs" />
     <Compile Include="IdentityRole.cs" />
     <Compile Include="IdentityServiceCollectionExtensions.cs" />
