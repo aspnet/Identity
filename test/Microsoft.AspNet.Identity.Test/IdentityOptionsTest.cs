@@ -100,7 +100,6 @@ namespace Microsoft.AspNet.Identity.Test
             var builder = new Builder.Builder(new ServiceCollection().BuildServiceProvider());
             builder.UseServices(services =>
             {
-                services.Add(OptionsServices.GetDefaultServices());
                 services.AddIdentity<IdentityUser>();
                 services.AddSetup<PasswordsNegativeLengthSetup>();
             });
@@ -125,7 +124,6 @@ namespace Microsoft.AspNet.Identity.Test
             var app = new Builder.Builder(new ServiceCollection().BuildServiceProvider());
             app.UseServices(services =>
             {
-                services.Add(OptionsServices.GetDefaultServices());
                 services.AddIdentity<IdentityUser>(identityServices => identityServices.SetupOptions(options => options.User.RequireUniqueEmail = true));
             });
 
