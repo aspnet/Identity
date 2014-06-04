@@ -5,6 +5,7 @@ using Microsoft.AspNet.Identity.Entity;
 using Microsoft.Data.Entity;
 using Microsoft.Framework.DependencyInjection;
 
+// Move to DI namespace?
 namespace Microsoft.AspNet.Identity
 {
     public static class EntityIdentityBuilderExtensions
