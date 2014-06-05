@@ -37,7 +37,6 @@ namespace Microsoft.AspNet.Identity.Entity.Test
         public static RoleManager<EntityRole> CreateRoleManager(IdentityContext context)
         {
             var services = new ServiceCollection();
-            services.Add(OptionsServices.GetDefaultServices());
             services.AddIdentity<EntityUser, EntityRole>(b => b.AddRoleStore(() => new EntityRoleStore<EntityRole>(context)));
             return services.BuildServiceProvider().GetService<RoleManager<EntityRole>>();
         }

@@ -25,7 +25,7 @@ namespace Microsoft.AspNet.Identity
         public static IdentityBuilder<TUser, IdentityRole> AddEntityFramework<TUser, TContext>(this IdentityBuilder<TUser, IdentityRole> builder)
             where TUser : User where TContext : DbContext
         {
-            builder.Services.AddScoped<IUserStore<TUser>, UserStore<TUser, TContext>>();
+            builder.Services.AddScoped<IUserStore<TUser>, UserStore<TUser, IdentityRole, TContext>>();
             builder.Services.AddScoped<TContext>();
             return builder;
         }

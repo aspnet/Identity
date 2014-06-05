@@ -63,15 +63,13 @@ namespace Microsoft.AspNet.Identity.Entity
                 //.ToTable("AspNetRoles");
  
             builder.Entity<TUserRole>()
-                .Key(u => u.Id)
-                //TODO: .Key(r => new { r.UserId, r.RoleId })
+                .Key(r => new { r.UserId, r.RoleId })
                 .ForeignKeys(fk => fk.ForeignKey<TUser>(f => f.UserId))
                 .ForeignKeys(fk => fk.ForeignKey<TRole>(f => f.RoleId));
                 //.ToTable("AspNetUserRoles");
 
             builder.Entity<TUserLogin>()
-                .Key(u => u.Id)
-                //TODO: .Key(l => new { l.LoginProvider, l.ProviderKey, l.UserId })
+                .Key(l => new { l.LoginProvider, l.ProviderKey, l.UserId })
                 .ForeignKeys(fk => fk.ForeignKey<TUser>(f => f.UserId));
             //.ToTable("AspNetUserLogins");
 

@@ -12,7 +12,7 @@ using Microsoft.Data.Entity;
 
 namespace Microsoft.AspNet.Identity.Entity
 {
-    public class RoleStore<TRole> : RoleStore<TRole, string> where TRole : EntityRole
+    public class RoleStore<TRole> : RoleStore<TRole, string> where TRole : IdentityRole
     {
         public RoleStore(DbContext context) : base(context) { }
     }
@@ -20,7 +20,7 @@ namespace Microsoft.AspNet.Identity.Entity
     public class RoleStore<TRole, TKey> : 
         IQueryableRoleStore<TRole>,
         IRoleClaimStore<TRole>
-        where TRole : EntityRole
+        where TRole : IdentityRole
         where TKey : IEquatable<TKey>
     {
         private bool _disposed;
@@ -52,7 +52,7 @@ namespace Microsoft.AspNet.Identity.Entity
 
         public virtual Task<TRole> GetRoleAggregate(Expression<Func<TRole, bool>> filter, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return Roles.SingleOrDefaultAsync(filter, cancellationToken);
+            return Task.FromResult(Roles.FirstOrDefault(filter));
         }
 
         public async virtual Task CreateAsync(TRole role, CancellationToken cancellationToken = default(CancellationToken))
