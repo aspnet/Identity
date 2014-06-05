@@ -34,14 +34,14 @@ namespace Microsoft.AspNet.Identity.Entity.Test
             return CreateManager(CreateContext());
         }
 
-        public static RoleManager<EntityRole> CreateRoleManager(IdentityContext context)
+        public static RoleManager<IdentityRole> CreateRoleManager(IdentityContext context)
         {
             var services = new ServiceCollection();
-            services.AddIdentity<EntityUser, EntityRole>(b => b.AddRoleStore(() => new EntityRoleStore<EntityRole>(context)));
-            return services.BuildServiceProvider().GetService<RoleManager<EntityRole>>();
+            services.AddIdentity<EntityUser, IdentityRole>(b => b.AddRoleStore(() => new RoleStore<IdentityRole>(context)));
+            return services.BuildServiceProvider().GetService<RoleManager<IdentityRole>>();
         }
 
-        public static RoleManager<EntityRole> CreateRoleManager()
+        public static RoleManager<IdentityRole> CreateRoleManager()
         {
             return CreateRoleManager(CreateContext());
         }

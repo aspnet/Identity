@@ -12,20 +12,28 @@ using Microsoft.Data.Entity;
 
 namespace Microsoft.AspNet.Identity.Entity
 {
-    public class RoleStore<TRole> : RoleStore<TRole, string> where TRole : IdentityRole
+    public class RoleStore<TRole> : RoleStore<TRole, string, DbContext> where TRole : IdentityRole
     {
         public RoleStore(DbContext context) : base(context) { }
     }
 
-    public class RoleStore<TRole, TKey> : 
+    public class RoleStore<TRole, TContext> : RoleStore<TRole, string, TContext> 
+        where TRole : IdentityRole
+        where TContext : DbContext
+    {
+        public RoleStore(TContext context) : base(context) { }
+    }
+
+    public class RoleStore<TRole, TKey, TContext> : 
         IQueryableRoleStore<TRole>,
         IRoleClaimStore<TRole>
         where TRole : IdentityRole
         where TKey : IEquatable<TKey>
+        where TContext : DbContext
     {
         private bool _disposed;
 
-        public RoleStore(DbContext context)
+        public RoleStore(TContext context)
         {
             if (context == null)
             {
@@ -35,7 +43,7 @@ namespace Microsoft.AspNet.Identity.Entity
             AutoSaveChanges = true;
         }
 
-        public DbContext Context { get; private set; }
+        public TContext Context { get; private set; }
 
         /// <summary>
         ///     If true will call SaveChanges after CreateAsync/UpdateAsync/DeleteAsync

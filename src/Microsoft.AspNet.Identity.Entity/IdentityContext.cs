@@ -12,14 +12,14 @@ using Microsoft.Framework.DependencyInjection.Fallback;
 namespace Microsoft.AspNet.Identity.Entity
 {
     public class IdentityContext :
-        IdentityContext<EntityUser, EntityRole, string, IdentityUserLogin, IdentityUserRole, IdentityUserClaim>
+        IdentityContext<EntityUser, IdentityRole, string, IdentityUserLogin, IdentityUserRole, IdentityUserClaim>
     {
         public IdentityContext() { }
         public IdentityContext(IServiceProvider serviceProvider) : base(serviceProvider) { }
     }
 
     public class IdentityContext<TUser> :
-        IdentityContext<TUser, EntityRole, string, IdentityUserLogin, IdentityUserRole, IdentityUserClaim>
+        IdentityContext<TUser, IdentityRole, string, IdentityUserLogin, IdentityUserRole, IdentityUserClaim>
         where TUser : EntityUser<string, IdentityUserLogin, IdentityUserRole, IdentityUserClaim>
     {
         public IdentityContext() { }
@@ -28,7 +28,7 @@ namespace Microsoft.AspNet.Identity.Entity
 
     public class IdentityContext<TUser, TRole, TKey, TUserLogin, TUserRole, TUserClaim> : DbContext
         where TUser : EntityUser<TKey, TUserLogin, TUserRole, TUserClaim>
-        where TRole : EntityRole<TKey, TUserRole>
+        where TRole : IdentityRole<TKey>
         where TUserLogin : IdentityUserLogin<TKey>
         where TUserRole : IdentityUserRole<TKey>
         where TUserClaim : IdentityUserClaim<TKey>

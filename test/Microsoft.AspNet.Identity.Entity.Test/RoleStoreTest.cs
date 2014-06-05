@@ -4,8 +4,6 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity.Test;
-using Microsoft.Data.Entity;
-using Microsoft.Data.Entity.InMemory;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.DependencyInjection.Fallback;
 using Xunit;
@@ -20,16 +18,16 @@ namespace Microsoft.AspNet.Identity.Entity.Test
             var services = new ServiceCollection();
             services.AddEntityFramework().AddInMemoryStore();
             // TODO: this should construct a new instance of InMemoryStore
-            var store = new EntityRoleStore<EntityRole>(new IdentityContext());
-            services.AddIdentity<EntityUser, EntityRole>(s =>
+            var store = new RoleStore<IdentityRole>(new IdentityContext());
+            services.AddIdentity<EntityUser, IdentityRole>(s =>
             {
                 s.AddRoleStore(() => store);
             });
 
             var provider = services.BuildServiceProvider();
-            var manager = provider.GetService<RoleManager<EntityRole>>();
+            var manager = provider.GetService<RoleManager<IdentityRole>>();
             Assert.NotNull(manager);
-            IdentityResultAssert.IsSuccess(await manager.CreateAsync(new EntityRole("arole")));
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(new IdentityRole("arole")));
         }
         [Fact]
         public async Task CanCreateRoleWithSingletonManager()
@@ -37,18 +35,18 @@ namespace Microsoft.AspNet.Identity.Entity.Test
             var services = new ServiceCollection();
             services.AddEntityFramework().AddInMemoryStore();
             services.AddTransient<IdentityContext>();
-            services.AddTransient<IRoleStore<EntityRole>, EntityRoleStore<EntityRole>>();
-            services.AddSingleton<RoleManager<EntityRole>>();
+            services.AddTransient<IRoleStore<IdentityRole>, RoleStore<IdentityRole, IdentityContext>>();
+            services.AddSingleton<RoleManager<IdentityRole>>();
             var provider = services.BuildServiceProvider();
-            var manager = provider.GetService<RoleManager<EntityRole>>();
+            var manager = provider.GetService<RoleManager<IdentityRole>>();
             Assert.NotNull(manager);
-            IdentityResultAssert.IsSuccess(await manager.CreateAsync(new EntityRole("someRole")));
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(new IdentityRole("someRole")));
         }
 
         [Fact]
         public async Task RoleStoreMethodsThrowWhenDisposedTest()
         {
-            var store = new EntityRoleStore<EntityRole>(new IdentityContext());
+            var store = new RoleStore<IdentityRole>(new IdentityContext());
             store.Dispose();
             await Assert.ThrowsAsync<ObjectDisposedException>(async () => await store.FindByIdAsync(null));
             await Assert.ThrowsAsync<ObjectDisposedException>(async () => await store.FindByNameAsync(null));
@@ -63,8 +61,8 @@ namespace Microsoft.AspNet.Identity.Entity.Test
         [Fact]
         public async Task RoleStorePublicNullCheckTest()
         {
-            Assert.Throws<ArgumentNullException>("context", () => new EntityRoleStore<EntityRole>(null));
-            var store = new EntityRoleStore<EntityRole>(new IdentityContext());
+            Assert.Throws<ArgumentNullException>("context", () => new RoleStore<IdentityRole>(null));
+            var store = new RoleStore<IdentityRole>(new IdentityContext());
             await Assert.ThrowsAsync<ArgumentNullException>("role", async () => await store.GetRoleIdAsync(null));
             await Assert.ThrowsAsync<ArgumentNullException>("role", async () => await store.GetRoleNameAsync(null));
             await Assert.ThrowsAsync<ArgumentNullException>("role", async () => await store.SetRoleNameAsync(null, null));
@@ -77,7 +75,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
         public async Task CanUpdateRoleName()
         {
             var manager = TestIdentityFactory.CreateRoleManager();
-            var role = new EntityRole("UpdateRoleName");
+            var role = new IdentityRole("UpdateRoleName");
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(role));
             Assert.Null(await manager.FindByNameAsync("New"));
             role.Name = "New";
@@ -90,7 +88,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
         public async Task CanSetUserName()
         {
             var manager = TestIdentityFactory.CreateRoleManager();
-            var role = new EntityRole("UpdateRoleName");
+            var role = new IdentityRole("UpdateRoleName");
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(role));
             Assert.Null(await manager.FindByNameAsync("New"));
             IdentityResultAssert.IsSuccess(await manager.SetRoleNameAsync(role, "New"));
