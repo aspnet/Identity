@@ -7,7 +7,6 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Testing;
-using Microsoft.Framework.OptionsModel;
 using Xunit;
 
 namespace Microsoft.AspNet.Identity.Test
@@ -410,9 +409,8 @@ namespace Microsoft.AspNet.Identity.Test
                 IdentityResultAssert.IsSuccess(await manager.AddClaimAsync(user, c));
             }
 
-            var identity = await manager.CreateIdentityAsync(user, "test");
-            var claimsFactory = (ClaimsIdentityFactory<TUser>)manager.ClaimsIdentityFactory;
-            Assert.NotNull(claimsFactory);
+            var claimsFactory = new ClaimsIdentityFactory<TUser, TRole>(manager, role);
+            var identity = await claimsFactory.CreateAsync(user, "test");
             var claims = identity.Claims.ToList();
             Assert.NotNull(claims);
             Assert.True(

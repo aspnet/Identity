@@ -17,13 +17,11 @@ namespace Microsoft.AspNet.Identity.Entity.Test
         {
             var services = new ServiceCollection();
             services.AddEntityFramework().AddInMemoryStore();
-            // TODO: this should construct a new instance of InMemoryStore
             var store = new RoleStore<IdentityRole>(new IdentityContext());
             services.AddIdentity<EntityUser, IdentityRole>(s =>
             {
                 s.AddRoleStore(() => store);
             });
-
             var provider = services.BuildServiceProvider();
             var manager = provider.GetService<RoleManager<IdentityRole>>();
             Assert.NotNull(manager);

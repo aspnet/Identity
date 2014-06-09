@@ -36,6 +36,12 @@ namespace Microsoft.AspNet.Identity.Test
             return new Mock<UserManager<TUser>>(new ServiceCollection().BuildServiceProvider(), store.Object, options);
         }
 
+        public static Mock<RoleManager<TRole>> MockRoleManager<TRole>() where TRole : class
+        {
+            var store = new Mock<IRoleStore<TRole>>();
+            return new Mock<RoleManager<TRole>>(new ServiceCollection().BuildServiceProvider(), store.Object);
+        }
+
         public static UserManager<TUser> TestUserManager<TUser>() where TUser : class
         {
             return TestUserManager(new Mock<IUserStore<TUser>>().Object);

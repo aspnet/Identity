@@ -23,7 +23,6 @@ namespace Microsoft.AspNet.Identity
         private readonly Dictionary<string, IUserTokenProvider<TUser>> _factors =
             new Dictionary<string, IUserTokenProvider<TUser>>();
 
-        private IClaimsIdentityFactory<TUser> _claimsFactory;
         private TimeSpan _defaultLockout = TimeSpan.Zero;
         private bool _disposed;
         private IPasswordHasher _passwordHasher;
@@ -50,11 +49,10 @@ namespace Microsoft.AspNet.Identity
                 throw new ArgumentNullException("optionsAccessor");
             }
             Store = store;
-            Options = optionsAccessor.Options;
-            PasswordHasher = serviceProvider.GetService<IPasswordHasher>() ?? new PasswordHasher();
-            UserValidator = serviceProvider.GetService<IUserValidator<TUser>>() ?? new UserValidator<TUser>();
-            PasswordValidator = serviceProvider.GetService<IPasswordValidator<TUser>>() ?? new PasswordValidator<TUser>();
-            ClaimsIdentityFactory = serviceProvider.GetService<IClaimsIdentityFactory<TUser>>() ?? new ClaimsIdentityFactory<TUser>();
+            Options = optionsAccessor.Options ?? new IdentityOptions();
+            PasswordHasher = serviceProvider.GetServiceOrDefault<IPasswordHasher>() ?? new PasswordHasher();
+            UserValidator = serviceProvider.GetServiceOrDefault<IUserValidator<TUser>>() ?? new UserValidator<TUser>();
+            PasswordValidator = serviceProvider.GetServiceOrDefault<IPasswordValidator<TUser>>() ?? new PasswordValidator<TUser>();
             // TODO: Email/Sms/Token services
         }
 
@@ -93,27 +91,6 @@ namespace Microsoft.AspNet.Identity
         ///     Used to validate passwords before persisting changes
         /// </summary>
         public IPasswordValidator<TUser> PasswordValidator { get; set; }
-
-        /// <summary>
-        ///     Used to create claims identities from users
-        /// </summary>
-        public IClaimsIdentityFactory<TUser> ClaimsIdentityFactory
-        {
-            get
-            {
-                ThrowIfDisposed();
-                return _claimsFactory;
-            }
-            set
-            {
-                ThrowIfDisposed();
-                if (value == null)
-                {
-                    throw new ArgumentNullException("value");
-                }
-                _claimsFactory = value;
-            }
-        }
 
         /// <summary>
         ///     Used to send email
@@ -302,30 +279,13 @@ namespace Microsoft.AspNet.Identity
             GC.SuppressFinalize(this);
         }
 
-        /// <summary>
-        ///     Creates a ClaimsIdentity representing the user
-        /// </summary>
-        /// <param name="user"></param>
-        /// <param name="authenticationType"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        public virtual Task<ClaimsIdentity> CreateIdentityAsync(TUser user, string authenticationType, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            ThrowIfDisposed();
-            if (user == null)
-            {
-                throw new ArgumentNullException("user");
-            }
-            return ClaimsIdentityFactory.CreateAsync(this, user, authenticationType, cancellationToken);
-        }
-
         private async Task<IdentityResult> ValidateUserInternal(TUser user, CancellationToken cancellationToken)
         {
             return (UserValidator == null)
                 ? IdentityResult.Success
                 : await UserValidator.ValidateAsync(this, user, cancellationToken);
         }
-
+        
         /// <summary>
         ///     Create a user with no password
         /// </summary>

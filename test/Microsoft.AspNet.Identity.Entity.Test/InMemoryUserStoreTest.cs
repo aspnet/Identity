@@ -584,9 +584,8 @@ namespace Microsoft.AspNet.Identity.Entity.Test
                 IdentityResultAssert.IsSuccess(await manager.AddClaimAsync(user, c));
             }
 
-            var identity = await manager.CreateIdentityAsync(user, "test");
-            var claimsFactory = (ClaimsIdentityFactory<EntityUser>)manager.ClaimsIdentityFactory;
-            Assert.NotNull(claimsFactory);
+            var claimsFactory = new ClaimsIdentityFactory<EntityUser, IdentityRole>(manager, role);
+            var identity = await claimsFactory.CreateAsync(user, "test");
             var claims = identity.Claims.ToList();
             Assert.NotNull(claims);
             Assert.True(

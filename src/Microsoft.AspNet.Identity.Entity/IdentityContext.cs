@@ -3,11 +3,7 @@
 
 using System;
 using Microsoft.Data.Entity;
-using Microsoft.Data.Entity.SqlServer;
-using Microsoft.Data.Entity.InMemory;
 using Microsoft.Data.Entity.Metadata;
-using Microsoft.Framework.DependencyInjection;
-using Microsoft.Framework.DependencyInjection.Fallback;
 
 namespace Microsoft.AspNet.Identity.Entity
 {
@@ -45,40 +41,35 @@ namespace Microsoft.AspNet.Identity.Entity
 
         protected override void OnConfiguring(DbContextOptions builder)
         {
-//#if NET45
-//            builder.SqlServerConnectionString(@"Server=(localdb)\v11.0;Database=IdentityEF5-5-1;Trusted_Connection=True;");
-//#else
             builder.UseInMemoryStore();
-//#endif
         }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<TUser>()
                 .Key(u => u.Id)
-                .Properties(ps => ps.Property(u => u.UserName));
-                //.ToTable("AspNetUsers");
+                .Properties(ps => ps.Property(u => u.UserName))
+                .ToTable("AspNetUsers");
+
             builder.Entity<TRole>()
-                .Key(r => r.Id);
-                //.ToTable("AspNetRoles");
- 
+                .Key(r => r.Id)
+                .ToTable("AspNetRoles");
+
             builder.Entity<TUserRole>()
                 .Key(r => new { r.UserId, r.RoleId })
                 .ForeignKeys(fk => fk.ForeignKey<TUser>(f => f.UserId))
-                .ForeignKeys(fk => fk.ForeignKey<TRole>(f => f.RoleId));
-                //.ToTable("AspNetUserRoles");
+                .ForeignKeys(fk => fk.ForeignKey<TRole>(f => f.RoleId))
+                .ToTable("AspNetUserRoles");
 
             builder.Entity<TUserLogin>()
                 .Key(l => new { l.LoginProvider, l.ProviderKey, l.UserId })
-                .ForeignKeys(fk => fk.ForeignKey<TUser>(f => f.UserId));
-            //.ToTable("AspNetUserLogins");
+                .ForeignKeys(fk => fk.ForeignKey<TUser>(f => f.UserId))
+                .ToTable("AspNetUserLogins");
 
             builder.Entity<TUserClaim>()
                 .Key(c => c.Id)
-                .ForeignKeys(fk => fk.ForeignKey<TUser>(f => f.UserId));
-            //.ToTable("AspNetUserClaims");
-
+                .ForeignKeys(fk => fk.ForeignKey<TUser>(f => f.UserId))
+                .ToTable("AspNetUserClaims");
         }
-
     }
 }

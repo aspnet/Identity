@@ -5,7 +5,6 @@ using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Identity.Test;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.DependencyInjection.Fallback;
-using Microsoft.Framework.OptionsModel;
 using System;
 using System.Threading.Tasks;
 using Xunit;

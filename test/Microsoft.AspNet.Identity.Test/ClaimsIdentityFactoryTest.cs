@@ -6,8 +6,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Framework.DependencyInjection;
-using Microsoft.Framework.DependencyInjection.Fallback;
 using Moq;
 using Xunit;
 
@@ -18,14 +16,13 @@ namespace Microsoft.AspNet.Identity.Test
         [Fact]
         public async Task CreateIdentityNullChecks()
         {
-            var factory = new ClaimsIdentityFactory<TestUser>();
-            var manager = MockHelpers.MockUserManager<TestUser>().Object;
-            await Assert.ThrowsAsync<ArgumentNullException>("manager",
-                async () => await factory.CreateAsync(null, null, "whatever"));
+            var userManager = MockHelpers.MockUserManager<TestUser>().Object;
+            var roleManager = MockHelpers.MockRoleManager<TestRole>().Object;
+            var factory = new ClaimsIdentityFactory<TestUser, TestRole>(userManager, roleManager);
             await Assert.ThrowsAsync<ArgumentNullException>("user",
-                async () => await factory.CreateAsync(manager, null, "whatever"));
+                async () => await factory.CreateAsync(null, "whatever"));
             await Assert.ThrowsAsync<ArgumentNullException>("value",
-                async () => await factory.CreateAsync(manager, new TestUser(), null));
+                async () => await factory.CreateAsync(new TestUser(), null));
         }
 
  #if NET45
@@ -39,6 +36,7 @@ namespace Microsoft.AspNet.Identity.Test
         {
             // Setup
             var userManager = MockHelpers.MockUserManager<TestUser>();
+            var roleManager = MockHelpers.MockRoleManager<TestRole>();
             var user = new TestUser { UserName = "Foo" };
             userManager.Setup(m => m.SupportsUserRole).Returns(supportRoles);
             userManager.Setup(m => m.SupportsUserClaim).Returns(supportClaims);
@@ -51,10 +49,10 @@ namespace Microsoft.AspNet.Identity.Test
             userManager.Object.Options = new IdentityOptions();
 
             const string authType = "Microsoft.AspNet.Identity";
-            var factory = new ClaimsIdentityFactory<TestUser>();
+            var factory = new ClaimsIdentityFactory<TestUser, TestRole>(userManager.Object, roleManager.Object);
 
             // Act
-            var identity = await factory.CreateAsync(userManager.Object, user, authType);
+            var identity = await factory.CreateAsync(user, authType);
 
             // Assert
             var manager = userManager.Object;

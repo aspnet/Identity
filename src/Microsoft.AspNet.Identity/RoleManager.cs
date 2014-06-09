@@ -34,7 +34,7 @@ namespace Microsoft.AspNet.Identity
             {
                 throw new ArgumentNullException("services");
             }
-            RoleValidator = services.GetService<IRoleValidator<TRole>>() ?? new RoleValidator<TRole>();
+            RoleValidator = services.GetServiceOrDefault<IRoleValidator<TRole>>() ?? new RoleValidator<TRole>();
             Store = store;
         }
 
