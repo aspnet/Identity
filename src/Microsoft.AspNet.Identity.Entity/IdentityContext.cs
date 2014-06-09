@@ -33,6 +33,7 @@ namespace Microsoft.AspNet.Identity.Entity
 
         public DbSet<TUser> Users { get; set; }
         public DbSet<TRole> Roles { get; set; }
+        public DbSet<IdentityRoleClaim> RoleClaims { get; set; }
 
         public IdentityContext(IServiceProvider serviceProvider)
         : base(serviceProvider) { }
@@ -70,6 +71,12 @@ namespace Microsoft.AspNet.Identity.Entity
                 .Key(c => c.Id)
                 .ForeignKeys(fk => fk.ForeignKey<TUser>(f => f.UserId))
                 .ToTable("AspNetUserClaims");
+
+            builder.Entity<IdentityRoleClaim>()
+                .Key(c => c.Id)
+                .ForeignKeys(fk => fk.ForeignKey<TRole>(f => f.RoleId))
+                .ToTable("AspNetRoleClaims");
+
         }
     }
 }

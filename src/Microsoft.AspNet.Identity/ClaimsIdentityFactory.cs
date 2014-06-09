@@ -64,6 +64,14 @@ namespace Microsoft.AspNet.Identity
                 foreach (var roleName in roles)
                 {
                     id.AddClaim(new Claim(UserManager.Options.ClaimType.Role, roleName, ClaimValueTypes.String));
+                    if (RoleManager.SupportsRoleClaims)
+                    {
+                        var role = await RoleManager.FindByNameAsync(roleName);
+                        if (role != null)
+                        {
+                            id.AddClaims(await RoleManager.GetClaimsAsync(role, cancellationToken));
+                        }
+                    }
                 }
             }
             if (UserManager.SupportsUserClaim)

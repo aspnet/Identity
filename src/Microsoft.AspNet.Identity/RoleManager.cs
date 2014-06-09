@@ -77,6 +77,18 @@ namespace Microsoft.AspNet.Identity
         }
 
         /// <summary>
+        ///     Returns true if the store is an IUserClaimStore
+        /// </summary>
+        public virtual bool SupportsRoleClaims
+        {
+            get
+            {
+                ThrowIfDisposed();
+                return Store is IRoleClaimStore<TRole>;
+            }
+        }
+
+        /// <summary>
         ///     Dispose this object
         /// </summary>
         public void Dispose()
@@ -252,11 +264,11 @@ namespace Microsoft.AspNet.Identity
         /// <summary>
         ///     Add a user claim
         /// </summary>
-        /// <param name="user"></param>
+        /// <param name="role"></param>
         /// <param name="claim"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public virtual async Task<IdentityResult> AddClaimAsync(TRole user, Claim claim, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<IdentityResult> AddClaimAsync(TRole role, Claim claim, CancellationToken cancellationToken = default(CancellationToken))
         {
             ThrowIfDisposed();
             var claimStore = GetClaimStore();
@@ -264,48 +276,48 @@ namespace Microsoft.AspNet.Identity
             {
                 throw new ArgumentNullException("claim");
             }
-            if (user == null)
+            if (role == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException("role");
             }
-            await claimStore.AddClaimAsync(user, claim, cancellationToken);
-            return await UpdateAsync(user, cancellationToken);
+            await claimStore.AddClaimAsync(role, claim, cancellationToken);
+            return await UpdateAsync(role, cancellationToken);
         }
 
         /// <summary>
         ///     Remove a user claim
         /// </summary>
-        /// <param name="user"></param>
+        /// <param name="role"></param>
         /// <param name="claim"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public virtual async Task<IdentityResult> RemoveClaimAsync(TRole user, Claim claim, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<IdentityResult> RemoveClaimAsync(TRole role, Claim claim, CancellationToken cancellationToken = default(CancellationToken))
         {
             ThrowIfDisposed();
             var claimStore = GetClaimStore();
-            if (user == null)
+            if (role == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException("role");
             }
-            await claimStore.RemoveClaimAsync(user, claim, cancellationToken);
-            return await UpdateAsync(user, cancellationToken);
+            await claimStore.RemoveClaimAsync(role, claim, cancellationToken);
+            return await UpdateAsync(role, cancellationToken);
         }
 
         /// <summary>
-        ///     Get a users's claims
+        ///     Get a role's claims
         /// </summary>
-        /// <param name="user"></param>
+        /// <param name="role"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public virtual async Task<IList<Claim>> GetClaimsAsync(TRole user, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<IList<Claim>> GetClaimsAsync(TRole role, CancellationToken cancellationToken = default(CancellationToken))
         {
             ThrowIfDisposed();
             var claimStore = GetClaimStore();
-            if (user == null)
+            if (role == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException("role");
             }
-            return await claimStore.GetClaimsAsync(user, cancellationToken);
+            return await claimStore.GetClaimsAsync(role, cancellationToken);
         }
 
         private void ThrowIfDisposed()

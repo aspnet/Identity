@@ -37,6 +37,7 @@ namespace Microsoft.AspNet.Identity.Entity
         public DbSet<IdentityUserLogin> UserLogins { get; set; }
         public DbSet<IdentityUserRole> UserRoles { get; set; }
         public DbSet<TRole> Roles { get; set; }
+        public DbSet<IdentityRoleClaim> RoleClaims { get; set; }
 
         private readonly string _nameOrConnectionString;
 
