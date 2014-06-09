@@ -5,7 +5,6 @@ using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Identity.Test;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.DependencyInjection.Fallback;
-using Microsoft.Framework.OptionsModel;
 using System;
 using System.Threading.Tasks;
 using Xunit;
@@ -31,16 +30,16 @@ namespace Microsoft.AspNet.Identity.Entity.Test
             builder.UseServices(services =>
             {
                 services.AddEntityFramework().AddInMemoryStore();
-                services.AddIdentity<ApplicationUser, EntityRole>(s =>
+                services.AddIdentity<ApplicationUser, IdentityRole>(s =>
                 {
-                    s.AddEntityFrameworkInMemory<ApplicationUser, EntityRole, ApplicationDbContext>();
+                    s.AddEntityFrameworkInMemory<ApplicationUser, IdentityRole, ApplicationDbContext>();
                 });
             });
 
             var userStore = builder.ApplicationServices.GetService<IUserStore<ApplicationUser>>();
-            var roleStore = builder.ApplicationServices.GetService<IRoleStore<EntityRole>>();
+            var roleStore = builder.ApplicationServices.GetService<IRoleStore<IdentityRole>>();
             var userManager = builder.ApplicationServices.GetService<UserManager<ApplicationUser>>();
-            var roleManager = builder.ApplicationServices.GetService<RoleManager<EntityRole>>();
+            var roleManager = builder.ApplicationServices.GetService<RoleManager<IdentityRole>>();
 
             Assert.NotNull(userStore);
             Assert.NotNull(userManager);
@@ -56,11 +55,11 @@ namespace Microsoft.AspNet.Identity.Entity.Test
             const string roleName = "Admins";
             const string password = "1qaz@WSX";
             var userManager = serviceProvider.GetService<UserManager<ApplicationUser>>();
-            var roleManager = serviceProvider.GetService<RoleManager<EntityRole>>();
+            var roleManager = serviceProvider.GetService<RoleManager<IdentityRole>>();
 
             var user = new ApplicationUser { UserName = userName };
             IdentityResultAssert.IsSuccess(await userManager.CreateAsync(user, password));
-            IdentityResultAssert.IsSuccess(await roleManager.CreateAsync(new EntityRole { Name = roleName }));
+            IdentityResultAssert.IsSuccess(await roleManager.CreateAsync(new IdentityRole { Name = roleName }));
             IdentityResultAssert.IsSuccess(await userManager.AddToRoleAsync(user, roleName));
         }
 

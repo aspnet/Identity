@@ -12,12 +12,12 @@ namespace Microsoft.AspNet.Identity
     {
         public static IdentityBuilder<TUser, TRole> AddEntityFrameworkInMemory<TUser, TRole, TDbContext>(this IdentityBuilder<TUser, TRole> builder)
             where TUser : EntityUser
-            where TRole : EntityRole
+            where TRole : IdentityRole
             where TDbContext : DbContext
         {
             builder.Services.AddScoped<TDbContext>();
             builder.Services.AddScoped<IUserStore<TUser>, InMemoryUserStore<TUser, TDbContext>>();
-            builder.Services.AddScoped<IRoleStore<TRole>, EntityRoleStore<TRole, TDbContext>>();
+            builder.Services.AddScoped<IRoleStore<TRole>, RoleStore<TRole, TDbContext>>();
             return builder;
         }
 
@@ -25,7 +25,8 @@ namespace Microsoft.AspNet.Identity
         public static IdentityBuilder<TUser, IdentityRole> AddEntityFramework<TUser, TContext>(this IdentityBuilder<TUser, IdentityRole> builder)
             where TUser : User where TContext : DbContext
         {
-            builder.Services.AddScoped<IUserStore<TUser>, UserStore<TUser, TContext>>();
+            builder.Services.AddScoped<IUserStore<TUser>, UserStore<TUser, IdentityRole, TContext>>();
+            builder.Services.AddScoped<IRoleStore<IdentityRole>, RoleStore<IdentityRole, TContext>>();
             builder.Services.AddScoped<TContext>();
             return builder;
         }

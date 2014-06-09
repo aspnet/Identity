@@ -20,8 +20,6 @@
     <Content Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EntityRole.cs" />
-    <Compile Include="EntityRoleStore.cs" />
     <Compile Include="EntityUser.cs" />
     <Compile Include="EntityIdentityBuilderExtensions.cs" />
     <Compile Include="IdentityContext.cs" />

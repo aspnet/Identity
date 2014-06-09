@@ -44,7 +44,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
             // TODO: this needs to construct a new instance of InMemoryStore
             var store = new InMemoryUserStore(new IdentityContext());
             services.Add(OptionsServices.GetDefaultServices());
-            services.AddIdentity<EntityUser, EntityRole>(s =>
+            services.AddIdentity<EntityUser, IdentityRole>(s =>
             {
                 s.AddUserStore(() => store);
             });
@@ -570,8 +570,8 @@ namespace Microsoft.AspNet.Identity.Entity.Test
             var role = TestIdentityFactory.CreateRoleManager(context);
             var user = new EntityUser("Hao");
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
-            IdentityResultAssert.IsSuccess(await role.CreateAsync(new EntityRole("Admin")));
-            IdentityResultAssert.IsSuccess(await role.CreateAsync(new EntityRole("Local")));
+            IdentityResultAssert.IsSuccess(await role.CreateAsync(new IdentityRole("Admin")));
+            IdentityResultAssert.IsSuccess(await role.CreateAsync(new IdentityRole("Local")));
             IdentityResultAssert.IsSuccess(await manager.AddToRoleAsync(user, "Admin"));
             IdentityResultAssert.IsSuccess(await manager.AddToRoleAsync(user, "Local"));
             Claim[] userClaims =
@@ -584,9 +584,8 @@ namespace Microsoft.AspNet.Identity.Entity.Test
                 IdentityResultAssert.IsSuccess(await manager.AddClaimAsync(user, c));
             }
 
-            var identity = await manager.CreateIdentityAsync(user, "test");
-            var claimsFactory = (ClaimsIdentityFactory<EntityUser>)manager.ClaimsIdentityFactory;
-            Assert.NotNull(claimsFactory);
+            var claimsFactory = new ClaimsIdentityFactory<EntityUser, IdentityRole>(manager, role);
+            var identity = await claimsFactory.CreateAsync(user, "test");
             var claims = identity.Claims.ToList();
             Assert.NotNull(claims);
             Assert.True(
@@ -934,13 +933,13 @@ namespace Microsoft.AspNet.Identity.Entity.Test
         public async Task CanCreateRoleTest()
         {
             var manager = TestIdentityFactory.CreateRoleManager();
-            var role = new EntityRole("create");
+            var role = new IdentityRole("create");
             Assert.False(await manager.RoleExistsAsync(role.Name));
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(role));
             Assert.True(await manager.RoleExistsAsync(role.Name));
         }
 
-        private class AlwaysBadValidator : IUserValidator<EntityUser>, IRoleValidator<EntityRole>,
+        private class AlwaysBadValidator : IUserValidator<EntityUser>, IRoleValidator<IdentityRole>,
             IPasswordValidator<EntityUser>
         {
             public const string ErrorMessage = "I'm Bad.";
@@ -950,7 +949,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
                 return Task.FromResult(IdentityResult.Failed(ErrorMessage));
             }
 
-            public Task<IdentityResult> ValidateAsync(RoleManager<EntityRole> manager, EntityRole role, CancellationToken token)
+            public Task<IdentityResult> ValidateAsync(RoleManager<IdentityRole> manager, IdentityRole role, CancellationToken token)
             {
                 return Task.FromResult(IdentityResult.Failed(ErrorMessage));
             }
@@ -966,7 +965,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
         {
             var manager = TestIdentityFactory.CreateRoleManager();
             manager.RoleValidator = new AlwaysBadValidator();
-            IdentityResultAssert.IsFailure(await manager.CreateAsync(new EntityRole("blocked")),
+            IdentityResultAssert.IsFailure(await manager.CreateAsync(new IdentityRole("blocked")),
                 AlwaysBadValidator.ErrorMessage);
         }
 
@@ -974,7 +973,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
         public async Task BadValidatorBlocksRoleUpdate()
         {
             var manager = TestIdentityFactory.CreateRoleManager();
-            var role = new EntityRole("poorguy");
+            var role = new IdentityRole("poorguy");
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(role));
             var error = AlwaysBadValidator.ErrorMessage;
             manager.RoleValidator = new AlwaysBadValidator();
@@ -985,7 +984,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
         public async Task CanDeleteRoleTest()
         {
             var manager = TestIdentityFactory.CreateRoleManager();
-            var role = new EntityRole("delete");
+            var role = new IdentityRole("delete");
             Assert.False(await manager.RoleExistsAsync(role.Name));
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(role));
             IdentityResultAssert.IsSuccess(await manager.DeleteAsync(role));
@@ -996,7 +995,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
         public async Task CanRoleFindByIdTest()
         {
             var manager = TestIdentityFactory.CreateRoleManager();
-            var role = new EntityRole("FindByIdAsync");
+            var role = new IdentityRole("FindByIdAsync");
             Assert.Null(await manager.FindByIdAsync(role.Id));
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(role));
             Assert.Equal(role, await manager.FindByIdAsync(role.Id));
@@ -1006,7 +1005,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
         public async Task CanRoleFindByName()
         {
             var manager = TestIdentityFactory.CreateRoleManager();
-            var role = new EntityRole("FindByNameAsync");
+            var role = new IdentityRole("FindByNameAsync");
             Assert.Null(await manager.FindByNameAsync(role.Name));
             Assert.False(await manager.RoleExistsAsync(role.Name));
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(role));
@@ -1017,7 +1016,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
         public async Task CanUpdateRoleNameTest()
         {
             var manager = TestIdentityFactory.CreateRoleManager();
-            var role = new EntityRole("update");
+            var role = new IdentityRole("update");
             Assert.False(await manager.RoleExistsAsync(role.Name));
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(role));
             Assert.True(await manager.RoleExistsAsync(role.Name));
@@ -1031,10 +1030,10 @@ namespace Microsoft.AspNet.Identity.Entity.Test
         public async Task CanQuerableRolesTest()
         {
             var manager = TestIdentityFactory.CreateRoleManager();
-            EntityRole[] roles =
+            IdentityRole[] roles =
             {
-                new EntityRole("r1"), new EntityRole("r2"), new EntityRole("r3"),
-                new EntityRole("r4")
+                new IdentityRole("r1"), new IdentityRole("r2"), new IdentityRole("r3"),
+                new IdentityRole("r4")
             };
             foreach (var r in roles)
             {
@@ -1051,7 +1050,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
         //    // Need fail if not empty?
         //    var userMgr = TestIdentityFactory.CreateManager();
         //    var roleMgr = TestIdentityFactory.CreateRoleManager();
-        //    var role = new EntityRole("deleteNonEmpty");
+        //    var role = new IdentityRole("deleteNonEmpty");
         //    Assert.False(await roleMgr.RoleExistsAsync(role.Name));
         //    IdentityResultAssert.IsSuccess(await roleMgr.CreateAsync(role));
         //    var user = new EntityUser("t");
@@ -1073,7 +1072,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
         ////    // Need fail if not empty?
         ////    var userMgr = TestIdentityFactory.CreateManager();
         ////    var roleMgr = TestIdentityFactory.CreateRoleManager();
-        ////    var role = new EntityRole("deleteNonEmpty");
+        ////    var role = new IdentityRole("deleteNonEmpty");
         ////    Assert.False(await roleMgr.RoleExistsAsync(role.Name));
         ////    IdentityResultAssert.IsSuccess(await roleMgr.CreateAsync(role));
         ////    var user = new EntityUser("t");
@@ -1087,11 +1086,11 @@ namespace Microsoft.AspNet.Identity.Entity.Test
         public async Task CreateRoleFailsIfExists()
         {
             var manager = TestIdentityFactory.CreateRoleManager();
-            var role = new EntityRole("dupeRole");
+            var role = new IdentityRole("dupeRole");
             Assert.False(await manager.RoleExistsAsync(role.Name));
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(role));
             Assert.True(await manager.RoleExistsAsync(role.Name));
-            var role2 = new EntityRole("dupeRole");
+            var role2 = new IdentityRole("dupeRole");
             IdentityResultAssert.IsFailure(await manager.CreateAsync(role2));
         }
 
@@ -1101,7 +1100,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
             var context = TestIdentityFactory.CreateContext();
             var manager = TestIdentityFactory.CreateManager(context);
             var roleManager = TestIdentityFactory.CreateRoleManager(context);
-            var role = new EntityRole("addUserTest");
+            var role = new IdentityRole("addUserTest");
             IdentityResultAssert.IsSuccess(await roleManager.CreateAsync(role));
             EntityUser[] users =
             {
@@ -1127,10 +1126,10 @@ namespace Microsoft.AspNet.Identity.Entity.Test
                 new EntityUser("u1"), new EntityUser("u2"), new EntityUser("u3"),
                 new EntityUser("u4")
             };
-            EntityRole[] roles =
+            IdentityRole[] roles =
             {
-                new EntityRole("r1"), new EntityRole("r2"), new EntityRole("r3"),
-                new EntityRole("r4")
+                new IdentityRole("r1"), new IdentityRole("r2"), new IdentityRole("r3"),
+                new IdentityRole("r4")
             };
             foreach (var u in users)
             {
@@ -1166,10 +1165,10 @@ namespace Microsoft.AspNet.Identity.Entity.Test
             var roleManager = TestIdentityFactory.CreateRoleManager(context);
             var user = new EntityUser("MultiRoleUser");
             IdentityResultAssert.IsSuccess(await userManager.CreateAsync(user));
-            EntityRole[] roles =
+            IdentityRole[] roles =
             {
-                new EntityRole("r1"), new EntityRole("r2"), new EntityRole("r3"),
-                new EntityRole("r4")
+                new IdentityRole("r1"), new IdentityRole("r2"), new IdentityRole("r3"),
+                new IdentityRole("r4")
             };
             foreach (var r in roles)
             {
@@ -1196,7 +1195,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
             {
                 IdentityResultAssert.IsSuccess(await userManager.CreateAsync(u));
             }
-            var r = new EntityRole("r1");
+            var r = new IdentityRole("r1");
             IdentityResultAssert.IsSuccess(await roleManager.CreateAsync(r));
             foreach (var u in users)
             {
@@ -1216,7 +1215,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
             var context = TestIdentityFactory.CreateContext();
             var userMgr = TestIdentityFactory.CreateManager(context);
             var roleMgr = TestIdentityFactory.CreateRoleManager(context);
-            var role = new EntityRole("addUserDupeTest");
+            var role = new IdentityRole("addUserDupeTest");
             var user = new EntityUser("user1");
             IdentityResultAssert.IsSuccess(await userMgr.CreateAsync(user));
             IdentityResultAssert.IsSuccess(await roleMgr.CreateAsync(role));
@@ -1240,7 +1239,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
             var context = TestIdentityFactory.CreateContext();
             var userMgr = TestIdentityFactory.CreateManager(context);
             var roleMgr = TestIdentityFactory.CreateRoleManager(context);
-            var role = new EntityRole("addUserDupeTest");
+            var role = new IdentityRole("addUserDupeTest");
             var user = new EntityUser("user1");
             IdentityResultAssert.IsSuccess(await userMgr.CreateAsync(user));
             IdentityResultAssert.IsSuccess(await roleMgr.CreateAsync(role));
@@ -1253,7 +1252,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
         public async Task CanFindRoleByNameWithManager()
         {
             var roleMgr = TestIdentityFactory.CreateRoleManager();
-            var role = new EntityRole("findRoleByNameTest");
+            var role = new IdentityRole("findRoleByNameTest");
             IdentityResultAssert.IsSuccess(await roleMgr.CreateAsync(role));
             Assert.Equal(role.Id, (await roleMgr.FindByNameAsync(role.Name)).Id);
         }
@@ -1262,7 +1261,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
         public async Task CanFindRoleWithManager()
         {
             var roleMgr = TestIdentityFactory.CreateRoleManager();
-            var role = new EntityRole("findRoleTest");
+            var role = new IdentityRole("findRoleTest");
             IdentityResultAssert.IsSuccess(await roleMgr.CreateAsync(role));
             Assert.Equal(role, await roleMgr.FindByIdAsync(role.Id));
         }

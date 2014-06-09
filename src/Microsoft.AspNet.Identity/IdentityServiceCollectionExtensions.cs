@@ -38,6 +38,7 @@ namespace Microsoft.Framework.DependencyInjection
             services.AddScoped<UserManager<TUser>>();
             services.AddScoped<SignInManager<TUser>>();
             services.AddScoped<RoleManager<TRole>>();
+            services.AddScoped<IClaimsIdentityFactory<TUser>, ClaimsIdentityFactory<TUser, TRole>>();
             return new IdentityBuilder<TUser, TRole>(services);
         }
 
