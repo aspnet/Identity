@@ -612,8 +612,10 @@ namespace Microsoft.AspNet.Identity.Entity.Test
             var role = CreateRoleManager(context);
             var user = new User("ClaimsIdentityCreatesExpectedClaims");
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
-            IdentityResultAssert.IsSuccess(await role.CreateAsync(new IdentityRole("Admin")));
-            IdentityResultAssert.IsSuccess(await role.CreateAsync(new IdentityRole("Local")));
+            var admin = new IdentityRole("Admin");
+            var local = new IdentityRole("Local");
+            IdentityResultAssert.IsSuccess(await role.CreateAsync(admin));
+            IdentityResultAssert.IsSuccess(await role.CreateAsync(local));
             IdentityResultAssert.IsSuccess(await manager.AddToRoleAsync(user, "Admin"));
             IdentityResultAssert.IsSuccess(await manager.AddToRoleAsync(user, "Local"));
             Claim[] userClaims =
@@ -624,6 +626,23 @@ namespace Microsoft.AspNet.Identity.Entity.Test
             foreach (var c in userClaims)
             {
                 IdentityResultAssert.IsSuccess(await manager.AddClaimAsync(user, c));
+            }
+            Claim[] adminClaims =
+            {
+                new Claim("Admin", "Value"),
+            };
+            foreach (var c in adminClaims)
+            {
+                IdentityResultAssert.IsSuccess(await role.AddClaimAsync(admin, c));
+            }
+            Claim[] localClaims =
+            {
+                new Claim("Local", "Value"),
+                new Claim("Local2", "Value2")
+            };
+            foreach (var c in localClaims)
+            {
+                IdentityResultAssert.IsSuccess(await role.AddClaimAsync(local, c));
             }
 
             var claimsFactory = new ClaimsIdentityFactory<User, IdentityRole>(manager, role);
@@ -639,6 +658,21 @@ namespace Microsoft.AspNet.Identity.Entity.Test
             {
                 Assert.True(claims.Any(c => c.Type == cl.Type && c.Value == cl.Value));
             }
+            foreach (var cl in adminClaims)
+            {
+                Assert.True(claims.Any(c => c.Type == cl.Type && c.Value == cl.Value));
+            }
+            foreach (var cl in localClaims)
+            {
+                Assert.True(claims.Any(c => c.Type == cl.Type && c.Value == cl.Value));
+            }
+
+            // Remove a role claim and make sure its not there
+            IdentityResultAssert.IsSuccess(await role.RemoveClaimAsync(local, localClaims[0]));
+            identity = await claimsFactory.CreateAsync(user, "test");
+            claims = identity.Claims.ToList();
+            Assert.False(claims.Any(c => c.Type == localClaims[0].Type && c.Value == localClaims[0].Value));
+            Assert.True(claims.Any(c => c.Type == localClaims[1].Type && c.Value == localClaims[1].Value));
         }
 
         [Fact]
