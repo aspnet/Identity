@@ -24,7 +24,7 @@ namespace Microsoft.AspNet.Identity.Entity
         public InMemoryUserStore(IdentityContext context) : base(context) { }
     }
 
-    public class InMemoryUserStore<TUser, TContext> : InMemoryUserStore<TUser, EntityRole, string, IdentityUserLogin, IdentityUserRole, IdentityUserClaim, TContext> 
+    public class InMemoryUserStore<TUser, TContext> : InMemoryUserStore<TUser, IdentityRole, string, IdentityUserLogin, IdentityUserRole, IdentityUserClaim, TContext> 
         where TUser:EntityUser
         where TContext : DbContext
     {
@@ -44,7 +44,7 @@ namespace Microsoft.AspNet.Identity.Entity
         IUserLockoutStore<TUser>
         where TKey : IEquatable<TKey>
         where TUser : EntityUser<TKey, TUserLogin, TUserRole, TUserClaim>
-        where TRole : EntityRole<TKey, TUserRole>
+        where TRole : IdentityRole<TKey>
         where TUserLogin : IdentityUserLogin<TKey>, new()
         where TUserRole : IdentityUserRole<TKey>, new()
         where TUserClaim : IdentityUserClaim<TKey>, new()

@@ -4,12 +4,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.AspNet.Identity.InMemory
 {
-    public class InMemoryRoleStore<TRole> : IQueryableRoleStore<TRole> where TRole : IdentityRole
+    public class InMemoryRoleStore<TRole> : IQueryableRoleStore<TRole>, IRoleClaimStore<TRole> where TRole : IdentityRole
 
     {
         private readonly Dictionary<string, TRole> _roles = new Dictionary<string, TRole>();
@@ -70,6 +71,30 @@ namespace Microsoft.AspNet.Identity.InMemory
 
         public void Dispose()
         {
+        }
+
+        public Task<IList<Claim>> GetClaimsAsync(TRole role, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var claims = role.Claims.Select(c => new Claim(c.ClaimType, c.ClaimValue)).ToList();
+            return Task.FromResult<IList<Claim>>(claims);
+        }
+
+        public Task AddClaimAsync(TRole role, Claim claim, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            role.Claims.Add(new IdentityRoleClaim<string> { ClaimType = claim.Type, ClaimValue = claim.Value, RoleId = role.Id });
+            return Task.FromResult(0);
+        }
+
+        public Task RemoveClaimAsync(TRole role, Claim claim, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var entity =
+                role.Claims.FirstOrDefault(
+                    ur => ur.RoleId == role.Id && ur.ClaimType == claim.Type && ur.ClaimValue == claim.Value);
+            if (entity != null)
+            {
+                role.Claims.Remove(entity);
+            }
+            return Task.FromResult(0);
         }
 
         public IQueryable<TRole> Roles

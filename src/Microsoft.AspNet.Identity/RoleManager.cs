@@ -2,11 +2,12 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Framework.DependencyInjection;
-using Microsoft.Framework.DependencyInjection.Fallback;
 
 namespace Microsoft.AspNet.Identity
 {
@@ -72,6 +73,18 @@ namespace Microsoft.AspNet.Identity
             {
                 ThrowIfDisposed();
                 return Store is IQueryableRoleStore<TRole>;
+            }
+        }
+
+        /// <summary>
+        ///     Returns true if the store is an IUserClaimStore
+        /// </summary>
+        public virtual bool SupportsRoleClaims
+        {
+            get
+            {
+                ThrowIfDisposed();
+                return Store is IRoleClaimStore<TRole>;
             }
         }
 
@@ -235,6 +248,76 @@ namespace Microsoft.AspNet.Identity
             }
 
             return await Store.FindByNameAsync(roleName, cancellationToken);
+        }
+
+        // IRoleClaimStore methods
+        private IRoleClaimStore<TRole> GetClaimStore()
+        {
+            var cast = Store as IRoleClaimStore<TRole>;
+            if (cast == null)
+            {
+                throw new NotSupportedException(Resources.StoreNotIRoleClaimStore);
+            }
+            return cast;
+        }
+
+        /// <summary>
+        ///     Add a user claim
+        /// </summary>
+        /// <param name="role"></param>
+        /// <param name="claim"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public virtual async Task<IdentityResult> AddClaimAsync(TRole role, Claim claim, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            ThrowIfDisposed();
+            var claimStore = GetClaimStore();
+            if (claim == null)
+            {
+                throw new ArgumentNullException("claim");
+            }
+            if (role == null)
+            {
+                throw new ArgumentNullException("role");
+            }
+            await claimStore.AddClaimAsync(role, claim, cancellationToken);
+            return await UpdateAsync(role, cancellationToken);
+        }
+
+        /// <summary>
+        ///     Remove a user claim
+        /// </summary>
+        /// <param name="role"></param>
+        /// <param name="claim"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public virtual async Task<IdentityResult> RemoveClaimAsync(TRole role, Claim claim, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            ThrowIfDisposed();
+            var claimStore = GetClaimStore();
+            if (role == null)
+            {
+                throw new ArgumentNullException("role");
+            }
+            await claimStore.RemoveClaimAsync(role, claim, cancellationToken);
+            return await UpdateAsync(role, cancellationToken);
+        }
+
+        /// <summary>
+        ///     Get a role's claims
+        /// </summary>
+        /// <param name="role"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public virtual async Task<IList<Claim>> GetClaimsAsync(TRole role, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            ThrowIfDisposed();
+            var claimStore = GetClaimStore();
+            if (role == null)
+            {
+                throw new ArgumentNullException("role");
+            }
+            return await claimStore.GetClaimsAsync(role, cancellationToken);
         }
 
         private void ThrowIfDisposed()
