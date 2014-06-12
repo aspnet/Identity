@@ -52,14 +52,6 @@ namespace Microsoft.AspNet.Identity
             {
                 throw new ArgumentNullException("passwordHasher");
             }
-            if (userValidator == null)
-            {
-                throw new ArgumentNullException("userValidator");
-            }
-            if (passwordValidator == null)
-            {
-                throw new ArgumentNullException("passwordValidator");
-            }
             Store = store;
             Options = optionsAccessor.Options;
             PasswordHasher = passwordHasher;
