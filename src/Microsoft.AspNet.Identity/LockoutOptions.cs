@@ -13,17 +13,6 @@ namespace Microsoft.AspNet.Identity
             EnabledByDefault = false;
             MaxFailedAccessAttempts = 5;
         }
-        public void Copy(LockoutOptions options)
-        {
-            if (options == null)
-            {
-                return;
-            }
-
-            DefaultLockoutTimeSpan = options.DefaultLockoutTimeSpan;
-            EnabledByDefault = options.EnabledByDefault;
-            MaxFailedAccessAttempts = options.MaxFailedAccessAttempts;
-        }
 
         /// <summary>
         ///     If true, will enable user lockout when users are created

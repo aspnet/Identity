@@ -11,7 +11,6 @@ namespace Microsoft.AspNet.Identity
     ///     Interface that exposes basic user management apis
     /// </summary>
     /// <typeparam name="TUser"></typeparam>
-    /// <typeparam name="TKey"></typeparam>
     public interface IUserStore<TUser> : IDisposable where TUser : class
     {
         /// <summary>
