@@ -433,10 +433,6 @@ namespace Microsoft.AspNet.Identity.Test
                 () => new UserManager<TestUser>(store, null, null, null, null));
             Assert.Throws<ArgumentNullException>("passwordHasher",
                 () => new UserManager<TestUser>(store, optionsAccessor, null, null, null));
-            Assert.Throws<ArgumentNullException>("userValidator",
-                () => new UserManager<TestUser>(store, optionsAccessor, passwordHasher, null, null));
-            Assert.Throws<ArgumentNullException>("passwordValidator",
-                () => new UserManager<TestUser>(store, optionsAccessor, passwordHasher, userValidator, null));
 
             var manager = new UserManager<TestUser>(store, optionsAccessor, passwordHasher, userValidator, passwordValidator);
 
