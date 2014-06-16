@@ -235,16 +235,14 @@ namespace Microsoft.AspNet.Identity.Entity
             {
                 throw new ArgumentNullException("user");
             }
-            // TODO:
-            //if (String.IsNullOrWhiteSpace(roleName))
-            //{
-            //    throw new ArgumentException(IdentityResources.ValueCannotBeNullOrEmpty, "roleName");
-            //}
+            if (String.IsNullOrWhiteSpace(roleName))
+            {
+                throw new ArgumentException(Resources.ValueCannotBeNullOrEmpty, "roleName");
+            }
             var roleEntity = Roles.SingleOrDefault(r => r.Name.ToUpper() == roleName.ToUpper());
             if (roleEntity == null)
             {
-                throw new InvalidOperationException("Role Not Found");
-                //TODO: String.Format(CultureInfo.CurrentCulture, IdentityResources.RoleNotFound, roleName));
+                throw new InvalidOperationException(String.Format(CultureInfo.CurrentCulture, Resources.RoleNotFound, roleName));
             }
             var ur = new IdentityUserRole { UserId = user.Id, RoleId = roleEntity.Id };
             // TODO: rely on fixup?
@@ -268,10 +266,10 @@ namespace Microsoft.AspNet.Identity.Entity
             {
                 throw new ArgumentNullException("user");
             }
-            //if (String.IsNullOrWhiteSpace(roleName))
-            //{
-            //    throw new ArgumentException(IdentityResources.ValueCannotBeNullOrEmpty, "roleName");
-            //}
+            if (String.IsNullOrWhiteSpace(roleName))
+            {
+                throw new ArgumentException(Resources.ValueCannotBeNullOrEmpty, "roleName");
+            }
             var roleEntity = Roles.SingleOrDefault(r => r.Name.ToUpper() == roleName.ToUpper());
             if (roleEntity != null)
             {
@@ -323,10 +321,10 @@ namespace Microsoft.AspNet.Identity.Entity
             {
                 throw new ArgumentNullException("user");
             }
-            //if (String.IsNullOrWhiteSpace(roleName))
-            //{
-            //    throw new ArgumentException(IdentityResources.ValueCannotBeNullOrEmpty, "roleName");
-            //}
+            if (String.IsNullOrWhiteSpace(roleName))
+            {
+                throw new ArgumentException(Resources.ValueCannotBeNullOrEmpty, "roleName");
+            }
             //var role = await Roles.SingleOrDefaultAsync(r => r.Name.ToUpper() == roleName.ToUpper());
             var role = Roles.SingleOrDefault(r => r.Name.ToUpper() == roleName.ToUpper());
             if (role != null)

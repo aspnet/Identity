@@ -225,13 +225,12 @@ namespace Microsoft.AspNet.Identity.Entity.Test
             await Assert.ThrowsAsync<ArgumentNullException>("user", async () => await store.SetLockoutEndDateAsync(null, new DateTimeOffset()));
             await Assert.ThrowsAsync<ArgumentNullException>("user", async () => await store.ResetAccessFailedCountAsync(null));
             await Assert.ThrowsAsync<ArgumentNullException>("user", async () => await store.IncrementAccessFailedCountAsync(null));
-            // TODO:
-            //ExceptionAssert.ThrowsArgumentNullOrEmpty(
-            //    async () => store.AddToRoleAsync(new User("fake"), null)), "roleName");
-            //ExceptionAssert.ThrowsArgumentNullOrEmpty(
-            //    async () => store.RemoveFromRoleAsync(new User("fake"), null)), "roleName");
-            //ExceptionAssert.ThrowsArgumentNullOrEmpty(
-            //    async () => store.IsInRoleAsync(new User("fake"), null)), "roleName");
+            await Assert.ThrowsAsync<ArgumentException>("roleName", async () => await store.AddToRoleAsync(new User("fake"), null));
+            await Assert.ThrowsAsync<ArgumentException>("roleName", async () => await store.RemoveFromRoleAsync(new User("fake"), null));
+            await Assert.ThrowsAsync<ArgumentException>("roleName", async () => await store.IsInRoleAsync(new User("fake"), null));
+            await Assert.ThrowsAsync<ArgumentException>("roleName", async () => await store.AddToRoleAsync(new User("fake"), ""));
+            await Assert.ThrowsAsync<ArgumentException>("roleName", async () => await store.RemoveFromRoleAsync(new User("fake"), ""));
+            await Assert.ThrowsAsync<ArgumentException>("roleName", async () => await store.IsInRoleAsync(new User("fake"), ""));
         }
 
         [Fact]

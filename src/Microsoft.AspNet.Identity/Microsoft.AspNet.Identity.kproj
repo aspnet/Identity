@@ -64,7 +64,7 @@
     <Compile Include="PasswordOptions.cs" />
     <Compile Include="PasswordValidator.cs" />
     <Compile Include="PasswordVerificationResult.cs" />
-    <Compile Include="Resources.Designer.cs" />
+    <Compile Include="Properties\Resources.Designer.cs" />
     <Compile Include="Rfc6238AuthenticationService.cs" />
     <Compile Include="RoleManager.cs" />
     <Compile Include="RoleValidator.cs" />
