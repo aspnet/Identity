@@ -13,7 +13,8 @@ namespace Microsoft.AspNet.Identity
     /// <typeparam name="TUser"></typeparam>
     public class SignInManager<TUser> where TUser : class
     {
-        public SignInManager(UserManager<TUser> userManager, IAuthenticationManager authenticationManager, IClaimsIdentityFactory<TUser> claimsFactory)
+        public SignInManager(UserManager<TUser> userManager, IAuthenticationManager authenticationManager, 
+            IClaimsIdentityFactory<TUser> claimsFactory)
         {
             if (userManager == null)
             {
@@ -58,7 +59,8 @@ namespace Microsoft.AspNet.Identity
             AuthenticationManager.SignOut(AuthenticationType);
         }
 
-        public virtual async Task<SignInStatus> PasswordSignInAsync(string userName, string password, bool isPersistent, bool shouldLockout)
+        public virtual async Task<SignInStatus> PasswordSignInAsync(string userName, string password, 
+            bool isPersistent, bool shouldLockout)
         {
             var user = await UserManager.FindByNameAsync(userName);
             if (user == null)

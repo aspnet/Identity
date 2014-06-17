@@ -36,7 +36,8 @@ namespace Microsoft.AspNet.Identity
         /// <param name="userName"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task SetUserNameAsync(TUser user, string userName, CancellationToken cancellationToken = default(CancellationToken));
+        Task SetUserNameAsync(TUser user, string userName,
+            CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         ///     Insert a new user
@@ -77,6 +78,5 @@ namespace Microsoft.AspNet.Identity
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<TUser> FindByNameAsync(string name, CancellationToken cancellationToken = default(CancellationToken));
-
     }
 }

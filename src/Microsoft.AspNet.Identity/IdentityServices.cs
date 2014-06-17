@@ -18,7 +18,8 @@ namespace Microsoft.AspNet.Identity
             return GetDefaultUserServices<TUser>(new Configuration());
         }
 
-        public static IEnumerable<IServiceDescriptor> GetDefaultUserServices<TUser>(IConfiguration configuration) where TUser : class
+        public static IEnumerable<IServiceDescriptor> GetDefaultUserServices<TUser>(IConfiguration configuration)
+            where TUser : class
         {
             var describe = new ServiceDescriber(configuration);
 
@@ -34,7 +35,8 @@ namespace Microsoft.AspNet.Identity
             return GetDefaultRoleServices<TRole>(new Configuration());
         }
 
-        public static IEnumerable<IServiceDescriptor> GetDefaultRoleServices<TRole>(IConfiguration configuration) where TRole : class
+        public static IEnumerable<IServiceDescriptor> GetDefaultRoleServices<TRole>(IConfiguration configuration)
+            where TRole : class
         {
             var describe = new ServiceDescriber(configuration);
             yield return describe.Instance<IRoleValidator<TRole>>(new RoleValidator<TRole>());

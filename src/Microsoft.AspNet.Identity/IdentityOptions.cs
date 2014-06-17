@@ -8,7 +8,6 @@ namespace Microsoft.AspNet.Identity
     /// </summary>
     public class IdentityOptions
     {
-
         public IdentityOptions()
         {
             ClaimType = new ClaimTypeOptions();

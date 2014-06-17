@@ -19,12 +19,10 @@ namespace Microsoft.AspNet.Identity
         /// </summary>
         public bool EnabledByDefault { get; set; }
 
-
         /// <summary>
         ///     Number of access attempts allowed for a user before lockout (if enabled)
         /// </summary>
         public int MaxFailedAccessAttempts { get; set; }
-
 
         /// <summary>
         ///     Default amount of time an user is locked out for after MaxFailedAccessAttempsBeforeLockout is reached

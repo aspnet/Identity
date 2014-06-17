@@ -50,12 +50,14 @@ namespace Microsoft.AspNet.Identity
             }
             var userId = await UserManager.GetUserIdAsync(user, cancellationToken);
             var userName = await UserManager.GetUserNameAsync(user, cancellationToken);
-            var id = new ClaimsIdentity(authenticationType, UserManager.Options.ClaimType.UserName, UserManager.Options.ClaimType.Role);
+            var id = new ClaimsIdentity(authenticationType, UserManager.Options.ClaimType.UserName, 
+                UserManager.Options.ClaimType.Role);
             id.AddClaim(new Claim(UserManager.Options.ClaimType.UserId, userId));
             id.AddClaim(new Claim(UserManager.Options.ClaimType.UserName, userName, ClaimValueTypes.String));
             if (UserManager.SupportsUserSecurityStamp)
             {
-                id.AddClaim(new Claim(UserManager.Options.ClaimType.SecurityStamp, await UserManager.GetSecurityStampAsync(user, cancellationToken)));
+                id.AddClaim(new Claim(UserManager.Options.ClaimType.SecurityStamp, 
+                    await UserManager.GetSecurityStampAsync(user, cancellationToken)));
             }
             if (UserManager.SupportsUserRole)
             {

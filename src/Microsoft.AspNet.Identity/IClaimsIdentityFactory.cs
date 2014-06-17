@@ -21,6 +21,7 @@ namespace Microsoft.AspNet.Identity
         /// <param name="authenticationType"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<ClaimsIdentity> CreateAsync(TUser user, string authenticationType, CancellationToken cancellationToken = default(CancellationToken));
+        Task<ClaimsIdentity> CreateAsync(TUser user, string authenticationType, 
+            CancellationToken cancellationToken = default(CancellationToken));
     }
 }

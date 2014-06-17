@@ -20,7 +20,8 @@ namespace Microsoft.AspNet.Identity
         /// <param name="role"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<IList<Claim>> GetClaimsAsync(TRole role, CancellationToken cancellationToken = default(CancellationToken));
+        Task<IList<Claim>> GetClaimsAsync(TRole role, 
+            CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         ///     Add a new role claim
@@ -38,6 +39,7 @@ namespace Microsoft.AspNet.Identity
         /// <param name="claim"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task RemoveClaimAsync(TRole role, Claim claim, CancellationToken cancellationToken = default(CancellationToken));
+        Task RemoveClaimAsync(TRole role, Claim claim, 
+            CancellationToken cancellationToken = default(CancellationToken));
     }
 }

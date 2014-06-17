@@ -248,6 +248,7 @@ namespace Microsoft.AspNet.Identity.Entity
             // TODO: rely on fixup?
             UserRoles.Add(ur);
             user.Roles.Add(ur);
+            roleEntity.Users.Add(ur);
             return Task.FromResult(0);
         }
 
