@@ -6,27 +6,27 @@ using System.Collections.Generic;
 
 namespace Microsoft.AspNet.Identity.Entity.Test
 {
-    public class EntityUser : EntityUser<string, IdentityUserLogin, IdentityUserRole, IdentityUserClaim>
+    public class InMemoryUser : InMemoryUser<string, IdentityUserLogin, IdentityUserRole, IdentityUserClaim>
     {
-        public EntityUser()
+        public InMemoryUser()
         {
             Id = Guid.NewGuid().ToString();
         }
 
-        public EntityUser(string userName)
+        public InMemoryUser(string userName)
             : this()
         {
             UserName = userName;
         }
     }
 
-    public class EntityUser<TKey, TLogin, TRole, TClaim>
+    public class InMemoryUser<TKey, TLogin, TRole, TClaim>
         where TLogin : IdentityUserLogin<TKey>
         where TRole : IdentityUserRole<TKey>
         where TClaim : IdentityUserClaim<TKey>
         where TKey : IEquatable<TKey>
     {
-        public EntityUser()
+        public InMemoryUser()
         {
             Claims = new List<TClaim>();
             Roles = new List<TRole>();

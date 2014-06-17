@@ -13,19 +13,19 @@ using Microsoft.Data.Entity;
 
 namespace Microsoft.AspNet.Identity.Entity.Test
 {
-    public class InMemoryUserStore : InMemoryUserStore<EntityUser, InMemoryContext>
+    public class InMemoryUserStore : InMemoryUserStore<InMemoryUser, InMemoryContext>
     {
         public InMemoryUserStore(InMemoryContext context) : base(context) { }
     }
 
     public class InMemoryUserStore<TUser> : InMemoryUserStore<TUser, InMemoryContext>
-        where TUser : EntityUser
+        where TUser : InMemoryUser
     {
         public InMemoryUserStore(InMemoryContext context) : base(context) { }
     }
 
     public class InMemoryUserStore<TUser, TContext> : InMemoryUserStore<TUser, IdentityRole, string, IdentityUserLogin, IdentityUserRole, IdentityUserClaim, TContext> 
-        where TUser:EntityUser
+        where TUser:InMemoryUser
         where TContext : DbContext
     {
         public InMemoryUserStore(TContext context) : base(context) { }
@@ -43,7 +43,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
         IUserTwoFactorStore<TUser>,
         IUserLockoutStore<TUser>
         where TKey : IEquatable<TKey>
-        where TUser : EntityUser<TKey, TUserLogin, TUserRole, TUserClaim>
+        where TUser : InMemoryUser<TKey, TUserLogin, TUserRole, TUserClaim>
         where TRole : IdentityRole<TKey>
         where TUserLogin : IdentityUserLogin<TKey>, new()
         where TUserRole : IdentityUserRole<TKey>, new()

@@ -13,7 +13,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
 {
     public class StartupTest
     {
-        public class ApplicationUser : EntityUser { }
+        public class ApplicationUser : InMemoryUser { }
 
         public class ApplicationDbContext : InMemoryContext<ApplicationUser>
         {

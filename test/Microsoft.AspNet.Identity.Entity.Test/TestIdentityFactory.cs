@@ -21,12 +21,12 @@ namespace Microsoft.AspNet.Identity.Entity.Test
             return db;
         }
 
-        public static UserManager<EntityUser> CreateManager(InMemoryContext context)
+        public static UserManager<InMemoryUser> CreateManager(InMemoryContext context)
         {
-            return MockHelpers.CreateManager<EntityUser>(() => new InMemoryUserStore<EntityUser>(context));
+            return MockHelpers.CreateManager<InMemoryUser>(() => new InMemoryUserStore<InMemoryUser>(context));
         }
 
-        public static UserManager<EntityUser> CreateManager()
+        public static UserManager<InMemoryUser> CreateManager()
         {
             return CreateManager(CreateContext());
         }
@@ -34,7 +34,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
         public static RoleManager<IdentityRole> CreateRoleManager(InMemoryContext context)
         {
             var services = new ServiceCollection();
-            services.AddIdentity<EntityUser, IdentityRole>(b => b.AddRoleStore(() => new RoleStore<IdentityRole>(context)));
+            services.AddIdentity<InMemoryUser, IdentityRole>(b => b.AddRoleStore(() => new RoleStore<IdentityRole>(context)));
             return services.BuildServiceProvider().GetService<RoleManager<IdentityRole>>();
         }
 

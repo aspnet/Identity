@@ -8,7 +8,7 @@ using Microsoft.Data.Entity.Metadata;
 namespace Microsoft.AspNet.Identity.Entity.Test
 {
     public class InMemoryContext :
-        InMemoryContext<EntityUser, IdentityRole, string, IdentityUserLogin, IdentityUserRole, IdentityUserClaim>
+        InMemoryContext<InMemoryUser, IdentityRole, string, IdentityUserLogin, IdentityUserRole, IdentityUserClaim>
     {
         public InMemoryContext() { }
         public InMemoryContext(IServiceProvider serviceProvider) : base(serviceProvider) { }
@@ -16,14 +16,14 @@ namespace Microsoft.AspNet.Identity.Entity.Test
 
     public class InMemoryContext<TUser> :
         InMemoryContext<TUser, IdentityRole, string, IdentityUserLogin, IdentityUserRole, IdentityUserClaim>
-        where TUser : EntityUser<string, IdentityUserLogin, IdentityUserRole, IdentityUserClaim>
+        where TUser : InMemoryUser<string, IdentityUserLogin, IdentityUserRole, IdentityUserClaim>
     {
         public InMemoryContext() { }
         public InMemoryContext(IServiceProvider serviceProvider) : base(serviceProvider) { }
     }
 
     public class InMemoryContext<TUser, TRole, TKey, TUserLogin, TUserRole, TUserClaim> : DbContext
-        where TUser : EntityUser<TKey, TUserLogin, TUserRole, TUserClaim>
+        where TUser : InMemoryUser<TKey, TUserLogin, TUserRole, TUserClaim>
         where TRole : IdentityRole<TKey>
         where TUserLogin : IdentityUserLogin<TKey>
         where TUserRole : IdentityUserRole<TKey>

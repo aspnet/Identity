@@ -22,12 +22,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EntityIdentityBuilderExtensions.cs" />
-    <Compile Include="EntityUser.cs" />
+    <Compile Include="InMemoryUser.cs" />
     <Compile Include="InMemoryContext.cs" />
     <Compile Include="InMemoryUserStore.cs" />
     <Compile Include="InMemoryUserStoreTest.cs" />
     <Compile Include="RoleStoreTest.cs" />
-    <Compile Include="SqlUserStoreTest.cs" />
+    <Compile Include="UserStoreTest.cs" />
     <Compile Include="StartupTest.cs" />
     <Compile Include="TestIdentityFactory.cs" />
   </ItemGroup>

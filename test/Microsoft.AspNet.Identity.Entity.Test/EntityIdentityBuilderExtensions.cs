@@ -11,7 +11,7 @@ namespace Microsoft.AspNet.Identity
     public static class EntityIdentityBuilderExtensions
     {
         public static IdentityBuilder<TUser, TRole> AddEntityFrameworkInMemory<TUser, TRole, TDbContext>(this IdentityBuilder<TUser, TRole> builder)
-            where TUser : EntityUser
+            where TUser : InMemoryUser
             where TRole : IdentityRole
             where TDbContext : DbContext
         {

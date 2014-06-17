@@ -18,7 +18,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
             var services = new ServiceCollection();
             services.AddEntityFramework().AddInMemoryStore();
             var store = new RoleStore<IdentityRole>(new InMemoryContext());
-            services.AddIdentity<EntityUser, IdentityRole>(s =>
+            services.AddIdentity<InMemoryUser, IdentityRole>(s =>
             {
                 s.AddRoleStore(() => store);
             });
