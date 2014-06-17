@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Microsoft.AspNet.Identity.Entity.Test
+namespace Microsoft.AspNet.Identity.Entity.InMemory.Test
 {
     public class InMemoryUser : InMemoryUser<string, IdentityUserLogin, IdentityUserRole, IdentityUserClaim>
     {

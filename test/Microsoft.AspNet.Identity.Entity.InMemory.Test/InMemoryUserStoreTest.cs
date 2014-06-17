@@ -15,7 +15,7 @@ using Microsoft.Framework.DependencyInjection.Fallback;
 using Microsoft.Framework.OptionsModel;
 using Xunit;
 
-namespace Microsoft.AspNet.Identity.Entity.Test
+namespace Microsoft.AspNet.Identity.Entity.InMemory.Test
 {
     public class InMemoryUserStoreTest
     {

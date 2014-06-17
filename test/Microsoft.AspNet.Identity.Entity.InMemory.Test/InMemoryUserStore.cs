@@ -11,7 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Data.Entity;
 
-namespace Microsoft.AspNet.Identity.Entity.Test
+namespace Microsoft.AspNet.Identity.Entity.InMemory.Test
 {
     public class InMemoryUserStore : InMemoryUserStore<InMemoryUser, InMemoryContext>
     {

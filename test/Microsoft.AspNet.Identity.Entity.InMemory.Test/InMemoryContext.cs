@@ -5,7 +5,7 @@ using System;
 using Microsoft.Data.Entity;
 using Microsoft.Data.Entity.Metadata;
 
-namespace Microsoft.AspNet.Identity.Entity.Test
+namespace Microsoft.AspNet.Identity.Entity.InMemory.Test
 {
     public class InMemoryContext :
         InMemoryContext<InMemoryUser, IdentityRole, string, IdentityUserLogin, IdentityUserRole, IdentityUserClaim>
