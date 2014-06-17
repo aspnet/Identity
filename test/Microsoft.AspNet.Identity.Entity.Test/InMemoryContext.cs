@@ -5,24 +5,24 @@ using System;
 using Microsoft.Data.Entity;
 using Microsoft.Data.Entity.Metadata;
 
-namespace Microsoft.AspNet.Identity.Entity
+namespace Microsoft.AspNet.Identity.Entity.Test
 {
-    public class IdentityContext :
-        IdentityContext<EntityUser, IdentityRole, string, IdentityUserLogin, IdentityUserRole, IdentityUserClaim>
+    public class InMemoryContext :
+        InMemoryContext<EntityUser, IdentityRole, string, IdentityUserLogin, IdentityUserRole, IdentityUserClaim>
     {
-        public IdentityContext() { }
-        public IdentityContext(IServiceProvider serviceProvider) : base(serviceProvider) { }
+        public InMemoryContext() { }
+        public InMemoryContext(IServiceProvider serviceProvider) : base(serviceProvider) { }
     }
 
-    public class IdentityContext<TUser> :
-        IdentityContext<TUser, IdentityRole, string, IdentityUserLogin, IdentityUserRole, IdentityUserClaim>
+    public class InMemoryContext<TUser> :
+        InMemoryContext<TUser, IdentityRole, string, IdentityUserLogin, IdentityUserRole, IdentityUserClaim>
         where TUser : EntityUser<string, IdentityUserLogin, IdentityUserRole, IdentityUserClaim>
     {
-        public IdentityContext() { }
-        public IdentityContext(IServiceProvider serviceProvider) : base(serviceProvider) { }
+        public InMemoryContext() { }
+        public InMemoryContext(IServiceProvider serviceProvider) : base(serviceProvider) { }
     }
 
-    public class IdentityContext<TUser, TRole, TKey, TUserLogin, TUserRole, TUserClaim> : DbContext
+    public class InMemoryContext<TUser, TRole, TKey, TUserLogin, TUserRole, TUserClaim> : DbContext
         where TUser : EntityUser<TKey, TUserLogin, TUserRole, TUserClaim>
         where TRole : IdentityRole<TKey>
         where TUserLogin : IdentityUserLogin<TKey>
@@ -35,10 +35,10 @@ namespace Microsoft.AspNet.Identity.Entity
         public DbSet<TRole> Roles { get; set; }
         public DbSet<IdentityRoleClaim> RoleClaims { get; set; }
 
-        public IdentityContext(IServiceProvider serviceProvider)
+        public InMemoryContext(IServiceProvider serviceProvider)
         : base(serviceProvider) { }
 
-        public IdentityContext() { }
+        public InMemoryContext() { }
 
         protected override void OnConfiguring(DbContextOptions builder)
         {

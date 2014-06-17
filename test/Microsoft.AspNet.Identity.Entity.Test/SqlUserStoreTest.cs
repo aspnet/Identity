@@ -25,7 +25,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
 
         public class ApplicationUser : User { }
 
-        public class ApplicationDbContext : IdentitySqlContext<ApplicationUser>
+        public class ApplicationDbContext : IdentityContext<ApplicationUser>
         {
             public ApplicationDbContext(IServiceProvider services, IOptionsAccessor<DbContextOptions> options) : base(services, options.Options) { }
         }
@@ -77,13 +77,13 @@ namespace Microsoft.AspNet.Identity.Entity.Test
             }
         }
 
-        public static IdentitySqlContext CreateContext(bool delete = false)
+        public static IdentityContext CreateContext(bool delete = false)
         {
             var services = new ServiceCollection();
             services.AddEntityFramework().AddSqlServer();
             var serviceProvider = services.BuildServiceProvider();
 
-            var db = new IdentitySqlContext(serviceProvider, ConnectionString);
+            var db = new IdentityContext(serviceProvider, ConnectionString);
             if (delete)
             {
                 db.Database.EnsureDeleted();
@@ -120,7 +120,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
             return CreateManager(CreateContext());
         }
 
-        public static RoleManager<IdentityRole> CreateRoleManager(IdentitySqlContext context)
+        public static RoleManager<IdentityRole> CreateRoleManager(IdentityContext context)
         {
             var services = new ServiceCollection();
             services.AddIdentity<User, IdentityRole>(b => b.AddRoleStore(() => new RoleStore<IdentityRole>(context)));
@@ -135,7 +135,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
         [Fact]
         public async Task SqlUserStoreMethodsThrowWhenDisposedTest()
         {
-            var store = new UserStore(new IdentitySqlContext());
+            var store = new UserStore(new IdentityContext());
             store.Dispose();
             await Assert.ThrowsAsync<ObjectDisposedException>(async () => await store.AddClaimAsync(null, null));
             await Assert.ThrowsAsync<ObjectDisposedException>(async () => await store.AddLoginAsync(null, null));
@@ -168,7 +168,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
         public async Task UserStorePublicNullCheckTest()
         {
             Assert.Throws<ArgumentNullException>("context", () => new UserStore(null));
-            var store = new UserStore(new IdentitySqlContext());
+            var store = new UserStore(new IdentityContext());
             await Assert.ThrowsAsync<ArgumentNullException>("user", async () => await store.GetUserIdAsync(null));
             await Assert.ThrowsAsync<ArgumentNullException>("user", async () => await store.GetUserNameAsync(null));
             await Assert.ThrowsAsync<ArgumentNullException>("user", async () => await store.SetUserNameAsync(null, null));

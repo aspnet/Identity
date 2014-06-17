@@ -27,7 +27,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
             services.AddEntityFramework().AddInMemoryStore();
             services.AddIdentity<EntityUser, IdentityRole>();
             services.AddSingleton<IOptionsAccessor<IdentityOptions>, OptionsAccessor<IdentityOptions>>();
-            services.AddInstance(new IdentityContext());
+            services.AddInstance(new InMemoryContext());
             services.AddTransient<IUserStore<EntityUser>, InMemoryUserStore>();
             var provider = services.BuildServiceProvider();
             var manager = provider.GetService<UserManager<EntityUser>>();
@@ -42,7 +42,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
             services.AddEntityFramework().AddInMemoryStore();
 
             // TODO: this needs to construct a new instance of InMemoryStore
-            var store = new InMemoryUserStore(new IdentityContext());
+            var store = new InMemoryUserStore(new InMemoryContext());
             services.Add(OptionsServices.GetDefaultServices());
             services.AddIdentity<EntityUser, IdentityRole>(s =>
             {
@@ -58,7 +58,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
         [Fact]
         public async Task EntityUserStoreMethodsThrowWhenDisposedTest()
         {
-            var store = new InMemoryUserStore(new IdentityContext());
+            var store = new InMemoryUserStore(new InMemoryContext());
             store.Dispose();
             await Assert.ThrowsAsync<ObjectDisposedException>(async () => await store.AddClaimAsync(null, null));
             await Assert.ThrowsAsync<ObjectDisposedException>(async () => await store.AddLoginAsync(null, null));
@@ -91,7 +91,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
         public async Task EntityUserStorePublicNullCheckTest()
         {
             Assert.Throws<ArgumentNullException>("context", () => new InMemoryUserStore(null));
-            var store = new InMemoryUserStore(new IdentityContext());
+            var store = new InMemoryUserStore(new InMemoryContext());
             await Assert.ThrowsAsync<ArgumentNullException>("user", async () => await store.GetUserIdAsync(null));
             await Assert.ThrowsAsync<ArgumentNullException>("user", async () => await store.GetUserNameAsync(null));
             await Assert.ThrowsAsync<ArgumentNullException>("user", async () => await store.SetUserNameAsync(null, null));
@@ -166,13 +166,13 @@ namespace Microsoft.AspNet.Identity.Entity.Test
             services.AddEntityFramework().AddInMemoryStore();
             var provider = services.BuildServiceProvider();
 
-            using (var db = new IdentityContext(provider))
+            using (var db = new InMemoryContext(provider))
             {
                 db.Users.Add(new EntityUser { UserName = "John Doe" });
                 await db.SaveChangesAsync();
             }
 
-            using (var db = new IdentityContext(provider))
+            using (var db = new InMemoryContext(provider))
             {
                 var data = db.Users.ToList();
                 Assert.Equal(1, data.Count);

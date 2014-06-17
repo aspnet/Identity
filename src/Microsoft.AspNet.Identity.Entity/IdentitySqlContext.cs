@@ -7,28 +7,28 @@ using Microsoft.Data.Entity.Metadata;
 
 namespace Microsoft.AspNet.Identity.Entity
 {
-    public class IdentitySqlContext :
-        IdentitySqlContext<User, IdentityRole>
+    public class IdentityContext :
+        IdentityContext<User, IdentityRole>
     {
-        public IdentitySqlContext() { }
-        public IdentitySqlContext(IServiceProvider serviceProvider) : base(serviceProvider) { }
-        public IdentitySqlContext(IServiceProvider serviceProvider, string nameOrConnectionString) : base(serviceProvider, nameOrConnectionString) { }
-        public IdentitySqlContext(DbContextOptions options) : base(options) { }
-        public IdentitySqlContext(IServiceProvider serviceProvider, DbContextOptions options) : base(serviceProvider, options) { }
+        public IdentityContext() { }
+        public IdentityContext(IServiceProvider serviceProvider) : base(serviceProvider) { }
+        public IdentityContext(IServiceProvider serviceProvider, string nameOrConnectionString) : base(serviceProvider, nameOrConnectionString) { }
+        public IdentityContext(DbContextOptions options) : base(options) { }
+        public IdentityContext(IServiceProvider serviceProvider, DbContextOptions options) : base(serviceProvider, options) { }
     }
 
-    public class IdentitySqlContext<TUser> :
-        IdentitySqlContext<TUser, IdentityRole>
+    public class IdentityContext<TUser> :
+        IdentityContext<TUser, IdentityRole>
         where TUser : User
     {
-        public IdentitySqlContext() { }
-        public IdentitySqlContext(IServiceProvider serviceProvider) : base(serviceProvider) { }
-        public IdentitySqlContext(IServiceProvider serviceProvider, string nameOrConnectionString) : base(serviceProvider, nameOrConnectionString) { }
-        public IdentitySqlContext(DbContextOptions options) : base(options) { }
-        public IdentitySqlContext(IServiceProvider serviceProvider, DbContextOptions options) : base(serviceProvider, options) { }
+        public IdentityContext() { }
+        public IdentityContext(IServiceProvider serviceProvider) : base(serviceProvider) { }
+        public IdentityContext(IServiceProvider serviceProvider, string nameOrConnectionString) : base(serviceProvider, nameOrConnectionString) { }
+        public IdentityContext(DbContextOptions options) : base(options) { }
+        public IdentityContext(IServiceProvider serviceProvider, DbContextOptions options) : base(serviceProvider, options) { }
     }
 
-    public class IdentitySqlContext<TUser, TRole> : DbContext
+    public class IdentityContext<TUser, TRole> : DbContext
         where TUser : User
         where TRole : IdentityRole
     {
@@ -41,14 +41,14 @@ namespace Microsoft.AspNet.Identity.Entity
 
         private readonly string _nameOrConnectionString;
 
-        public IdentitySqlContext() { }
-        public IdentitySqlContext(IServiceProvider serviceProvider, string nameOrConnectionString) : base(serviceProvider)
+        public IdentityContext() { }
+        public IdentityContext(IServiceProvider serviceProvider, string nameOrConnectionString) : base(serviceProvider)
         {
             _nameOrConnectionString = nameOrConnectionString;
         }
-        public IdentitySqlContext(IServiceProvider serviceProvider) : base(serviceProvider) { }
-        public IdentitySqlContext(DbContextOptions options) : base(options) { }
-        public IdentitySqlContext(IServiceProvider serviceProvider, DbContextOptions options) : base(serviceProvider, options) { }
+        public IdentityContext(IServiceProvider serviceProvider) : base(serviceProvider) { }
+        public IdentityContext(DbContextOptions options) : base(options) { }
+        public IdentityContext(IServiceProvider serviceProvider, DbContextOptions options) : base(serviceProvider, options) { }
 
         protected override void OnConfiguring(DbContextOptions builder)
         {

@@ -9,19 +9,19 @@ namespace Microsoft.AspNet.Identity.Entity.Test
 {
     public static class TestIdentityFactory
     {
-        public static IdentityContext CreateContext()
+        public static InMemoryContext CreateContext()
         {
             var services = new ServiceCollection();
             services.AddEntityFramework().AddInMemoryStore();
             var serviceProvider = services.BuildServiceProvider();
 
-            var db = new IdentityContext(serviceProvider);
+            var db = new InMemoryContext(serviceProvider);
             db.Database.EnsureCreated();
 
             return db;
         }
 
-        public static UserManager<EntityUser> CreateManager(IdentityContext context)
+        public static UserManager<EntityUser> CreateManager(InMemoryContext context)
         {
             return MockHelpers.CreateManager<EntityUser>(() => new InMemoryUserStore<EntityUser>(context));
         }
@@ -31,7 +31,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
             return CreateManager(CreateContext());
         }
 
-        public static RoleManager<IdentityRole> CreateRoleManager(IdentityContext context)
+        public static RoleManager<IdentityRole> CreateRoleManager(InMemoryContext context)
         {
             var services = new ServiceCollection();
             services.AddIdentity<EntityUser, IdentityRole>(b => b.AddRoleStore(() => new RoleStore<IdentityRole>(context)));

@@ -15,7 +15,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
     {
         public class ApplicationUser : EntityUser { }
 
-        public class ApplicationDbContext : IdentityContext<ApplicationUser>
+        public class ApplicationDbContext : InMemoryContext<ApplicationUser>
         {
             public ApplicationDbContext(IServiceProvider services) : base(services) { }
         }

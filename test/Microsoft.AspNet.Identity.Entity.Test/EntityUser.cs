@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Microsoft.AspNet.Identity.Entity
+namespace Microsoft.AspNet.Identity.Entity.Test
 {
     public class EntityUser : EntityUser<string, IdentityUserLogin, IdentityUserRole, IdentityUserClaim>
     {

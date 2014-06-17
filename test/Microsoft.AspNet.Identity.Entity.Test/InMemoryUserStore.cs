@@ -11,17 +11,17 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Data.Entity;
 
-namespace Microsoft.AspNet.Identity.Entity
+namespace Microsoft.AspNet.Identity.Entity.Test
 {
-    public class InMemoryUserStore : InMemoryUserStore<EntityUser, IdentityContext>
+    public class InMemoryUserStore : InMemoryUserStore<EntityUser, InMemoryContext>
     {
-        public InMemoryUserStore(IdentityContext context) : base(context) { }
+        public InMemoryUserStore(InMemoryContext context) : base(context) { }
     }
 
-    public class InMemoryUserStore<TUser> : InMemoryUserStore<TUser, IdentityContext>
+    public class InMemoryUserStore<TUser> : InMemoryUserStore<TUser, InMemoryContext>
         where TUser : EntityUser
     {
-        public InMemoryUserStore(IdentityContext context) : base(context) { }
+        public InMemoryUserStore(InMemoryContext context) : base(context) { }
     }
 
     public class InMemoryUserStore<TUser, TContext> : InMemoryUserStore<TUser, IdentityRole, string, IdentityUserLogin, IdentityUserRole, IdentityUserClaim, TContext> 
