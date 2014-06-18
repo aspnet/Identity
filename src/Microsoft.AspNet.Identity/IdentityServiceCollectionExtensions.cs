@@ -48,8 +48,7 @@ namespace Microsoft.Framework.DependencyInjection
             where TUser : class
             where TRole : class
         {
-            services.AddIdentity<TUser, TRole>();
-            var builder = new IdentityBuilder<TUser, TRole>(services);
+            var builder = services.AddIdentity<TUser, TRole>();
             actionBuilder(builder);
             return builder;
         }
@@ -59,8 +58,7 @@ namespace Microsoft.Framework.DependencyInjection
             where TUser : class
             where TRole : class
         {
-            services.AddIdentity<TUser, TRole>(identityConfig);
-            var builder = new IdentityBuilder<TUser, TRole>(services);
+            var builder = services.AddIdentity<TUser, TRole>(identityConfig);
             actionBuilder(builder);
             return builder;
         }
