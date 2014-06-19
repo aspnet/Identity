@@ -19,7 +19,7 @@ using Xunit;
 namespace Microsoft.AspNet.Identity.Entity.Test
 {
     [TestCaseOrderer("Microsoft.AspNet.Identity.Test.PriorityOrderer", "Microsoft.AspNet.Identity.Entity.Test")]
-    public class SqlUserStoreTest
+    public class UserStoreTest
     {
         private const string ConnectionString = @"Server=(localdb)\v11.0;Database=SqlUserStoreTest;Trusted_Connection=True;";
 
@@ -497,6 +497,7 @@ namespace Microsoft.AspNet.Identity.Entity.Test
             foreach (var c in claims)
             {
                 IdentityResultAssert.IsSuccess(await manager.AddClaimAsync(user, c));
+                Assert.NotNull(user.Claims.Single(cl => cl.ClaimType == c.Type && cl.ClaimValue == c.Value));
             }
             var userClaims = await manager.GetClaimsAsync(user);
             Assert.Equal(3, userClaims.Count);
@@ -601,6 +602,18 @@ namespace Microsoft.AspNet.Identity.Entity.Test
             }
             var usersQ = mgr.Users.Where(u => u.UserName.StartsWith("CanFindUsersViaUserQuerable"));
             Assert.Null(mgr.Users.FirstOrDefault(u => u.UserName == "bogus"));
+        }
+
+        [Fact]
+        public async Task EnsureRoleClaimNavigationProperty()
+        {
+            var context = CreateContext();
+            var roleManager = CreateRoleManager(context);
+            var r = new IdentityRole("EnsureRoleClaimNavigationProperty");
+            IdentityResultAssert.IsSuccess(await roleManager.CreateAsync(r));
+            var c = new Claim("a", "b");
+            IdentityResultAssert.IsSuccess(await roleManager.AddClaimAsync(r, c));
+            Assert.NotNull(r.Claims.Single(cl => cl.ClaimValue == c.Value && cl.ClaimType == c.Type));
         }
 
         [Fact]

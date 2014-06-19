@@ -72,9 +72,24 @@ namespace Microsoft.AspNet.Identity.Entity
 
             builder.Entity<IdentityUserClaim>()
                 .Key(uc => uc.Id)
-                // TODO: causes issues with cascading deletes
-                //.ForeignKeys(fk => fk.ForeignKey<TUser>(f => f.UserId))
                 .ToTable("AspNetUserClaims");
+
+            var userType = builder.Model.GetEntityType(typeof(TUser));
+            var roleType = builder.Model.GetEntityType(typeof(TRole));
+            var userClaimType = builder.Model.GetEntityType(typeof(IdentityUserClaim));
+            var roleClaimType = builder.Model.GetEntityType(typeof(IdentityRoleClaim));
+            var userRoleType = builder.Model.GetEntityType(typeof(IdentityUserRole));
+            var ucfk = userClaimType.AddForeignKey(userType.GetKey(), new[] { userClaimType.GetProperty("UserId") });
+            userType.AddNavigation(new Navigation(ucfk, "Claims", false));
+            //userClaimType.AddNavigation(new Navigation(ucfk, "User", true));
+            //var urfk = userRoleType.AddForeignKey(userType.GetKey(), new[] { userRoleType.GetProperty("UserId") });
+            //userType.AddNavigation(new Navigation(urfk, "Roles", false));
+
+            //var urfk2 = userRoleType.AddForeignKey(roleType.GetKey(), new[] { userRoleType.GetProperty("RoleId") });
+            //roleType.AddNavigation(new Navigation(urfk2, "Users", false));
+
+            var rcfk = roleClaimType.AddForeignKey(roleType.GetKey(), new[] { roleClaimType.GetProperty("RoleId") });
+            roleType.AddNavigation(new Navigation(rcfk, "Claims", false));
 
             builder.Entity<IdentityUserRole>()
                 .Key(r => new { r.UserId, r.RoleId })
