@@ -9,37 +9,37 @@ using System.Threading.Tasks;
 namespace Microsoft.AspNet.Identity
 {
     /// <summary>
-    ///     Stores user specific claims
+    ///     Stores role specific claims
     /// </summary>
-    /// <typeparam name="TUser"></typeparam>
-    public interface IUserClaimStore<TUser> : IUserStore<TUser> where TUser : class
+    /// <typeparam name="TRole"></typeparam>
+    public interface IRoleClaimStore<TRole> : IRoleStore<TRole> where TRole : class
     {
         /// <summary>
-        ///     Returns the claims for the user
+        ///     Returns the claims for the role
         /// </summary>
-        /// <param name="user"></param>
+        /// <param name="role"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<IList<Claim>> GetClaimsAsync(TUser user, 
+        Task<IList<Claim>> GetClaimsAsync(TRole role, 
             CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
-        ///     Add a new user claim
+        ///     Add a new role claim
         /// </summary>
-        /// <param name="user"></param>
+        /// <param name="role"></param>
         /// <param name="claim"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task AddClaimAsync(TUser user, Claim claim, CancellationToken cancellationToken = default(CancellationToken));
+        Task AddClaimAsync(TRole role, Claim claim, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
-        ///     Remove a user claim
+        ///     Remove a role claim
         /// </summary>
-        /// <param name="user"></param>
+        /// <param name="role"></param>
         /// <param name="claim"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task RemoveClaimAsync(TUser user, Claim claim, 
+        Task RemoveClaimAsync(TRole role, Claim claim, 
             CancellationToken cancellationToken = default(CancellationToken));
     }
 }

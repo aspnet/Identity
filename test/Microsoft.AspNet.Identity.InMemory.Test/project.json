@@ -3,7 +3,6 @@
   "dependencies": {
     "Microsoft.AspNet.Http" : "0.1-alpha-*",
     "Microsoft.AspNet.Identity" : "0.1-alpha-*",
-    "Microsoft.AspNet.Identity.InMemory" : "0.1-alpha-*",
     "Microsoft.AspNet.PipelineCore" : "0.1-alpha-*",
     "Microsoft.AspNet.RequestContainer" : "0.1-alpha-*",
     "Microsoft.AspNet.Testing" : "0.1-alpha-*",

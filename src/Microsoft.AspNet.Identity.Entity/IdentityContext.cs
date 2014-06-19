@@ -3,84 +3,104 @@
 
 using System;
 using Microsoft.Data.Entity;
-using Microsoft.Data.Entity.SqlServer;
-using Microsoft.Data.Entity.InMemory;
 using Microsoft.Data.Entity.Metadata;
-using Microsoft.Framework.DependencyInjection;
-using Microsoft.Framework.DependencyInjection.Fallback;
 
 namespace Microsoft.AspNet.Identity.Entity
 {
     public class IdentityContext :
-        IdentityContext<EntityUser, EntityRole, string, IdentityUserLogin, IdentityUserRole, IdentityUserClaim>
+        IdentityContext<User, IdentityRole>
     {
         public IdentityContext() { }
         public IdentityContext(IServiceProvider serviceProvider) : base(serviceProvider) { }
+        public IdentityContext(IServiceProvider serviceProvider, string nameOrConnectionString) : base(serviceProvider, nameOrConnectionString) { }
+        public IdentityContext(DbContextOptions options) : base(options) { }
+        public IdentityContext(IServiceProvider serviceProvider, DbContextOptions options) : base(serviceProvider, options) { }
     }
 
     public class IdentityContext<TUser> :
-        IdentityContext<TUser, EntityRole, string, IdentityUserLogin, IdentityUserRole, IdentityUserClaim>
-        where TUser : EntityUser<string, IdentityUserLogin, IdentityUserRole, IdentityUserClaim>
+        IdentityContext<TUser, IdentityRole>
+        where TUser : User
     {
         public IdentityContext() { }
         public IdentityContext(IServiceProvider serviceProvider) : base(serviceProvider) { }
+        public IdentityContext(IServiceProvider serviceProvider, string nameOrConnectionString) : base(serviceProvider, nameOrConnectionString) { }
+        public IdentityContext(DbContextOptions options) : base(options) { }
+        public IdentityContext(IServiceProvider serviceProvider, DbContextOptions options) : base(serviceProvider, options) { }
     }
 
-    public class IdentityContext<TUser, TRole, TKey, TUserLogin, TUserRole, TUserClaim> : DbContext
-        where TUser : EntityUser<TKey, TUserLogin, TUserRole, TUserClaim>
-        where TRole : EntityRole<TKey, TUserRole>
-        where TUserLogin : IdentityUserLogin<TKey>
-        where TUserRole : IdentityUserRole<TKey>
-        where TUserClaim : IdentityUserClaim<TKey>
-        where TKey : IEquatable<TKey>
+    public class IdentityContext<TUser, TRole> : DbContext
+        where TUser : User
+        where TRole : IdentityRole
     {
-
         public DbSet<TUser> Users { get; set; }
+        public DbSet<IdentityUserClaim> UserClaims { get; set; }
+        public DbSet<IdentityUserLogin> UserLogins { get; set; }
+        public DbSet<IdentityUserRole> UserRoles { get; set; }
         public DbSet<TRole> Roles { get; set; }
+        public DbSet<IdentityRoleClaim> RoleClaims { get; set; }
 
-        public IdentityContext(IServiceProvider serviceProvider)
-        : base(serviceProvider) { }
+        private readonly string _nameOrConnectionString;
 
         public IdentityContext() { }
+        public IdentityContext(IServiceProvider serviceProvider, string nameOrConnectionString) : base(serviceProvider)
+        {
+            _nameOrConnectionString = nameOrConnectionString;
+        }
+        public IdentityContext(IServiceProvider serviceProvider) : base(serviceProvider) { }
+        public IdentityContext(DbContextOptions options) : base(options) { }
+        public IdentityContext(IServiceProvider serviceProvider, DbContextOptions options) : base(serviceProvider, options) { }
 
         protected override void OnConfiguring(DbContextOptions builder)
         {
-//#if NET45
-//            builder.SqlServerConnectionString(@"Server=(localdb)\v11.0;Database=IdentityEF5-5-1;Trusted_Connection=True;");
-//#else
-            builder.UseInMemoryStore();
-//#endif
+            if (!string.IsNullOrEmpty(_nameOrConnectionString))
+            {
+                builder.UseSqlServer(_nameOrConnectionString);
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<TUser>()
                 .Key(u => u.Id)
-                .Properties(ps => ps.Property(u => u.UserName));
-                //.ToTable("AspNetUsers");
+                .Properties(ps => ps.Property(u => u.UserName))
+                .ToTable("AspNetUsers");
+
             builder.Entity<TRole>()
-                .Key(r => r.Id);
-                //.ToTable("AspNetRoles");
- 
-            builder.Entity<TUserRole>()
-                .Key(u => u.Id)
-                //TODO: .Key(r => new { r.UserId, r.RoleId })
-                .ForeignKeys(fk => fk.ForeignKey<TUser>(f => f.UserId))
-                .ForeignKeys(fk => fk.ForeignKey<TRole>(f => f.RoleId));
-                //.ToTable("AspNetUserRoles");
+                .Key(r => r.Id)
+                .Properties(ps => ps.Property(r => r.Name))
+                .ToTable("AspNetRoles");
 
-            builder.Entity<TUserLogin>()
-                .Key(u => u.Id)
-                //TODO: .Key(l => new { l.LoginProvider, l.ProviderKey, l.UserId })
-                .ForeignKeys(fk => fk.ForeignKey<TUser>(f => f.UserId));
-            //.ToTable("AspNetUserLogins");
+            builder.Entity<IdentityUserClaim>()
+                .Key(uc => uc.Id)
+                .ToTable("AspNetUserClaims");
 
-            builder.Entity<TUserClaim>()
-                .Key(c => c.Id)
-                .ForeignKeys(fk => fk.ForeignKey<TUser>(f => f.UserId));
-            //.ToTable("AspNetUserClaims");
+            var userType = builder.Model.GetEntityType(typeof(TUser));
+            var roleType = builder.Model.GetEntityType(typeof(TRole));
+            var userClaimType = builder.Model.GetEntityType(typeof(IdentityUserClaim));
+            var roleClaimType = builder.Model.GetEntityType(typeof(IdentityRoleClaim));
+            var userRoleType = builder.Model.GetEntityType(typeof(IdentityUserRole));
+            var ucfk = userClaimType.AddForeignKey(userType.GetKey(), new[] { userClaimType.GetProperty("UserId") });
+            userType.AddNavigation(new Navigation(ucfk, "Claims", false));
+            //userClaimType.AddNavigation(new Navigation(ucfk, "User", true));
+            //var urfk = userRoleType.AddForeignKey(userType.GetKey(), new[] { userRoleType.GetProperty("UserId") });
+            //userType.AddNavigation(new Navigation(urfk, "Roles", false));
 
+            //var urfk2 = userRoleType.AddForeignKey(roleType.GetKey(), new[] { userRoleType.GetProperty("RoleId") });
+            //roleType.AddNavigation(new Navigation(urfk2, "Users", false));
+
+            var rcfk = roleClaimType.AddForeignKey(roleType.GetKey(), new[] { roleClaimType.GetProperty("RoleId") });
+            roleType.AddNavigation(new Navigation(rcfk, "Claims", false));
+
+            builder.Entity<IdentityUserRole>()
+                .Key(r => new { r.UserId, r.RoleId })
+                //.ForeignKeys(fk => fk.ForeignKey<TUser>(f => f.UserId))
+                //.ForeignKeys(fk => fk.ForeignKey<TRole>(f => f.RoleId));
+                .ToTable("AspNetUserRoles");
+
+            builder.Entity<IdentityUserLogin>()
+                .Key(l => new { l.LoginProvider, l.ProviderKey, l.UserId })
+                //.ForeignKeys(fk => fk.ForeignKey<TUser>(f => f.UserId));
+                .ToTable("AspNetUserLogins");
         }
-
     }
 }
