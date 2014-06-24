@@ -14,11 +14,14 @@ namespace Microsoft.AspNet.Identity
 
         public ClaimTypeOptions()
         {
+            AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie;
             Role = ClaimTypes.Role;
             SecurityStamp = DefaultSecurityStampClaimType;
             UserId = ClaimTypes.NameIdentifier;
             UserName = ClaimTypes.Name;
         }
+
+        public string AuthenticationType { get; set; }
 
         /// <summary>
         ///     Claim type used for role claims

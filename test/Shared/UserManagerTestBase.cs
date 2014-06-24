@@ -410,9 +410,10 @@ namespace Microsoft.AspNet.Identity.Test
             }
 
             var claimsFactory = new ClaimsIdentityFactory<TUser, TRole>(manager, role);
-            var identity = await claimsFactory.CreateAsync(user, "test");
+            var identity = await claimsFactory.CreateAsync(user, new ClaimTypeOptions());
             var claims = identity.Claims.ToList();
             Assert.NotNull(claims);
+            Assert.Equal(DefaultAuthenticationTypes.ApplicationCookie, identity.AuthenticationType);
             Assert.True(
                 claims.Any(c => c.Type == manager.Options.ClaimType.UserName && c.Value == user.UserName));
             Assert.True(claims.Any(c => c.Type == manager.Options.ClaimType.UserId && c.Value == user.Id));

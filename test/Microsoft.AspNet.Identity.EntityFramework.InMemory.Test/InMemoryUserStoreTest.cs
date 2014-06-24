@@ -585,7 +585,8 @@ namespace Microsoft.AspNet.Identity.EntityFramework.InMemory.Test
             }
 
             var claimsFactory = new ClaimsIdentityFactory<InMemoryUser, IdentityRole>(manager, role);
-            var identity = await claimsFactory.CreateAsync(user, "test");
+            var identity = await claimsFactory.CreateAsync(user, new ClaimTypeOptions());
+            Assert.Equal(DefaultAuthenticationTypes.ApplicationCookie, identity.AuthenticationType);
             var claims = identity.Claims.ToList();
             Assert.NotNull(claims);
             Assert.True(

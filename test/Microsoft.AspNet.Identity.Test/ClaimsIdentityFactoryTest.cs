@@ -20,8 +20,8 @@ namespace Microsoft.AspNet.Identity.Test
             var roleManager = MockHelpers.MockRoleManager<TestRole>().Object;
             var factory = new ClaimsIdentityFactory<TestUser, TestRole>(userManager, roleManager);
             await Assert.ThrowsAsync<ArgumentNullException>("user",
-                async () => await factory.CreateAsync(null, "whatever"));
-            await Assert.ThrowsAsync<ArgumentNullException>("value",
+                async () => await factory.CreateAsync(null, new ClaimTypeOptions()));
+            await Assert.ThrowsAsync<ArgumentNullException>("options",
                 async () => await factory.CreateAsync(new TestUser(), null));
         }
 
@@ -69,16 +69,15 @@ namespace Microsoft.AspNet.Identity.Test
                 roleManager.Setup(m => m.GetClaimsAsync(local, CancellationToken.None)).ReturnsAsync(localClaims);
             }
 
-            const string authType = "Microsoft.AspNet.Identity";
             var factory = new ClaimsIdentityFactory<TestUser, TestRole>(userManager.Object, roleManager.Object);
 
             // Act
-            var identity = await factory.CreateAsync(user, authType);
+            var identity = await factory.CreateAsync(user, new ClaimTypeOptions());
 
             // Assert
             var manager = userManager.Object;
             Assert.NotNull(identity);
-            Assert.Equal(authType, identity.AuthenticationType);
+            Assert.Equal(DefaultAuthenticationTypes.ApplicationCookie, identity.AuthenticationType);
             var claims = identity.Claims.ToList();
             Assert.NotNull(claims);
             Assert.True(

@@ -658,7 +658,8 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             }
 
             var claimsFactory = new ClaimsIdentityFactory<User, IdentityRole>(manager, role);
-            var identity = await claimsFactory.CreateAsync(user, "test");
+            var identity = await claimsFactory.CreateAsync(user, new ClaimTypeOptions());
+            Assert.Equal(DefaultAuthenticationTypes.ApplicationCookie, identity.AuthenticationType);
             var claims = identity.Claims.ToList();
             Assert.NotNull(claims);
             Assert.True(
@@ -681,7 +682,8 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
 
             // Remove a role claim and make sure its not there
             IdentityResultAssert.IsSuccess(await role.RemoveClaimAsync(local, localClaims[0]));
-            identity = await claimsFactory.CreateAsync(user, "test");
+            identity = await claimsFactory.CreateAsync(user, new ClaimTypeOptions());
+            Assert.Equal(DefaultAuthenticationTypes.ApplicationCookie, identity.AuthenticationType);
             claims = identity.Claims.ToList();
             Assert.False(claims.Any(c => c.Type == localClaims[0].Type && c.Value == localClaims[0].Value));
             Assert.True(claims.Any(c => c.Type == localClaims[1].Type && c.Value == localClaims[1].Value));
