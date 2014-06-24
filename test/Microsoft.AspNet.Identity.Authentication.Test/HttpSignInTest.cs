@@ -149,7 +149,7 @@ namespace Microsoft.AspNet.Identity.Authentication.Test
             contextAccessor.Setup(a => a.Value).Returns(context.Object);
             var roleManager = MockHelpers.MockRoleManager<TestRole>();
             var claimsFactory = new Mock<ClaimsIdentityFactory<TestUser, TestRole>>(manager.Object, roleManager.Object);
-            claimsFactory.Setup(m => m.CreateAsync(user, manager.Object.Options.ClaimType, CancellationToken.None)).ReturnsAsync(new ClaimsIdentity("Microsoft.AspNet.Identity")).Verifiable();
+            claimsFactory.Setup(m => m.CreateAsync(user, manager.Object.Options.ClaimsIdentity, CancellationToken.None)).ReturnsAsync(new ClaimsIdentity("Microsoft.AspNet.Identity")).Verifiable();
             var helper = new SignInManager<TestUser>(manager.Object, new HttpAuthenticationManager(contextAccessor.Object), claimsFactory.Object);
 
             // Act
@@ -321,7 +321,7 @@ namespace Microsoft.AspNet.Identity.Authentication.Test
             var signInService = new HttpAuthenticationManager(contextAccessor.Object);
             var roleManager = MockHelpers.MockRoleManager<TestRole>();
             var claimsFactory = new Mock<ClaimsIdentityFactory<TestUser, TestRole>>(manager.Object, roleManager.Object);
-            claimsFactory.Setup(m => m.CreateAsync(user, manager.Object.Options.ClaimType, CancellationToken.None)).ReturnsAsync(new ClaimsIdentity(DefaultAuthenticationTypes.ApplicationCookie)).Verifiable();
+            claimsFactory.Setup(m => m.CreateAsync(user, manager.Object.Options.ClaimsIdentity, CancellationToken.None)).ReturnsAsync(new ClaimsIdentity(DefaultAuthenticationTypes.ApplicationCookie)).Verifiable();
             var helper = new SignInManager<TestUser>(manager.Object, signInService, claimsFactory.Object);
 
             // Act
@@ -351,7 +351,7 @@ namespace Microsoft.AspNet.Identity.Authentication.Test
             contextAccessor.Setup(a => a.Value).Returns(context.Object);
             var roleManager = MockHelpers.MockRoleManager<TestRole>();
             var claimsFactory = new Mock<ClaimsIdentityFactory<TestUser, TestRole>>(manager.Object, roleManager.Object);
-            manager.Object.Options.ClaimType.AuthenticationType = authenticationType;
+            manager.Object.Options.ClaimsIdentity.AuthenticationType = authenticationType;
             var helper = new SignInManager<TestUser>(manager.Object, new HttpAuthenticationManager(contextAccessor.Object), claimsFactory.Object);
 
             // Act

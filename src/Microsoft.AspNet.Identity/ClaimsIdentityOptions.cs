@@ -5,20 +5,20 @@ using System.Security.Claims;
 
 namespace Microsoft.AspNet.Identity
 {
-    public class ClaimTypeOptions
+    public class ClaimsIdentityOptions
     {
         /// <summary>
         ///     ClaimType used for the security stamp by default
         /// </summary>
         public static readonly string DefaultSecurityStampClaimType = "AspNet.Identity.SecurityStamp";
 
-        public ClaimTypeOptions()
+        public ClaimsIdentityOptions()
         {
             AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie;
-            Role = ClaimTypes.Role;
-            SecurityStamp = DefaultSecurityStampClaimType;
-            UserId = ClaimTypes.NameIdentifier;
-            UserName = ClaimTypes.Name;
+            RoleClaimType = ClaimTypes.Role;
+            SecurityStampClaimType = DefaultSecurityStampClaimType;
+            UserIdClaimType = ClaimTypes.NameIdentifier;
+            UserNameClaimType = ClaimTypes.Name;
         }
 
         public string AuthenticationType { get; set; }
@@ -26,21 +26,21 @@ namespace Microsoft.AspNet.Identity
         /// <summary>
         ///     Claim type used for role claims
         /// </summary>
-        public string Role { get; set; }
+        public string RoleClaimType { get; set; }
 
         /// <summary>
         ///     Claim type used for the user name
         /// </summary>
-        public string UserName { get; set; }
+        public string UserNameClaimType { get; set; }
 
         /// <summary>
         ///     Claim type used for the user id
         /// </summary>
-        public string UserId { get; set; }
+        public string UserIdClaimType { get; set; }
 
         /// <summary>
         ///     Claim type used for the user security stamp
         /// </summary>
-        public string SecurityStamp { get; set; }
+        public string SecurityStampClaimType { get; set; }
     }
 }

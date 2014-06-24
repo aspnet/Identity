@@ -41,7 +41,7 @@ namespace Microsoft.AspNet.Identity
         /// <param name="authenticationType"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public virtual async Task<ClaimsIdentity> CreateAsync(TUser user, ClaimTypeOptions options,
+        public virtual async Task<ClaimsIdentity> CreateAsync(TUser user, ClaimsIdentityOptions options,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             if (user == null)
@@ -54,13 +54,13 @@ namespace Microsoft.AspNet.Identity
             }
             var userId = await UserManager.GetUserIdAsync(user, cancellationToken);
             var userName = await UserManager.GetUserNameAsync(user, cancellationToken);
-            var id = new ClaimsIdentity(options.AuthenticationType, options.UserName, 
-                options.Role);
-            id.AddClaim(new Claim(options.UserId, userId));
-            id.AddClaim(new Claim(options.UserName, userName, ClaimValueTypes.String));
+            var id = new ClaimsIdentity(options.AuthenticationType, options.UserNameClaimType, 
+                options.RoleClaimType);
+            id.AddClaim(new Claim(options.UserIdClaimType, userId));
+            id.AddClaim(new Claim(options.UserNameClaimType, userName, ClaimValueTypes.String));
             if (UserManager.SupportsUserSecurityStamp)
             {
-                id.AddClaim(new Claim(options.SecurityStamp, 
+                id.AddClaim(new Claim(options.SecurityStampClaimType, 
                     await UserManager.GetSecurityStampAsync(user, cancellationToken)));
             }
             if (UserManager.SupportsUserRole)
@@ -68,7 +68,7 @@ namespace Microsoft.AspNet.Identity
                 var roles = await UserManager.GetRolesAsync(user, cancellationToken);
                 foreach (var roleName in roles)
                 {
-                    id.AddClaim(new Claim(options.Role, roleName, ClaimValueTypes.String));
+                    id.AddClaim(new Claim(options.RoleClaimType, roleName, ClaimValueTypes.String));
                     if (RoleManager.SupportsRoleClaims)
                     {
                         var role = await RoleManager.FindByNameAsync(roleName);

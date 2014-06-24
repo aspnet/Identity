@@ -41,7 +41,7 @@ namespace Microsoft.AspNet.Identity
         public virtual async Task<ClaimsIdentity> CreateUserIdentityAsync(TUser user)
         {
             // REVIEW: should sign in manager take options instead of using the user manager instance?
-            return await ClaimsFactory.CreateAsync(user, UserManager.Options.ClaimType);
+            return await ClaimsFactory.CreateAsync(user, UserManager.Options.ClaimsIdentity);
         }
 
         public virtual async Task SignInAsync(TUser user, bool isPersistent)
@@ -54,7 +54,7 @@ namespace Microsoft.AspNet.Identity
         public void SignOut()
         {
             // REVIEW: need a new home for this option config?
-            AuthenticationManager.SignOut(UserManager.Options.ClaimType.AuthenticationType);
+            AuthenticationManager.SignOut(UserManager.Options.ClaimsIdentity.AuthenticationType);
         }
 
         public virtual async Task<SignInStatus> PasswordSignInAsync(string userName, string password, 
