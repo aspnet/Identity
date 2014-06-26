@@ -9,12 +9,24 @@ namespace Microsoft.Framework.DependencyInjection
 {
     public static class EntityIdentityBuilderExtensions
     {
-        // todo: add overloads
+        public static IdentityBuilder<User, IdentityRole> AddEntityFramework(this IdentityBuilder<User, IdentityRole> builder)
+        {
+            return AddEntityFramework<User, IdentityRole, IdentityDbContext>(builder);
+        }
+
         public static IdentityBuilder<TUser, IdentityRole> AddEntityFramework<TUser, TContext>(this IdentityBuilder<TUser, IdentityRole> builder)
             where TUser : User where TContext : DbContext
         {
-            builder.Services.AddScoped<IUserStore<TUser>, UserStore<TUser, IdentityRole, TContext>>();
-            builder.Services.AddScoped<IRoleStore<IdentityRole>, RoleStore<IdentityRole, TContext>>();
+            return AddEntityFramework<TUser, IdentityRole, TContext>(builder);
+        }
+
+        public static IdentityBuilder<TUser, TRole> AddEntityFramework<TUser, TRole, TContext>(this IdentityBuilder<TUser, TRole> builder)
+            where TUser : User
+            where TRole : IdentityRole
+            where TContext : DbContext
+        {
+            builder.Services.AddScoped<IUserStore<TUser>, UserStore<TUser, TRole, TContext>>();
+            builder.Services.AddScoped<IRoleStore<TRole>, RoleStore<TRole, TContext>>();
             builder.Services.AddScoped<TContext>();
             return builder;
         }
