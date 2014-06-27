@@ -14,6 +14,12 @@ namespace Microsoft.Framework.DependencyInjection
             return AddEntityFramework<IdentityUser, IdentityRole, IdentityDbContext>(builder);
         }
 
+        public static IdentityBuilder<IdentityUser, IdentityRole> AddEntityFramework<TContext>(this IdentityBuilder<IdentityUser, IdentityRole> builder)
+            where TContext : DbContext
+        {
+            return AddEntityFramework<IdentityUser, IdentityRole, TContext>(builder);
+        }
+
         public static IdentityBuilder<TUser, IdentityRole> AddEntityFramework<TUser, TContext>(this IdentityBuilder<TUser, IdentityRole> builder)
             where TUser : IdentityUser 
             where TContext : DbContext
