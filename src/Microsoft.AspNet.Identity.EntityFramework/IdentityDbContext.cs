@@ -93,13 +93,14 @@ namespace Microsoft.AspNet.Identity.EntityFramework
 
             builder.Entity<IdentityUserRole>()
                 .Key(r => new { r.UserId, r.RoleId })
+                // Blocks delete currently without cascade
                 //.ForeignKeys(fk => fk.ForeignKey<TUser>(f => f.UserId))
                 //.ForeignKeys(fk => fk.ForeignKey<TRole>(f => f.RoleId));
                 .ToTable("AspNetUserRoles");
 
             builder.Entity<IdentityUserLogin>()
                 .Key(l => new { l.LoginProvider, l.ProviderKey, l.UserId })
-                //.ForeignKeys(fk => fk.ForeignKey<TUser>(f => f.UserId));
+                .ForeignKeys(fk => fk.ForeignKey<TUser>(f => f.UserId))
                 .ToTable("AspNetUserLogins");
         }
     }
