@@ -43,22 +43,22 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             builder.UseServices(services =>
             {
                 services.AddEntityFramework().AddSqlServer();
-                services.AddIdentity<User>().AddEntityFramework();
+                services.AddIdentity<IdentityUser>().AddEntityFramework();
                 services.SetupOptions<DbContextOptions>(options =>
                     options.UseSqlServer(ConnectionString));
                 // todo: constructor resolution doesn't work well with IdentityDbContext since it has 4 constructors
                 services.AddInstance(context);
             });
 
-            var userStore = builder.ApplicationServices.GetService<IUserStore<User>>();
-            var userManager = builder.ApplicationServices.GetService<UserManager<User>>();
+            var userStore = builder.ApplicationServices.GetService<IUserStore<IdentityUser>>();
+            var userManager = builder.ApplicationServices.GetService<UserManager<IdentityUser>>();
 
             Assert.NotNull(userStore);
             Assert.NotNull(userManager);
 
             const string userName = "admin";
             const string password = "1qaz@WSX";
-            var user = new User { UserName = userName };
+            var user = new IdentityUser { UserName = userName };
             IdentityResultAssert.IsSuccess(await userManager.CreateAsync(user, password));
             IdentityResultAssert.IsSuccess(await userManager.DeleteAsync(user));
         }

@@ -13,12 +13,12 @@ using Microsoft.Data.Entity;
 
 namespace Microsoft.AspNet.Identity.EntityFramework
 {
-    public class UserStore : UserStore<User>
+    public class UserStore : UserStore<IdentityUser>
     {
         public UserStore(DbContext context) : base(context) { }
     }
 
-    public class UserStore<TUser> : UserStore<TUser, IdentityRole, DbContext> where TUser : User
+    public class UserStore<TUser> : UserStore<TUser, IdentityRole, DbContext> where TUser : IdentityUser
     {
         public UserStore(DbContext context) : base(context) { }
     }
@@ -34,7 +34,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         IUserPhoneNumberStore<TUser>,
         IQueryableUserStore<TUser>,
         IUserTwoFactorStore<TUser>
-        where TUser : User
+        where TUser : IdentityUser
         where TRole : IdentityRole
         where TContext : DbContext
     {
@@ -591,9 +591,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
                 throw new ArgumentNullException("user");
             }
             return
-                Task.FromResult(user.LockoutEnd.HasValue
-                    ? new DateTimeOffset(DateTime.SpecifyKind(user.LockoutEnd.Value, DateTimeKind.Utc))
-                    : new DateTimeOffset());
+                Task.FromResult(user.LockoutEnd);
         }
 
         /// <summary>
@@ -611,7 +609,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             {
                 throw new ArgumentNullException("user");
             }
-            user.LockoutEnd = lockoutEnd == DateTimeOffset.MinValue ? (DateTime?)null : lockoutEnd.UtcDateTime;
+            user.LockoutEnd = lockoutEnd;
             return Task.FromResult(0);
         }
 

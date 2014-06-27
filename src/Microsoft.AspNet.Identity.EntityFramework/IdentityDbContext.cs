@@ -8,7 +8,7 @@ using Microsoft.Data.Entity.Metadata;
 namespace Microsoft.AspNet.Identity.EntityFramework
 {
     public class IdentityDbContext :
-        IdentityDbContext<User, IdentityRole>
+        IdentityDbContext<IdentityUser, IdentityRole>
     {
         public IdentityDbContext() { }
         public IdentityDbContext(IServiceProvider serviceProvider) : base(serviceProvider) { }
@@ -19,7 +19,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
 
     public class IdentityDbContext<TUser> :
         IdentityDbContext<TUser, IdentityRole>
-        where TUser : User
+        where TUser : IdentityUser
     {
         public IdentityDbContext() { }
         public IdentityDbContext(IServiceProvider serviceProvider) : base(serviceProvider) { }
@@ -29,7 +29,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
     }
 
     public class IdentityDbContext<TUser, TRole> : DbContext
-        where TUser : User
+        where TUser : IdentityUser
         where TRole : IdentityRole
     {
         public DbSet<TUser> Users { get; set; }

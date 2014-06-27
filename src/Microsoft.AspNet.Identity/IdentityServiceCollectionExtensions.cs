@@ -43,6 +43,12 @@ namespace Microsoft.Framework.DependencyInjection
             return new IdentityBuilder<TUser, TRole>(services);
         }
 
+        public static IdentityBuilder<IdentityUser, IdentityRole> AddIdentity(this ServiceCollection services,
+            Action<IdentityBuilder<IdentityUser, IdentityRole>> actionBuilder)
+        {
+            return services.AddIdentity<IdentityUser, IdentityRole>(actionBuilder);
+        }
+
         public static IdentityBuilder<TUser, TRole> AddIdentity<TUser, TRole>(this ServiceCollection services, 
             Action<IdentityBuilder<TUser, TRole>> actionBuilder)
             where TUser : class

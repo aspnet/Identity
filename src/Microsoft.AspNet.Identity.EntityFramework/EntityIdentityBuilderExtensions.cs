@@ -9,19 +9,20 @@ namespace Microsoft.Framework.DependencyInjection
 {
     public static class EntityIdentityBuilderExtensions
     {
-        public static IdentityBuilder<User, IdentityRole> AddEntityFramework(this IdentityBuilder<User, IdentityRole> builder)
+        public static IdentityBuilder<IdentityUser, IdentityRole> AddEntityFramework(this IdentityBuilder<IdentityUser, IdentityRole> builder)
         {
-            return AddEntityFramework<User, IdentityRole, IdentityDbContext>(builder);
+            return AddEntityFramework<IdentityUser, IdentityRole, IdentityDbContext>(builder);
         }
 
         public static IdentityBuilder<TUser, IdentityRole> AddEntityFramework<TUser, TContext>(this IdentityBuilder<TUser, IdentityRole> builder)
-            where TUser : User where TContext : DbContext
+            where TUser : IdentityUser 
+            where TContext : DbContext
         {
             return AddEntityFramework<TUser, IdentityRole, TContext>(builder);
         }
 
         public static IdentityBuilder<TUser, TRole> AddEntityFramework<TUser, TRole, TContext>(this IdentityBuilder<TUser, TRole> builder)
-            where TUser : User
+            where TUser : IdentityUser
             where TRole : IdentityRole
             where TContext : DbContext
         {

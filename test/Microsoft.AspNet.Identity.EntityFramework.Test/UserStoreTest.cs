@@ -23,7 +23,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
     {
         private const string ConnectionString = @"Server=(localdb)\v11.0;Database=SqlUserStoreTest;Trusted_Connection=True;";
 
-        public class ApplicationUser : User { }
+        public class ApplicationUser : IdentityUser { }
 
         public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         {
@@ -70,7 +70,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             using (var db = CreateContext())
             {
                 var guid = Guid.NewGuid().ToString();
-                db.Users.Add(new User {Id = guid, UserName = guid});
+                db.Users.Add(new IdentityUser {Id = guid, UserName = guid});
                 db.SaveChanges();
                 Assert.True(db.Users.Any(u => u.UserName == guid));
                 Assert.NotNull(db.Users.FirstOrDefault(u => u.UserName == guid));
@@ -110,12 +110,12 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             return db;
         }
 
-        public static UserManager<User> CreateManager(DbContext context)
+        public static UserManager<IdentityUser> CreateManager(DbContext context)
         {
-            return MockHelpers.CreateManager(() => new UserStore<User>(context));
+            return MockHelpers.CreateManager(() => new UserStore<IdentityUser>(context));
         }
 
-        public static UserManager<User> CreateManager()
+        public static UserManager<IdentityUser> CreateManager()
         {
             return CreateManager(CreateContext());
         }
@@ -123,7 +123,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         public static RoleManager<IdentityRole> CreateRoleManager(IdentityDbContext context)
         {
             var services = new ServiceCollection();
-            services.AddIdentity<User, IdentityRole>(b => b.AddRoleStore(() => new RoleStore<IdentityRole>(context)));
+            services.AddIdentity(b => b.AddRoleStore(() => new RoleStore<IdentityRole>(context)));
             return services.BuildServiceProvider().GetService<RoleManager<IdentityRole>>();
         }
 
@@ -196,13 +196,13 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             await Assert.ThrowsAsync<ArgumentNullException>("user",
                 async () => await store.SetSecurityStampAsync(null, null));
             await Assert.ThrowsAsync<ArgumentNullException>("claim",
-                async () => await store.AddClaimAsync(new User("fake"), null));
+                async () => await store.AddClaimAsync(new IdentityUser("fake"), null));
             await Assert.ThrowsAsync<ArgumentNullException>("claim",
-                async () => await store.RemoveClaimAsync(new User("fake"), null));
+                async () => await store.RemoveClaimAsync(new IdentityUser("fake"), null));
             await Assert.ThrowsAsync<ArgumentNullException>("login",
-                async () => await store.AddLoginAsync(new User("fake"), null));
+                async () => await store.AddLoginAsync(new IdentityUser("fake"), null));
             await Assert.ThrowsAsync<ArgumentNullException>("login",
-                async () => await store.RemoveLoginAsync(new User("fake"), null));
+                async () => await store.RemoveLoginAsync(new IdentityUser("fake"), null));
             await Assert.ThrowsAsync<ArgumentNullException>("login", async () => await store.FindByLoginAsync(null));
             await Assert.ThrowsAsync<ArgumentNullException>("user", async () => await store.GetEmailConfirmedAsync(null));
             await Assert.ThrowsAsync<ArgumentNullException>("user",
@@ -225,12 +225,12 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             await Assert.ThrowsAsync<ArgumentNullException>("user", async () => await store.SetLockoutEndDateAsync(null, new DateTimeOffset()));
             await Assert.ThrowsAsync<ArgumentNullException>("user", async () => await store.ResetAccessFailedCountAsync(null));
             await Assert.ThrowsAsync<ArgumentNullException>("user", async () => await store.IncrementAccessFailedCountAsync(null));
-            await Assert.ThrowsAsync<ArgumentException>("roleName", async () => await store.AddToRoleAsync(new User("fake"), null));
-            await Assert.ThrowsAsync<ArgumentException>("roleName", async () => await store.RemoveFromRoleAsync(new User("fake"), null));
-            await Assert.ThrowsAsync<ArgumentException>("roleName", async () => await store.IsInRoleAsync(new User("fake"), null));
-            await Assert.ThrowsAsync<ArgumentException>("roleName", async () => await store.AddToRoleAsync(new User("fake"), ""));
-            await Assert.ThrowsAsync<ArgumentException>("roleName", async () => await store.RemoveFromRoleAsync(new User("fake"), ""));
-            await Assert.ThrowsAsync<ArgumentException>("roleName", async () => await store.IsInRoleAsync(new User("fake"), ""));
+            await Assert.ThrowsAsync<ArgumentException>("roleName", async () => await store.AddToRoleAsync(new IdentityUser("fake"), null));
+            await Assert.ThrowsAsync<ArgumentException>("roleName", async () => await store.RemoveFromRoleAsync(new IdentityUser("fake"), null));
+            await Assert.ThrowsAsync<ArgumentException>("roleName", async () => await store.IsInRoleAsync(new IdentityUser("fake"), null));
+            await Assert.ThrowsAsync<ArgumentException>("roleName", async () => await store.AddToRoleAsync(new IdentityUser("fake"), ""));
+            await Assert.ThrowsAsync<ArgumentException>("roleName", async () => await store.RemoveFromRoleAsync(new IdentityUser("fake"), ""));
+            await Assert.ThrowsAsync<ArgumentException>("roleName", async () => await store.IsInRoleAsync(new IdentityUser("fake"), ""));
         }
 
         [Fact]
@@ -238,7 +238,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         {
             var manager = CreateManager();
             var guid = Guid.NewGuid().ToString();
-            var user = new User { UserName = "New"+guid };
+            var user = new IdentityUser { UserName = "New"+guid };
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
             IdentityResultAssert.IsSuccess(await manager.DeleteAsync(user));
         }
@@ -247,7 +247,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         public async Task CanDeleteUser()
         {
             var manager = CreateManager();
-            var user = new User("CanDeleteUser");
+            var user = new IdentityUser("CanDeleteUser");
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
             IdentityResultAssert.IsSuccess(await manager.DeleteAsync(user));
             Assert.Null(await manager.FindByIdAsync(user.Id));
@@ -258,7 +258,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         {
             var manager = CreateManager();
             var oldName = Guid.NewGuid().ToString();
-            var user = new User(oldName);
+            var user = new IdentityUser(oldName);
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
             var newName = Guid.NewGuid().ToString();
             user.UserName = newName;
@@ -272,7 +272,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         public async Task CanUpdatePasswordUsingHasher()
         {
             var manager = CreateManager();
-            var user = new User("CanUpdatePasswordUsingHasher");
+            var user = new IdentityUser("CanUpdatePasswordUsingHasher");
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user, "password"));
             Assert.True(await manager.CheckPasswordAsync(user, "password"));
             user.PasswordHash = manager.PasswordHasher.HashPassword("New");
@@ -287,7 +287,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         {
             var manager = CreateManager();
             var oldName = Guid.NewGuid().ToString();
-            var user = new User(oldName);
+            var user = new IdentityUser(oldName);
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
             var newName = Guid.NewGuid().ToString();
             IdentityResultAssert.IsSuccess(await manager.SetUserNameAsync(user, newName));
@@ -300,7 +300,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         public async Task RemoveClaimOnlyForUser()
         {
             var manager = CreateManager();
-            var user = new User("RemoveClaimForMe");
+            var user = new IdentityUser("RemoveClaimForMe");
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
             IdentityResultAssert.IsSuccess(await manager.DeleteAsync(user));
         }
@@ -309,7 +309,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         public async Task UserValidatorCanBlockCreate()
         {
             var manager = CreateManager();
-            var user = new User("UserValidatorCanBlockCreate");
+            var user = new IdentityUser("UserValidatorCanBlockCreate");
             manager.UserValidator = new AlwaysBadValidator();
             IdentityResultAssert.IsFailure(await manager.CreateAsync(user), AlwaysBadValidator.ErrorMessage);
         }
@@ -318,7 +318,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         public async Task UserValidatorCanBlockUpdate()
         {
             var manager = CreateManager();
-            var user = new User("UserValidatorCanBlockUpdate");
+            var user = new IdentityUser("UserValidatorCanBlockUpdate");
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
             manager.UserValidator = new AlwaysBadValidator();
             IdentityResultAssert.IsFailure(await manager.UpdateAsync(user), AlwaysBadValidator.ErrorMessage);
@@ -330,7 +330,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         public async Task UserValidatorBlocksShortEmailsWhenRequiresUniqueEmail(string email)
         {
             var manager = CreateManager();
-            var user = new User("UserValidatorBlocksShortEmailsWhenRequiresUniqueEmail") { Email = email };
+            var user = new IdentityUser("UserValidatorBlocksShortEmailsWhenRequiresUniqueEmail") { Email = email };
             manager.Options.User.RequireUniqueEmail = true;
             IdentityResultAssert.IsFailure(await manager.CreateAsync(user), "Email cannot be null or empty.");
         }
@@ -342,7 +342,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         public async Task UserValidatorBlocksInvalidEmailsWhenRequiresUniqueEmail(string email)
         {
             var manager = CreateManager();
-            var user = new User("UserValidatorBlocksInvalidEmailsWhenRequiresUniqueEmail") { Email = email };
+            var user = new IdentityUser("UserValidatorBlocksInvalidEmailsWhenRequiresUniqueEmail") { Email = email };
             manager.Options.User.RequireUniqueEmail = true;
             IdentityResultAssert.IsFailure(await manager.CreateAsync(user), "Email '" + email + "' is invalid.");
         }
@@ -352,7 +352,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         public async Task PasswordValidatorCanBlockAddPassword()
         {
             var manager = CreateManager();
-            var user = new User("AddPasswordBlocked");
+            var user = new IdentityUser("AddPasswordBlocked");
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
             manager.PasswordValidator = new AlwaysBadValidator();
             IdentityResultAssert.IsFailure(await manager.AddPasswordAsync(user, "password"),
@@ -363,7 +363,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         public async Task PasswordValidatorCanBlockChangePassword()
         {
             var manager = CreateManager();
-            var user = new User("ChangePasswordBlocked");
+            var user = new IdentityUser("ChangePasswordBlocked");
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user, "password"));
             manager.PasswordValidator = new AlwaysBadValidator();
             IdentityResultAssert.IsFailure(await manager.ChangePasswordAsync(user, "password", "new"),
@@ -374,7 +374,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         public async Task CanCreateUserNoPassword()
         {
             var manager = CreateManager();
-            IdentityResultAssert.IsSuccess(await manager.CreateAsync(new User("CanCreateUserNoPassword")));
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(new IdentityUser("CanCreateUserNoPassword")));
             var user = await manager.FindByNameAsync("CanCreateUserNoPassword");
             Assert.NotNull(user);
             Assert.Null(user.PasswordHash);
@@ -390,7 +390,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             const string userName = "CanCreateUserAddLogin";
             const string provider = "ZzAuth";
             const string providerKey = "HaoKey";
-            IdentityResultAssert.IsSuccess(await manager.CreateAsync(new User(userName)));
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(new IdentityUser(userName)));
             var user = await manager.FindByNameAsync(userName);
             Assert.NotNull(user);
             var login = new UserLoginInfo(provider, providerKey);
@@ -407,7 +407,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         {
             var manager = CreateManager();
             var login = new UserLoginInfo("Provider", "key");
-            var user = new User("CreateUserLoginAddPasswordTest");
+            var user = new IdentityUser("CreateUserLoginAddPasswordTest");
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
             IdentityResultAssert.IsSuccess(await manager.AddLoginAsync(user, login));
             Assert.False(await manager.HasPasswordAsync(user));
@@ -424,7 +424,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         public async Task AddPasswordFailsIfAlreadyHave()
         {
             var manager = CreateManager();
-            var user = new User("CannotAddAnotherPassword");
+            var user = new IdentityUser("CannotAddAnotherPassword");
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user, "Password"));
             Assert.True(await manager.HasPasswordAsync(user));
             IdentityResultAssert.IsFailure(await manager.AddPasswordAsync(user, "password"),
@@ -435,7 +435,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         public async Task CanCreateUserAddRemoveLogin()
         {
             var manager = CreateManager();
-            var user = new User("CreateUserAddRemoveLoginTest");
+            var user = new IdentityUser("CreateUserAddRemoveLoginTest");
             var login = new UserLoginInfo("Provider", "key");
             var result = await manager.CreateAsync(user);
             Assert.NotNull(user);
@@ -460,7 +460,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         public async Task CanRemovePassword()
         {
             var manager = CreateManager();
-            var user = new User("RemovePasswordTest");
+            var user = new IdentityUser("RemovePasswordTest");
             const string password = "password";
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user, password));
             var stamp = user.SecurityStamp;
@@ -475,7 +475,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         public async Task CanChangePassword()
         {
             var manager = CreateManager();
-            var user = new User("ChangePasswordTest");
+            var user = new IdentityUser("ChangePasswordTest");
             const string password = "password";
             const string newPassword = "newpassword";
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user, password));
@@ -491,7 +491,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         public async Task CanAddRemoveUserClaim()
         {
             var manager = CreateManager();
-            var user = new User("ClaimsAddRemove");
+            var user = new IdentityUser("ClaimsAddRemove");
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
             Claim[] claims = { new Claim("c", "v"), new Claim("c2", "v2"), new Claim("c2", "v3") };
             foreach (var c in claims)
@@ -516,7 +516,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         public async Task ChangePasswordFallsIfPasswordWrong()
         {
             var manager = CreateManager();
-            var user = new User("user");
+            var user = new IdentityUser("user");
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user, "password"));
             var result = await manager.ChangePasswordAsync(user, "bogus", "newpassword");
             IdentityResultAssert.IsFailure(result, "Incorrect password.");
@@ -526,8 +526,8 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         public async Task AddDupeUserNameFails()
         {
             var manager = CreateManager();
-            var user = new User("AddDupeUserNameFails");
-            var user2 = new User("AddDupeUserNameFails");
+            var user = new IdentityUser("AddDupeUserNameFails");
+            var user2 = new IdentityUser("AddDupeUserNameFails");
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
             IdentityResultAssert.IsFailure(await manager.CreateAsync(user2), "Name AddDupeUserNameFails is already taken.");
         }
@@ -536,8 +536,8 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         public async Task AddDupeEmailAllowedByDefault()
         {
             var manager = CreateManager();
-            var user = new User("AddDupeEmailAllowedByDefault") { Email = "yup@yup.com" };
-            var user2 = new User("AddDupeEmailAllowedByDefault2") { Email = "yup@yup.com" };
+            var user = new IdentityUser("AddDupeEmailAllowedByDefault") { Email = "yup@yup.com" };
+            var user2 = new IdentityUser("AddDupeEmailAllowedByDefault2") { Email = "yup@yup.com" };
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user2));
         }
@@ -547,8 +547,8 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         {
             var manager = CreateManager();
             manager.Options.User.RequireUniqueEmail = true;
-            var user = new User("AddDupeEmailFallsWhenUniqueEmailRequired") { Email = "dupeEmailTrue@yup.com" };
-            var user2 = new User("AddDupeEmailFallsWhenUniqueEmailRequiredDupe") { Email = "dupeEmailTrue@yup.com" };
+            var user = new IdentityUser("AddDupeEmailFallsWhenUniqueEmailRequired") { Email = "dupeEmailTrue@yup.com" };
+            var user2 = new IdentityUser("AddDupeEmailFallsWhenUniqueEmailRequiredDupe") { Email = "dupeEmailTrue@yup.com" };
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
             IdentityResultAssert.IsFailure(await manager.CreateAsync(user2), "Email 'dupeEmailTrue@yup.com' is already taken.");
         }
@@ -557,7 +557,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         public async Task UpdateSecurityStampActuallyChanges()
         {
             var manager = CreateManager();
-            var user = new User("UpdateSecurityStampActuallyChanges");
+            var user = new IdentityUser("UpdateSecurityStampActuallyChanges");
             Assert.Null(user.SecurityStamp);
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
             var stamp = user.SecurityStamp;
@@ -570,7 +570,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         public async Task AddDupeLoginFails()
         {
             var manager = CreateManager();
-            var user = new User("DupeLogin");
+            var user = new IdentityUser("DupeLogin");
             var login = new UserLoginInfo("provder", "key");
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
             IdentityResultAssert.IsSuccess(await manager.AddLoginAsync(user, login));
@@ -585,7 +585,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             var manager = CreateManager();
             const string userName = "EmailTest";
             const string email = "email@test.com";
-            var user = new User(userName) { Email = email };
+            var user = new IdentityUser(userName) { Email = email };
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
             var fetch = await manager.FindByEmailAsync(email);
             Assert.Equal(user, fetch);
@@ -622,7 +622,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             var context = CreateContext();
             var manager = CreateManager(context);
             var role = CreateRoleManager(context);
-            var user = new User("ClaimsIdentityCreatesExpectedClaims");
+            var user = new IdentityUser("ClaimsIdentityCreatesExpectedClaims");
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
             var admin = new IdentityRole("Admin");
             var local = new IdentityRole("Local");
@@ -657,7 +657,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
                 IdentityResultAssert.IsSuccess(await role.AddClaimAsync(local, c));
             }
 
-            var claimsFactory = new ClaimsIdentityFactory<User, IdentityRole>(manager, role);
+            var claimsFactory = new ClaimsIdentityFactory<IdentityUser, IdentityRole>(manager, role);
             var identity = await claimsFactory.CreateAsync(user, new ClaimsIdentityOptions());
             Assert.Equal(DefaultAuthenticationTypes.ApplicationCookie, identity.AuthenticationType);
             var claims = identity.Claims.ToList();
@@ -693,37 +693,37 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         public async Task ConfirmEmailFalseByDefaultTest()
         {
             var manager = CreateManager();
-            var user = new User("ConfirmEmailFalseByDefaultTest");
+            var user = new IdentityUser("ConfirmEmailFalseByDefaultTest");
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
             Assert.False(await manager.IsEmailConfirmedAsync(user));
         }
 
         // TODO: No token provider implementations yet
-        private class StaticTokenProvider : IUserTokenProvider<User>
+        private class StaticTokenProvider : IUserTokenProvider<IdentityUser>
         {
-            public Task<string> GenerateAsync(string purpose, UserManager<User> manager,
-                User user, CancellationToken token)
+            public Task<string> GenerateAsync(string purpose, UserManager<IdentityUser> manager,
+                IdentityUser user, CancellationToken token)
             {
                 return Task.FromResult(MakeToken(purpose, user));
             }
 
-            public Task<bool> ValidateAsync(string purpose, string token, UserManager<User> manager,
-                User user, CancellationToken cancellationToken)
+            public Task<bool> ValidateAsync(string purpose, string token, UserManager<IdentityUser> manager,
+                IdentityUser user, CancellationToken cancellationToken)
             {
                 return Task.FromResult(token == MakeToken(purpose, user));
             }
 
-            public Task NotifyAsync(string token, UserManager<User> manager, User user, CancellationToken cancellationToken)
+            public Task NotifyAsync(string token, UserManager<IdentityUser> manager, IdentityUser user, CancellationToken cancellationToken)
             {
                 return Task.FromResult(0);
             }
 
-            public Task<bool> IsValidProviderForUserAsync(UserManager<User> manager, User user, CancellationToken token)
+            public Task<bool> IsValidProviderForUserAsync(UserManager<IdentityUser> manager, IdentityUser user, CancellationToken token)
             {
                 return Task.FromResult(true);
             }
 
-            private static string MakeToken(string purpose, User user)
+            private static string MakeToken(string purpose, IdentityUser user)
             {
                 return string.Join(":", user.Id, purpose, "ImmaToken");
             }
@@ -734,7 +734,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         {
             var manager = CreateManager();
             manager.UserTokenProvider = new StaticTokenProvider();
-            var user = new User("CanResetPasswordWithStaticTokenProvider");
+            var user = new IdentityUser("CanResetPasswordWithStaticTokenProvider");
             const string password = "password";
             const string newPassword = "newpassword";
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user, password));
@@ -753,7 +753,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         {
             var manager = CreateManager();
             manager.UserTokenProvider = new StaticTokenProvider();
-            var user = new User("PasswordValidatorCanBlockResetPasswordWithStaticTokenProvider");
+            var user = new IdentityUser("PasswordValidatorCanBlockResetPasswordWithStaticTokenProvider");
             const string password = "password";
             const string newPassword = "newpassword";
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user, password));
@@ -774,7 +774,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         {
             var manager = CreateManager();
             manager.UserTokenProvider = new StaticTokenProvider();
-            var user = new User("ResetPasswordWithStaticTokenProviderFailsWithWrongToken");
+            var user = new IdentityUser("ResetPasswordWithStaticTokenProviderFailsWithWrongToken");
             const string password = "password";
             const string newPassword = "newpassword";
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user, password));
@@ -791,8 +791,8 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         {
             var manager = CreateManager();
             manager.UserTokenProvider = new StaticTokenProvider();
-            var user = new User("CanGenerateAndVerifyUserTokenWithStaticTokenProvider");
-            var user2 = new User("CanGenerateAndVerifyUserTokenWithStaticTokenProvider2");
+            var user = new IdentityUser("CanGenerateAndVerifyUserTokenWithStaticTokenProvider");
+            var user2 = new IdentityUser("CanGenerateAndVerifyUserTokenWithStaticTokenProvider2");
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user2));
             var token = await manager.GenerateUserTokenAsync("test", user);
@@ -807,7 +807,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         {
             var manager = CreateManager();
             manager.UserTokenProvider = new StaticTokenProvider();
-            var user = new User("CanConfirmEmailWithStaticToken");
+            var user = new IdentityUser("CanConfirmEmailWithStaticToken");
             Assert.False(user.EmailConfirmed);
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
             var token = await manager.GenerateEmailConfirmationTokenAsync(user);
@@ -823,7 +823,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         {
             var manager = CreateManager();
             manager.UserTokenProvider = new StaticTokenProvider();
-            var user = new User("ConfirmEmailWithStaticTokenFailsWithWrongToken");
+            var user = new IdentityUser("ConfirmEmailWithStaticTokenFailsWithWrongToken");
             Assert.False(user.EmailConfirmed);
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
             IdentityResultAssert.IsFailure(await manager.ConfirmEmailAsync(user, "bogus"), "Invalid token.");
@@ -835,7 +835,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         //public async Task ConfirmTokenFailsAfterPasswordChange()
         //{
         //    var manager = CreateManager();
-        //    var user = new User("test");
+        //    var user = new IdentityUser("test");
         //    Assert.False(user.EmailConfirmed);
         //    IdentityResultAssert.IsSuccess(await manager.CreateAsync(user, "password"));
         //    var token = await manager.GenerateEmailConfirmationTokenAsync(user);
@@ -854,7 +854,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             mgr.Options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromHours(1);
             mgr.Options.Lockout.EnabledByDefault = true;
             mgr.Options.Lockout.MaxFailedAccessAttempts = 0;
-            var user = new User("SingleFailureLockout");
+            var user = new IdentityUser("SingleFailureLockout");
             IdentityResultAssert.IsSuccess(await mgr.CreateAsync(user));
             Assert.True(await mgr.GetLockoutEnabledAsync(user));
             Assert.True(user.LockoutEnabled);
@@ -872,7 +872,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             mgr.Options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromHours(1);
             mgr.Options.Lockout.EnabledByDefault = true;
             mgr.Options.Lockout.MaxFailedAccessAttempts = 2;
-            var user = new User("twoFailureLockout");
+            var user = new IdentityUser("twoFailureLockout");
             IdentityResultAssert.IsSuccess(await mgr.CreateAsync(user));
             Assert.True(await mgr.GetLockoutEnabledAsync(user));
             Assert.True(user.LockoutEnabled);
@@ -894,7 +894,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             mgr.Options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromHours(1);
             mgr.Options.Lockout.EnabledByDefault = true;
             mgr.Options.Lockout.MaxFailedAccessAttempts = 2;
-            var user = new User("ResetAccessCountPreventsLockout");
+            var user = new IdentityUser("ResetAccessCountPreventsLockout");
             IdentityResultAssert.IsSuccess(await mgr.CreateAsync(user));
             Assert.True(await mgr.GetLockoutEnabledAsync(user));
             Assert.True(user.LockoutEnabled);
@@ -919,7 +919,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             var mgr = CreateManager();
             mgr.Options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromHours(1);
             mgr.Options.Lockout.MaxFailedAccessAttempts = 2;
-            var user = new User("manualLockout");
+            var user = new IdentityUser("manualLockout");
             IdentityResultAssert.IsSuccess(await mgr.CreateAsync(user));
             Assert.False(await mgr.GetLockoutEnabledAsync(user));
             Assert.False(user.LockoutEnabled);
@@ -942,21 +942,20 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         {
             var mgr = CreateManager();
             mgr.Options.Lockout.EnabledByDefault = true;
-            var user = new User("UserNotLockedOutWithNullDateTimeAndIsSetToNullDate");
+            var user = new IdentityUser("UserNotLockedOutWithNullDateTimeAndIsSetToNullDate");
             IdentityResultAssert.IsSuccess(await mgr.CreateAsync(user));
             Assert.True(await mgr.GetLockoutEnabledAsync(user));
             Assert.True(user.LockoutEnabled);
             IdentityResultAssert.IsSuccess(await mgr.SetLockoutEndDateAsync(user, new DateTimeOffset()));
             Assert.False(await mgr.IsLockedOutAsync(user));
             Assert.Equal(new DateTimeOffset(), await mgr.GetLockoutEndDateAsync(user));
-            Assert.Null(user.LockoutEnd);
         }
 
         [Fact]
         public async Task LockoutFailsIfNotEnabled()
         {
             var mgr = CreateManager();
-            var user = new User("LockoutFailsIfNotEnabled");
+            var user = new IdentityUser("LockoutFailsIfNotEnabled");
             IdentityResultAssert.IsSuccess(await mgr.CreateAsync(user));
             Assert.False(await mgr.GetLockoutEnabledAsync(user));
             Assert.False(user.LockoutEnabled);
@@ -970,7 +969,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         {
             var mgr = CreateManager();
             mgr.Options.Lockout.EnabledByDefault = true;
-            var user = new User("LockoutEndToUtcNowMinus1SecInUserShouldNotBeLockedOut") { LockoutEnd = DateTime.UtcNow.AddSeconds(-1) };
+            var user = new IdentityUser("LockoutEndToUtcNowMinus1SecInUserShouldNotBeLockedOut") { LockoutEnd = DateTime.UtcNow.AddSeconds(-1) };
             IdentityResultAssert.IsSuccess(await mgr.CreateAsync(user));
             Assert.True(await mgr.GetLockoutEnabledAsync(user));
             Assert.True(user.LockoutEnabled);
@@ -982,7 +981,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         {
             var mgr = CreateManager();
             mgr.Options.Lockout.EnabledByDefault = true;
-            var user = new User("LockoutEndToUtcNowSubOneSecondWithManagerShouldNotBeLockedOut");
+            var user = new IdentityUser("LockoutEndToUtcNowSubOneSecondWithManagerShouldNotBeLockedOut");
             IdentityResultAssert.IsSuccess(await mgr.CreateAsync(user));
             Assert.True(await mgr.GetLockoutEnabledAsync(user));
             Assert.True(user.LockoutEnabled);
@@ -995,7 +994,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         {
             var mgr = CreateManager();
             mgr.Options.Lockout.EnabledByDefault = true;
-            var user = new User("LockoutEndToUtcNowPlus5ShouldBeLockedOut") { LockoutEnd = DateTime.UtcNow.AddMinutes(5) };
+            var user = new IdentityUser("LockoutEndToUtcNowPlus5ShouldBeLockedOut") { LockoutEnd = DateTime.UtcNow.AddMinutes(5) };
             IdentityResultAssert.IsSuccess(await mgr.CreateAsync(user));
             Assert.True(await mgr.GetLockoutEnabledAsync(user));
             Assert.True(user.LockoutEnabled);
@@ -1007,7 +1006,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         {
             var mgr = CreateManager();
             mgr.Options.Lockout.EnabledByDefault = true;
-            var user = new User("UserLockedOutWithDateTimeLocalKindNowPlus30");
+            var user = new IdentityUser("UserLockedOutWithDateTimeLocalKindNowPlus30");
             IdentityResultAssert.IsSuccess(await mgr.CreateAsync(user));
             Assert.True(await mgr.GetLockoutEnabledAsync(user));
             Assert.True(user.LockoutEnabled);
@@ -1029,12 +1028,12 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             Assert.True(await manager.RoleExistsAsync(role.Name));
         }
 
-        private class AlwaysBadValidator : IUserValidator<User>, IRoleValidator<IdentityRole>,
-            IPasswordValidator<User>
+        private class AlwaysBadValidator : IUserValidator<IdentityUser>, IRoleValidator<IdentityRole>,
+            IPasswordValidator<IdentityUser>
         {
             public const string ErrorMessage = "I'm Bad.";
 
-            public Task<IdentityResult> ValidateAsync(string password, UserManager<User> manager, CancellationToken token)
+            public Task<IdentityResult> ValidateAsync(string password, UserManager<IdentityUser> manager, CancellationToken token)
             {
                 return Task.FromResult(IdentityResult.Failed(ErrorMessage));
             }
@@ -1044,7 +1043,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
                 return Task.FromResult(IdentityResult.Failed(ErrorMessage));
             }
 
-            public Task<IdentityResult> ValidateAsync(UserManager<User> manager, User user, CancellationToken token)
+            public Task<IdentityResult> ValidateAsync(UserManager<IdentityUser> manager, IdentityUser user, CancellationToken token)
             {
                 return Task.FromResult(IdentityResult.Failed(ErrorMessage));
             }
@@ -1139,7 +1138,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             var role = new IdentityRole("deleteNonEmpty");
             Assert.False(await roleMgr.RoleExistsAsync(role.Name));
             IdentityResultAssert.IsSuccess(await roleMgr.CreateAsync(role));
-            var user = new User("t");
+            var user = new IdentityUser("t");
             IdentityResultAssert.IsSuccess(await userMgr.CreateAsync(user));
             IdentityResultAssert.IsSuccess(await userMgr.AddToRoleAsync(user, role.Name));
             var roles = await userMgr.GetRolesAsync(user);
@@ -1163,7 +1162,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         //    var role = new IdentityRole("deleteNonEmpty");
         //    Assert.False(await roleMgr.RoleExistsAsync(role.Name));
         //    IdentityResultAssert.IsSuccess(await roleMgr.CreateAsync(role));
-        //    var user = new User("t");
+        //    var user = new IdentityUser("t");
         //    IdentityResultAssert.IsSuccess(await userMgr.CreateAsync(user));
         //    IdentityResultAssert.IsSuccess(await userMgr.AddToRoleAsync(user, role.Name));
         //    Assert.Equal(1, role.Users.Count);
@@ -1201,12 +1200,12 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             }
         }
 
-        private List<User> GenerateUsers(string userNamePrefix, int count)
+        private List<IdentityUser> GenerateUsers(string userNamePrefix, int count)
         {
-            var users = new List<User>(count);
+            var users = new List<IdentityUser>(count);
             for (var i=0; i<count; i++)
             {
-                users.Add(new User(userNamePrefix + i));
+                users.Add(new IdentityUser(userNamePrefix + i));
             }
             return users;
         }
@@ -1260,7 +1259,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             var context = CreateContext();
             var userManager = CreateManager(context);
             var roleManager = CreateRoleManager(context);
-            var user = new User("RemoveUserFromRoleWithMultipleRoles");
+            var user = new IdentityUser("RemoveUserFromRoleWithMultipleRoles");
             IdentityResultAssert.IsSuccess(await userManager.CreateAsync(user));
             var roles = GenerateRoles("RemoveUserFromRoleWithMultipleRoles", 4);
             foreach (var r in roles)
@@ -1305,7 +1304,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             var userMgr = CreateManager(context);
             var roleMgr = CreateRoleManager(context);
             var role = new IdentityRole("RemoveUserNotInRoleFails");
-            var user = new User("RemoveUserNotInRoleFails");
+            var user = new IdentityUser("RemoveUserNotInRoleFails");
             IdentityResultAssert.IsSuccess(await userMgr.CreateAsync(user));
             IdentityResultAssert.IsSuccess(await roleMgr.CreateAsync(role));
             var result = await userMgr.RemoveFromRoleAsync(user, role.Name);
@@ -1316,7 +1315,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         public async Task AddUserToUnknownRoleFails()
         {
             var manager = CreateManager();
-            var u = new User("AddUserToUnknownRoleFails");
+            var u = new IdentityUser("AddUserToUnknownRoleFails");
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(u));
             await Assert.ThrowsAsync<InvalidOperationException>(
                 async () => await manager.AddToRoleAsync(u, "bogus"));
@@ -1329,7 +1328,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             var userMgr = CreateManager(context);
             var roleMgr = CreateRoleManager(context);
             var role = new IdentityRole("AddUserToRoleFailsIfAlreadyInRole");
-            var user = new User("AddUserToRoleFailsIfAlreadyInRoleUser");
+            var user = new IdentityUser("AddUserToRoleFailsIfAlreadyInRoleUser");
             IdentityResultAssert.IsSuccess(await userMgr.CreateAsync(user));
             IdentityResultAssert.IsSuccess(await roleMgr.CreateAsync(role));
             IdentityResultAssert.IsSuccess(await userMgr.AddToRoleAsync(user, role.Name));
@@ -1360,7 +1359,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         {
             var manager = CreateManager();
             const string userName = "SetPhoneNumberTest";
-            var user = new User(userName) { PhoneNumber = "123-456-7890" };
+            var user = new IdentityUser(userName) { PhoneNumber = "123-456-7890" };
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
             var stamp = await manager.GetSecurityStampAsync(user);
             Assert.Equal(await manager.GetPhoneNumberAsync(user), "123-456-7890");
@@ -1375,7 +1374,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         {
             var manager = CreateManager();
             const string userName = "CanChangePhoneNumber";
-            var user = new User(userName) { PhoneNumber = "123-456-7890" };
+            var user = new IdentityUser(userName) { PhoneNumber = "123-456-7890" };
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
             Assert.False(await manager.IsPhoneNumberConfirmedAsync(user));
             var stamp = await manager.GetSecurityStampAsync(user);
@@ -1391,7 +1390,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         {
             var manager = CreateManager();
             const string userName = "ChangePhoneNumberFailsWithWrongToken";
-            var user = new User(userName) { PhoneNumber = "123-456-7890" };
+            var user = new IdentityUser(userName) { PhoneNumber = "123-456-7890" };
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
             Assert.False(await manager.IsPhoneNumberConfirmedAsync(user));
             var stamp = await manager.GetSecurityStampAsync(user);
@@ -1407,7 +1406,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         {
             var manager = CreateManager();
             const string userName = "CanVerifyPhoneNumber";
-            var user = new User(userName);
+            var user = new IdentityUser(userName);
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
             const string num1 = "111-123-4567";
             const string num2 = "111-111-1111";
@@ -1421,25 +1420,25 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         }
 #endif
 
-        private class EmailTokenProvider : IUserTokenProvider<User>
+        private class EmailTokenProvider : IUserTokenProvider<IdentityUser>
         {
-            public Task<string> GenerateAsync(string purpose, UserManager<User> manager, User user, CancellationToken token)
+            public Task<string> GenerateAsync(string purpose, UserManager<IdentityUser> manager, IdentityUser user, CancellationToken token)
             {
                 return Task.FromResult(MakeToken(purpose));
             }
 
-            public Task<bool> ValidateAsync(string purpose, string token, UserManager<User> manager,
-                User user, CancellationToken cancellationToken)
+            public Task<bool> ValidateAsync(string purpose, string token, UserManager<IdentityUser> manager,
+                IdentityUser user, CancellationToken cancellationToken)
             {
                 return Task.FromResult(token == MakeToken(purpose));
             }
 
-            public Task NotifyAsync(string token, UserManager<User> manager, User user, CancellationToken cancellationToken)
+            public Task NotifyAsync(string token, UserManager<IdentityUser> manager, IdentityUser user, CancellationToken cancellationToken)
             {
                 return manager.SendEmailAsync(user, token, token);
             }
 
-            public async Task<bool> IsValidProviderForUserAsync(UserManager<User> manager, User user, CancellationToken token)
+            public async Task<bool> IsValidProviderForUserAsync(UserManager<IdentityUser> manager, IdentityUser user, CancellationToken token)
             {
                 return !string.IsNullOrEmpty(await manager.GetEmailAsync(user));
             }
@@ -1450,25 +1449,25 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             }
         }
 
-        private class SmsTokenProvider : IUserTokenProvider<User>
+        private class SmsTokenProvider : IUserTokenProvider<IdentityUser>
         {
-            public Task<string> GenerateAsync(string purpose, UserManager<User> manager, User user, CancellationToken token)
+            public Task<string> GenerateAsync(string purpose, UserManager<IdentityUser> manager, IdentityUser user, CancellationToken token)
             {
                 return Task.FromResult(MakeToken(purpose));
             }
 
-            public Task<bool> ValidateAsync(string purpose, string token, UserManager<User> manager,
-                User user, CancellationToken cancellationToken)
+            public Task<bool> ValidateAsync(string purpose, string token, UserManager<IdentityUser> manager,
+                IdentityUser user, CancellationToken cancellationToken)
             {
                 return Task.FromResult(token == MakeToken(purpose));
             }
 
-            public Task NotifyAsync(string token, UserManager<User> manager, User user, CancellationToken cancellationToken)
+            public Task NotifyAsync(string token, UserManager<IdentityUser> manager, IdentityUser user, CancellationToken cancellationToken)
             {
                 return manager.SendSmsAsync(user, token);
             }
 
-            public async Task<bool> IsValidProviderForUserAsync(UserManager<User> manager, User user, CancellationToken token)
+            public async Task<bool> IsValidProviderForUserAsync(UserManager<IdentityUser> manager, IdentityUser user, CancellationToken token)
             {
                 return !string.IsNullOrEmpty(await manager.GetPhoneNumberAsync(user));
             }
@@ -1487,7 +1486,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             manager.EmailService = messageService;
             const string factorId = "EmailCode";
             manager.RegisterTwoFactorProvider(factorId, new EmailTokenProvider());
-            var user = new User("CanEmailTwoFactorToken") { Email = "foo@foo.com" };
+            var user = new IdentityUser("CanEmailTwoFactorToken") { Email = "foo@foo.com" };
             const string password = "password";
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user, password));
             var stamp = user.SecurityStamp;
@@ -1506,7 +1505,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         public async Task NotifyWithUnknownProviderFails()
         {
             var manager = CreateManager();
-            var user = new User("NotifyFail");
+            var user = new IdentityUser("NotifyFail");
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
             await
                 ExceptionAssert.ThrowsAsync<NotSupportedException>(
@@ -1522,12 +1521,12 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         //    var messageService = new TestMessageService();
         //    manager.EmailService = messageService;
         //    const string factorId = "EmailCode";
-        //    manager.RegisterTwoFactorProvider(factorId, new EmailTokenProvider<User>
+        //    manager.RegisterTwoFactorProvider(factorId, new EmailTokenProvider<IdentityUser>
         //    {
         //        Subject = "Security Code",
         //        BodyFormat = "Your code is: {0}"
         //    });
-        //    var user = new User("EmailCodeTest") { Email = "foo@foo.com" };
+        //    var user = new IdentityUser("EmailCodeTest") { Email = "foo@foo.com" };
         //    const string password = "password";
         //    IdentityResultAssert.IsSuccess(await manager.CreateAsync(user, password));
         //    var stamp = user.SecurityStamp;
@@ -1547,8 +1546,8 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         //{
         //    var manager = CreateManager();
         //    const string factorId = "EmailCode";
-        //    manager.RegisterTwoFactorProvider(factorId, new EmailTokenProvider<User>());
-        //    var user = new User("EmailCodeTest") { Email = "foo@foo.com" };
+        //    manager.RegisterTwoFactorProvider(factorId, new EmailTokenProvider<IdentityUser>());
+        //    var user = new IdentityUser("EmailCodeTest") { Email = "foo@foo.com" };
         //    IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
         //    var stamp = user.SecurityStamp;
         //    Assert.NotNull(stamp);
@@ -1562,7 +1561,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         public async Task EnableTwoFactorChangesSecurityStamp()
         {
             var manager = CreateManager();
-            var user = new User("EnableTwoFactorChangesSecurityStamp");
+            var user = new IdentityUser("EnableTwoFactorChangesSecurityStamp");
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
             var stamp = user.SecurityStamp;
             Assert.NotNull(stamp);
@@ -1577,7 +1576,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             var manager = CreateManager();
             var messageService = new TestMessageService();
             manager.SmsService = messageService;
-            var user = new User("SmsTest") { PhoneNumber = "4251234567" };
+            var user = new IdentityUser("SmsTest") { PhoneNumber = "4251234567" };
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
             await manager.SendSmsAsync(user, "Hi");
             Assert.NotNull(messageService.Message);
@@ -1590,7 +1589,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             var manager = CreateManager();
             var messageService = new TestMessageService();
             manager.EmailService = messageService;
-            var user = new User("CanSendEmail") { Email = "foo@foo.com" };
+            var user = new IdentityUser("CanSendEmail") { Email = "foo@foo.com" };
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
             await manager.SendEmailAsync(user, "Hi", "Body");
             Assert.NotNull(messageService.Message);
@@ -1606,7 +1605,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             manager.SmsService = messageService;
             const string factorId = "PhoneCode";
             manager.RegisterTwoFactorProvider(factorId, new SmsTokenProvider());
-            var user = new User("CanSmsTwoFactorToken") { PhoneNumber = "4251234567" };
+            var user = new IdentityUser("CanSmsTwoFactorToken") { PhoneNumber = "4251234567" };
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
             var stamp = user.SecurityStamp;
             Assert.NotNull(stamp);
@@ -1626,11 +1625,11 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         //    var messageService = new TestMessageService();
         //    manager.SmsService = messageService;
         //    const string factorId = "PhoneCode";
-        //    manager.RegisterTwoFactorProvider(factorId, new PhoneNumberTokenProvider<User>
+        //    manager.RegisterTwoFactorProvider(factorId, new PhoneNumberTokenProvider<IdentityUser>
         //    {
         //        MessageFormat = "Your code is: {0}"
         //    });
-        //    var user = new User("PhoneCodeTest") { PhoneNumber = "4251234567" };
+        //    var user = new IdentityUser("PhoneCodeTest") { PhoneNumber = "4251234567" };
         //    IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
         //    var stamp = user.SecurityStamp;
         //    Assert.NotNull(stamp);
@@ -1647,7 +1646,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         public async Task GenerateTwoFactorWithUnknownFactorProviderWillThrow()
         {
             var manager = CreateManager();
-            var user = new User("GenerateTwoFactorWithUnknownFactorProviderWillThrow");
+            var user = new IdentityUser("GenerateTwoFactorWithUnknownFactorProviderWillThrow");
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
             const string error = "No IUserTwoFactorProvider for 'bogus' is registered.";
             await
@@ -1661,7 +1660,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         public async Task GetValidTwoFactorTestEmptyWithNoProviders()
         {
             var manager = CreateManager();
-            var user = new User("GetValidTwoFactorTestEmptyWithNoProviders");
+            var user = new IdentityUser("GetValidTwoFactorTestEmptyWithNoProviders");
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
             var factors = await manager.GetValidTwoFactorProvidersAsync(user);
             Assert.NotNull(factors);
@@ -1674,7 +1673,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             var manager = CreateManager();
             manager.RegisterTwoFactorProvider("phone", new SmsTokenProvider());
             manager.RegisterTwoFactorProvider("email", new EmailTokenProvider());
-            var user = new User("CanGetValidTwoFactor");
+            var user = new IdentityUser("CanGetValidTwoFactor");
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
             var factors = await manager.GetValidTwoFactorProvidersAsync(user);
             Assert.NotNull(factors);
@@ -1700,8 +1699,8 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         //{
         //    var manager = CreateManager();
         //    var factorId = "PhoneCode";
-        //    manager.RegisterTwoFactorProvider(factorId, new PhoneNumberTokenProvider<User>());
-        //    var user = new User("PhoneCodeTest");
+        //    manager.RegisterTwoFactorProvider(factorId, new PhoneNumberTokenProvider<IdentityUser>());
+        //    var user = new IdentityUser("PhoneCodeTest");
         //    user.PhoneNumber = "4251234567";
         //    IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
         //    var stamp = user.SecurityStamp;
@@ -1718,7 +1717,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             var manager = CreateManager();
             manager.RegisterTwoFactorProvider("PhoneCode", new SmsTokenProvider());
             manager.RegisterTwoFactorProvider("EmailCode", new EmailTokenProvider());
-            var user = new User("WrongTokenProviderTest") { PhoneNumber = "4251234567" };
+            var user = new IdentityUser("WrongTokenProviderTest") { PhoneNumber = "4251234567" };
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
             var token = await manager.GenerateTwoFactorTokenAsync(user, "PhoneCode");
             Assert.NotNull(token);
@@ -1731,7 +1730,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             var manager = CreateManager();
             const string factorId = "PhoneCode";
             manager.RegisterTwoFactorProvider(factorId, new SmsTokenProvider());
-            var user = new User("VerifyWithWrongSmsTokenFails") { PhoneNumber = "4251234567" };
+            var user = new IdentityUser("VerifyWithWrongSmsTokenFails") { PhoneNumber = "4251234567" };
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
             Assert.False(await manager.VerifyTwoFactorTokenAsync(user, factorId, "bogus"));
         }
