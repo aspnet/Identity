@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace MusicStore.Models
+namespace IdentitySample.Models
 {
     public class ExternalLoginConfirmationViewModel
     {

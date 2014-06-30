@@ -1,4 +1,3 @@
-using System;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Diagnostics;
 using Microsoft.AspNet.Http;
@@ -8,9 +7,9 @@ using Microsoft.AspNet.Security.Cookies;
 using Microsoft.Data.Entity;
 using Microsoft.Framework.ConfigurationModel;
 using Microsoft.Framework.DependencyInjection;
-using MusicStore.Models;
+using IdentitySample.Models;
 
-namespace MusicStore
+namespace IdentitySamples
 {
     public class Startup
     {
@@ -30,23 +29,25 @@ namespace MusicStore
                 services.AddEntityFramework()
                         .AddSqlServer();
 
-                services.AddScoped<MusicStoreContext>();
-
                 // Configure DbContext           
                 services.SetupOptions<IdentityDbContextOptions>(options =>
-                        {
-                            options.DefaultAdminUserName = configuration.Get("DefaultAdminUsername");
-                            options.DefaultAdminPassword = configuration.Get("DefaultAdminPassword");
-                            options.UseSqlServer(configuration.Get("Data:IdentityConnection:ConnectionString"));
-                        });
-
-                services.SetupOptions<MusicStoreDbContextOptions>(options =>
-                    options.UseSqlServer(configuration.Get("Data:DefaultConnection:ConnectionString")));
+                {
+                    options.DefaultAdminUserName = configuration.Get("DefaultAdminUsername");
+                    options.DefaultAdminPassword = configuration.Get("DefaultAdminPassword");
+                    options.UseSqlServer(configuration.Get("Data:IdentityConnection:ConnectionString"));
+                });
 
                 // Add Identity services to the services container
                 services.AddIdentity<ApplicationUser>()
                         .AddEntityFramework<ApplicationUser, ApplicationDbContext>()
-                        .AddHttpSignIn();
+                        .AddHttpSignIn()
+                        .SetupOptions(options =>
+                        {
+                            options.Password.RequireDigit = false;
+                            options.Password.RequireLowercase = false;
+                            options.Password.RequireUppercase = false;
+                            options.Password.RequireNonLetterOrDigit = false;
+                        });
 
                 // Add MVC services to the services container
                 services.AddMvc();
@@ -67,6 +68,8 @@ namespace MusicStore
                 LoginPath = new PathString("/Account/Login"),
             });
 
+            app.UseTwoFactorSignInCookies();
+
             // Add MVC to the request pipeline
             app.UseMvc(routes =>
             {
@@ -74,14 +77,9 @@ namespace MusicStore
                     name: "default",
                     template: "{controller}/{action}/{id?}",
                     defaults: new { controller = "Home", action = "Index" });
-
-                routes.MapRoute(
-                    name: "api",
-                    template: "{controller}/{id?}");
             });
 
             //Populates the MusicStore sample data
-            SampleData.InitializeMusicStoreDatabaseAsync(app.ApplicationServices).Wait();
             SampleData.InitializeIdentityDatabaseAsync(app.ApplicationServices).Wait();
         }
     }

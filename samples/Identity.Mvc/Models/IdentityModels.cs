@@ -4,7 +4,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Data.Entity;
 using Microsoft.Framework.OptionsModel;
 
-namespace MusicStore.Models
+namespace IdentitySample.Models
 {
     public class ApplicationUser : IdentityUser { }
 

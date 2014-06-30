@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Mvc;
-using MusicStore.Models;
+using IdentitySample.Models;
 using System.Security.Principal;
 using System.Threading.Tasks;
 
-namespace MusicStore.Controllers
+namespace IdentitySample.Models
 {
     [Authorize]
     public class AccountController : Controller

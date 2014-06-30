@@ -1,39 +1,27 @@
 ﻿using Microsoft.AspNet.Mvc;
-using MusicStore.Models;
-using System.Collections.Generic;
-using System.Linq;
 
-namespace MusicStore.Controllers
+namespace IdentitySample.Models
 {
     public class HomeController : Controller
     {
-        private readonly MusicStoreContext db;
-
-        public HomeController(MusicStoreContext context)
-        {
-            db = context;
-        }
-
-        //
-        // GET: /Home/
         public IActionResult Index()
         {
-            // Get most popular albums
-            var albums = GetTopSellingAlbums(6);
-
-            return View(albums);
+            return View();
         }
 
-        private List<Album> GetTopSellingAlbums(int count)
+        [Authorize]
+        public IActionResult About()
         {
-            // Group the order details by album and return
-            // the albums with the highest count
+            ViewBag.Message = "Your app description page.";
 
-            // TODO [EF] We don't query related data as yet, so the OrderByDescending isn't doing anything
-            return db.Albums
-                .OrderByDescending(a => a.OrderDetails.Count())
-                .Take(count)
-                .ToList();
+            return View();
+        }
+
+        public IActionResult Contact()
+        {
+            ViewBag.Message = "Your contact page.";
+
+            return View();
         }
     }
 }
