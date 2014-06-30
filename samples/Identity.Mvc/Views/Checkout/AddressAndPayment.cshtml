@@ -1,0 +1,37 @@
+﻿@model MusicStore.Models.Order
+
+@{
+    //TODO: Until we have a way to specify the layout page at application level.
+    Layout = "/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Address And Payment";
+}
+
+@section Scripts {
+    @*TODO : Until script helpers are available, adding script references manually*@
+    @*@Scripts.Render("~/bundles/jqueryval")*@
+    <script src="@Url.Content("~/Scripts/jquery.validate.js")"></script>
+    <script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.js")"></script>
+}
+
+@using (Html.BeginForm())
+{
+    <h2>Address And Payment</h2>
+    <fieldset>
+        <legend>Shipping Information</legend>
+
+        @Html.EditorForModel()
+    </fieldset>
+    <fieldset>
+        <legend>Payment</legend>
+        <p>We're running a promotion: all music is free with the promo code: "FREE"</p>
+
+        <div class="editor-label">
+            @Html.Label("Promo Code")
+        </div>
+        <div class="editor-field">
+            @Html.TextBox("PromoCode")
+        </div>
+    </fieldset>
+
+    <input type="submit" value="Submit Order" />
+}
