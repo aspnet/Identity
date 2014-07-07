@@ -4,6 +4,7 @@
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Data.Entity;
+using System;
 
 namespace Microsoft.Framework.DependencyInjection
 {
@@ -37,5 +38,18 @@ namespace Microsoft.Framework.DependencyInjection
             builder.Services.AddScoped<TContext>();
             return builder;
         }
+
+        public static IdentityBuilder<TUser, TRole> AddEntityFramework<TUser, TRole, TContext, TKey>(this IdentityBuilder<TUser, TRole> builder)
+            where TUser : IdentityUser<TKey>
+            where TRole : IdentityRole<TKey>
+            where TContext : DbContext
+            where TKey : IEquatable<TKey>
+        {
+            builder.Services.AddScoped<IUserStore<TUser>, UserStore<TUser, TRole, TContext, TKey>>();
+            builder.Services.AddScoped<IRoleStore<TRole>, RoleStore<TRole, TKey, TContext>>();
+            builder.Services.AddScoped<TContext>();
+            return builder;
+        }
+
     }
 }
