@@ -43,7 +43,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             builder.UseServices(services =>
             {
                 services.AddEntityFramework().AddSqlServer();
-                services.AddIdentity<IdentityUser>().AddEntityFramework();
+                services.AddIdentitySqlServer();
                 services.SetupOptions<DbContextOptions>(options =>
                     options.UseSqlServer(ConnectionString));
                 // todo: constructor resolution doesn't work well with IdentityDbContext since it has 4 constructors

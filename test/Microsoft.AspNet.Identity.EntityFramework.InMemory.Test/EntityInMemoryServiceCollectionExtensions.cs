@@ -8,16 +8,17 @@ using Microsoft.Framework.DependencyInjection;
 
 namespace Microsoft.AspNet.Identity
 {
-    public static class EntityIdentityBuilderExtensions
+    public static class EntityInMemoryServiceCollectionExtensions
     {
-        public static IdentityBuilder<TUser, TRole> AddEntityFrameworkInMemory<TUser, TRole, TDbContext>(this IdentityBuilder<TUser, TRole> builder)
+        public static IdentityBuilder<TUser, TRole> AddIdentityInMemory<TUser, TRole, TDbContext>(this ServiceCollection services)
             where TUser : InMemoryUser
             where TRole : IdentityRole
             where TDbContext : DbContext
         {
-            builder.Services.AddScoped<TDbContext>();
-            builder.Services.AddScoped<IUserStore<TUser>, InMemoryUserStore<TUser, TDbContext>>();
-            builder.Services.AddScoped<IRoleStore<TRole>, RoleStore<TRole, TDbContext>>();
+            var builder = services.AddIdentity<TUser, TRole>();
+            services.AddScoped<TDbContext>();
+            services.AddScoped<IUserStore<TUser>, InMemoryUserStore<TUser, TDbContext>>();
+            services.AddScoped<IRoleStore<TRole>, RoleStore<TRole, TDbContext>>();
             return builder;
         }
     }
