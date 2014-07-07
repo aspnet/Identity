@@ -27,7 +27,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
     public class RoleStore<TRole, TKey, TContext> : 
         IQueryableRoleStore<TRole>,
         IRoleClaimStore<TRole>
-        where TRole : IdentityRole
+        where TRole : IdentityRole<TKey>
         where TKey : IEquatable<TKey>
         where TContext : DbContext
     {
@@ -107,7 +107,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             {
                 throw new ArgumentNullException("role");
             }
-            return Task.FromResult(role.Id);
+            return Task.FromResult(Convert.ToString(role.Id));
         }
 
         public Task<string> GetRoleNameAsync(TRole role, CancellationToken cancellationToken = new CancellationToken())
@@ -188,7 +188,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             {
                 throw new ArgumentNullException("role");
             }
-            var result = RoleClaims.Where(rc => rc.RoleId == role.Id).Select(c => new Claim(c.ClaimType, c.ClaimValue)).ToList();
+            var result = RoleClaims.Where(rc => rc.RoleId.Equals(role.Id)).Select(c => new Claim(c.ClaimType, c.ClaimValue)).ToList();
             return Task.FromResult((IList<Claim>)result);
         }
 
@@ -203,7 +203,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             {
                 throw new ArgumentNullException("claim");
             }
-            RoleClaims.Add(new IdentityRoleClaim { RoleId = role.Id, ClaimType = claim.Type, ClaimValue = claim.Value });
+            RoleClaims.Add(new IdentityRoleClaim<TKey> { RoleId = role.Id, ClaimType = claim.Type, ClaimValue = claim.Value });
             return Task.FromResult(0);
         }
 
@@ -231,6 +231,6 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             get { return Context.Set<TRole>(); }
         }
 
-        private DbSet<IdentityRoleClaim> RoleClaims { get { return Context.Set<IdentityRoleClaim>(); } }
+        private DbSet<IdentityRoleClaim<TKey>> RoleClaims { get { return Context.Set<IdentityRoleClaim<TKey>>(); } }
     }
 }
