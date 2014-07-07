@@ -46,7 +46,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             builder.UseServices(services =>
             {
                 services.AddEntityFramework().AddSqlServer();
-                services.AddIdentity<ApplicationUser>().AddEntityFramework<ApplicationUser, ApplicationDbContext>();
+                services.AddIdentitySqlServer<ApplicationDbContext, ApplicationUser>();
                 services.SetupOptions<DbContextOptions>(options => 
                     options.UseSqlServer(ConnectionString));
             });
@@ -59,6 +59,40 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
 
             const string userName = "admin";
             const string password = "1qaz@WSX";
+            var user = new ApplicationUser { UserName = userName };
+            IdentityResultAssert.IsSuccess(await userManager.CreateAsync(user, password));
+            IdentityResultAssert.IsSuccess(await userManager.DeleteAsync(user));
+        }
+
+        [Fact]
+        public async Task EnsureStartupOptionsChangeWorks()
+        {
+            EnsureDatabase();
+            IBuilder builder = new Builder.Builder(new ServiceCollection().BuildServiceProvider());
+
+            builder.UseServices(services =>
+            {
+                services.AddEntityFramework().AddSqlServer();
+                services.AddIdentitySqlServer<ApplicationDbContext, ApplicationUser>(b => b.SetupOptions(options =>
+                {
+                    options.Password.RequiredLength = 1;
+                    options.Password.RequireLowercase = false;
+                    options.Password.RequireNonLetterOrDigit = false;
+                    options.Password.RequireUppercase = false;
+                    options.Password.RequireDigit = false;
+                }));
+                services.SetupOptions<DbContextOptions>(options =>
+                    options.UseSqlServer(ConnectionString));
+            });
+
+            var userStore = builder.ApplicationServices.GetService<IUserStore<ApplicationUser>>();
+            var userManager = builder.ApplicationServices.GetService<UserManager<ApplicationUser>>();
+
+            Assert.NotNull(userStore);
+            Assert.NotNull(userManager);
+
+            const string userName = "admin";
+            const string password = "a";
             var user = new ApplicationUser { UserName = userName };
             IdentityResultAssert.IsSuccess(await userManager.CreateAsync(user, password));
             IdentityResultAssert.IsSuccess(await userManager.DeleteAsync(user));

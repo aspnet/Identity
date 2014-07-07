@@ -46,7 +46,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             builder.UseServices(services =>
             {
                 services.AddEntityFramework().AddSqlServer();
-                services.AddIdentity<ApplicationUser, IdentityRole<int>>().AddEntityFramework<ApplicationUser, IdentityRole<int>, ApplicationDbContext, int>();
+                services.AddIdentitySqlServer<ApplicationDbContext, ApplicationUser, IdentityRole<int>, int>();
                 services.SetupOptions<DbContextOptions>(options => 
                     options.UseSqlServer(ConnectionString));
             });
@@ -59,6 +59,40 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
 
             const string userName = "admin";
             const string password = "1qaz@WSX";
+            var user = new ApplicationUser { UserName = userName };
+            IdentityResultAssert.IsSuccess(await userManager.CreateAsync(user, password));
+            IdentityResultAssert.IsSuccess(await userManager.DeleteAsync(user));
+        }
+
+        [Fact]
+        public async Task EnsureStartupOptionsChangeWorks()
+        {
+            EnsureDatabase();
+            IBuilder builder = new Builder.Builder(new ServiceCollection().BuildServiceProvider());
+
+            builder.UseServices(services =>
+            {
+                services.AddEntityFramework().AddSqlServer();
+                services.AddIdentitySqlServer<ApplicationDbContext, ApplicationUser, IdentityRole<int>, int>(b => b.SetupOptions(options =>
+                {
+                    options.Password.RequiredLength = 1;
+                    options.Password.RequireLowercase = false;
+                    options.Password.RequireNonLetterOrDigit = false;
+                    options.Password.RequireUppercase = false;
+                    options.Password.RequireDigit = false;
+                }));
+                services.SetupOptions<DbContextOptions>(options =>
+                    options.UseSqlServer(ConnectionString));
+            });
+
+            var userStore = builder.ApplicationServices.GetService<IUserStore<ApplicationUser>>();
+            var userManager = builder.ApplicationServices.GetService<UserManager<ApplicationUser>>();
+
+            Assert.NotNull(userStore);
+            Assert.NotNull(userManager);
+
+            const string userName = "admin";
+            const string password = "a";
             var user = new ApplicationUser { UserName = userName };
             IdentityResultAssert.IsSuccess(await userManager.CreateAsync(user, password));
             IdentityResultAssert.IsSuccess(await userManager.DeleteAsync(user));
@@ -113,7 +147,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         public static RoleManager<IdentityRole<int>> CreateRoleManager(DbContext context)
         {
             var services = new ServiceCollection();
-            services.AddIdentity<ApplicationUser, IdentityRole<int>>(b => b.AddRoleStore(() => new RoleStore<IdentityRole<int>, int, DbContext>(context)));
+            services.AddIdentity<ApplicationUser, IdentityRole<int>>(b => b.AddRoleStore(() => new RoleStore<IdentityRole<int>, DbContext, int>(context)));
             return services.BuildServiceProvider().GetService<RoleManager<IdentityRole<int>>>();
         }
 
@@ -152,6 +186,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             var newName = Guid.NewGuid().ToString();
             user.UserName = newName;
             IdentityResultAssert.IsSuccess(await manager.UpdateAsync(user));
+            // TODO: remove
             manager = CreateManager();
             Assert.NotNull(await manager.FindByNameAsync(newName));
             Assert.Null(await manager.FindByNameAsync(oldName));
@@ -181,6 +216,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
             var newName = "PostSet"+Guid.NewGuid().ToString();
             IdentityResultAssert.IsSuccess(await manager.SetUserNameAsync(user, newName));
+            // TODO: remove
             manager = CreateManager();
             Assert.NotNull(await manager.FindByNameAsync(newName));
             Assert.Null(await manager.FindByNameAsync(oldName));

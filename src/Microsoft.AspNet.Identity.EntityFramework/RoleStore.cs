@@ -12,19 +12,19 @@ using Microsoft.Data.Entity;
 
 namespace Microsoft.AspNet.Identity.EntityFramework
 {
-    public class RoleStore<TRole> : RoleStore<TRole, string, DbContext> where TRole : IdentityRole
+    public class RoleStore<TRole> : RoleStore<TRole, DbContext, string> where TRole : IdentityRole
     {
         public RoleStore(DbContext context) : base(context) { }
     }
 
-    public class RoleStore<TRole, TContext> : RoleStore<TRole, string, TContext> 
+    public class RoleStore<TRole, TContext> : RoleStore<TRole, TContext, string> 
         where TRole : IdentityRole
         where TContext : DbContext
     {
         public RoleStore(TContext context) : base(context) { }
     }
 
-    public class RoleStore<TRole, TKey, TContext> : 
+    public class RoleStore<TRole, TContext, TKey> : 
         IQueryableRoleStore<TRole>,
         IRoleClaimStore<TRole>
         where TRole : IdentityRole<TKey>
