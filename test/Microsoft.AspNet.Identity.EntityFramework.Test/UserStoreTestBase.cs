@@ -30,6 +30,43 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             public ApplicationDbContext(IServiceProvider services, IOptionsAccessor<DbContextOptions> options) : base(services, options.Options) { }
         }
 
+        public ApplicationDbContext CreateContext(bool delete = false)
+        {
+            var services = new ServiceCollection();
+            services.AddEntityFramework().AddSqlServer();
+            services.Add(OptionsServices.GetDefaultServices());
+            services.SetupOptions<DbContextOptions>(options =>
+                options.UseSqlServer(ConnectionString));
+            var serviceProvider = services.BuildServiceProvider();
+            var db = new ApplicationDbContext(serviceProvider,
+                serviceProvider.GetService<IOptionsAccessor<DbContextOptions>>());
+            if (delete)
+            {
+                db.Database.EnsureDeleted();
+            }
+            db.Database.EnsureCreated();
+            return db;
+        }
+
+        public void EnsureDatabase()
+        {
+            CreateContext();
+        }
+
+        public abstract UserManager<ApplicationUser> CreateManager(ApplicationDbContext context);
+
+        public UserManager<ApplicationUser> CreateManager()
+        {
+            return CreateManager(CreateContext());
+        }
+
+        public abstract RoleManager<ApplicationRole> CreateRoleManager(ApplicationDbContext context);
+
+        public RoleManager<ApplicationRole> CreateRoleManager()
+        {
+            return CreateRoleManager(CreateContext());
+        }
+
         [TestPriority(-1)]
         [Fact]
         public void RecreateDatabase()
@@ -110,51 +147,6 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
                 Assert.NotNull(db.Users.FirstOrDefault(u => u.UserName == guid));
             }
         }
-
-        public ApplicationDbContext CreateContext(bool delete = false)
-        {
-            var services = new ServiceCollection();
-            services.AddEntityFramework().AddSqlServer();
-            services.Add(OptionsServices.GetDefaultServices());
-            services.SetupOptions<DbContextOptions>(options =>
-                options.UseSqlServer(ConnectionString));
-            var serviceProvider = services.BuildServiceProvider();
-            var db = new ApplicationDbContext(serviceProvider,
-                serviceProvider.GetService<IOptionsAccessor<DbContextOptions>>());
-            if (delete)
-            {
-                db.Database.EnsureDeleted();
-            }
-            db.Database.EnsureCreated();
-            return db;
-        }
-
-        public void EnsureDatabase()
-        {
-            CreateContext();
-        }
-
-        public abstract UserManager<ApplicationUser> CreateManager(ApplicationDbContext context);
-        //{
-        //    //return MockHelpers.CreateManager(() => new ApplicationUserStore(context));
-        //}
-
-        public abstract UserManager<ApplicationUser> CreateManager();
-        //{
-        //    //return CreateManager(CreateContext());
-        //}
-
-        public abstract RoleManager<ApplicationRole> CreateRoleManager(ApplicationDbContext context);
-        //{
-        //    var services = new ServiceCollection();
-        //    services.AddIdentity<ApplicationUser, ApplicationRole>(b => b.AddRoleStore(() => new ApplicationRoleStore(context)));
-        //    return services.BuildServiceProvider().GetService<RoleManager<ApplicationRole>>();
-        //}
-
-        public abstract RoleManager<ApplicationRole> CreateRoleManager();
-        //{
-        //    return CreateRoleManager(CreateContext());
-        //}
 
         [Fact]
         public async Task CanCreateUsingManager()
