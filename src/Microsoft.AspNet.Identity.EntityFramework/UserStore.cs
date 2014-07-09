@@ -18,14 +18,14 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         public UserStore(DbContext context) : base(context) { }
     }
 
-    public class UserStore<TUser> : UserStore<TUser, IdentityRole, DbContext> where TUser : IdentityUser
+    public class UserStore<TUser> : UserStore<TUser, IdentityRole, DbContext> where TUser : IdentityUser, new()
     {
         public UserStore(DbContext context) : base(context) { }
     }
 
     public class UserStore<TUser, TRole, TContext> : UserStore<TUser, TRole, TContext, string>
-        where TUser : IdentityUser
-        where TRole : IdentityRole
+        where TUser : IdentityUser, new()
+        where TRole : IdentityRole, new()
         where TContext : DbContext
     {
         public UserStore(TContext context) : base(context) { }
@@ -88,7 +88,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             {
                 throw new ArgumentNullException("user");
             }
-            return Task.FromResult(Convert.ToString(user.Id, CultureInfo.InvariantCulture));
+            return Task.FromResult(ConvertIdToString(user.Id));
         }
 
         public Task<string> GetUserNameAsync(TUser user, CancellationToken cancellationToken = new CancellationToken())
@@ -160,7 +160,26 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
-            return GetUserAggregate(u => u.Id.Equals(userId), cancellationToken);
+            var id = ConvertIdFromString(userId);
+            return GetUserAggregate(u => u.Id.Equals(id), cancellationToken);
+        }
+
+        public virtual TKey ConvertIdFromString(string id)
+        {
+            if (id == null)
+            {
+                return default(TKey);
+            }
+            return (TKey)Convert.ChangeType(id, typeof(TKey));
+        }
+
+        public virtual string ConvertIdToString(TKey id)
+        {
+            if (id.Equals(default(TKey)))
+            {
+                return null;
+            }
+            return id.ToString();
         }
 
         /// <summary>
