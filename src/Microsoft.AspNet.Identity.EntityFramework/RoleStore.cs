@@ -107,7 +107,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             {
                 throw new ArgumentNullException("role");
             }
-            return Task.FromResult(Convert.ToString(role.Id));
+            return Task.FromResult(ConvertIdToString(role.Id));
         }
 
         public Task<string> GetRoleNameAsync(TRole role, CancellationToken cancellationToken = new CancellationToken())
@@ -133,9 +133,22 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             return Task.FromResult(0);
         }
 
-        public virtual TKey ConvertId(string userId)
+        public virtual TKey ConvertIdFromString(string id)
         {
-            return (TKey)Convert.ChangeType(userId, typeof(TKey));
+            if (id == null)
+            {
+                return default(TKey);
+            }
+            return (TKey)Convert.ChangeType(id, typeof(TKey));
+        }
+
+        public virtual string ConvertIdToString(TKey id)
+        {
+            if (id.Equals(default(TKey)))
+            {
+                return null;
+            }
+            return id.ToString();
         }
 
         /// <summary>
@@ -148,7 +161,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
-            var roleId = ConvertId(id);
+            var roleId = ConvertIdFromString(id);
             return GetRoleAggregate(u => u.Id.Equals(roleId), cancellationToken);
         }
 

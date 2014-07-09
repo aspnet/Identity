@@ -33,22 +33,22 @@ namespace Microsoft.Framework.DependencyInjection
         }
 
         public static IdentityBuilder<TUser, IdentityRole> AddIdentitySqlServer<TContext, TUser>(this ServiceCollection services)
-            where TUser : IdentityUser
+            where TUser : IdentityUser, new()
             where TContext : DbContext
         {
             return services.AddIdentitySqlServer<TContext, TUser, IdentityRole>();
         }
 
         public static IdentityBuilder<TUser, IdentityRole> AddIdentitySqlServer<TContext, TUser>(this ServiceCollection services, Action<IdentityBuilder<TUser, IdentityRole>> actionBuilder)
-            where TUser : IdentityUser 
+            where TUser : IdentityUser, new()
             where TContext : DbContext
         {
             return services.AddIdentitySqlServer<TContext, TUser, IdentityRole>(actionBuilder);
         }
 
         public static IdentityBuilder<TUser, TRole> AddIdentitySqlServer<TContext, TUser, TRole>(this ServiceCollection services)
-            where TUser : IdentityUser
-            where TRole : IdentityRole
+            where TUser : IdentityUser, new()
+            where TRole : IdentityRole, new()
             where TContext : DbContext
         {
             var builder = services.AddIdentity<TUser, TRole>();
@@ -59,8 +59,8 @@ namespace Microsoft.Framework.DependencyInjection
         }
 
         public static IdentityBuilder<TUser, TRole> AddIdentitySqlServer<TContext, TUser, TRole>(this ServiceCollection services, Action<IdentityBuilder<TUser, TRole>> actionBuilder)
-            where TUser : IdentityUser
-            where TRole : IdentityRole
+            where TUser : IdentityUser, new()
+            where TRole : IdentityRole, new()
             where TContext : DbContext
         {
             var builder = services.AddIdentitySqlServer<TContext, TUser, TRole>();
@@ -69,8 +69,8 @@ namespace Microsoft.Framework.DependencyInjection
         }
 
         public static IdentityBuilder<TUser, TRole> AddIdentitySqlServer<TContext, TUser, TRole, TKey>(this ServiceCollection services)
-            where TUser : IdentityUser<TKey>
-            where TRole : IdentityRole<TKey>
+            where TUser : IdentityUser<TKey>, new()
+            where TRole : IdentityRole<TKey>, new()
             where TContext : DbContext
             where TKey : IEquatable<TKey>
         {
@@ -82,8 +82,8 @@ namespace Microsoft.Framework.DependencyInjection
         }
 
         public static IdentityBuilder<TUser, TRole> AddIdentitySqlServer<TContext, TUser, TRole, TKey>(this ServiceCollection services, Action<IdentityBuilder<TUser, TRole>> actionBuilder)
-            where TUser : IdentityUser<TKey>
-            where TRole : IdentityRole<TKey>
+            where TUser : IdentityUser<TKey>, new()
+            where TRole : IdentityRole<TKey>, new()
             where TContext : DbContext
             where TKey : IEquatable<TKey>
         {

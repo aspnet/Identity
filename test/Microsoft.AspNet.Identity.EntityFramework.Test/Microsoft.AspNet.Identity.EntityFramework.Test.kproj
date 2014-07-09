@@ -21,7 +21,9 @@
     <Content Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CustomPocoTest.cs" />
     <Compile Include="DefaultPocoTest.cs" />
+    <Compile Include="UserStoreGuidKeyTest.cs" />
     <Compile Include="UserStoreIntKeyTest.cs" />
     <Compile Include="UserStoreTest.cs" />
   </ItemGroup>
