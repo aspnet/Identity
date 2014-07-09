@@ -63,11 +63,6 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             return MockHelpers.CreateManager(() => new ApplicationUserStore(context));
         }
 
-        public override UserManager<GuidUser> CreateManager()
-        {
-            return CreateManager(CreateContext());
-        }
-
         public override RoleManager<GuidRole> CreateRoleManager(ApplicationDbContext context)
         {
             var services = new ServiceCollection();
@@ -75,10 +70,5 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             return services.BuildServiceProvider().GetService<RoleManager<GuidRole>>();
         }
 
-
-        public override RoleManager<GuidRole> CreateRoleManager()
-        {
-            return CreateRoleManager(CreateContext());
-        }
     }
 }

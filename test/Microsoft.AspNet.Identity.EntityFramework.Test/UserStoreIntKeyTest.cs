@@ -41,22 +41,11 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             return MockHelpers.CreateManager(() => new UserStore<IntUser, IntRole, ApplicationDbContext, int>(context));
         }
 
-        public override UserManager<IntUser> CreateManager()
-        {
-            return CreateManager(CreateContext());
-        }
-
         public override RoleManager<IntRole> CreateRoleManager(ApplicationDbContext context)
         {
             var services = new ServiceCollection();
             services.AddIdentity<IntUser, IntRole>(b => b.AddRoleStore(() => new RoleStore<IntRole, ApplicationDbContext, int>(context)));
             return services.BuildServiceProvider().GetService<RoleManager<IntRole>>();
-        }
-
-
-        public override RoleManager<IntRole> CreateRoleManager()
-        {
-            return CreateRoleManager(CreateContext());
         }
     }
 }
