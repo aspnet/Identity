@@ -403,8 +403,6 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             var stamp = user.SecurityStamp;
             Assert.NotNull(stamp);
             IdentityResultAssert.IsSuccess(await manager.ChangePasswordAsync(user, password, newPassword));
-            // TODO: remove
-            manager = CreateManager();
             Assert.Null(await manager.FindByUserNamePasswordAsync(user.UserName, password));
             var fetch = await manager.FindByUserNamePasswordAsync(user.UserName, newPassword);
             Assert.NotNull(fetch);
@@ -669,8 +667,6 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             var token = await manager.GeneratePasswordResetTokenAsync(user);
             Assert.NotNull(token);
             IdentityResultAssert.IsSuccess(await manager.ResetPasswordAsync(user, token, newPassword));
-            // TODO: remove
-            manager = CreateManager();
             Assert.Null(await manager.FindByUserNamePasswordAsync(user.UserName, password));
             Assert.NotNull(await manager.FindByUserNamePasswordAsync(user.UserName, newPassword));
             //Assert.Equal(user, await manager.FindByUserNamePasswordAsync(user.UserName, newPassword));
