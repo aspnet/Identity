@@ -69,6 +69,5 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             services.AddIdentity<GuidUser, GuidRole>(b => b.AddRoleStore(() => new ApplicationRoleStore(context)));
             return services.BuildServiceProvider().GetService<RoleManager<GuidRole>>();
         }
-
     }
 }
