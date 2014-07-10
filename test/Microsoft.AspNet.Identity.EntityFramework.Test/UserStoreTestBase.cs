@@ -668,8 +668,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             Assert.NotNull(token);
             IdentityResultAssert.IsSuccess(await manager.ResetPasswordAsync(user, token, newPassword));
             Assert.Null(await manager.FindByUserNamePasswordAsync(user.UserName, password));
-            Assert.NotNull(await manager.FindByUserNamePasswordAsync(user.UserName, newPassword));
-            //Assert.Equal(user, await manager.FindByUserNamePasswordAsync(user.UserName, newPassword));
+            Assert.Equal(user, await manager.FindByUserNamePasswordAsync(user.UserName, newPassword));
             Assert.NotEqual(stamp, user.SecurityStamp);
         }
 
@@ -690,8 +689,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             IdentityResultAssert.IsFailure(await manager.ResetPasswordAsync(user, token, newPassword),
                 AlwaysBadValidator.ErrorMessage);
             var fetch = await manager.FindByUserNamePasswordAsync(user.UserName, password);
-            Assert.NotNull(fetch);
-            Assert.Equal(user.Id, fetch.Id);
+            Assert.Equal(user, fetch);
             Assert.Equal(stamp, user.SecurityStamp);
         }
 
@@ -708,8 +706,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             Assert.NotNull(stamp);
             IdentityResultAssert.IsFailure(await manager.ResetPasswordAsync(user, "bogus", newPassword), "Invalid token.");
             var fetch = await manager.FindByUserNamePasswordAsync(user.UserName, password);
-            Assert.NotNull(fetch);
-            Assert.Equal(user.Id, fetch.Id);
+            Assert.Equal(user, fetch);
             Assert.Equal(stamp, user.SecurityStamp);
         }
 
@@ -1048,8 +1045,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             manager = CreateRoleManager();
             Assert.False(await manager.RoleExistsAsync(oldName));
             var fetch = await manager.FindByNameAsync(role.Name);
-            Assert.Equal(role.Id, fetch.Id);
-            Assert.Equal(role.Name, fetch.Name);
+            Assert.Equal(role, fetch);
         }
 
         [Fact]
@@ -1063,9 +1059,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             }
             Assert.Equal(roles.Count, manager.Roles.Count(r => r.Name.StartsWith("CanQuerableRolesTest")));
             var r1 = manager.Roles.FirstOrDefault(r => r.Name == "CanQuerableRolesTest1");
-            //Assert.Equal(roles[1], r1);
-            Assert.Equal(roles[1].Id, r1.Id);
-            Assert.Equal(roles[1].Name, r1.Name);
+            Assert.Equal(roles[1], r1);
         }
 
         [Fact]
