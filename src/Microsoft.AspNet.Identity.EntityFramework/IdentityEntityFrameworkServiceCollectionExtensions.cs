@@ -8,7 +8,7 @@ using System;
 
 namespace Microsoft.Framework.DependencyInjection
 {
-    public static class EntityServiceCollectionExtensions
+    public static class IdentityEntityFrameworkServiceCollectionExtensions
     {
         public static IdentityBuilder<IdentityUser, IdentityRole> AddIdentitySqlServer(this ServiceCollection services)
         {
