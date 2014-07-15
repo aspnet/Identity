@@ -127,7 +127,7 @@ namespace Microsoft.AspNet.Identity.Test
             var app = new Builder.Builder(new ServiceCollection().BuildServiceProvider());
             app.UseServices(services =>
             {
-                services.AddIdentity<IdentityUser>(identityServices => identityServices.SetupOptions(options => options.User.RequireUniqueEmail = true));
+                services.AddIdentity<IdentityUser>().SetupOptions(options => options.User.RequireUniqueEmail = true);
             });
 
             var optionsGetter = app.ApplicationServices.GetService<IOptionsAccessor<IdentityOptions>>();

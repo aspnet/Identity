@@ -44,10 +44,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.InMemory.Test
             // TODO: this needs to construct a new instance of InMemoryStore
             var store = new InMemoryUserStore(new InMemoryContext());
             services.Add(OptionsServices.GetDefaultServices());
-            services.AddIdentity<InMemoryUser, IdentityRole>(s =>
-            {
-                s.AddUserStore(() => store);
-            });
+            services.AddIdentity<InMemoryUser, IdentityRole>().AddUserStore(() => store);
 
             var provider = services.BuildServiceProvider();
             var manager = provider.GetService<UserManager<InMemoryUser>>();

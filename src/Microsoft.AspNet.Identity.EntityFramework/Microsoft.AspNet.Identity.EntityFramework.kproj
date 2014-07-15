@@ -21,7 +21,7 @@
     <Content Include="Resources.resx" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EntityServiceCollectionExtensions.cs" />
+    <Compile Include="IdentityEntityFrameworkServiceCollectionExtensions.cs" />
     <Compile Include="IdentityDbContext.cs" />
     <Compile Include="Properties\Resources.Designer.cs" />
     <Compile Include="RoleStore.cs" />

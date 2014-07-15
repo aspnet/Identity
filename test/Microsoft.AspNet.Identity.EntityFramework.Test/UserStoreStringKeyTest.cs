@@ -47,7 +47,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         public override RoleManager<StringRole> CreateRoleManager(ApplicationDbContext context)
         {
             var services = new ServiceCollection();
-            services.AddIdentity<StringUser, StringRole>(b => b.AddRoleStore(() => new RoleStore<StringRole, ApplicationDbContext, string>(context)));
+            services.AddIdentity<StringUser, StringRole>().AddRoleStore(() => new RoleStore<StringRole, ApplicationDbContext, string>(context));
             return services.BuildServiceProvider().GetService<RoleManager<StringRole>>();
         }
     }

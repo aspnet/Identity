@@ -66,7 +66,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         public override RoleManager<GuidRole> CreateRoleManager(ApplicationDbContext context)
         {
             var services = new ServiceCollection();
-            services.AddIdentity<GuidUser, GuidRole>(b => b.AddRoleStore(() => new ApplicationRoleStore(context)));
+            services.AddIdentity<GuidUser, GuidRole>().AddRoleStore(() => new ApplicationRoleStore(context));
             return services.BuildServiceProvider().GetService<RoleManager<GuidRole>>();
         }
     }
