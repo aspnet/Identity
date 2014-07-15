@@ -110,14 +110,14 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             builder.UseServices(services =>
             {
                 services.AddEntityFramework().AddSqlServer();
-                services.AddIdentitySqlServer<ApplicationDbContext, ApplicationUser, ApplicationRole, TKey>(b => b.SetupOptions(options =>
+                services.AddIdentitySqlServer<ApplicationDbContext, ApplicationUser, ApplicationRole, TKey>().SetupOptions(options =>
                 {
                     options.Password.RequiredLength = 1;
                     options.Password.RequireLowercase = false;
                     options.Password.RequireNonLetterOrDigit = false;
                     options.Password.RequireUppercase = false;
                     options.Password.RequireDigit = false;
-                }));
+                });
                 services.SetupOptions<DbContextOptions>(options =>
                     options.UseSqlServer(ConnectionString));
             });
@@ -178,7 +178,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             var newName = Guid.NewGuid().ToString();
             user.UserName = newName;
             IdentityResultAssert.IsSuccess(await manager.UpdateAsync(user));
-            Assert.NotNull(await manager.FindByNameAsync(newName));
+            Assert.Equal(user, await manager.FindByNameAsync(newName));
             Assert.Null(await manager.FindByNameAsync(oldName));
             //IdentityResultAssert.IsSuccess(await manager.DeleteAsync(user));
         }
@@ -1042,7 +1042,6 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             Assert.True(await manager.RoleExistsAsync(role.Name));
             role.Name = "UpdatedRoleName" + Guid.NewGuid().ToString();
             IdentityResultAssert.IsSuccess(await manager.UpdateAsync(role));
-            manager = CreateRoleManager();
             Assert.False(await manager.RoleExistsAsync(oldName));
             var fetch = await manager.FindByNameAsync(role.Name);
             Assert.Equal(role, fetch);

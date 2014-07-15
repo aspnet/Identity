@@ -73,14 +73,14 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             builder.UseServices(services =>
             {
                 services.AddEntityFramework().AddSqlServer();
-                services.AddIdentitySqlServer<ApplicationDbContext, ApplicationUser>(b => b.SetupOptions(options =>
+                services.AddIdentitySqlServer<ApplicationDbContext, ApplicationUser>().SetupOptions(options =>
                 {
                     options.Password.RequiredLength = 1;
                     options.Password.RequireLowercase = false;
                     options.Password.RequireNonLetterOrDigit = false;
                     options.Password.RequireUppercase = false;
                     options.Password.RequireDigit = false;
-                }));
+                });
                 services.SetupOptions<DbContextOptions>(options =>
                     options.UseSqlServer(ConnectionString));
             });
@@ -157,7 +157,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         public static RoleManager<IdentityRole> CreateRoleManager(IdentityDbContext context)
         {
             var services = new ServiceCollection();
-            services.AddIdentity(b => b.AddRoleStore(() => new RoleStore<IdentityRole>(context)));
+            services.AddIdentity().AddRoleStore(() => new RoleStore<IdentityRole>(context));
             return services.BuildServiceProvider().GetService<RoleManager<IdentityRole>>();
         }
 

@@ -102,6 +102,24 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
                 await db.SaveChangesAsync();
                 user.UserName = "Boo";
                 await db.SaveChangesAsync();
+                var fetch = db.Users.First(u => u.UserName == "Boo");
+                Assert.Equal(user, fetch);
+            }
+        }
+
+        [Fact]
+        public async Task CanCreateUserIntViaSet()
+        {
+            using (var db = CreateContext<User<int>>(true))
+            {
+                var user = new User<int> { Id = 11 };
+                var users = db.Set<User<int>>();
+                users.Add(user);
+                await db.SaveChangesAsync();
+                user.UserName = "Boo";
+                await db.SaveChangesAsync();
+                var fetch = users.First(u => u.UserName == "Boo");
+                Assert.Equal(user, fetch);
             }
         }
 

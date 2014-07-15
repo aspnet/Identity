@@ -23,9 +23,9 @@
   <ItemGroup>
     <Compile Include="CustomPocoTest.cs" />
     <Compile Include="DefaultPocoTest.cs" />
-    <Compile Include="UserStoreDefaultTest.cs" />
     <Compile Include="UserStoreGuidKeyTest.cs" />
     <Compile Include="UserStoreIntKeyTest.cs" />
+    <Compile Include="UserStoreStringKeyTest.cs" />
     <Compile Include="UserStoreTest.cs" />
     <Compile Include="UserStoreTestBase.cs" />
   </ItemGroup>
