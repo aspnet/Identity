@@ -8,7 +8,7 @@ using Microsoft.Framework.DependencyInjection;
 
 namespace Microsoft.AspNet.Identity
 {
-    public static class EntityInMemoryServiceCollectionExtensions
+    public static class EntityInMemoryTestServiceCollectionExtensions
     {
         public static IdentityBuilder<TUser, TRole> AddIdentityInMemory<TUser, TRole, TDbContext>(this ServiceCollection services)
             where TUser : InMemoryUser
