@@ -8,7 +8,7 @@ namespace System.Security.Principal
     /// <summary>
     ///     Extensions making it easier to get the user name/user id claims off of an identity
     /// </summary>
-    public static class IdentityExtensions
+    public static class ClaimsIdentityExtensions
     {
         /// <summary>
         ///     Return the user name using the UserNameClaimType
