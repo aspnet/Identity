@@ -3,7 +3,6 @@
 
 using System;
 using System.Security.Claims;
-using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Http.Security;
@@ -19,19 +18,16 @@ namespace Microsoft.AspNet.Identity.Authentication.Test
 {
     public class SecurityStampTest
     {
-        //[Fact]
-        //public async Task OnValidateIdentityNoBoomWithNullManagerTest()
-        //{
-        //    var httpContext = new Mock<HttpContext>();
-        //    httpContext.Setup(c => c.ApplicationServices).Returns(new ServiceCollection().BuildServiceProvider());
-        //    var id = new ClaimsIdentity(DefaultAuthenticationTypes.ApplicationCookie);
-        //    var ticket = new AuthenticationTicket(id, new AuthenticationProperties { IssuedUtc = DateTimeOffset.UtcNow });
-        //    var context = new CookieValidateIdentityContext(httpContext.Object, ticket, new CookieAuthenticationOptions());
-        //    await
-        //        SecurityStampValidator.OnValidateIdentity<IdentityUser>(TimeSpan.Zero)
-        //            .Invoke(context);
-        //    Assert.NotNull(context.Identity);
-        //}
+        [Fact]
+        public async Task OnValidateIdentityThrowsWithEmptyServiceCollection()
+        {
+            var httpContext = new Mock<HttpContext>();
+            httpContext.Setup(c => c.ApplicationServices).Returns(new ServiceCollection().BuildServiceProvider());
+            var id = new ClaimsIdentity(DefaultAuthenticationTypes.ApplicationCookie);
+            var ticket = new AuthenticationTicket(id, new AuthenticationProperties { IssuedUtc = DateTimeOffset.UtcNow });
+            var context = new CookieValidateIdentityContext(httpContext.Object, ticket, new CookieAuthenticationOptions());
+            await Assert.ThrowsAsync<Exception>(() => SecurityStampValidator.OnValidateIdentity<IdentityUser>(TimeSpan.Zero).Invoke(context));
+        }
 
         [Theory]
         [InlineData(true)]
@@ -52,7 +48,6 @@ namespace Microsoft.AspNet.Identity.Authentication.Test
             httpContext.Setup(c => c.ApplicationServices).Returns(services.BuildServiceProvider());
             var id = new ClaimsIdentity(DefaultAuthenticationTypes.ApplicationCookie);
             id.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id));
-            //id.AddClaim(new Claim(ClaimsIdentityOptions.DefaultSecurityStampClaimType, securityStamp));
 
             var ticket = new AuthenticationTicket(id, new AuthenticationProperties { IssuedUtc = DateTimeOffset.UtcNow, IsPersistent = isPersistent });
             var context = new CookieValidateIdentityContext(httpContext.Object, ticket, new CookieAuthenticationOptions());
@@ -62,122 +57,91 @@ namespace Microsoft.AspNet.Identity.Authentication.Test
             await
                 SecurityStampValidator.OnValidateIdentity<IdentityUser>(TimeSpan.Zero).Invoke(context);
             Assert.NotNull(context.Identity);
-
             signInManager.VerifyAll();
-
-            //// change stamp and make sure it fails
-            //UnitTestHelper.IsSuccess(await manager.UpdateSecurityStampAsync(user.Id));
-            //await
-            //    SecurityStampValidator.OnValidateIdentity<UserManager<IdentityUser>, IdentityUser>(TimeSpan.Zero, SignIn)
-            //        .Invoke(context);
-            //Assert.Null(context.Identity);
         }
 
-        //[Fact]
-        //public async Task OnValidateRejectsUnknownUserIdentityTest()
-        //{
-        //    var owinContext = new OwinContext();
-        //    await CreateManager(owinContext);
-        //    var manager = owinContext.GetUserManager<UserManager<IdentityUser>>();
-        //    var user = new IdentityUser("test");
-        //    UnitTestHelper.IsSuccess(await manager.CreateAsync(user));
-        //    var id = await SignIn(manager, user);
-        //    UnitTestHelper.IsSuccess(await manager.DeleteAsync(user));
-        //    var ticket = new AuthenticationTicket(id, new AuthenticationProperties { IssuedUtc = DateTimeOffset.UtcNow });
-        //    var context = new CookieValidateIdentityContext(owinContext, ticket, new CookieAuthenticationOptions());
-        //    await
-        //        SecurityStampValidator.OnValidateIdentity<UserManager<IdentityUser>, IdentityUser>(TimeSpan.Zero, SignIn)
-        //            .Invoke(context);
-        //    Assert.Null(context.Identity);
-        //}
+        [Fact]
+        public async Task OnValidateIdentityRejectsWhenValidateSecurityStampFails()
+        {
+            var user = new IdentityUser("test");
+            var httpContext = new Mock<HttpContext>();
+            var userManager = MockHelpers.MockUserManager<IdentityUser>();
+            var authManager = new Mock<IAuthenticationManager>();
+            var claimsManager = new Mock<IClaimsIdentityFactory<IdentityUser>>();
+            var signInManager = new Mock<SignInManager<IdentityUser>>(userManager.Object,
+                authManager.Object, claimsManager.Object);
+            signInManager.Setup(s => s.ValidateSecurityStamp(It.IsAny<ClaimsIdentity>(), user.Id)).ReturnsAsync(null).Verifiable();
+            var services = new ServiceCollection();
+            services.AddInstance(signInManager.Object);
+            httpContext.Setup(c => c.ApplicationServices).Returns(services.BuildServiceProvider());
+            var id = new ClaimsIdentity(DefaultAuthenticationTypes.ApplicationCookie);
+            id.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id));
 
-        //[Fact]
-        //public async Task OnValidateIdentityRejectsWithNoIssuedUtcTest()
-        //{
-        //    var owinContext = new OwinContext();
-        //    await CreateManager(owinContext);
-        //    var manager = owinContext.GetUserManager<UserManager<IdentityUser>>();
-        //    var user = new IdentityUser("test");
-        //    UnitTestHelper.IsSuccess(await manager.CreateAsync(user));
-        //    var id = await SignIn(manager, user);
-        //    var ticket = new AuthenticationTicket(id, new AuthenticationProperties());
-        //    var context = new CookieValidateIdentityContext(owinContext, ticket, new CookieAuthenticationOptions());
-        //    await
-        //        SecurityStampValidator.OnValidateIdentity<UserManager<IdentityUser>, IdentityUser>(TimeSpan.Zero, SignIn)
-        //            .Invoke(context);
-        //    Assert.NotNull(context.Identity);
-        //    Assert.Equal(user.Id, id.GetUserId());
+            var ticket = new AuthenticationTicket(id, new AuthenticationProperties { IssuedUtc = DateTimeOffset.UtcNow });
+            var context = new CookieValidateIdentityContext(httpContext.Object, ticket, new CookieAuthenticationOptions());
+            Assert.NotNull(context.Properties);
+            Assert.NotNull(context.Options);
+            Assert.NotNull(context.Identity);
+            await
+                SecurityStampValidator.OnValidateIdentity<IdentityUser>(TimeSpan.Zero).Invoke(context);
+            Assert.Null(context.Identity);
+            signInManager.VerifyAll();
+        }
 
-        //    // change stamp does fail validation when no utc
-        //    UnitTestHelper.IsSuccess(await manager.UpdateSecurityStampAsync(user.Id));
-        //    await
-        //        SecurityStampValidator.OnValidateIdentity<UserManager<IdentityUser>, IdentityUser>(TimeSpan.Zero, SignIn)
-        //            .Invoke(context);
-        //    Assert.Null(context.Identity);
-        //}
+        [Fact]
+        public async Task OnValidateIdentityRejectsWhenNoIssuedUtc()
+        {
+            var user = new IdentityUser("test");
+            var httpContext = new Mock<HttpContext>();
+            var userManager = MockHelpers.MockUserManager<IdentityUser>();
+            var authManager = new Mock<IAuthenticationManager>();
+            var claimsManager = new Mock<IClaimsIdentityFactory<IdentityUser>>();
+            var signInManager = new Mock<SignInManager<IdentityUser>>(userManager.Object,
+                authManager.Object, claimsManager.Object);
+            signInManager.Setup(s => s.ValidateSecurityStamp(It.IsAny<ClaimsIdentity>(), user.Id)).ReturnsAsync(null).Verifiable();
+            var services = new ServiceCollection();
+            services.AddInstance(signInManager.Object);
+            httpContext.Setup(c => c.ApplicationServices).Returns(services.BuildServiceProvider());
+            var id = new ClaimsIdentity(DefaultAuthenticationTypes.ApplicationCookie);
+            id.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id));
 
-        //[Fact]
-        //public async Task OnValidateIdentityDoesNotRejectRightAwayTest()
-        //{
-        //    var owinContext = new OwinContext();
-        //    await CreateManager(owinContext);
-        //    var manager = owinContext.GetUserManager<UserManager<IdentityUser>>();
-        //    var user = new IdentityUser("test");
-        //    UnitTestHelper.IsSuccess(await manager.CreateAsync(user));
-        //    var id = await SignIn(manager, user);
-        //    var ticket = new AuthenticationTicket(id, new AuthenticationProperties { IssuedUtc = DateTimeOffset.UtcNow });
-        //    var context = new CookieValidateIdentityContext(owinContext, ticket, new CookieAuthenticationOptions());
+            var ticket = new AuthenticationTicket(id, new AuthenticationProperties());
+            var context = new CookieValidateIdentityContext(httpContext.Object, ticket, new CookieAuthenticationOptions());
+            Assert.NotNull(context.Properties);
+            Assert.NotNull(context.Options);
+            Assert.NotNull(context.Identity);
+            await
+                SecurityStampValidator.OnValidateIdentity<IdentityUser>(TimeSpan.Zero).Invoke(context);
+            Assert.Null(context.Identity);
+            signInManager.VerifyAll();
+        }
 
-        //    // change stamp does not fail validation when not enough time elapsed
-        //    UnitTestHelper.IsSuccess(await manager.UpdateSecurityStampAsync(user.Id));
-        //    await
-        //        SecurityStampValidator.OnValidateIdentity<UserManager<IdentityUser>, IdentityUser>(
-        //            TimeSpan.FromDays(1), SignIn).Invoke(context);
-        //    Assert.NotNull(context.Identity);
-        //    Assert.Equal(user.Id, id.GetUserId());
-        //}
+        [Fact]
+        public async Task OnValidateIdentityDoesNotRejectsWhenNotExpired()
+        {
+            var user = new IdentityUser("test");
+            var httpContext = new Mock<HttpContext>();
+            var userManager = MockHelpers.MockUserManager<IdentityUser>();
+            var authManager = new Mock<IAuthenticationManager>();
+            var claimsManager = new Mock<IClaimsIdentityFactory<IdentityUser>>();
+            var signInManager = new Mock<SignInManager<IdentityUser>>(userManager.Object,
+                authManager.Object, claimsManager.Object);
+            signInManager.Setup(s => s.ValidateSecurityStamp(It.IsAny<ClaimsIdentity>(), user.Id)).Throws(new Exception("Shouldn't be called"));
+            signInManager.Setup(s => s.SignInAsync(user, false)).Throws(new Exception("Shouldn't be called"));
+            var services = new ServiceCollection();
+            services.AddInstance(signInManager.Object);
+            httpContext.Setup(c => c.ApplicationServices).Returns(services.BuildServiceProvider());
+            var id = new ClaimsIdentity(DefaultAuthenticationTypes.ApplicationCookie);
+            id.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id));
 
-        //private Task<ClaimsIdentity> SignIn(UserManager<IdentityUser> manager, IdentityUser user)
-        //{
-        //    return manager.ClaimsIdentityFactory.CreateAsync(manager, user, DefaultAuthenticationTypes.ApplicationCookie);
-        //}
-
-        //private async Task CreateManager(OwinContext context)
-        //{
-        //    var options = new IdentityFactoryOptions<UserManager<IdentityUser>>
-        //    {
-        //        Provider = new TestProvider(),
-        //        DataProtectionProvider = new DpapiDataProtectionProvider()
-        //    };
-        //    var middleware =
-        //        new IdentityFactoryMiddleware
-        //            <UserManager<IdentityUser>, IdentityFactoryOptions<UserManager<IdentityUser>>>(null, options);
-        //    await middleware.Invoke(context);
-        //}
-
-        //private class TestProvider : IdentityFactoryProvider<UserManager<IdentityUser>>
-        //{
-        //    public TestProvider()
-        //    {
-        //        OnCreate = ((options, context) =>
-        //        {
-        //            var manager =
-        //                new UserManager<IdentityUser>(new UserStore<IdentityUser>(UnitTestHelper.CreateDefaultDb()));
-        //            manager.UserValidator = new UserValidator<IdentityUser>(manager)
-        //            {
-        //                AllowOnlyAlphanumericUserNames = true,
-        //                RequireUniqueEmail = false
-        //            };
-        //            if (options.DataProtectionProvider != null)
-        //            {
-        //                manager.UserTokenProvider =
-        //                    new DataProtectorTokenProvider<IdentityUser>(
-        //                        options.DataProtectionProvider.Create("ASP.NET Identity"));
-        //            }
-        //            return manager;
-        //        });
-        //        OnDispose = (options, manager) => { };
-        //    }
-        //}
+            var ticket = new AuthenticationTicket(id, new AuthenticationProperties { IssuedUtc = DateTimeOffset.UtcNow });
+            var context = new CookieValidateIdentityContext(httpContext.Object, ticket, new CookieAuthenticationOptions());
+            Assert.NotNull(context.Properties);
+            Assert.NotNull(context.Options);
+            Assert.NotNull(context.Identity);
+            await
+                SecurityStampValidator.OnValidateIdentity<IdentityUser>(TimeSpan.FromDays(1)).Invoke(context);
+            Assert.NotNull(context.Identity);
+        }
     }
 }
