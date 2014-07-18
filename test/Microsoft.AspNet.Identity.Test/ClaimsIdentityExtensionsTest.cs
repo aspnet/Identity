@@ -6,9 +6,9 @@ using System.Security.Claims;
 using System.Security.Principal;
 using Xunit;
 
-namespace Microsoft.AspNet.Identity.Authentication.Test
+namespace Microsoft.AspNet.Identity.Test
 {
-    public class IdentityExtensionsTest
+    public class ClaimsIdentityExtensionsTest
     {
         public const string ExternalAuthenticationType = "TestExternalAuth";
 

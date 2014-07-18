@@ -73,7 +73,12 @@ namespace Microsoft.AspNet.Identity.Authentication
                     var user = await manager.ValidateSecurityStamp(context.Identity, userId);
                     if (user != null)
                     {
-                        await manager.SignInAsync(user, context.Properties.IsPersistent);
+                        bool isPersistent = false;
+                        if (context.Properties != null)
+                        {
+                            isPersistent = context.Properties.IsPersistent;
+                        }
+                        await manager.SignInAsync(user, isPersistent);
                     }
                     else
                     {
