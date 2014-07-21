@@ -11,10 +11,11 @@ namespace Microsoft.AspNet.Identity
         ///     ClaimType used for the security stamp by default
         /// </summary>
         public static readonly string DefaultSecurityStampClaimType = "AspNet.Identity.SecurityStamp";
+        public static readonly string DefaultApplicationCookie = typeof(ClaimsIdentityOptions).Namespace + ".Application";
 
         public ClaimsIdentityOptions()
         {
-            AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie;
+            AuthenticationType = DefaultApplicationCookie;
             RoleClaimType = ClaimTypes.Role;
             SecurityStampClaimType = DefaultSecurityStampClaimType;
             UserIdClaimType = ClaimTypes.NameIdentifier;
