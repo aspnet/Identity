@@ -28,7 +28,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
             IBuilder app = new Builder.Builder(new ServiceCollection().BuildServiceProvider());
             app.UseCookieAuthentication(new CookieAuthenticationOptions
             {
-                AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie
+                AuthenticationType = ClaimsIdentityOptions.DefaultApplicationCookie
             });
 
             var context = new Mock<HttpContext>();
@@ -40,7 +40,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
             app.UseServices(services =>
             {
                 services.AddInstance(contextAccessor.Object);
-                services.AddIdentity<ApplicationUser, IdentityRole>().AddInMemory().AddHttpSignIn();
+                services.AddIdentity<ApplicationUser, IdentityRole>().AddInMemory().AddAuthentication();
             });
 
             // Act
