@@ -25,7 +25,6 @@
     <Compile Include="ClaimsIdentityFactory.cs" />
     <Compile Include="ClaimsIdentityOptions.cs" />
     <Compile Include="Crypto.cs" />
-    <Compile Include="DefaultAuthenticationTypes.cs" />
     <Compile Include="IAuthenticationManager.cs" />
     <Compile Include="IClaimsIdentityFactory.cs" />
     <Compile Include="IdentityBuilder.cs" />
@@ -57,6 +56,7 @@
     <Compile Include="IUserRoleStore.cs" />
     <Compile Include="IUserSecurityStampStore.cs" />
     <Compile Include="IUserStore.cs" />
+    <Compile Include="TotpSecurityStampBasedTokenProvider.cs" />
     <Compile Include="IUserTokenProvider.cs" />
     <Compile Include="IUserTwoFactorStore.cs" />
     <Compile Include="IUserValidator.cs" />
