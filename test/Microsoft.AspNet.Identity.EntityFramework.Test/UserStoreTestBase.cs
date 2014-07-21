@@ -1299,7 +1299,6 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             Assert.NotEqual(stamp, user.SecurityStamp);
         }
 
-#if NET45
         [Fact]
         public async Task CanChangePhoneNumber()
         {
@@ -1346,7 +1345,6 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             Assert.False(await manager.VerifyChangePhoneNumberTokenAsync(user, token2, num1));
             Assert.False(await manager.VerifyChangePhoneNumberTokenAsync(user, token1, num2));
         }
-#endif
 
         private class EmailTokenProvider : IUserTokenProvider<ApplicationUser>
         {
@@ -1441,49 +1439,48 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
                     "No IUserTwoFactorProvider for 'Bogus' is registered.");
         }
 
+        [Fact]
+        public async Task EmailTokenFactorWithFormatTest()
+        {
+            var manager = CreateManager();
+            var messageService = new TestMessageService();
+            manager.EmailService = messageService;
+            const string factorId = "EmailCode";
+            manager.RegisterTwoFactorProvider(factorId, new EmailTokenProvider<ApplicationUser>
+            {
+                Subject = "Security Code",
+                BodyFormat = "Your code is: {0}"
+            });
+            var user = new ApplicationUser { Email = "foo@foo.com" };
+            const string password = "password";
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user, password));
+            var stamp = user.SecurityStamp;
+            Assert.NotNull(stamp);
+            var token = await manager.GenerateTwoFactorTokenAsync(user, factorId);
+            Assert.NotNull(token);
+            Assert.Null(messageService.Message);
+            IdentityResultAssert.IsSuccess(await manager.NotifyTwoFactorTokenAsync(user, factorId, token));
+            Assert.NotNull(messageService.Message);
+            Assert.Equal("Security Code", messageService.Message.Subject);
+            Assert.Equal("Your code is: " + token, messageService.Message.Body);
+            Assert.True(await manager.VerifyTwoFactorTokenAsync(user, factorId, token));
+        }
 
-        //[Fact]
-        //public async Task EmailTokenFactorWithFormatTest()
-        //{
-        //    var manager = CreateManager();
-        //    var messageService = new TestMessageService();
-        //    manager.EmailService = messageService;
-        //    const string factorId = "EmailCode";
-        //    manager.RegisterTwoFactorProvider(factorId, new EmailTokenProvider<ApplicationUser>
-        //    {
-        //        Subject = "Security Code",
-        //        BodyFormat = "Your code is: {0}"
-        //    });
-        //    var user = new ApplicationUser("EmailCodeTest") { Email = "foo@foo.com" };
-        //    const string password = "password";
-        //    IdentityResultAssert.IsSuccess(await manager.CreateAsync(user, password));
-        //    var stamp = user.SecurityStamp;
-        //    Assert.NotNull(stamp);
-        //    var token = await manager.GenerateTwoFactorTokenAsync(user, factorId);
-        //    Assert.NotNull(token);
-        //    Assert.Null(messageService.Message);
-        //    IdentityResultAssert.IsSuccess(await manager.NotifyTwoFactorTokenAsync(user, factorId, token));
-        //    Assert.NotNull(messageService.Message);
-        //    Assert.Equal("Security Code", messageService.Message.Subject);
-        //    Assert.Equal("Your code is: " + token, messageService.Message.Body);
-        //    Assert.True(await manager.VerifyTwoFactorTokenAsync(user, factorId, token));
-        //}
-
-        //[Fact]
-        //public async Task EmailFactorFailsAfterSecurityStampChangeTest()
-        //{
-        //    var manager = CreateManager();
-        //    const string factorId = "EmailCode";
-        //    manager.RegisterTwoFactorProvider(factorId, new EmailTokenProvider<ApplicationUser>());
-        //    var user = new ApplicationUser("EmailCodeTest") { Email = "foo@foo.com" };
-        //    IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
-        //    var stamp = user.SecurityStamp;
-        //    Assert.NotNull(stamp);
-        //    var token = await manager.GenerateTwoFactorTokenAsync(user, factorId);
-        //    Assert.NotNull(token);
-        //    IdentityResultAssert.IsSuccess(await manager.UpdateSecurityStampAsync(user));
-        //    Assert.False(await manager.VerifyTwoFactorTokenAsync(user, factorId, token));
-        //}
+        [Fact]
+        public async Task EmailFactorFailsAfterSecurityStampChangeTest()
+        {
+            var manager = CreateManager();
+            const string factorId = "EmailCode";
+            manager.RegisterTwoFactorProvider(factorId, new EmailTokenProvider<ApplicationUser>());
+            var user = new ApplicationUser { Email = "foo@foo.com" };
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
+            var stamp = user.SecurityStamp;
+            Assert.NotNull(stamp);
+            var token = await manager.GenerateTwoFactorTokenAsync(user, factorId);
+            Assert.NotNull(token);
+            IdentityResultAssert.IsSuccess(await manager.UpdateSecurityStampAsync(user));
+            Assert.False(await manager.VerifyTwoFactorTokenAsync(user, factorId, token));
+        }
 
         [Fact]
         public async Task EnableTwoFactorChangesSecurityStamp()
@@ -1546,29 +1543,29 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             Assert.True(await manager.VerifyTwoFactorTokenAsync(user, factorId, token));
         }
 
-        //[Fact]
-        //public async Task PhoneTokenFactorFormatTest()
-        //{
-        //    var manager = CreateManager();
-        //    var messageService = new TestMessageService();
-        //    manager.SmsService = messageService;
-        //    const string factorId = "PhoneCode";
-        //    manager.RegisterTwoFactorProvider(factorId, new PhoneNumberTokenProvider<ApplicationUser>
-        //    {
-        //        MessageFormat = "Your code is: {0}"
-        //    });
-        //    var user = new ApplicationUser("PhoneCodeTest") { PhoneNumber = "4251234567" };
-        //    IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
-        //    var stamp = user.SecurityStamp;
-        //    Assert.NotNull(stamp);
-        //    var token = await manager.GenerateTwoFactorTokenAsync(user, factorId);
-        //    Assert.NotNull(token);
-        //    Assert.Null(messageService.Message);
-        //    IdentityResultAssert.IsSuccess(await manager.NotifyTwoFactorTokenAsync(user, factorId, token));
-        //    Assert.NotNull(messageService.Message);
-        //    Assert.Equal("Your code is: " + token, messageService.Message.Body);
-        //    Assert.True(await manager.VerifyTwoFactorTokenAsync(user, factorId, token));
-        //}
+        [Fact]
+        public async Task PhoneTokenFactorFormatTest()
+        {
+            var manager = CreateManager();
+            var messageService = new TestMessageService();
+            manager.SmsService = messageService;
+            const string factorId = "PhoneCode";
+            manager.RegisterTwoFactorProvider(factorId, new PhoneNumberTokenProvider<ApplicationUser>
+            {
+                MessageFormat = "Your code is: {0}"
+            });
+            var user = new ApplicationUser { PhoneNumber = "4251234567" };
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
+            var stamp = user.SecurityStamp;
+            Assert.NotNull(stamp);
+            var token = await manager.GenerateTwoFactorTokenAsync(user, factorId);
+            Assert.NotNull(token);
+            Assert.Null(messageService.Message);
+            IdentityResultAssert.IsSuccess(await manager.NotifyTwoFactorTokenAsync(user, factorId, token));
+            Assert.NotNull(messageService.Message);
+            Assert.Equal("Your code is: " + token, messageService.Message.Body);
+            Assert.True(await manager.VerifyTwoFactorTokenAsync(user, factorId, token));
+        }
 
         [Fact]
         public async Task GenerateTwoFactorWithUnknownFactorProviderWillThrow()
@@ -1622,22 +1619,22 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             Assert.Equal("phone", factors[0]);
         }
 
-        //[Fact]
-        //public async Task PhoneFactorFailsAfterSecurityStampChangeTest()
-        //{
-        //    var manager = CreateManager();
-        //    var factorId = "PhoneCode";
-        //    manager.RegisterTwoFactorProvider(factorId, new PhoneNumberTokenProvider<ApplicationUser>());
-        //    var user = new ApplicationUser("PhoneCodeTest");
-        //    user.PhoneNumber = "4251234567";
-        //    IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
-        //    var stamp = user.SecurityStamp;
-        //    Assert.NotNull(stamp);
-        //    var token = await manager.GenerateTwoFactorTokenAsync(user, factorId);
-        //    Assert.NotNull(token);
-        //    IdentityResultAssert.IsSuccess(await manager.UpdateSecurityStampAsync(user));
-        //    Assert.False(await manager.VerifyTwoFactorTokenAsync(user, factorId, token));
-        //}
+        [Fact]
+        public async Task PhoneFactorFailsAfterSecurityStampChangeTest()
+        {
+            var manager = CreateManager();
+            var factorId = "PhoneCode";
+            manager.RegisterTwoFactorProvider(factorId, new PhoneNumberTokenProvider<ApplicationUser>());
+            var user = new ApplicationUser();
+            user.PhoneNumber = "4251234567";
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
+            var stamp = user.SecurityStamp;
+            Assert.NotNull(stamp);
+            var token = await manager.GenerateTwoFactorTokenAsync(user, factorId);
+            Assert.NotNull(token);
+            IdentityResultAssert.IsSuccess(await manager.UpdateSecurityStampAsync(user));
+            Assert.False(await manager.VerifyTwoFactorTokenAsync(user, factorId, token));
+        }
 
         [Fact]
         public async Task VerifyTokenFromWrongTokenProviderFails()
