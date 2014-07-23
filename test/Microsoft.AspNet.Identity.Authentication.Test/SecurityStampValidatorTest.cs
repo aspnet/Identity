@@ -3,6 +3,7 @@
 
 using System;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Http.Security;
@@ -11,6 +12,7 @@ using Microsoft.AspNet.Security;
 using Microsoft.AspNet.Security.Cookies;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.DependencyInjection.Fallback;
+using Microsoft.Framework.OptionsModel;
 using Moq;
 using Xunit;
 
@@ -39,10 +41,13 @@ namespace Microsoft.AspNet.Identity.Authentication.Test
             var userManager = MockHelpers.MockUserManager<IdentityUser>();
             var authManager = new Mock<IAuthenticationManager>();
             var claimsManager = new Mock<IClaimsIdentityFactory<IdentityUser>>();
+            var identityOptions = new IdentityOptions();
+            var options = new Mock<IOptionsAccessor<IdentityOptions>>();
+            options.Setup(a => a.Options).Returns(identityOptions);
             var signInManager = new Mock<SignInManager<IdentityUser>>(userManager.Object,
-                authManager.Object, claimsManager.Object);
-            signInManager.Setup(s => s.ValidateSecurityStamp(It.IsAny<ClaimsIdentity>(), user.Id)).ReturnsAsync(user).Verifiable();
-            signInManager.Setup(s => s.SignInAsync(user, isPersistent)).Returns(Task.FromResult(0)).Verifiable();
+                authManager.Object, claimsManager.Object, options.Object);
+            signInManager.Setup(s => s.ValidateSecurityStampAsync(It.IsAny<ClaimsIdentity>(), user.Id, CancellationToken.None)).ReturnsAsync(user).Verifiable();
+            signInManager.Setup(s => s.SignInAsync(user, isPersistent, CancellationToken.None)).Returns(Task.FromResult(0)).Verifiable();
             var services = new ServiceCollection();
             services.AddInstance(signInManager.Object);
             httpContext.Setup(c => c.ApplicationServices).Returns(services.BuildServiceProvider());
@@ -68,9 +73,12 @@ namespace Microsoft.AspNet.Identity.Authentication.Test
             var userManager = MockHelpers.MockUserManager<IdentityUser>();
             var authManager = new Mock<IAuthenticationManager>();
             var claimsManager = new Mock<IClaimsIdentityFactory<IdentityUser>>();
+            var identityOptions = new IdentityOptions();
+            var options = new Mock<IOptionsAccessor<IdentityOptions>>();
+            options.Setup(a => a.Options).Returns(identityOptions);
             var signInManager = new Mock<SignInManager<IdentityUser>>(userManager.Object,
-                authManager.Object, claimsManager.Object);
-            signInManager.Setup(s => s.ValidateSecurityStamp(It.IsAny<ClaimsIdentity>(), user.Id)).ReturnsAsync(null).Verifiable();
+                authManager.Object, claimsManager.Object, options.Object);
+            signInManager.Setup(s => s.ValidateSecurityStampAsync(It.IsAny<ClaimsIdentity>(), user.Id, CancellationToken.None)).ReturnsAsync(null).Verifiable();
             var services = new ServiceCollection();
             services.AddInstance(signInManager.Object);
             httpContext.Setup(c => c.ApplicationServices).Returns(services.BuildServiceProvider());
@@ -96,9 +104,12 @@ namespace Microsoft.AspNet.Identity.Authentication.Test
             var userManager = MockHelpers.MockUserManager<IdentityUser>();
             var authManager = new Mock<IAuthenticationManager>();
             var claimsManager = new Mock<IClaimsIdentityFactory<IdentityUser>>();
+            var identityOptions = new IdentityOptions();
+            var options = new Mock<IOptionsAccessor<IdentityOptions>>();
+            options.Setup(a => a.Options).Returns(identityOptions);
             var signInManager = new Mock<SignInManager<IdentityUser>>(userManager.Object,
-                authManager.Object, claimsManager.Object);
-            signInManager.Setup(s => s.ValidateSecurityStamp(It.IsAny<ClaimsIdentity>(), user.Id)).ReturnsAsync(null).Verifiable();
+                authManager.Object, claimsManager.Object, options.Object);
+            signInManager.Setup(s => s.ValidateSecurityStampAsync(It.IsAny<ClaimsIdentity>(), user.Id, CancellationToken.None)).ReturnsAsync(null).Verifiable();
             var services = new ServiceCollection();
             services.AddInstance(signInManager.Object);
             httpContext.Setup(c => c.ApplicationServices).Returns(services.BuildServiceProvider());
@@ -124,10 +135,13 @@ namespace Microsoft.AspNet.Identity.Authentication.Test
             var userManager = MockHelpers.MockUserManager<IdentityUser>();
             var authManager = new Mock<IAuthenticationManager>();
             var claimsManager = new Mock<IClaimsIdentityFactory<IdentityUser>>();
+            var identityOptions = new IdentityOptions();
+            var options = new Mock<IOptionsAccessor<IdentityOptions>>();
+            options.Setup(a => a.Options).Returns(identityOptions);
             var signInManager = new Mock<SignInManager<IdentityUser>>(userManager.Object,
-                authManager.Object, claimsManager.Object);
-            signInManager.Setup(s => s.ValidateSecurityStamp(It.IsAny<ClaimsIdentity>(), user.Id)).Throws(new Exception("Shouldn't be called"));
-            signInManager.Setup(s => s.SignInAsync(user, false)).Throws(new Exception("Shouldn't be called"));
+                authManager.Object, claimsManager.Object, options.Object);
+            signInManager.Setup(s => s.ValidateSecurityStampAsync(It.IsAny<ClaimsIdentity>(), user.Id, CancellationToken.None)).Throws(new Exception("Shouldn't be called"));
+            signInManager.Setup(s => s.SignInAsync(user, false, CancellationToken.None)).Throws(new Exception("Shouldn't be called"));
             var services = new ServiceCollection();
             services.AddInstance(signInManager.Object);
             httpContext.Setup(c => c.ApplicationServices).Returns(services.BuildServiceProvider());
