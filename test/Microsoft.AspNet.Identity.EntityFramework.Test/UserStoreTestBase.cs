@@ -1011,10 +1011,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             var role = new ApplicationRole();
             Assert.Null(await manager.FindByIdAsync(role.Id.ToString()));
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(role));
-            //Assert.Equal(role, await manager.FindByIdAsync(role.Id.ToString()));
-            var fetch = await manager.FindByIdAsync(role.Id.ToString());
-            Assert.Equal(role.Id, fetch.Id);
-            Assert.Equal(role.Name, fetch.Name);
+            Assert.Equal(role, await manager.FindByIdAsync(role.Id.ToString()));
         }
 
         [Fact]
@@ -1025,10 +1022,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             Assert.Null(await manager.FindByNameAsync(role.Name));
             Assert.False(await manager.RoleExistsAsync(role.Name));
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(role));
-            var fetch = await manager.FindByNameAsync(role.Name);
-            //Assert.Equal(role, fetch);
-            Assert.Equal(role.Id, fetch.Id);
-            Assert.Equal(role.Name, fetch.Name);
+            Assert.Equal(role, await manager.FindByNameAsync(role.Name));
         }
 
         [Fact]
@@ -1345,64 +1339,6 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             Assert.False(await manager.VerifyChangePhoneNumberTokenAsync(user, token2, num1));
             Assert.False(await manager.VerifyChangePhoneNumberTokenAsync(user, token1, num2));
         }
-
-        //private class EmailTokenProvider : IUserTokenProvider<ApplicationUser>
-        //{
-        //    public Task<string> GenerateAsync(string purpose, UserManager<ApplicationUser> manager, ApplicationUser user, CancellationToken token)
-        //    {
-        //        return Task.FromResult(MakeToken(purpose));
-        //    }
-
-        //    public Task<bool> ValidateAsync(string purpose, string token, UserManager<ApplicationUser> manager,
-        //        ApplicationUser user, CancellationToken cancellationToken)
-        //    {
-        //        return Task.FromResult(token == MakeToken(purpose));
-        //    }
-
-        //    public Task NotifyAsync(string token, UserManager<ApplicationUser> manager, ApplicationUser user, CancellationToken cancellationToken)
-        //    {
-        //        return manager.SendEmailAsync(user, token, token);
-        //    }
-
-        //    public async Task<bool> IsValidProviderForUserAsync(UserManager<ApplicationUser> manager, ApplicationUser user, CancellationToken token)
-        //    {
-        //        return !string.IsNullOrEmpty(await manager.GetEmailAsync(user));
-        //    }
-
-        //    private static string MakeToken(string purpose)
-        //    {
-        //        return "email:" + purpose;
-        //    }
-        //}
-
-        //private class SmsTokenProvider : IUserTokenProvider<ApplicationUser>
-        //{
-        //    public Task<string> GenerateAsync(string purpose, UserManager<ApplicationUser> manager, ApplicationUser user, CancellationToken token)
-        //    {
-        //        return Task.FromResult(MakeToken(purpose));
-        //    }
-
-        //    public Task<bool> ValidateAsync(string purpose, string token, UserManager<ApplicationUser> manager,
-        //        ApplicationUser user, CancellationToken cancellationToken)
-        //    {
-        //        return Task.FromResult(token == MakeToken(purpose));
-        //    }
-
-        //    public Task NotifyAsync(string token, UserManager<ApplicationUser> manager, ApplicationUser user, CancellationToken cancellationToken)
-        //    {
-        //        return manager.SendSmsAsync(user, token);
-        //    }
-
-        //    public async Task<bool> IsValidProviderForUserAsync(UserManager<ApplicationUser> manager, ApplicationUser user, CancellationToken token)
-        //    {
-        //        return !string.IsNullOrEmpty(await manager.GetPhoneNumberAsync(user));
-        //    }
-
-        //    private static string MakeToken(string purpose)
-        //    {
-        //        return "sms:" + purpose;
-        //    }
-        //}
 
         [Fact]
         public async Task CanEmailTwoFactorToken()
