@@ -25,7 +25,7 @@ namespace Microsoft.AspNet.Identity
         }
 
         /// <summary>
-        ///     Email body which should contain a formatted string which the token will be the only argument
+        ///     Format string which will be used for the email body, it will be passed the token for the first parameter
         /// </summary>
         public string BodyFormat
         {

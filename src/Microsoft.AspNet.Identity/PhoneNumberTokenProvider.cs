@@ -59,7 +59,7 @@ namespace Microsoft.AspNet.Identity
         }
 
         /// <summary>
-        ///     Notifies the user with a token via sms using the MessageFormat
+        ///     Notifies the user with a token via SMS using the MessageFormat
         /// </summary>
         /// <param name="token"></param>
         /// <param name="manager"></param>
