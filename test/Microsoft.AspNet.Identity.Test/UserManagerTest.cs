@@ -428,13 +428,13 @@ namespace Microsoft.AspNet.Identity.Test
             var passwordValidator = new PasswordValidator<TestUser>();
 
             Assert.Throws<ArgumentNullException>("store",
-                () => new UserManager<TestUser>(null, null, null, null, null));
+                () => new UserManager<TestUser>(null, null, null, null, null, null));
             Assert.Throws<ArgumentNullException>("optionsAccessor",
-                () => new UserManager<TestUser>(store, null, null, null, null));
+                () => new UserManager<TestUser>(store, null, null, null, null, null));
             Assert.Throws<ArgumentNullException>("passwordHasher",
-                () => new UserManager<TestUser>(store, optionsAccessor, null, null, null));
+                () => new UserManager<TestUser>(store, optionsAccessor, null, null, null, null));
 
-            var manager = new UserManager<TestUser>(store, optionsAccessor, passwordHasher, userValidator, passwordValidator);
+            var manager = new UserManager<TestUser>(store, optionsAccessor, passwordHasher, userValidator, passwordValidator, null);
 
             Assert.Throws<ArgumentNullException>("value", () => manager.PasswordHasher = null);
             Assert.Throws<ArgumentNullException>("value", () => manager.Options = null);
@@ -836,6 +836,16 @@ namespace Microsoft.AspNet.Identity.Test
             {
                 return Task.FromResult<string>(null);
             }
+
+            public Task<string> GetNormalizedUserNameAsync(TestUser user, CancellationToken cancellationToken = default(CancellationToken))
+            {
+                return Task.FromResult<string>(null);
+            }
+
+            public Task SetNormalizedUserNameAsync(TestUser user, string userName, CancellationToken cancellationToken = default(CancellationToken))
+            {
+                return Task.FromResult(0);
+            }
         }
 
         private class NoOpTokenProvider : IUserTokenProvider<TestUser>
@@ -1073,6 +1083,16 @@ namespace Microsoft.AspNet.Identity.Test
             }
 
             public Task<bool> IsInRoleAsync(TestUser user, string roleName, CancellationToken cancellationToken = new CancellationToken())
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<string> GetNormalizedUserNameAsync(TestUser user, CancellationToken cancellationToken = default(CancellationToken))
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task SetNormalizedUserNameAsync(TestUser user, string userName, CancellationToken cancellationToken = default(CancellationToken))
             {
                 throw new NotImplementedException();
             }

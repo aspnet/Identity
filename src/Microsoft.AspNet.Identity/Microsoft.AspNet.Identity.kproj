@@ -25,6 +25,7 @@
     <Compile Include="ClaimsIdentityFactory.cs" />
     <Compile Include="ClaimsIdentityOptions.cs" />
     <Compile Include="Crypto.cs" />
+    <Compile Include="IUserNameNormalizer.cs" />
     <Compile Include="PhoneNumberTokenProvider.cs" />
     <Compile Include="IAuthenticationManager.cs" />
     <Compile Include="IClaimsIdentityFactory.cs" />
