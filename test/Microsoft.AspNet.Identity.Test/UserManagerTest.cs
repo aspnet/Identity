@@ -24,7 +24,7 @@ namespace Microsoft.AspNet.Identity.Test
             public TestManager(IUserStore<TestUser> store, IOptionsAccessor<IdentityOptions> optionsAccessor,
                 IPasswordHasher<TestUser> passwordHasher, IUserValidator<TestUser> userValidator,
                 IPasswordValidator<TestUser> passwordValidator)
-                : base(store, optionsAccessor, passwordHasher, userValidator, passwordValidator) { }
+                : base(store, optionsAccessor, passwordHasher, userValidator, passwordValidator, null) { }
         }
 
         [Fact]
@@ -130,12 +130,12 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
-        public async Task FindByNameCallsStore()
+        public async Task FindByNameCallsStoreWithNormalizedName()
         {
             // Setup
             var store = new Mock<IUserStore<TestUser>>();
             var user = new TestUser {UserName="Foo"};
-            store.Setup(s => s.FindByNameAsync(user.UserName, CancellationToken.None)).Returns(Task.FromResult(user)).Verifiable();
+            store.Setup(s => s.FindByNameAsync(user.UserName.ToUpperInvariant(), CancellationToken.None)).Returns(Task.FromResult(user)).Verifiable();
             var userManager = MockHelpers.TestUserManager<TestUser>(store.Object);
 
             // Act

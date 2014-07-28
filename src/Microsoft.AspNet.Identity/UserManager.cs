@@ -315,6 +315,7 @@ namespace Microsoft.AspNet.Identity
             {
                 await GetUserLockoutStore().SetLockoutEnabledAsync(user, true, cancellationToken);
             }
+            await UpdateNormalizedUserName(user, cancellationToken);
             await Store.CreateAsync(user, cancellationToken);
             return IdentityResult.Success;
         }
@@ -338,6 +339,7 @@ namespace Microsoft.AspNet.Identity
             {
                 return result;
             }
+            await UpdateNormalizedUserName(user, cancellationToken);
             await Store.UpdateAsync(user, cancellationToken);
             return IdentityResult.Success;
         }
@@ -432,7 +434,13 @@ namespace Microsoft.AspNet.Identity
 
         private string NormalizeUserName(string userName)
         {
-            return UserNameNormalizer.Normalize(userName);
+            return (UserNameNormalizer == null) ? userName : UserNameNormalizer.Normalize(userName);
+        }
+
+        private async Task UpdateNormalizedUserName(TUser user, CancellationToken cancellationToken)
+        {
+            string userName = await GetUserNameAsync(user, cancellationToken);
+            await Store.SetNormalizedUserNameAsync(user, NormalizeUserName(userName), cancellationToken);
         }
 
         /// <summary>
@@ -468,7 +476,7 @@ namespace Microsoft.AspNet.Identity
                 throw new ArgumentNullException("user");
             }
             await Store.SetUserNameAsync(user, userName, cancellationToken);
-            await Store.SetNormalizedUserNameAsync(user, NormalizeUserName(userName), cancellationToken);
+            await UpdateNormalizedUserName(user, cancellationToken);
             return await UpdateAsync(user, cancellationToken);
         }
 

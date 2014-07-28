@@ -24,7 +24,7 @@ namespace Microsoft.AspNet.Identity
         {
             if (userName == null)
             {
-                throw new ArgumentNullException("userName");
+                return null;
             }
             return userName.ToUpperInvariant();
         }
