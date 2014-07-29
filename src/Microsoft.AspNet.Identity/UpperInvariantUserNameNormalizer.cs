@@ -21,7 +21,7 @@ namespace Microsoft.AspNet.Identity
             {
                 return null;
             }
-            return userName.ToUpperInvariant();
+            return userName.Normalize().ToUpperInvariant();
         }
     }
 }

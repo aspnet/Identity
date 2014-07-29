@@ -147,6 +147,24 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        public async Task CanFindByNameCallsStoreWithoutNormalizedName()
+        {
+            // Setup
+            var store = new Mock<IUserStore<TestUser>>();
+            var user = new TestUser {UserName="Foo"};
+            store.Setup(s => s.FindByNameAsync(user.UserName, CancellationToken.None)).Returns(Task.FromResult(user)).Verifiable();
+            var userManager = MockHelpers.TestUserManager<TestUser>(store.Object);
+            userManager.UserNameNormalizer = null;
+
+            // Act
+            var result = await userManager.FindByNameAsync(user.UserName);
+
+            // Assert
+            Assert.Equal(user, result);
+            store.VerifyAll();
+        }
+
+        [Fact]
         public async Task AddToRolesCallsStore()
         {
             // Setup
@@ -333,14 +351,10 @@ namespace Microsoft.AspNet.Identity.Test
             Assert.False(manager.SupportsUserSecurityStamp);
             await Assert.ThrowsAsync<NotSupportedException>(() => manager.UpdateSecurityStampAsync(null));
             await Assert.ThrowsAsync<NotSupportedException>(() => manager.GetSecurityStampAsync(null));
-#if NET45
-            await
-                Assert.ThrowsAsync<NotSupportedException>(
+            await Assert.ThrowsAsync<NotSupportedException>(
                     () => manager.VerifyChangePhoneNumberTokenAsync(null, "1", "111-111-1111"));
-            await
-                Assert.ThrowsAsync<NotSupportedException>(
+            await Assert.ThrowsAsync<NotSupportedException>(
                     () => manager.GenerateChangePhoneNumberTokenAsync(null, "111-111-1111"));
-#endif
         }
 
         [Fact]

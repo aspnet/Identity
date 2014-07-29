@@ -432,12 +432,24 @@ namespace Microsoft.AspNet.Identity
             return await CreateAsync(user, cancellationToken);
         }
 
-        private string NormalizeUserName(string userName)
+        /// <summary>
+        /// Normalize a user name for uniqueness comparisons
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <returns></returns>
+        public virtual string NormalizeUserName(string userName)
         {
             return (UserNameNormalizer == null) ? userName : UserNameNormalizer.Normalize(userName);
         }
 
-        private async Task UpdateNormalizedUserName(TUser user, CancellationToken cancellationToken)
+        /// <summary>
+        /// Update the user's normalized user name
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public virtual async Task UpdateNormalizedUserName(TUser user,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             string userName = await GetUserNameAsync(user, cancellationToken);
             await Store.SetNormalizedUserNameAsync(user, NormalizeUserName(userName), cancellationToken);
