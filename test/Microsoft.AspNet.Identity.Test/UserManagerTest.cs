@@ -182,7 +182,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
-        public async Task UseUserNameAsEmailReturnsEmail()
+        public async Task UseUserNameAsEmailReturnsName()
         {
             // Setup
             var store = new Mock<IUserStore<TestUser>>();
