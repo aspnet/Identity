@@ -460,6 +460,7 @@ namespace Microsoft.AspNet.Identity.Test
             await Assert.ThrowsAsync<ArgumentNullException>("user", async () => await manager.UpdateAsync(null));
             await Assert.ThrowsAsync<ArgumentNullException>("user", async () => await manager.DeleteAsync(null));
             await Assert.ThrowsAsync<ArgumentNullException>("claim", async () => await manager.AddClaimAsync(null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>("claims", async () => await manager.AddClaimsAsync(null, null));
             await Assert.ThrowsAsync<ArgumentNullException>("userName", async () => await manager.FindByNameAsync(null));
             await Assert.ThrowsAsync<ArgumentNullException>("userName", async () => await manager.FindByUserNamePasswordAsync(null, null));
             await Assert.ThrowsAsync<ArgumentNullException>("login", async () => await manager.AddLoginAsync(null, null));
@@ -584,6 +585,7 @@ namespace Microsoft.AspNet.Identity.Test
             var manager = MockHelpers.TestUserManager(new NoopUserStore());
             manager.Dispose();
             await Assert.ThrowsAsync<ObjectDisposedException>(() => manager.AddClaimAsync(null, null));
+            await Assert.ThrowsAsync<ObjectDisposedException>(() => manager.AddClaimsAsync(null, null));
             await Assert.ThrowsAsync<ObjectDisposedException>(() => manager.AddLoginAsync(null, null));
             await Assert.ThrowsAsync<ObjectDisposedException>(() => manager.AddPasswordAsync(null, null));
             await Assert.ThrowsAsync<ObjectDisposedException>(() => manager.AddToRoleAsync(null, null));
@@ -594,11 +596,11 @@ namespace Microsoft.AspNet.Identity.Test
             await Assert.ThrowsAsync<ObjectDisposedException>(() => manager.GetRolesAsync(null));
             await Assert.ThrowsAsync<ObjectDisposedException>(() => manager.IsInRoleAsync(null, null));
             await Assert.ThrowsAsync<ObjectDisposedException>(() => manager.RemoveClaimAsync(null, null));
+            await Assert.ThrowsAsync<ObjectDisposedException>(() => manager.RemoveClaimsAsync(null, null));
             await Assert.ThrowsAsync<ObjectDisposedException>(() => manager.RemoveLoginAsync(null, null));
             await Assert.ThrowsAsync<ObjectDisposedException>(() => manager.RemovePasswordAsync(null));
             await Assert.ThrowsAsync<ObjectDisposedException>(() => manager.RemoveFromRoleAsync(null, null));
             await Assert.ThrowsAsync<ObjectDisposedException>(() => manager.RemoveFromRolesAsync(null, null));
-            await Assert.ThrowsAsync<ObjectDisposedException>(() => manager.RemoveClaimAsync(null, null));
             await Assert.ThrowsAsync<ObjectDisposedException>(() => manager.FindByUserNamePasswordAsync(null, null));
             await Assert.ThrowsAsync<ObjectDisposedException>(() => manager.FindByLoginAsync(null));
             await Assert.ThrowsAsync<ObjectDisposedException>(() => manager.FindByIdAsync(null));
@@ -642,12 +644,12 @@ namespace Microsoft.AspNet.Identity.Test
                 return Task.FromResult<IList<Claim>>(new List<Claim>());
             }
 
-            public Task AddClaimAsync(TestUser user, Claim claim, CancellationToken cancellationToken = default(CancellationToken))
+            public Task AddClaimsAsync(TestUser user, IEnumerable<Claim> claim, CancellationToken cancellationToken = default(CancellationToken))
             {
                 return Task.FromResult(0);
             }
 
-            public Task RemoveClaimAsync(TestUser user, Claim claim, CancellationToken cancellationToken = default(CancellationToken))
+            public Task RemoveClaimsAsync(TestUser user, IEnumerable<Claim> claim, CancellationToken cancellationToken = default(CancellationToken))
             {
                 return Task.FromResult(0);
             }
@@ -901,12 +903,12 @@ namespace Microsoft.AspNet.Identity.Test
                 throw new NotImplementedException();
             }
 
-            public Task AddClaimAsync(TestUser user, Claim claim, CancellationToken cancellationToken = default(CancellationToken))
+            public Task AddClaimsAsync(TestUser user, IEnumerable<Claim> claims, CancellationToken cancellationToken = default(CancellationToken))
             {
                 throw new NotImplementedException();
             }
 
-            public Task RemoveClaimAsync(TestUser user, Claim claim, CancellationToken cancellationToken = default(CancellationToken))
+            public Task RemoveClaimsAsync(TestUser user, IEnumerable<Claim> claims, CancellationToken cancellationToken = default(CancellationToken))
             {
                 throw new NotImplementedException();
             }
