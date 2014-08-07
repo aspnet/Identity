@@ -24,7 +24,7 @@ namespace Microsoft.AspNet.Identity.Authentication.Test
         public async Task OnValidateIdentityThrowsWithEmptyServiceCollection()
         {
             var httpContext = new Mock<HttpContext>();
-            httpContext.Setup(c => c.ApplicationServices).Returns(new ServiceCollection().BuildServiceProvider());
+            httpContext.Setup(c => c.RequestServices).Returns(new ServiceCollection().BuildServiceProvider());
             var id = new ClaimsIdentity(ClaimsIdentityOptions.DefaultAuthenticationType);
             var ticket = new AuthenticationTicket(id, new AuthenticationProperties { IssuedUtc = DateTimeOffset.UtcNow });
             var context = new CookieValidateIdentityContext(httpContext.Object, ticket, new CookieAuthenticationOptions());
@@ -50,7 +50,7 @@ namespace Microsoft.AspNet.Identity.Authentication.Test
             signInManager.Setup(s => s.SignInAsync(user, isPersistent, CancellationToken.None)).Returns(Task.FromResult(0)).Verifiable();
             var services = new ServiceCollection();
             services.AddInstance(signInManager.Object);
-            httpContext.Setup(c => c.ApplicationServices).Returns(services.BuildServiceProvider());
+            httpContext.Setup(c => c.RequestServices).Returns(services.BuildServiceProvider());
             var id = new ClaimsIdentity(ClaimsIdentityOptions.DefaultAuthenticationType);
             id.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id));
 
@@ -81,7 +81,7 @@ namespace Microsoft.AspNet.Identity.Authentication.Test
             signInManager.Setup(s => s.ValidateSecurityStampAsync(It.IsAny<ClaimsIdentity>(), user.Id, CancellationToken.None)).ReturnsAsync(null).Verifiable();
             var services = new ServiceCollection();
             services.AddInstance(signInManager.Object);
-            httpContext.Setup(c => c.ApplicationServices).Returns(services.BuildServiceProvider());
+            httpContext.Setup(c => c.RequestServices).Returns(services.BuildServiceProvider());
             var id = new ClaimsIdentity(ClaimsIdentityOptions.DefaultAuthenticationType);
             id.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id));
 
@@ -112,7 +112,7 @@ namespace Microsoft.AspNet.Identity.Authentication.Test
             signInManager.Setup(s => s.ValidateSecurityStampAsync(It.IsAny<ClaimsIdentity>(), user.Id, CancellationToken.None)).ReturnsAsync(null).Verifiable();
             var services = new ServiceCollection();
             services.AddInstance(signInManager.Object);
-            httpContext.Setup(c => c.ApplicationServices).Returns(services.BuildServiceProvider());
+            httpContext.Setup(c => c.RequestServices).Returns(services.BuildServiceProvider());
             var id = new ClaimsIdentity(ClaimsIdentityOptions.DefaultAuthenticationType);
             id.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id));
 
@@ -144,7 +144,7 @@ namespace Microsoft.AspNet.Identity.Authentication.Test
             signInManager.Setup(s => s.SignInAsync(user, false, CancellationToken.None)).Throws(new Exception("Shouldn't be called"));
             var services = new ServiceCollection();
             services.AddInstance(signInManager.Object);
-            httpContext.Setup(c => c.ApplicationServices).Returns(services.BuildServiceProvider());
+            httpContext.Setup(c => c.RequestServices).Returns(services.BuildServiceProvider());
             var id = new ClaimsIdentity(ClaimsIdentityOptions.DefaultAuthenticationType);
             id.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id));
 
