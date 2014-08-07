@@ -275,6 +275,91 @@ namespace Microsoft.AspNet.Identity.Test
             store.VerifyAll();
         }
 
+
+        [Fact]
+        public async Task AddClaimsCallsStore()
+        {
+            // Setup
+            var store = new Mock<IUserClaimStore<TestUser>>();
+            var user = new TestUser { UserName = "Foo" };
+            var claims = new Claim[] { new Claim("1", "1"), new Claim("2", "2"), new Claim("3", "3") };
+            store.Setup(s => s.AddClaimsAsync(user, claims, CancellationToken.None))
+                .Returns(Task.FromResult(0))
+                .Verifiable();
+            store.Setup(s => s.UpdateAsync(user, CancellationToken.None)).Returns(Task.FromResult(0)).Verifiable();
+            var userManager = MockHelpers.TestUserManager<TestUser>(store.Object);
+
+            // Act
+            var result = await userManager.AddClaimsAsync(user, claims);
+
+            // Assert
+            Assert.True(result.Succeeded);
+            store.VerifyAll();
+        }
+
+        [Fact]
+        public async Task AddClaimCallsStore()
+        {
+            // Setup
+            var store = new Mock<IUserClaimStore<TestUser>>();
+            var user = new TestUser { UserName = "Foo" };
+            var claim = new Claim("1", "1");
+            store.Setup(s => s.AddClaimsAsync(user, It.IsAny<IEnumerable<Claim>>(), CancellationToken.None))
+                .Returns(Task.FromResult(0))
+                .Verifiable();
+            store.Setup(s => s.UpdateAsync(user, CancellationToken.None)).Returns(Task.FromResult(0)).Verifiable();
+            var userManager = MockHelpers.TestUserManager<TestUser>(store.Object);
+
+            // Act
+            var result = await userManager.AddClaimAsync(user, claim);
+
+            // Assert
+            Assert.True(result.Succeeded);
+            store.VerifyAll();
+        }
+
+        [Fact]
+        public async Task RemoveClaimsCallsStore()
+        {
+            // Setup
+            var store = new Mock<IUserClaimStore<TestUser>>();
+            var user = new TestUser { UserName = "Foo" };
+            var claims = new Claim[] { new Claim("1", "1"), new Claim("2", "2"), new Claim("3", "3") };
+            store.Setup(s => s.RemoveClaimsAsync(user, claims, CancellationToken.None))
+                .Returns(Task.FromResult(0))
+                .Verifiable();
+            store.Setup(s => s.UpdateAsync(user, CancellationToken.None)).Returns(Task.FromResult(0)).Verifiable();
+            var userManager = MockHelpers.TestUserManager<TestUser>(store.Object);
+
+            // Act
+            var result = await userManager.RemoveClaimsAsync(user, claims);
+
+            // Assert
+            Assert.True(result.Succeeded);
+            store.VerifyAll();
+        }
+
+        [Fact]
+        public async Task RemoveClaimCallsStore()
+        {
+            // Setup
+            var store = new Mock<IUserClaimStore<TestUser>>();
+            var user = new TestUser { UserName = "Foo" };
+            var claim = new Claim("1", "1");
+            store.Setup(s => s.RemoveClaimsAsync(user, It.IsAny<IEnumerable<Claim>>(), CancellationToken.None))
+                .Returns(Task.FromResult(0))
+                .Verifiable();
+            store.Setup(s => s.UpdateAsync(user, CancellationToken.None)).Returns(Task.FromResult(0)).Verifiable();
+            var userManager = MockHelpers.TestUserManager<TestUser>(store.Object);
+
+            // Act
+            var result = await userManager.RemoveClaimAsync(user, claim);
+
+            // Assert
+            Assert.True(result.Succeeded);
+            store.VerifyAll();
+        }
+
 #endif
 
         [Fact]
