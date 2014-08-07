@@ -472,7 +472,8 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             {
                 UserId = user.Id,
                 ProviderKey = login.ProviderKey,
-                LoginProvider = login.LoginProvider
+                LoginProvider = login.LoginProvider,
+                ProviderDisplayName = login.ProviderDisplayName
             };
             // TODO: fixup so we don't have to update both
             UserLogins.Add(l);
@@ -514,7 +515,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
                 throw new ArgumentNullException("user");
             }
             // todo: ensure logins loaded
-            var result = user.Logins.Select(l => new UserLoginInfo(l.LoginProvider, l.ProviderKey)).ToList();
+            var result = user.Logins.Select(l => new UserLoginInfo(l.LoginProvider, l.ProviderKey, l.ProviderDisplayName)).ToList();
             return Task.FromResult((IList<UserLoginInfo>)result);
         }
 

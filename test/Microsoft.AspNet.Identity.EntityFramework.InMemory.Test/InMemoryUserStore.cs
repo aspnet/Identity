@@ -229,7 +229,8 @@ namespace Microsoft.AspNet.Identity.EntityFramework.InMemory.Test
             {
                 UserId = user.Id,
                 ProviderKey = login.ProviderKey,
-                LoginProvider = login.LoginProvider
+                LoginProvider = login.LoginProvider,
+                ProviderDisplayName = login.ProviderDisplayName
             };
             await Context.Set<TUserLogin>().AddAsync(l, cancellationToken);
             user.Logins.Add(l);
@@ -267,7 +268,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.InMemory.Test
                 throw new ArgumentNullException("user");
             }
             IList<UserLoginInfo> result =
-                user.Logins.Select(l => new UserLoginInfo(l.LoginProvider, l.ProviderKey)).ToList();
+                user.Logins.Select(l => new UserLoginInfo(l.LoginProvider, l.ProviderKey, l.ProviderDisplayName)).ToList();
             return Task.FromResult(result);
         }
 

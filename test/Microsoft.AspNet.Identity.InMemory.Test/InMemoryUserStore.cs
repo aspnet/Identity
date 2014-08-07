@@ -131,7 +131,8 @@ namespace Microsoft.AspNet.Identity.InMemory
             {
                 UserId = user.Id, 
                 LoginProvider = login.LoginProvider, 
-                ProviderKey = login.ProviderKey
+                ProviderKey = login.ProviderKey,
+                ProviderDisplayName = login.ProviderDisplayName
             });
             _logins[login] = user;
             return Task.FromResult(0);
@@ -154,7 +155,7 @@ namespace Microsoft.AspNet.Identity.InMemory
 
         public Task<IList<UserLoginInfo>> GetLoginsAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var logins = user.Logins.Select(l => new UserLoginInfo(l.LoginProvider, l.ProviderKey)).ToList();
+            var logins = user.Logins.Select(l => new UserLoginInfo(l.LoginProvider, l.ProviderKey, l.ProviderDisplayName)).ToList();
             return Task.FromResult<IList<UserLoginInfo>>(logins);
         }
 

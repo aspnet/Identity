@@ -305,23 +305,25 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             const string userName = "CanCreateUserAddLogin";
             const string provider = "ZzAuth";
             const string providerKey = "HaoKey";
+            const string displayName = "Display";
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(new ApplicationUser { UserName = userName }));
             var user = await manager.FindByNameAsync(userName);
             Assert.NotNull(user);
-            var login = new UserLoginInfo(provider, providerKey);
+            var login = new UserLoginInfo(provider, providerKey, displayName);
             IdentityResultAssert.IsSuccess(await manager.AddLoginAsync(user, login));
             var logins = await manager.GetLoginsAsync(user);
             Assert.NotNull(logins);
             Assert.Equal(1, logins.Count());
             Assert.Equal(provider, logins.First().LoginProvider);
             Assert.Equal(providerKey, logins.First().ProviderKey);
+            Assert.Equal(displayName, logins.First().ProviderDisplayName);
         }
 
         [Fact]
         public async Task CanCreateUserLoginAndAddPassword()
         {
             var manager = CreateManager();
-            var login = new UserLoginInfo("Provider", "key");
+            var login = new UserLoginInfo("Provider", "key", "display");
             var user = new ApplicationUser();
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
             IdentityResultAssert.IsSuccess(await manager.AddLoginAsync(user, login));
@@ -331,12 +333,8 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             var logins = await manager.GetLoginsAsync(user);
             Assert.NotNull(logins);
             Assert.Equal(1, logins.Count());
-            // REVIEW: need to remove this
-            manager = CreateManager();
-            var fetch = await manager.FindByLoginAsync(login);
-            Assert.Equal(user.Id, fetch.Id);
-            fetch = await manager.FindByUserNamePasswordAsync(user.UserName, "password");
-            Assert.Equal(user.Id, fetch.Id);
+            Assert.Equal(user, await manager.FindByLoginAsync(login));
+            Assert.Equal(user, await manager.FindByUserNamePasswordAsync(user.UserName, "password"));
         }
 
         [Fact]
@@ -355,18 +353,18 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         {
             var manager = CreateManager();
             var user = new ApplicationUser();
-            var login = new UserLoginInfo("Provider", "key");
+            var login = new UserLoginInfo("Provider", "key", "display");
             var result = await manager.CreateAsync(user);
             Assert.NotNull(user);
             IdentityResultAssert.IsSuccess(result);
             IdentityResultAssert.IsSuccess(await manager.AddLoginAsync(user, login));
-            var fetch = await manager.FindByLoginAsync(login);
-            Assert.Equal(user.Id, fetch.Id);
+            Assert.Equal(user, await manager.FindByLoginAsync(login));
             var logins = await manager.GetLoginsAsync(user);
             Assert.NotNull(logins);
             Assert.Equal(1, logins.Count());
             Assert.Equal(login.LoginProvider, logins.Last().LoginProvider);
             Assert.Equal(login.ProviderKey, logins.Last().ProviderKey);
+            Assert.Equal(login.ProviderDisplayName, logins.Last().ProviderDisplayName);
             var stamp = user.SecurityStamp;
             IdentityResultAssert.IsSuccess(await manager.RemoveLoginAsync(user, login));
             Assert.Null(await manager.FindByLoginAsync(login));
@@ -495,7 +493,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         {
             var manager = CreateManager();
             var user = new ApplicationUser();
-            var login = new UserLoginInfo("provder", "key");
+            var login = new UserLoginInfo("provder", "key", "display");
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
             IdentityResultAssert.IsSuccess(await manager.AddLoginAsync(user, login));
             var result = await manager.AddLoginAsync(user, login);

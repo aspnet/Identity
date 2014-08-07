@@ -485,7 +485,7 @@ namespace Microsoft.AspNet.Identity.Test
             await Assert.ThrowsAsync<ArgumentNullException>("user",
                 async () => await manager.AddClaimAsync(null, new Claim("a", "b")));
             await Assert.ThrowsAsync<ArgumentNullException>("user",
-                async () => await manager.AddLoginAsync(null, new UserLoginInfo("", "")));
+                async () => await manager.AddLoginAsync(null, new UserLoginInfo("", "", "")));
             await Assert.ThrowsAsync<ArgumentNullException>("user",
                 async () => await manager.AddPasswordAsync(null, null));
             await Assert.ThrowsAsync<ArgumentNullException>("user",
@@ -505,7 +505,7 @@ namespace Microsoft.AspNet.Identity.Test
             await Assert.ThrowsAsync<ArgumentNullException>("user",
                 async () => await manager.RemoveClaimAsync(null, new Claim("a", "b")));
             await Assert.ThrowsAsync<ArgumentNullException>("user",
-                async () => await manager.RemoveLoginAsync(null, new UserLoginInfo("", "")));
+                async () => await manager.RemoveLoginAsync(null, new UserLoginInfo("", "", "")));
             await Assert.ThrowsAsync<ArgumentNullException>("user",
                 async () => await manager.RemovePasswordAsync(null));
             await Assert.ThrowsAsync<ArgumentNullException>("user",
