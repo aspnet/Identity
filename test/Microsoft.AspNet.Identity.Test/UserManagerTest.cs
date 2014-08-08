@@ -877,7 +877,7 @@ namespace Microsoft.AspNet.Identity.Test
             {
             }
 
-            public Task SetUserNameAsync(TestUser user, string userName, CancellationToken cancellationToken = new CancellationToken())
+            public Task SetUserNameAsync(TestUser user, string userName, CancellationToken cancellationToken = default(CancellationToken))
             {
                 return Task.FromResult(0);
             }
@@ -1137,17 +1137,17 @@ namespace Microsoft.AspNet.Identity.Test
                 throw new NotImplementedException();
             }
 
-            public Task<string> GetUserIdAsync(TestUser user, CancellationToken cancellationToken = new CancellationToken())
+            public Task<string> GetUserIdAsync(TestUser user, CancellationToken cancellationToken = default(CancellationToken))
             {
                 throw new NotImplementedException();
             }
 
-            public Task<string> GetUserNameAsync(TestUser user, CancellationToken cancellationToken = new CancellationToken())
+            public Task<string> GetUserNameAsync(TestUser user, CancellationToken cancellationToken = default(CancellationToken))
             {
                 throw new NotImplementedException();
             }
 
-            public Task SetUserNameAsync(TestUser user, string userName, CancellationToken cancellationToken = new CancellationToken())
+            public Task SetUserNameAsync(TestUser user, string userName, CancellationToken cancellationToken = default(CancellationToken))
             {
                 throw new NotImplementedException();
             }
@@ -1222,22 +1222,22 @@ namespace Microsoft.AspNet.Identity.Test
                 throw new NotImplementedException();
             }
 
-            public Task AddToRoleAsync(TestUser user, string roleName, CancellationToken cancellationToken = new CancellationToken())
+            public Task AddToRoleAsync(TestUser user, string roleName, CancellationToken cancellationToken = default(CancellationToken))
             {
                 throw new NotImplementedException();
             }
 
-            public Task RemoveFromRoleAsync(TestUser user, string roleName, CancellationToken cancellationToken = new CancellationToken())
+            public Task RemoveFromRoleAsync(TestUser user, string roleName, CancellationToken cancellationToken = default(CancellationToken))
             {
                 throw new NotImplementedException();
             }
 
-            public Task<IList<string>> GetRolesAsync(TestUser user, CancellationToken cancellationToken = new CancellationToken())
+            public Task<IList<string>> GetRolesAsync(TestUser user, CancellationToken cancellationToken = default(CancellationToken))
             {
                 throw new NotImplementedException();
             }
 
-            public Task<bool> IsInRoleAsync(TestUser user, string roleName, CancellationToken cancellationToken = new CancellationToken())
+            public Task<bool> IsInRoleAsync(TestUser user, string roleName, CancellationToken cancellationToken = default(CancellationToken))
             {
                 throw new NotImplementedException();
             }

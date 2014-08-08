@@ -442,7 +442,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         public async Task CanCreateUserLoginAndAddPassword()
         {
             var manager = CreateManager();
-            var login = new UserLoginInfo("Provider", "key", "display");
+            var login = new UserLoginInfo { LoginProvider = "Provider", ProviderKey = "key", ProviderDisplayName = "display" };
             var user = new IdentityUser("CreateUserLoginAddPasswordTest");
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
             IdentityResultAssert.IsSuccess(await manager.AddLoginAsync(user, login));
@@ -472,7 +472,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         {
             var manager = CreateManager();
             var user = new IdentityUser("CreateUserAddRemoveLoginTest");
-            var login = new UserLoginInfo("Provider", "key", "display");
+            var login = new UserLoginInfo { LoginProvider = "Provider", ProviderKey = "key", ProviderDisplayName = "display" };
             var result = await manager.CreateAsync(user);
             Assert.NotNull(user);
             IdentityResultAssert.IsSuccess(result);

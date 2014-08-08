@@ -309,8 +309,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(new ApplicationUser { UserName = userName }));
             var user = await manager.FindByNameAsync(userName);
             Assert.NotNull(user);
-            var login = new UserLoginInfo(provider, providerKey, displayName);
-            IdentityResultAssert.IsSuccess(await manager.AddLoginAsync(user, login));
+            IdentityResultAssert.IsSuccess(await manager.AddLoginAsync(user, provider, providerKey, displayName));
             var logins = await manager.GetLoginsAsync(user);
             Assert.NotNull(logins);
             Assert.Equal(1, logins.Count());
@@ -323,17 +322,17 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         public async Task CanCreateUserLoginAndAddPassword()
         {
             var manager = CreateManager();
-            var login = new UserLoginInfo("Provider", "key", "display");
+            var login = new UserLoginInfo { LoginProvider = "Provider", ProviderKey = "key", ProviderDisplayName = "display" };
             var user = new ApplicationUser();
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
-            IdentityResultAssert.IsSuccess(await manager.AddLoginAsync(user, login));
+            IdentityResultAssert.IsSuccess(await manager.AddLoginAsync(user, login.LoginProvider, login.ProviderKey, login.ProviderDisplayName));
             Assert.False(await manager.HasPasswordAsync(user));
             IdentityResultAssert.IsSuccess(await manager.AddPasswordAsync(user, "password"));
             Assert.True(await manager.HasPasswordAsync(user));
             var logins = await manager.GetLoginsAsync(user);
             Assert.NotNull(logins);
             Assert.Equal(1, logins.Count());
-            Assert.Equal(user, await manager.FindByLoginAsync(login));
+            Assert.Equal(user, await manager.FindByLoginAsync(login.LoginProvider, login.ProviderKey));
             Assert.Equal(user, await manager.FindByUserNamePasswordAsync(user.UserName, "password"));
         }
 
@@ -353,12 +352,12 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         {
             var manager = CreateManager();
             var user = new ApplicationUser();
-            var login = new UserLoginInfo("Provider", "key", "display");
+            var login = new UserLoginInfo { LoginProvider = "Provider", ProviderKey = "key", ProviderDisplayName = "display" };
             var result = await manager.CreateAsync(user);
             Assert.NotNull(user);
             IdentityResultAssert.IsSuccess(result);
-            IdentityResultAssert.IsSuccess(await manager.AddLoginAsync(user, login));
-            Assert.Equal(user, await manager.FindByLoginAsync(login));
+            IdentityResultAssert.IsSuccess(await manager.AddLoginAsync(user, login.LoginProvider, login.ProviderKey, login.ProviderDisplayName));
+            Assert.Equal(user, await manager.FindByLoginAsync(login.LoginProvider, login.ProviderKey));
             var logins = await manager.GetLoginsAsync(user);
             Assert.NotNull(logins);
             Assert.Equal(1, logins.Count());
@@ -366,8 +365,8 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             Assert.Equal(login.ProviderKey, logins.Last().ProviderKey);
             Assert.Equal(login.ProviderDisplayName, logins.Last().ProviderDisplayName);
             var stamp = user.SecurityStamp;
-            IdentityResultAssert.IsSuccess(await manager.RemoveLoginAsync(user, login));
-            Assert.Null(await manager.FindByLoginAsync(login));
+            IdentityResultAssert.IsSuccess(await manager.RemoveLoginAsync(user, login.LoginProvider, login.ProviderKey));
+            Assert.Null(await manager.FindByLoginAsync(login.LoginProvider, login.ProviderKey));
             logins = await manager.GetLoginsAsync(user);
             Assert.NotNull(logins);
             Assert.Equal(0, logins.Count());
@@ -493,10 +492,10 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         {
             var manager = CreateManager();
             var user = new ApplicationUser();
-            var login = new UserLoginInfo("provder", "key", "display");
+            var login = new UserLoginInfo { LoginProvider = "Provider", ProviderKey = "key", ProviderDisplayName = "display" };
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
-            IdentityResultAssert.IsSuccess(await manager.AddLoginAsync(user, login));
-            var result = await manager.AddLoginAsync(user, login);
+            IdentityResultAssert.IsSuccess(await manager.AddLoginAsync(user, login.LoginProvider, login.ProviderKey, login.ProviderDisplayName));
+            var result = await manager.AddLoginAsync(user, login.LoginProvider, login.ProviderKey, login.ProviderDisplayName));
             IdentityResultAssert.IsFailure(result, "A user with that external login already exists.");
         }
 

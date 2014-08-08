@@ -795,14 +795,25 @@ namespace Microsoft.AspNet.Identity
         }
 
         /// <summary>
-        ///     Returns the user associated with this login
+        /// Returns the user associated with this login
         /// </summary>
+        /// <param name="loginProvider"></param>
+        /// <param name="providerKey"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public virtual Task<TUser> FindByLoginAsync(UserLoginInfo login,
+        public virtual Task<TUser> FindByLoginAsync(string loginProvider, string providerKey,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             ThrowIfDisposed();
-            return GetLoginStore().FindByLoginAsync(login, cancellationToken);
+            if (loginProvider == null)
+            {
+                throw new ArgumentNullException("loginProvider");
+            }
+            if (providerKey == null)
+            {
+                throw new ArgumentNullException("providerKey");
+            }
+            return GetLoginStore().FindByLoginAsync(loginProvider, providerKey, cancellationToken);
         }
 
         /// <summary>
@@ -812,20 +823,24 @@ namespace Microsoft.AspNet.Identity
         /// <param name="login"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public virtual async Task<IdentityResult> RemoveLoginAsync(TUser user, UserLoginInfo login,
+        public virtual async Task<IdentityResult> RemoveLoginAsync(TUser user, string loginProvider, string providerKey,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             ThrowIfDisposed();
             var loginStore = GetLoginStore();
-            if (login == null)
+            if (loginProvider == null)
             {
-                throw new ArgumentNullException("login");
+                throw new ArgumentNullException("loginProvider");
+            }
+            if (providerKey == null)
+            {
+                throw new ArgumentNullException("providerKey");
             }
             if (user == null)
             {
                 throw new ArgumentNullException("user");
             }
-            await loginStore.RemoveLoginAsync(user, login, cancellationToken);
+            await loginStore.RemoveLoginAsync(user, loginProvider, providerKey, cancellationToken);
             await UpdateSecurityStampInternal(user, cancellationToken);
             return await UpdateAsync(user, cancellationToken);
         }
@@ -837,25 +852,29 @@ namespace Microsoft.AspNet.Identity
         /// <param name="login"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public virtual async Task<IdentityResult> AddLoginAsync(TUser user, UserLoginInfo login,
-            CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<IdentityResult> AddLoginAsync(TUser user, string loginProvider, string providerKey,
+            string providerDisplayName, CancellationToken cancellationToken = default(CancellationToken))
         {
             ThrowIfDisposed();
             var loginStore = GetLoginStore();
-            if (login == null)
+            if (loginProvider == null)
             {
-                throw new ArgumentNullException("login");
+                throw new ArgumentNullException("loginProvider");
+            }
+            if (providerKey == null)
+            {
+                throw new ArgumentNullException("providerKey");
             }
             if (user == null)
             {
                 throw new ArgumentNullException("user");
             }
-            var existingUser = await FindByLoginAsync(login, cancellationToken);
+            var existingUser = await FindByLoginAsync(loginProvider, providerKey, cancellationToken);
             if (existingUser != null)
             {
                 return IdentityResult.Failed(Resources.ExternalLoginExists);
             }
-            await loginStore.AddLoginAsync(user, login, cancellationToken);
+            await loginStore.AddLoginAsync(user, loginProvider, providerKey, providerDisplayName, cancellationToken);
             return await UpdateAsync(user, cancellationToken);
         }
 

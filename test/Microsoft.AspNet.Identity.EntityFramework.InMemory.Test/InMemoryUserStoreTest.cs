@@ -281,7 +281,6 @@ namespace Microsoft.AspNet.Identity.EntityFramework.InMemory.Test
             IdentityResultAssert.IsFailure(await manager.CreateAsync(user), "Email cannot be null or empty.");
         }
 
-#if NET45
         [Theory]
         [InlineData("@@afd")]
         [InlineData("bogus")]
@@ -292,7 +291,6 @@ namespace Microsoft.AspNet.Identity.EntityFramework.InMemory.Test
             manager.Options.User.RequireUniqueEmail = true;
             IdentityResultAssert.IsFailure(await manager.CreateAsync(user), "Email '" + email + "' is invalid.");
         }
-#endif
 
         [Fact]
         public async Task PasswordValidatorCanBlockAddPassword()
@@ -350,7 +348,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.InMemory.Test
             Assert.Equal(display, logins.First().ProviderDisplayName);
         }
 
-        //[Fact] Disabled--see issue #107
+        [Fact]
         public async Task CanCreateUserLoginAndAddPassword()
         {
             var manager = TestIdentityFactory.CreateManager();

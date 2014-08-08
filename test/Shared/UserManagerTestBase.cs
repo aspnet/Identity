@@ -170,8 +170,7 @@ namespace Microsoft.AspNet.Identity.Test
             const string display = "display";
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(new TUser() { UserName = userName }));
             var user = await manager.FindByNameAsync(userName);
-            var login = new UserLoginInfo(provider, providerKey, display);
-            IdentityResultAssert.IsSuccess(await manager.AddLoginAsync(user, login));
+            IdentityResultAssert.IsSuccess(await manager.AddLoginAsync(user, provider, providerKey, display));
             var logins = await manager.GetLoginsAsync(user);
             Assert.NotNull(logins);
             Assert.Equal(1, logins.Count());
@@ -184,17 +183,17 @@ namespace Microsoft.AspNet.Identity.Test
         public async Task CanCreateUserLoginAndAddPassword()
         {
             var manager = CreateManager();
-            var login = new UserLoginInfo("Provider", "key", "display");
+            var login = new UserLoginInfo { LoginProvider = "Provider", ProviderKey = "key", ProviderDisplayName = "display" };
             var user = new TUser() { UserName = "CreateUserLoginAddPasswordTest" };
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
-            IdentityResultAssert.IsSuccess(await manager.AddLoginAsync(user, login));
+            IdentityResultAssert.IsSuccess(await manager.AddLoginAsync(user, login.LoginProvider, login.ProviderKey, login.ProviderDisplayName));
             Assert.False(await manager.HasPasswordAsync(user));
             IdentityResultAssert.IsSuccess(await manager.AddPasswordAsync(user, "password"));
             Assert.True(await manager.HasPasswordAsync(user));
             var logins = await manager.GetLoginsAsync(user);
             Assert.NotNull(logins);
             Assert.Equal(1, logins.Count());
-            Assert.Equal(user, await manager.FindByLoginAsync(login));
+            Assert.Equal(user, await manager.FindByLoginAsync(login.LoginProvider, login.ProviderKey));
             Assert.Equal(user, await manager.FindByUserNamePasswordAsync(user.UserName, "password"));
         }
 
@@ -349,10 +348,10 @@ namespace Microsoft.AspNet.Identity.Test
         {
             var manager = CreateManager();
             var user = new TUser() { UserName = "DupeLogin" };
-            var login = new UserLoginInfo("provder", "key", "display");
+            var login = new UserLoginInfo { LoginProvider = "Provider", ProviderKey = "key", ProviderDisplayName = "display" };
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
-            IdentityResultAssert.IsSuccess(await manager.AddLoginAsync(user, login));
-            var result = await manager.AddLoginAsync(user, login);
+            IdentityResultAssert.IsSuccess(await manager.AddLoginAsync(user, login.LoginProvider, login.ProviderKey, login.ProviderDisplayName));
+            var result = await manager.AddLoginAsync(user, login.LoginProvider, login.ProviderKey, login.ProviderDisplayName));
             IdentityResultAssert.IsFailure(result, "A user with that external login already exists.");
         }
 

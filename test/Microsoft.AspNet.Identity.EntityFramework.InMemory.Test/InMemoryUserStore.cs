@@ -83,7 +83,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.InMemory.Test
                 //.Include(u => u.Logins)
         }
 
-        public Task<string> GetUserIdAsync(TUser user, CancellationToken cancellationToken = new CancellationToken())
+        public Task<string> GetUserIdAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -94,7 +94,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.InMemory.Test
             return Task.FromResult(Convert.ToString(user.Id, CultureInfo.InvariantCulture));
         }
 
-        public Task<string> GetUserNameAsync(TUser user, CancellationToken cancellationToken = new CancellationToken())
+        public Task<string> GetUserNameAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -105,7 +105,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.InMemory.Test
             return Task.FromResult(user.UserName);
         }
 
-        public Task SetUserNameAsync(TUser user, string userName, CancellationToken cancellationToken = new CancellationToken())
+        public Task SetUserNameAsync(TUser user, string userName, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -117,7 +117,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.InMemory.Test
             return Task.FromResult(0);
         }
 
-        public Task<string> GetNormalizedUserNameAsync(TUser user, CancellationToken cancellationToken = new CancellationToken())
+        public Task<string> GetNormalizedUserNameAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -128,7 +128,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.InMemory.Test
             return Task.FromResult(user.NormalizedUserName);
         }
 
-        public Task SetNormalizedUserNameAsync(TUser user, string userName, CancellationToken cancellationToken = new CancellationToken())
+        public Task SetNormalizedUserNameAsync(TUser user, string userName, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -213,7 +213,8 @@ namespace Microsoft.AspNet.Identity.EntityFramework.InMemory.Test
             get { return Context.Set<TUser>(); }
         }
 
-        public async virtual Task AddLoginAsync(TUser user, UserLoginInfo login, CancellationToken cancellationToken = default(CancellationToken))
+        public async virtual Task AddLoginAsync(TUser user, string loginProvider, string providerKey,
+            string providerDisplayName, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -221,16 +222,12 @@ namespace Microsoft.AspNet.Identity.EntityFramework.InMemory.Test
             {
                 throw new ArgumentNullException("user");
             }
-            if (login == null)
-            {
-                throw new ArgumentNullException("login");
-            }
             var l = new TUserLogin
             {
                 UserId = user.Id,
-                ProviderKey = login.ProviderKey,
-                LoginProvider = login.LoginProvider,
-                ProviderDisplayName = login.ProviderDisplayName
+                ProviderKey = providerKey,
+                LoginProvider = loginProvider,
+                ProviderDisplayName = providerDisplayName
             };
             await Context.Set<TUserLogin>().AddAsync(l, cancellationToken);
             user.Logins.Add(l);

@@ -174,17 +174,17 @@ namespace Microsoft.AspNet.Identity.InMemory
             return Task.FromResult<TUser>(null);
         }
 
-        public Task<string> GetUserIdAsync(TUser user, CancellationToken cancellationToken = new CancellationToken())
+        public Task<string> GetUserIdAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.FromResult(user.Id);
         }
 
-        public Task<string> GetUserNameAsync(TUser user, CancellationToken cancellationToken = new CancellationToken())
+        public Task<string> GetUserNameAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.FromResult(user.UserName);
         }
 
-        public Task SetUserNameAsync(TUser user, string userName, CancellationToken cancellationToken = new CancellationToken())
+        public Task SetUserNameAsync(TUser user, string userName, CancellationToken cancellationToken = default(CancellationToken))
         {
             user.UserName = userName;
             return Task.FromResult(0);
