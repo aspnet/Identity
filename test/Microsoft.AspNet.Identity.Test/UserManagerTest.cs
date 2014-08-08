@@ -501,8 +501,6 @@ namespace Microsoft.AspNet.Identity.Test
             store.VerifyAll();
         }
 
-#endif
-
         [Fact]
         public async Task CheckPasswordWithNullUserReturnsFalse()
         {
