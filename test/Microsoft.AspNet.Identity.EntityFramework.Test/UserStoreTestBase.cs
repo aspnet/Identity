@@ -304,10 +304,10 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             var manager = CreateManager();
             const string userName = "CanCreateUserAddLogin";
             const string provider = "ZzAuth";
-            const string providerKey = "HaoKey";
             const string displayName = "Display";
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(new ApplicationUser { UserName = userName }));
             var user = await manager.FindByNameAsync(userName);
+            var providerKey = user.Id.ToString();
             Assert.NotNull(user);
             IdentityResultAssert.IsSuccess(await manager.AddLoginAsync(user, provider, providerKey, displayName));
             var logins = await manager.GetLoginsAsync(user);
@@ -322,8 +322,8 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         public async Task CanCreateUserLoginAndAddPassword()
         {
             var manager = CreateManager();
-            var login = new UserLoginInfo { LoginProvider = "Provider", ProviderKey = "key", ProviderDisplayName = "display" };
             var user = new ApplicationUser();
+            var login = new UserLoginInfo { LoginProvider = "Provider", ProviderKey = user.Id.ToString(), ProviderDisplayName = "display" };
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
             IdentityResultAssert.IsSuccess(await manager.AddLoginAsync(user, login.LoginProvider, login.ProviderKey, login.ProviderDisplayName));
             Assert.False(await manager.HasPasswordAsync(user));
@@ -352,7 +352,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         {
             var manager = CreateManager();
             var user = new ApplicationUser();
-            var login = new UserLoginInfo { LoginProvider = "Provider", ProviderKey = "key", ProviderDisplayName = "display" };
+            var login = new UserLoginInfo { LoginProvider = "Provider", ProviderKey = user.Id.ToString(), ProviderDisplayName = "display" };
             var result = await manager.CreateAsync(user);
             Assert.NotNull(user);
             IdentityResultAssert.IsSuccess(result);
@@ -495,7 +495,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             var login = new UserLoginInfo { LoginProvider = "Provider", ProviderKey = "key", ProviderDisplayName = "display" };
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
             IdentityResultAssert.IsSuccess(await manager.AddLoginAsync(user, login.LoginProvider, login.ProviderKey, login.ProviderDisplayName));
-            var result = await manager.AddLoginAsync(user, login.LoginProvider, login.ProviderKey, login.ProviderDisplayName));
+            var result = await manager.AddLoginAsync(user, login.LoginProvider, login.ProviderKey, login.ProviderDisplayName);
             IdentityResultAssert.IsFailure(result, "A user with that external login already exists.");
         }
 
@@ -1249,16 +1249,6 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             IdentityResultAssert.IsSuccess(await roleMgr.CreateAsync(role));
             var result = await userMgr.RemoveFromRoleAsync(user, role.Name);
             IdentityResultAssert.IsFailure(result, "User is not in role.");
-        }
-
-        [Fact]
-        public async Task AddUserToUnknownRoleFails()
-        {
-            var manager = CreateManager();
-            var u = new ApplicationUser();
-            IdentityResultAssert.IsSuccess(await manager.CreateAsync(u));
-            await Assert.ThrowsAsync<InvalidOperationException>(
-                async () => await manager.AddToRoleAsync(u, "bogus"));
         }
 
         [Fact]

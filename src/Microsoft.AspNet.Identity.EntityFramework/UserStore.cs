@@ -461,7 +461,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             return Task.FromResult(0);
         }
 
-        public async virtual Task AddLoginAsync(TUser user, string loginProvider, string providerKey,
+        public virtual Task AddLoginAsync(TUser user, string loginProvider, string providerKey,
             string providerDisplayName, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -478,8 +478,9 @@ namespace Microsoft.AspNet.Identity.EntityFramework
                 ProviderDisplayName = providerDisplayName
             };
             // TODO: fixup so we don't have to update both
-            await UserLogins.AddAsync(l);
+            UserLogins.Add(l);
             user.Logins.Add(l);
+            return Task.FromResult(0);
         }
 
         public virtual Task RemoveLoginAsync(TUser user, string loginProvider, string providerKey,
@@ -511,13 +512,13 @@ namespace Microsoft.AspNet.Identity.EntityFramework
                 throw new ArgumentNullException("user");
             }
             // todo: ensure logins loaded
-            var result = user.Logins.Select(l => new UserLoginInfo
+            IList<UserLoginInfo> result = user.Logins.Select(l => new UserLoginInfo
             {
                 LoginProvider = l.LoginProvider,
                 ProviderKey = l.ProviderKey,
                 ProviderDisplayName = l.ProviderDisplayName
             }).ToList();
-            return Task.FromResult((IList<UserLoginInfo>)result);
+            return Task.FromResult(result);
         }
 
         public async virtual Task<TUser> FindByLoginAsync(string loginProvider, string providerKey,
@@ -526,8 +527,8 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
             // todo: ensure logins loaded
-            var userLogin = await 
-                UserLogins.FirstOrDefaultAsync(l => l.LoginProvider == loginProvider && l.ProviderKey == providerKey);
+            var userLogin = 
+                UserLogins.FirstOrDefault(l => l.LoginProvider == loginProvider && l.ProviderKey == providerKey);
             if (userLogin != null)
             {
                 return await GetUserAggregate(u => u.Id.Equals(userLogin.UserId), cancellationToken);
@@ -637,8 +638,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             {
                 throw new ArgumentNullException("user");
             }
-            return
-                Task.FromResult(user.LockoutEnd);
+            return Task.FromResult(user.LockoutEnd);
         }
 
         /// <summary>

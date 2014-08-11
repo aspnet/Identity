@@ -805,6 +805,7 @@ namespace Microsoft.AspNet.Identity
             CancellationToken cancellationToken = default(CancellationToken))
         {
             ThrowIfDisposed();
+            var loginStore = GetLoginStore();
             if (loginProvider == null)
             {
                 throw new ArgumentNullException("loginProvider");
@@ -813,7 +814,7 @@ namespace Microsoft.AspNet.Identity
             {
                 throw new ArgumentNullException("providerKey");
             }
-            return GetLoginStore().FindByLoginAsync(loginProvider, providerKey, cancellationToken);
+            return loginStore.FindByLoginAsync(loginProvider, providerKey, cancellationToken);
         }
 
         /// <summary>

@@ -205,7 +205,7 @@ namespace Microsoft.AspNet.Identity
         public async Task<SignInStatus> ExternalLoginSignInAsync(UserLoginInfo loginInfo, bool isPersistent,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            var user = await UserManager.FindByLoginAsync(loginInfo, cancellationToken);
+            var user = await UserManager.FindByLoginAsync(loginInfo.LoginProvider, loginInfo.ProviderDisplayName, cancellationToken);
             if (user == null)
             {
                 return SignInStatus.Failure;

@@ -22,10 +22,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EntityInMemoryTestServiceCollectionExtensions.cs" />
-    <Compile Include="InMemoryUser.cs" />
     <Compile Include="InMemoryContext.cs" />
     <Compile Include="InMemoryUserStore.cs" />
-    <Compile Include="InMemoryUserStoreTest.cs" />
+    <Compile Include="InMemoryEFUserStoreTest.cs" />
     <Compile Include="RoleStoreTest.cs" />
     <Compile Include="TestIdentityFactory.cs" />
   </ItemGroup>
