@@ -944,7 +944,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
-        public async Task CanQuerableRoles()
+        public async Task CanQueryableRoles()
         {
             var manager = CreateRoleManager();
             var roles = GenerateRoles("CanQuerableRolesTest", 4);
@@ -957,28 +957,32 @@ namespace Microsoft.AspNet.Identity.Test
             Assert.Equal(roles[1], r1);
         }
 
-        //[Fact]
-        //public async Task DeleteRoleNonEmptySucceedsTest()
-        //{
-        //    // Need fail if not empty?
-        //    var userMgr = CreateManager();
-        //    var roleMgr = CreateRoleManager();
-        //    var role = CreateRole("deleteNonEmpty");
-        //    Assert.False(await roleMgr.RoleExistsAsync(role.Name));
-        //    IdentityResultAssert.IsSuccess(await roleMgr.CreateAsync(role));
-        //    var user = new TUser() { UserName = "t");
-        //    IdentityResultAssert.IsSuccess(await userMgr.CreateAsync(user));
-        //    IdentityResultAssert.IsSuccess(await userMgr.AddToRoleAsync(user, role.Name));
-        //    IdentityResultAssert.IsSuccess(await roleMgr.DeleteAsync(role));
-        //    Assert.Null(await roleMgr.FindByNameAsync(role.Name));
-        //    Assert.False(await roleMgr.RoleExistsAsync(role.Name));
-        //    // REVIEW: We should throw if deleteing a non empty role?
-        //    var roles = await userMgr.GetRolesAsync(user);
+        [Fact]
+        public async Task DeleteRoleNonEmptySucceedsTest()
+        {
+            // Need fail if not empty?
+            var context = CreateTestContext();
+            var userMgr = CreateManager(context);
+            var roleMgr = CreateRoleManager(context);
+            var role = CreateRole();
+            Assert.False(await roleMgr.RoleExistsAsync(role.Name));
+            IdentityResultAssert.IsSuccess(await roleMgr.CreateAsync(role));
+            var user = CreateTestUser();
+            IdentityResultAssert.IsSuccess(await userMgr.CreateAsync(user));
+            IdentityResultAssert.IsSuccess(await userMgr.AddToRoleAsync(user, role.Name));
+            var roles = await userMgr.GetRolesAsync(user);
+            Assert.Equal(1, roles.Count());
+            IdentityResultAssert.IsSuccess(await roleMgr.DeleteAsync(role));
+            Assert.Null(await roleMgr.FindByNameAsync(role.Name));
+            Assert.False(await roleMgr.RoleExistsAsync(role.Name));
+            // REVIEW: We should throw if deleteing a non empty role?
+            roles = await userMgr.GetRolesAsync(user);
 
-        //    // In memory this doesn't work since there's no concept of cascading deletes
-        //    //Assert.Equal(0, roles.Count());
-        //}
+            // REVIEW: This depends on cascading deletes
+            //Assert.Equal(0, roles.Count());
+        }
 
+        // TODO: cascading deletes?  navigation properties not working
         ////[Fact]
         ////public async Task DeleteUserRemovesFromRoleTest()
         ////{
