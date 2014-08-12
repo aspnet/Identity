@@ -18,6 +18,82 @@ using Xunit;
 
 namespace Microsoft.AspNet.Identity.EntityFramework.Test
 {
+
+    public abstract class SqlStoreTestBase<TUser, TRole, TKey> : UserManagerTestBase<TUser, TRole, TKey>
+        where TUser : IdentityUser<TKey>, new()
+        where TRole : IdentityRole<TKey>, new()
+        where TKey : IEquatable<TKey>
+    {
+        public abstract string ConnectionString { get; }
+
+        public class ApplicationDbContext : IdentityDbContext<TUser, TRole, TKey>
+        {
+            public ApplicationDbContext(IServiceProvider services, IOptionsAccessor<DbContextOptions> options) : base(services, options.Options) { }
+        }
+
+        [TestPriority(-1)]
+        [Fact]
+        public void RecreateDatabase()
+        {
+            CreateContext(true);
+        }
+
+        public ApplicationDbContext CreateContext(bool delete = false)
+        {
+            var services = new ServiceCollection();
+            services.AddEntityFramework().AddSqlServer();
+            services.Add(OptionsServices.GetDefaultServices());
+            services.SetupOptions<DbContextOptions>(options =>
+                options.UseSqlServer(ConnectionString));
+            var serviceProvider = services.BuildServiceProvider();
+            var db = new ApplicationDbContext(serviceProvider,
+                serviceProvider.GetService<IOptionsAccessor<DbContextOptions>>());
+            if (delete)
+            {
+                db.Database.EnsureDeleted();
+            }
+            db.Database.EnsureCreated();
+            return db;
+        }
+
+        protected override object CreateTestContext()
+        {
+            return CreateContext();
+        }
+
+        protected override UserManager<TUser> CreateManager(object context)
+        {
+            if (context == null)
+            {
+                context = CreateTestContext();
+            }
+            return MockHelpers.CreateManager(() => new UserStore<TUser, TRole, ApplicationDbContext, TKey>((ApplicationDbContext)context));
+        }
+
+        protected override RoleManager<TRole> CreateRoleManager(object context)
+        {
+            if (context == null)
+            {
+                context = CreateTestContext();
+            }
+            var services = new ServiceCollection();
+            services.AddIdentity<TUser, TRole>().AddRoleStore(() => new RoleStore<TRole, ApplicationDbContext, TKey>((ApplicationDbContext)context));
+            return services.BuildServiceProvider().GetService<RoleManager<TRole>>();
+        }
+
+        [Fact]
+        public async Task EnsureRoleClaimNavigationProperty()
+        {
+            var context = CreateContext();
+            var roleManager = CreateRoleManager(context);
+            var r = CreateRole();
+            IdentityResultAssert.IsSuccess(await roleManager.CreateAsync(r));
+            var c = new Claim("a", "b");
+            IdentityResultAssert.IsSuccess(await roleManager.AddClaimAsync(r, c));
+            Assert.NotNull(r.Claims.Single(cl => cl.ClaimValue == c.Value && cl.ClaimType == c.Type));
+        }
+    }
+
     public abstract class UserStoreTestBase<ApplicationUser, ApplicationRole, TKey>
         where ApplicationUser : IdentityUser<TKey>, new()
         where ApplicationRole : IdentityRole<TKey>, new()
@@ -542,17 +618,6 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             Assert.Null(mgr.Users.FirstOrDefault(u => u.UserName == "bogus"));
         }
 
-        [Fact]
-        public async Task EnsureRoleClaimNavigationProperty()
-        {
-            var context = CreateContext();
-            var roleManager = CreateRoleManager(context);
-            var r = new ApplicationRole { Name = "EnsureRoleClaimNavigationProperty" };
-            IdentityResultAssert.IsSuccess(await roleManager.CreateAsync(r));
-            var c = new Claim("a", "b");
-            IdentityResultAssert.IsSuccess(await roleManager.AddClaimAsync(r, c));
-            Assert.NotNull(r.Claims.Single(cl => cl.ClaimValue == c.Value && cl.ClaimType == c.Type));
-        }
 
         [Fact]
         public async Task ClaimsIdentityCreatesExpectedClaims()

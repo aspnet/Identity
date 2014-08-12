@@ -307,7 +307,6 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
                 async () => await manager.AddToRoleAsync(u, "bogus"));
         }
 
-
         // TODO: can we move these to UserManagerTestBase?
         [Fact]
         public async Task DeleteRoleNonEmptySucceedsTest()
@@ -351,26 +350,5 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         //    role = await roleMgr.FindByIdAsync(role.Id);
         //    Assert.Equal(0, role.Users.Count);
         //}
-
-
-        private List<IdentityUser> GenerateUsers(string userNamePrefix, int count)
-        {
-            var users = new List<IdentityUser>(count);
-            for (var i=0; i<count; i++)
-            {
-                users.Add(new IdentityUser(userNamePrefix + i));
-            }
-            return users;
-        }
-
-        private List<IdentityRole> GenerateRoles(string namePrefix, int count)
-        {
-            var roles = new List<IdentityRole>(count);
-            for (var i = 0; i < count; i++)
-            {
-                roles.Add(new IdentityRole(namePrefix + i));
-            }
-            return roles;
-        }
     }
 }
