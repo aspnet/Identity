@@ -20,7 +20,7 @@ namespace Microsoft.AspNet.Identity
         /// <param name="login"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task AddLoginAsync(TUser user, string loginProvider, string providerKey, string providerDisplayName,
+        Task AddLoginAsync(TUser user, UserLoginInfo login,
             CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>

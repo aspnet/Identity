@@ -461,8 +461,8 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             return Task.FromResult(0);
         }
 
-        public virtual Task AddLoginAsync(TUser user, string loginProvider, string providerKey,
-            string providerDisplayName, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task AddLoginAsync(TUser user, UserLoginInfo login,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -470,12 +470,16 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             {
                 throw new ArgumentNullException("user");
             }
+            if (login == null)
+            {
+                throw new ArgumentNullException("login");
+            }
             var l = new IdentityUserLogin<TKey>
             {
                 UserId = user.Id,
-                ProviderKey = providerKey,
-                LoginProvider = loginProvider,
-                ProviderDisplayName = providerDisplayName
+                ProviderKey = login.ProviderKey,
+                LoginProvider = login.LoginProvider,
+                ProviderDisplayName = login.ProviderDisplayName
             };
             // TODO: fixup so we don't have to update both
             UserLogins.Add(l);
@@ -512,12 +516,8 @@ namespace Microsoft.AspNet.Identity.EntityFramework
                 throw new ArgumentNullException("user");
             }
             // todo: ensure logins loaded
-            IList<UserLoginInfo> result = user.Logins.Select(l => new UserLoginInfo
-            {
-                LoginProvider = l.LoginProvider,
-                ProviderKey = l.ProviderKey,
-                ProviderDisplayName = l.ProviderDisplayName
-            }).ToList();
+            IList<UserLoginInfo> result = user.Logins
+                .Select(l => new UserLoginInfo(l.LoginProvider, l.ProviderKey, l.ProviderDisplayName)).ToList();
             return Task.FromResult(result);
         }
 

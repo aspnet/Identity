@@ -9,6 +9,19 @@ namespace Microsoft.AspNet.Identity
     public sealed class UserLoginInfo
     {
         /// <summary>
+        ///     Constructor
+        /// </summary>
+        /// <param name="loginProvider"></param>
+        /// <param name="providerKey"></param>
+        /// <param name="displayName"></param>
+        public UserLoginInfo(string loginProvider, string providerKey, string displayName)
+        {
+            LoginProvider = loginProvider;
+            ProviderKey = providerKey;
+            ProviderDisplayName = displayName;
+        }
+
+        /// <summary>
         ///     Provider for the linked login, i.e. Local, Facebook, Google, etc.
         /// </summary>
         public string LoginProvider { get; set; }

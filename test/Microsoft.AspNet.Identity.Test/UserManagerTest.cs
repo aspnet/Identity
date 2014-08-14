@@ -501,7 +501,7 @@ namespace Microsoft.AspNet.Identity.Test
         {
             var manager = MockHelpers.TestUserManager(new NoopUserStore());
             Assert.False(manager.SupportsUserLogin);
-            await Assert.ThrowsAsync<NotSupportedException>(async () => await manager.AddLoginAsync(null, null, null, null));
+            await Assert.ThrowsAsync<NotSupportedException>(async () => await manager.AddLoginAsync(null, null));
             await Assert.ThrowsAsync<NotSupportedException>(async () => await manager.RemoveLoginAsync(null, null, null));
             await Assert.ThrowsAsync<NotSupportedException>(async () => await manager.GetLoginsAsync(null));
             await Assert.ThrowsAsync<NotSupportedException>(async () => await manager.FindByLoginAsync(null, null));
@@ -602,8 +602,7 @@ namespace Microsoft.AspNet.Identity.Test
             await Assert.ThrowsAsync<ArgumentNullException>("claims", async () => await manager.AddClaimsAsync(null, null));
             await Assert.ThrowsAsync<ArgumentNullException>("userName", async () => await manager.FindByNameAsync(null));
             await Assert.ThrowsAsync<ArgumentNullException>("userName", async () => await manager.FindByUserNamePasswordAsync(null, null));
-            await Assert.ThrowsAsync<ArgumentNullException>("loginProvider", async () => await manager.AddLoginAsync(null, null, null, null));
-            await Assert.ThrowsAsync<ArgumentNullException>("providerKey", async () => await manager.AddLoginAsync(null, "", null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>("login", async () => await manager.AddLoginAsync(null, null));
             await Assert.ThrowsAsync<ArgumentNullException>("loginProvider", 
                 async () => await manager.RemoveLoginAsync(null, null, null));
             await Assert.ThrowsAsync<ArgumentNullException>("providerKey",
@@ -628,7 +627,7 @@ namespace Microsoft.AspNet.Identity.Test
             await Assert.ThrowsAsync<ArgumentNullException>("user",
                 async () => await manager.AddClaimAsync(null, new Claim("a", "b")));
             await Assert.ThrowsAsync<ArgumentNullException>("user",
-                async () => await manager.AddLoginAsync(null, "", "", ""));
+                async () => await manager.AddLoginAsync(null, new UserLoginInfo("","","")));
             await Assert.ThrowsAsync<ArgumentNullException>("user",
                 async () => await manager.AddPasswordAsync(null, null));
             await Assert.ThrowsAsync<ArgumentNullException>("user",
@@ -728,7 +727,7 @@ namespace Microsoft.AspNet.Identity.Test
             manager.Dispose();
             await Assert.ThrowsAsync<ObjectDisposedException>(() => manager.AddClaimAsync(null, null));
             await Assert.ThrowsAsync<ObjectDisposedException>(() => manager.AddClaimsAsync(null, null));
-            await Assert.ThrowsAsync<ObjectDisposedException>(() => manager.AddLoginAsync(null, null, null, null));
+            await Assert.ThrowsAsync<ObjectDisposedException>(() => manager.AddLoginAsync(null, null));
             await Assert.ThrowsAsync<ObjectDisposedException>(() => manager.AddPasswordAsync(null, null));
             await Assert.ThrowsAsync<ObjectDisposedException>(() => manager.AddToRoleAsync(null, null));
             await Assert.ThrowsAsync<ObjectDisposedException>(() => manager.AddToRolesAsync(null, null));
@@ -856,7 +855,7 @@ namespace Microsoft.AspNet.Identity.Test
                 return Task.FromResult(0);
             }
 
-            public Task AddLoginAsync(TestUser user, string loginProvider, string providerKey, string providerDisplayName, CancellationToken cancellationToken = default(CancellationToken))
+            public Task AddLoginAsync(TestUser user, UserLoginInfo login, CancellationToken cancellationToken = default(CancellationToken))
             {
                 return Task.FromResult(0);
             }
@@ -1115,7 +1114,7 @@ namespace Microsoft.AspNet.Identity.Test
                 throw new NotImplementedException();
             }
 
-            public Task AddLoginAsync(TestUser user, string loginProvider, string providerKey, string providerName, CancellationToken cancellationToken = default(CancellationToken))
+            public Task AddLoginAsync(TestUser user, UserLoginInfo login, CancellationToken cancellationToken = default(CancellationToken))
             {
                 throw new NotImplementedException();
             }

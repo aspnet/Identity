@@ -769,7 +769,7 @@ namespace Microsoft.AspNet.Identity
             return await UpdateAsync(user, cancellationToken);
         }
 
-        // UpdateAsync the security stamp if the store supports it
+        // Update the security stamp if the store supports it
         internal async Task UpdateSecurityStampInternal(TUser user, CancellationToken cancellationToken)
         {
             if (SupportsUserSecurityStamp)
@@ -853,29 +853,25 @@ namespace Microsoft.AspNet.Identity
         /// <param name="login"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public virtual async Task<IdentityResult> AddLoginAsync(TUser user, string loginProvider, string providerKey,
-            string providerDisplayName, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<IdentityResult> AddLoginAsync(TUser user, UserLoginInfo login,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             ThrowIfDisposed();
             var loginStore = GetLoginStore();
-            if (loginProvider == null)
+            if (login == null)
             {
-                throw new ArgumentNullException("loginProvider");
-            }
-            if (providerKey == null)
-            {
-                throw new ArgumentNullException("providerKey");
+                throw new ArgumentNullException("login");
             }
             if (user == null)
             {
                 throw new ArgumentNullException("user");
             }
-            var existingUser = await FindByLoginAsync(loginProvider, providerKey, cancellationToken);
+            var existingUser = await FindByLoginAsync(login.LoginProvider, login.ProviderKey, cancellationToken);
             if (existingUser != null)
             {
                 return IdentityResult.Failed(Resources.ExternalLoginExists);
             }
-            await loginStore.AddLoginAsync(user, loginProvider, providerKey, providerDisplayName, cancellationToken);
+            await loginStore.AddLoginAsync(user, login, cancellationToken);
             return await UpdateAsync(user, cancellationToken);
         }
 

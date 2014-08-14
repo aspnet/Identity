@@ -183,7 +183,7 @@ namespace Microsoft.AspNet.Identity.Test
             var providerKey = user.Id.ToString();
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
             user = await manager.FindByNameAsync(user.UserName);
-            IdentityResultAssert.IsSuccess(await manager.AddLoginAsync(user, provider, providerKey, display));
+            IdentityResultAssert.IsSuccess(await manager.AddLoginAsync(user, new UserLoginInfo(provider, providerKey, display)));
             var logins = await manager.GetLoginsAsync(user);
             Assert.NotNull(logins);
             Assert.Equal(1, logins.Count());
@@ -197,9 +197,9 @@ namespace Microsoft.AspNet.Identity.Test
         {
             var manager = CreateManager();
             var user = CreateTestUser();
-            var login = new UserLoginInfo { LoginProvider = "Provider", ProviderKey = user.Id.ToString(), ProviderDisplayName = "display" };
+            var login = new UserLoginInfo("Provider", user.Id.ToString(), "display");
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
-            IdentityResultAssert.IsSuccess(await manager.AddLoginAsync(user, login.LoginProvider, login.ProviderKey, login.ProviderDisplayName));
+            IdentityResultAssert.IsSuccess(await manager.AddLoginAsync(user, login));
             Assert.False(await manager.HasPasswordAsync(user));
             IdentityResultAssert.IsSuccess(await manager.AddPasswordAsync(user, "password"));
             Assert.True(await manager.HasPasswordAsync(user));
@@ -226,11 +226,11 @@ namespace Microsoft.AspNet.Identity.Test
         {
             var manager = CreateManager();
             var user = CreateTestUser();
-            var login = new UserLoginInfo { LoginProvider = "Provider", ProviderKey = user.Id.ToString(), ProviderDisplayName = "display" };
+            var login = new UserLoginInfo("Provider", user.Id.ToString(), "display");
             var result = await manager.CreateAsync(user);
             Assert.NotNull(user);
             IdentityResultAssert.IsSuccess(result);
-            IdentityResultAssert.IsSuccess(await manager.AddLoginAsync(user, login.LoginProvider, login.ProviderKey, login.ProviderDisplayName));
+            IdentityResultAssert.IsSuccess(await manager.AddLoginAsync(user, login));
             Assert.Equal(user, await manager.FindByLoginAsync(login.LoginProvider, login.ProviderKey));
             var logins = await manager.GetLoginsAsync(user);
             Assert.NotNull(logins);
@@ -366,10 +366,10 @@ namespace Microsoft.AspNet.Identity.Test
         {
             var manager = CreateManager();
             var user = CreateTestUser();
-            var login = new UserLoginInfo { LoginProvider = "Provider", ProviderKey = "key", ProviderDisplayName = "display" };
+            var login = new UserLoginInfo("Provider", "key", "display");
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
-            IdentityResultAssert.IsSuccess(await manager.AddLoginAsync(user, login.LoginProvider, login.ProviderKey, login.ProviderDisplayName));
-            var result = await manager.AddLoginAsync(user, login.LoginProvider, login.ProviderKey, login.ProviderDisplayName);
+            IdentityResultAssert.IsSuccess(await manager.AddLoginAsync(user, login));
+            var result = await manager.AddLoginAsync(user, login);
             IdentityResultAssert.IsFailure(result, "A user with that external login already exists.");
         }
 

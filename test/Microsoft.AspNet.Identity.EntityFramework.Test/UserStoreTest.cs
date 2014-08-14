@@ -185,7 +185,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             var store = new UserStore(new IdentityDbContext());
             store.Dispose();
             await Assert.ThrowsAsync<ObjectDisposedException>(async () => await store.AddClaimsAsync(null, null));
-            await Assert.ThrowsAsync<ObjectDisposedException>(async () => await store.AddLoginAsync(null, null, null, null));
+            await Assert.ThrowsAsync<ObjectDisposedException>(async () => await store.AddLoginAsync(null, null));
             await Assert.ThrowsAsync<ObjectDisposedException>(async () => await store.AddToRoleAsync(null, null));
             await Assert.ThrowsAsync<ObjectDisposedException>(async () => await store.GetClaimsAsync(null));
             await Assert.ThrowsAsync<ObjectDisposedException>(async () => await store.GetLoginsAsync(null));
@@ -227,7 +227,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             await Assert.ThrowsAsync<ArgumentNullException>("user", async () => await store.GetClaimsAsync(null));
             await Assert.ThrowsAsync<ArgumentNullException>("user", async () => await store.GetLoginsAsync(null));
             await Assert.ThrowsAsync<ArgumentNullException>("user", async () => await store.GetRolesAsync(null));
-            await Assert.ThrowsAsync<ArgumentNullException>("user", async () => await store.AddLoginAsync(null, null, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>("user", async () => await store.AddLoginAsync(null, null));
             await
                 Assert.ThrowsAsync<ArgumentNullException>("user", async () => await store.RemoveLoginAsync(null, null, null));
             await Assert.ThrowsAsync<ArgumentNullException>("user", async () => await store.AddToRoleAsync(null, null));
@@ -242,6 +242,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             await Assert.ThrowsAsync<ArgumentNullException>("user", async () => await store.GetSecurityStampAsync(null));
             await Assert.ThrowsAsync<ArgumentNullException>("user",
                 async () => await store.SetSecurityStampAsync(null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>("login", async () => await store.AddLoginAsync(new IdentityUser("fake"), null));
             await Assert.ThrowsAsync<ArgumentNullException>("claims",
                 async () => await store.AddClaimsAsync(new IdentityUser("fake"), null));
             await Assert.ThrowsAsync<ArgumentNullException>("claims",

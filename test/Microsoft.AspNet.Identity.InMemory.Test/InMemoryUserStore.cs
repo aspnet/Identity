@@ -135,17 +135,17 @@ namespace Microsoft.AspNet.Identity.InMemory
             return loginProvider + "|" + providerKey;
         }
 
-        public virtual Task AddLoginAsync(TUser user, string loginProvider, string providerKey,
-            string providerDisplayName, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task AddLoginAsync(TUser user, UserLoginInfo login,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             user.Logins.Add(new IdentityUserLogin<string>
             {
                 UserId = user.Id,
-                ProviderKey = providerKey,
-                LoginProvider = loginProvider,
-                ProviderDisplayName = providerDisplayName
+                ProviderKey = login.ProviderKey,
+                LoginProvider = login.LoginProvider,
+                ProviderDisplayName = login.ProviderDisplayName
             });
-            _logins[GetLoginKey(loginProvider, providerKey)] = user;
+            _logins[GetLoginKey(login.LoginProvider, login.ProviderKey)] = user;
             return Task.FromResult(0);
         }
 
@@ -167,12 +167,8 @@ namespace Microsoft.AspNet.Identity.InMemory
 
         public Task<IList<UserLoginInfo>> GetLoginsAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
-            IList<UserLoginInfo> result = user.Logins.Select(l => new UserLoginInfo
-            {
-                LoginProvider = l.LoginProvider,
-                ProviderKey = l.ProviderKey,
-                ProviderDisplayName = l.ProviderDisplayName
-            }).ToList();
+            IList<UserLoginInfo> result = user.Logins
+                .Select(l => new UserLoginInfo(l.LoginProvider, l.ProviderKey, l.ProviderDisplayName)).ToList();
             return Task.FromResult(result);
         }
 

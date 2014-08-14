@@ -213,8 +213,8 @@ namespace Microsoft.AspNet.Identity.EntityFramework.InMemory.Test
             get { return Context.Set<TUser>(); }
         }
 
-        public async virtual Task AddLoginAsync(TUser user, string loginProvider, string providerKey,
-            string providerDisplayName, CancellationToken cancellationToken = default(CancellationToken))
+        public async virtual Task AddLoginAsync(TUser user, UserLoginInfo login,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -225,9 +225,9 @@ namespace Microsoft.AspNet.Identity.EntityFramework.InMemory.Test
             var l = new TUserLogin
             {
                 UserId = user.Id,
-                ProviderKey = providerKey,
-                LoginProvider = loginProvider,
-                ProviderDisplayName = providerDisplayName
+                ProviderKey = login.ProviderKey,
+                LoginProvider = login.LoginProvider,
+                ProviderDisplayName = login.ProviderDisplayName
             };
             await Context.Set<TUserLogin>().AddAsync(l, cancellationToken);
             user.Logins.Add(l);
@@ -259,12 +259,9 @@ namespace Microsoft.AspNet.Identity.EntityFramework.InMemory.Test
             {
                 throw new ArgumentNullException("user");
             }
-            IList<UserLoginInfo> result = user.Logins.Select(l => new UserLoginInfo
-            {
-                LoginProvider = l.LoginProvider,
-                ProviderKey = l.ProviderKey,
-                ProviderDisplayName = l.ProviderDisplayName
-            }).ToList();
+            IList<UserLoginInfo> result = user.Logins.Select(
+                l => new UserLoginInfo(l.LoginProvider, l.ProviderKey, l.ProviderDisplayName))
+                .ToList();
             return Task.FromResult(result);
         }
 
