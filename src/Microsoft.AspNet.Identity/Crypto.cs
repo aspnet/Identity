@@ -1,24 +1,25 @@
 // Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using Microsoft.AspNet.Security.DataProtection;
+using Microsoft.AspNet.Security.DataProtection.Cng;
 using System;
 using System.Runtime.CompilerServices;
-using System.Security.Cryptography;
 
 namespace Microsoft.AspNet.Identity
 {
     internal static class Crypto
     {
-        private const int Pbkdf2IterCount = 1000; // default for Rfc2898DeriveBytes
+        private const int Pbkdf2IterCount = 10000;
         private const int Pbkdf2SubkeyLength = 256 / 8; // 256 bits
-        private const int SaltSize = 128 / 8; // 128 bits
+        private const int SaltSize = 256 / 8; // 256 bits
 
         /* =======================
          * HASHED PASSWORD FORMATS
          * =======================
          * 
          * Version 0:
-         * PBKDF2 with HMAC-SHA1, 128-bit salt, 256-bit subkey, 1000 iterations.
+         * PBKDF2 with HMAC-SHA256, 256-bit salt, 256-bit subkey, 10000 iterations.
          * (See also: SDL crypto guidelines v5.1, Part III)
          * Format: { 0x00, salt, subkey }
          */
@@ -31,14 +32,9 @@ namespace Microsoft.AspNet.Identity
             }
 
             // Produce a version 0 (see comment above) text hash.
-            byte[] salt;
-            byte[] subkey;
-            using (var deriveBytes = new Rfc2898DeriveBytes(password, SaltSize, Pbkdf2IterCount))
-            {
-                salt = deriveBytes.Salt;
-                subkey = deriveBytes.GetBytes(Pbkdf2SubkeyLength);
-            }
-
+            var salt = new byte[SaltSize];
+            CryptRand.FillBuffer(new ArraySegment<byte>(salt));
+            var subkey = KeyDerivation.Pbkdf2(password, salt, KeyDerivationPrf.Sha256, Pbkdf2IterCount, Pbkdf2SubkeyLength);
             var outputBytes = new byte[1 + SaltSize + Pbkdf2SubkeyLength];
             Buffer.BlockCopy(salt, 0, outputBytes, 1, SaltSize);
             Buffer.BlockCopy(subkey, 0, outputBytes, 1 + SaltSize, Pbkdf2SubkeyLength);
@@ -69,11 +65,7 @@ namespace Microsoft.AspNet.Identity
             var storedSubkey = new byte[Pbkdf2SubkeyLength];
             Buffer.BlockCopy(hashedPasswordBytes, 1 + SaltSize, storedSubkey, 0, Pbkdf2SubkeyLength);
 
-            byte[] generatedSubkey;
-            using (var deriveBytes = new Rfc2898DeriveBytes(password, salt, Pbkdf2IterCount))
-            {
-                generatedSubkey = deriveBytes.GetBytes(Pbkdf2SubkeyLength);
-            }
+            var generatedSubkey = KeyDerivation.Pbkdf2(password, salt, KeyDerivationPrf.Sha256, Pbkdf2IterCount, Pbkdf2SubkeyLength);
             return ByteArraysEqual(storedSubkey, generatedSubkey);
         }
 
