@@ -131,6 +131,13 @@ namespace IdentitySample.Models
                     ExternalIdentity = auth.Identity
                 };
             }
+
+            public static ChallengeResult CreateChallengeResult(string provider, string redirectUrl)
+            {
+                var properties = new AuthenticationProperties { RedirectUri = redirectUrl };
+                properties.Dictionary[ProviderKey] = provider;
+                return new ChallengeResult(provider, properties);
+            }
         }
 
         //
@@ -142,9 +149,7 @@ namespace IdentitySample.Models
         {
             var redirectUrl = Url.Action("ExternalLoginCallback", "Account", new { ReturnUrl = returnUrl });
             // Request a redirect to the external login provider
-            var properties = new AuthenticationProperties { RedirectUri = redirectUrl };
-            properties.Dictionary[ProviderKey] = provider;
-            return new ChallengeResult(provider, properties);//, 
+            return ExternalAuthHelper.CreateChallengeResult(provider, redirectUrl);
         }
 
         private const string ProviderKey = "Provider";

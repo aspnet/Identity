@@ -325,8 +325,7 @@ namespace IdentitySample
         {
             var redirectUrl = Url.Action("LinkLoginCallback", "Manage");
             // Request a redirect to the external login provider to link a login for the current user
-            var properties = new AuthenticationProperties { RedirectUri = redirectUrl };
-            return new ChallengeResult(provider, properties);//, 
+            return AccountController.ExternalAuthHelper.CreateChallengeResult(provider, redirectUrl);
 
             // TODO: add user id for xsrf?
             //return new AccountController.ChallengeResult(provider, Url.Action("LinkLoginCallback", "Manage"), User.Identity.GetUserId());
@@ -342,17 +341,14 @@ namespace IdentitySample
             {
                 return View("Error");
             }
-            var auth = await Context.AuthenticateAsync(ClaimsIdentityOptions.DefaultExternalLoginAuthenticationType);
+            // TODO: need to readd xsrf userId to external login info
+            var info = await AccountController.ExternalAuthHelper.GetExternalLoginInfo(Context);
             //var loginInfo = await AuthenticationManager.GetExternalLoginInfoAsync(XsrfKey, User.Identity.GetUserId());
-            if (auth == null)
+            if (info == null)
             {
                 return RedirectToAction("ManageLogins", new { Message = ManageMessageId.Error });
             }
-            // TODO: This used to be GetExternalLoginInfo
-            var providerKey = auth.Identity.FindFirstValue(ClaimTypes.NameIdentifier);
-            var provider = auth.Identity.FindFirst(ClaimTypes.NameIdentifier).Issuer;
-            var loginInfo = new UserLoginInfo(provider, providerKey, provider);
-            var result = await UserManager.AddLoginAsync(user, loginInfo);
+            var result = await UserManager.AddLoginAsync(user, info.LoginInfo);
             var message = result.Succeeded ? ManageMessageId.AddLoginSuccess : ManageMessageId.Error;
             return RedirectToAction("ManageLogins", new { Message = message });
         }
