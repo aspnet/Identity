@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNet.Http.Security;
+﻿using Microsoft.AspNet.Http;
+using Microsoft.AspNet.Http.Security;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Mvc;
 using System.Security.Claims;
@@ -103,6 +104,35 @@ namespace IdentitySample.Models
             return RedirectToAction("Index", "Home");
         }
 
+        public class ExternalLoginInfo
+        {
+            public UserLoginInfo LoginInfo { get; set; }
+            public ClaimsIdentity ExternalIdentity { get; set; }
+        }
+
+        internal static class ExternalAuthHelper
+        {
+            public static async Task<ExternalLoginInfo> GetExternalLoginInfo(HttpContext context)
+            {
+                var auth = await context.AuthenticateAsync(ClaimsIdentityOptions.DefaultExternalLoginAuthenticationType);
+                if (auth == null || auth.Properties == null || auth.Properties.Dictionary == null || !auth.Properties.Dictionary.ContainsKey(ProviderKey))
+                {
+                    return null;
+                }
+                var providerKey = auth.Identity.FindFirstValue(ClaimTypes.NameIdentifier);
+                var provider = auth.Properties.Dictionary[ProviderKey] as string;
+                if (providerKey == null || provider == null)
+                {
+                    return null;
+                }
+                return new ExternalLoginInfo
+                {
+                    LoginInfo = new UserLoginInfo(provider, providerKey, auth.Description.Caption),
+                    ExternalIdentity = auth.Identity
+                };
+            }
+        }
+
         //
         // POST: /Account/ExternalLogin
         [HttpPost]
@@ -125,24 +155,15 @@ namespace IdentitySample.Models
         [AllowAnonymous]
         public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null)
         {
-            var auth = await Context.AuthenticateAsync(ClaimsIdentityOptions.DefaultExternalLoginAuthenticationType);
-
-            //var loginInfo = await AuthenticationManager.GetExternalLoginInfoAsync();
-            if (auth == null || auth.Properties == null || auth.Properties.Dictionary == null || !auth.Properties.Dictionary.ContainsKey(ProviderKey))
+            var info = await ExternalAuthHelper.GetExternalLoginInfo(Context);
+            if (info == null)
             {
                 return RedirectToAction("Login");
             }
 
             // Sign in the user with this external login provider if the user already has a login
-            // TODO: This used to be GetExternalLoginInfo
-            var providerKey = auth.Identity.FindFirstValue(ClaimTypes.NameIdentifier);
-            var provider = auth.Properties.Dictionary[ProviderKey] as string;
-            if (provider == null)
-            {
-                return RedirectToAction("Login");
-            }
-
-            var result = await SignInManager.ExternalLoginSignInAsync(provider, providerKey, isPersistent: false);
+            var result = await SignInManager.ExternalLoginSignInAsync(info.LoginInfo.LoginProvider,
+                info.LoginInfo.ProviderKey, isPersistent: false);
             switch (result)
             {
                 case SignInStatus.Success:
@@ -155,9 +176,10 @@ namespace IdentitySample.Models
                 default:
                     // If the user does not have an account, then prompt the user to create an account
                     ViewBag.ReturnUrl = returnUrl;
-                    ViewBag.LoginProvider = provider;
-                    var email = auth.Identity.FindFirstValue(ClaimTypes.Email);
-                    return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = email /*loginInfo.Email*/ });
+                    ViewBag.LoginProvider = info.LoginInfo.LoginProvider;
+                    // REVIEW: handle case where email not in claims?
+                    var email = info.ExternalIdentity.FindFirstValue(ClaimTypes.Email);
+                    return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = email });
             }
         }
 
@@ -175,12 +197,9 @@ namespace IdentitySample.Models
 
             if (ModelState.IsValid)
             {
-                var auth = await Context.AuthenticateAsync(ClaimsIdentityOptions.DefaultExternalLoginAuthenticationType);
-
                 // Get the information about the user from the external login provider
-                //var info = await AuthenticationManager.GetExternalLoginInfoAsync();
-                //if (info == null)
-                if (auth == null)
+                var info = await ExternalAuthHelper.GetExternalLoginInfo(Context);
+                if (info == null)
                 {
                     return View("ExternalLoginFailure");
                 }
@@ -188,11 +207,7 @@ namespace IdentitySample.Models
                 var result = await UserManager.CreateAsync(user);
                 if (result.Succeeded)
                 {
-                    var providerKey = auth.Identity.FindFirstValue(ClaimTypes.NameIdentifier);
-                    var provider = auth.Properties.Dictionary[ProviderKey] as string;
-                    // TODO: what should login provider description be?
-
-                    result = await UserManager.AddLoginAsync(user, new UserLoginInfo(provider, providerKey, provider));
+                    result = await UserManager.AddLoginAsync(user, info.LoginInfo);
                     if (result.Succeeded)
                     {
                         await SignInManager.SignInAsync(user, isPersistent: false);

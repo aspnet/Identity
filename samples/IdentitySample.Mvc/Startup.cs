@@ -4,8 +4,10 @@ using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Authentication;
 using Microsoft.AspNet.Routing;
-using Microsoft.AspNet.Security.Google;
 using Microsoft.AspNet.Security.Cookies;
+using Microsoft.AspNet.Security.Facebook;
+using Microsoft.AspNet.Security.Google;
+using Microsoft.AspNet.Security.Twitter;
 using Microsoft.Data.Entity;
 using Microsoft.Framework.ConfigurationModel;
 using Microsoft.Framework.DependencyInjection;
@@ -91,18 +93,23 @@ namespace IdentitySamples
 
             app.UseGoogleAuthentication(new GoogleAuthenticationOptions
             {
-                ClientSecret = "qMYhSaXqL-c7LShdam3DcpDD",
-                ClientId = "691266903440-20chkmn7agdrq520bkjoje5uquur2skd.apps.googleusercontent.com",
-                Notifications = new MyNote()
+                ClientId = "514485782433-fr3ml6sq0imvhi8a7qir0nb46oumtgn9.apps.googleusercontent.com",
+                ClientSecret = "V2nDD9SkFbvLTqAUBWBBxYAL"
             });
 
-            //app.UseFacebookAuthentication(new FacebookAuthenticationOptions
-            //{
-            //    ClientSecret = "qMYhSaXqL-c7LShdam3DcpDD",
-            //    ClientId = "691266903440-20chkmn7agdrq520bkjoje5uquur2skd.apps.googleusercontent.com",
-            //    Notifications = new MyNote()
-            //});
+            app.UseFacebookAuthentication(new FacebookAuthenticationOptions
+            {
+                AppId = "901611409868059",
+                AppSecret = "4aa3c530297b1dcebc8860334b39668b"
+            });
 
+            app.UseTwitterAuthentication(new TwitterAuthenticationOptions
+            {
+
+                ConsumerKey = "BSdJJ0CrDuvEhpkchnukXZBUv",
+                ConsumerSecret = "xKUNuKhsRdHD03eLn67xhPAyE1wFFEndFo1X2UJaK2m1jdAxf4"
+            });
+            
             // Add MVC to the request pipeline
             app.UseMvc(routes =>
             {
