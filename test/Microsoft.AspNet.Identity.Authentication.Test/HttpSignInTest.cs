@@ -9,6 +9,7 @@ using Microsoft.Framework.OptionsModel;
 using Moq;
 using System;
 using System.Security.Claims;
+using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -269,7 +270,9 @@ namespace Microsoft.AspNet.Identity.Authentication.Test
             var context = new Mock<HttpContext>();
             var response = new Mock<HttpResponse>();
             context.Setup(c => c.Response).Returns(response.Object).Verifiable();
-            response.Setup(r => r.SignIn(It.Is<AuthenticationProperties>(v => v.IsPersistent == isPersistent), It.IsAny<ClaimsIdentity>())).Verifiable();
+            response.Setup(r => r.SignIn(
+                It.Is<AuthenticationProperties>(v => v.IsPersistent == isPersistent),
+                It.Is<ClaimsIdentity>(i => i.FindFirstValue(ClaimTypes.AuthenticationMethod) == loginProvider))).Verifiable();
             var contextAccessor = new Mock<IContextAccessor<HttpContext>>();
             contextAccessor.Setup(a => a.Value).Returns(context.Object);
             var roleManager = MockHelpers.MockRoleManager<TestRole>();
@@ -293,11 +296,15 @@ namespace Microsoft.AspNet.Identity.Authentication.Test
         }
 
         [Theory]
-        [InlineData(true, true)]
-        [InlineData(false, true)]
-        [InlineData(true, false)]
-        [InlineData(false, false)]
-        public async Task CanTwoFactorSignIn(bool isPersistent, bool supportsLockout)
+        [InlineData(true, true, true)]
+        [InlineData(true, true, false)]
+        [InlineData(true, false, true)]
+        [InlineData(true, false, false)]
+        [InlineData(false, true, true)]
+        [InlineData(false, true, false)]
+        [InlineData(false, false, true)]
+        [InlineData(false, false, false)]
+        public async Task CanTwoFactorSignIn(bool isPersistent, bool supportsLockout, bool externalLogin)
         {
             // Setup
             var user = new TestUser { UserName = "Foo" };
@@ -315,20 +322,38 @@ namespace Microsoft.AspNet.Identity.Authentication.Test
             manager.Setup(m => m.GetUserNameAsync(user, CancellationToken.None)).ReturnsAsync(user.UserName).Verifiable();
             var context = new Mock<HttpContext>();
             var response = new Mock<HttpResponse>();
-            response.Setup(r => r.SignIn(It.Is<AuthenticationProperties>(v => v.IsPersistent == isPersistent), It.IsAny<ClaimsIdentity>())).Verifiable();
-            context.Setup(c => c.Response).Returns(response.Object).Verifiable();
-            var id = new ClaimsIdentity(HttpAuthenticationManager.TwoFactorUserIdAuthenticationType);
-            id.AddClaim(new Claim(ClaimTypes.Name, user.Id));
-            var authResult = new AuthenticationResult(id, new AuthenticationProperties(), new AuthenticationDescription());
-            context.Setup(c => c.AuthenticateAsync(HttpAuthenticationManager.TwoFactorUserIdAuthenticationType)).ReturnsAsync(authResult).Verifiable();
             var contextAccessor = new Mock<IContextAccessor<HttpContext>>();
-            contextAccessor.Setup(a => a.Value).Returns(context.Object);
+            var twoFactorInfo = new TwoFactorAuthenticationInfo { UserId = user.Id };
+            var loginProvider = "loginprovider";
+            if (externalLogin)
+            {
+                twoFactorInfo.LoginProvider = loginProvider;
+            }
+            var id = HttpAuthenticationManager.CreateIdentity(twoFactorInfo);
+            var authResult = new AuthenticationResult(id, new AuthenticationProperties(), new AuthenticationDescription());
             var roleManager = MockHelpers.MockRoleManager<TestRole>();
             var claimsFactory = new ClaimsIdentityFactory<TestUser, TestRole>(manager.Object, roleManager.Object);
             var identityOptions = new IdentityOptions();
             var options = new Mock<IOptionsAccessor<IdentityOptions>>();
             options.Setup(a => a.Options).Returns(identityOptions);
-            var helper = new SignInManager<TestUser>(manager.Object, new HttpAuthenticationManager(contextAccessor.Object), claimsFactory, options.Object);
+            if (externalLogin)
+            {
+                response.Setup(r => r.SignIn(
+                    It.Is<AuthenticationProperties>(v => v.IsPersistent == isPersistent),
+                    It.Is<ClaimsIdentity>(i => i.FindFirstValue(ClaimTypes.NameIdentifier) == user.Id
+                        && i.FindFirstValue(ClaimTypes.AuthenticationMethod) == loginProvider))).Verifiable();
+            }
+            else
+            {
+                response.Setup(r => r.SignIn(
+                    It.Is<AuthenticationProperties>(v => v.IsPersistent == isPersistent),
+                    It.Is<ClaimsIdentity>(i => i.FindFirstValue(ClaimTypes.NameIdentifier) == user.Id))).Verifiable();
+            }
+            context.Setup(c => c.Response).Returns(response.Object).Verifiable();
+            context.Setup(c => c.AuthenticateAsync(HttpAuthenticationManager.TwoFactorUserIdAuthenticationType)).ReturnsAsync(authResult).Verifiable();
+            contextAccessor.Setup(a => a.Value).Returns(context.Object);
+            var httpAuthManager = new HttpAuthenticationManager(contextAccessor.Object);
+            var helper = new SignInManager<TestUser>(manager.Object, httpAuthManager, claimsFactory, options.Object);
 
             // Act
             var result = await helper.TwoFactorSignInAsync(provider, code, isPersistent);

@@ -24,26 +24,26 @@ namespace Microsoft.AspNet.Identity.Authentication
 
         public HttpContext Context { get; private set; }
 
-        public void ForgetClient()
+        public virtual void ForgetClient()
         {
             Context.Response.SignOut(TwoFactorRememberedAuthenticationType);
         }
 
-        public async Task<bool> IsClientRememeberedAsync(string userId, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<bool> IsClientRememeberedAsync(string userId, CancellationToken cancellationToken = default(CancellationToken))
         {
             var result =
                 await Context.AuthenticateAsync(TwoFactorRememberedAuthenticationType);
             return (result != null && result.Identity != null && result.Identity.Name == userId);
         }
 
-        public void RememberClient(string userId)
+        public virtual void RememberClient(string userId)
         {
             var rememberBrowserIdentity = new ClaimsIdentity(TwoFactorRememberedAuthenticationType);
             rememberBrowserIdentity.AddClaim(new Claim(ClaimTypes.Name, userId));
             Context.Response.SignIn(rememberBrowserIdentity);
         }
 
-        public async Task<TwoFactorAuthenticationInfo> RetrieveTwoFactorInfo(
+        public virtual async Task<TwoFactorAuthenticationInfo> RetrieveTwoFactorInfo(
             CancellationToken cancellationToken = default(CancellationToken))
         {
             var result = await Context.AuthenticateAsync(TwoFactorUserIdAuthenticationType);
@@ -58,29 +58,39 @@ namespace Microsoft.AspNet.Identity.Authentication
             return null;
         }
 
-        public void SignIn(ClaimsIdentity identity, bool isPersistent)
+        public virtual void SignIn(ClaimsIdentity identity, bool isPersistent)
         {
             Context.Response.SignIn(new AuthenticationProperties() { IsPersistent = isPersistent }, identity);
         }
-        public void SignOut(string authenticationType)
+
+        public virtual void SignOut(string authenticationType)
         {
             Context.Response.SignOut(authenticationType);
         }
 
-        public Task StoreTwoFactorInfo(TwoFactorAuthenticationInfo info, 
+        public static ClaimsIdentity CreateIdentity(TwoFactorAuthenticationInfo info)
+        {
+            if (info == null)
+            {
+                return null;
+            }
+            var identity = new ClaimsIdentity(TwoFactorUserIdAuthenticationType);
+            identity.AddClaim(new Claim(ClaimTypes.Name, info.UserId));
+            if (info.LoginProvider != null)
+            {
+                identity.AddClaim(new Claim(ClaimTypes.AuthenticationMethod, info.LoginProvider));
+            }
+            return identity;
+        }
+
+        public virtual Task StoreTwoFactorInfo(TwoFactorAuthenticationInfo info, 
             CancellationToken cancellationToken = default(CancellationToken))
         {
             if (info == null)
             {
                 throw new ArgumentNullException("info");
             }
-            var userIdentity = new ClaimsIdentity(TwoFactorUserIdAuthenticationType);
-            userIdentity.AddClaim(new Claim(ClaimTypes.Name, info.UserId));
-            if (info.LoginProvider != null)
-            {
-                userIdentity.AddClaim(new Claim(ClaimTypes.AuthenticationMethod, info.LoginProvider));
-            }
-            Context.Response.SignIn(userIdentity);
+            Context.Response.SignIn(CreateIdentity(info));
             return Task.FromResult(0);
         }
     }
