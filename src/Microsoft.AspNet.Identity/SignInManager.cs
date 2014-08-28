@@ -50,7 +50,6 @@ namespace Microsoft.AspNet.Identity
         public virtual async Task<ClaimsIdentity> CreateUserIdentityAsync(TUser user,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            // REVIEW: should sign in manager take options instead of using the user manager instance?
             return await ClaimsFactory.CreateAsync(user, Options.ClaimsIdentity);
         }
 
@@ -68,10 +67,14 @@ namespace Microsoft.AspNet.Identity
         //    return true;
         //}
 
-        public virtual async Task SignInAsync(TUser user, bool isPersistent,
+        public virtual async Task SignInAsync(TUser user, bool isPersistent, string authenticationMethod = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             var userIdentity = await CreateUserIdentityAsync(user);
+            if (authenticationMethod != null)
+            {
+                userIdentity.AddClaim(new Claim(ClaimTypes.AuthenticationMethod, authenticationMethod));
+            }
             AuthenticationManager.SignIn(userIdentity, isPersistent);
         }
 
@@ -141,13 +144,13 @@ namespace Microsoft.AspNet.Identity
         public virtual async Task<bool> SendTwoFactorCodeAsync(string provider,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            var userId = await AuthenticationManager.RetrieveUserId();
-            if (userId == null)
+            var twoFactorInfo = await AuthenticationManager.RetrieveTwoFactorInfo(cancellationToken);
+            if (twoFactorInfo == null || twoFactorInfo.UserId == null)
             {
                 return false;
             }
 
-            var user = await UserManager.FindByIdAsync(userId, cancellationToken);
+            var user = await UserManager.FindByIdAsync(twoFactorInfo.UserId, cancellationToken);
             if (user == null)
             {
                 return false;
@@ -181,12 +184,12 @@ namespace Microsoft.AspNet.Identity
         public virtual async Task<SignInStatus> TwoFactorSignInAsync(string provider, string code, bool isPersistent,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            var userId = await AuthenticationManager.RetrieveUserId();
-            if (userId == null)
+            var twoFactorInfo = await AuthenticationManager.RetrieveTwoFactorInfo(cancellationToken);
+            if (twoFactorInfo == null || twoFactorInfo.UserId == null)
             {
                 return SignInStatus.Failure;
             }
-            var user = await UserManager.FindByIdAsync(userId, cancellationToken);
+            var user = await UserManager.FindByIdAsync(twoFactorInfo.UserId, cancellationToken);
             if (user == null)
             {
                 return SignInStatus.Failure;
@@ -199,7 +202,7 @@ namespace Microsoft.AspNet.Identity
             {
                 // When token is verified correctly, clear the access failed count used for lockout
                 await UserManager.ResetAccessFailedCountAsync(user, cancellationToken);
-                await SignInAsync(user, isPersistent);
+                await SignInAsync(user, isPersistent, twoFactorInfo.LoginProvider, cancellationToken);
                 return SignInStatus.Success;
             }
             // If the token is incorrect, record the failure which also may cause the user to be locked out
@@ -219,11 +222,11 @@ namespace Microsoft.AspNet.Identity
             {
                 return SignInStatus.LockedOut;
             }
-            return await SignInOrTwoFactorAsync(user, isPersistent, cancellationToken);
+            return await SignInOrTwoFactorAsync(user, isPersistent, cancellationToken, loginProvider);
         }
 
         private async Task<SignInStatus> SignInOrTwoFactorAsync(TUser user, bool isPersistent,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken, string loginProvider = null)
         {
             if (UserManager.SupportsUserTwoFactor && await UserManager.GetTwoFactorEnabledAsync(user))
             {
@@ -231,11 +234,11 @@ namespace Microsoft.AspNet.Identity
                 {
                     // Store the userId for use after two factor check
                     var userId = await UserManager.GetUserIdAsync(user, cancellationToken);
-                    await AuthenticationManager.StoreUserId(userId);
+                    await AuthenticationManager.StoreTwoFactorInfo(new TwoFactorAuthenticationInfo { UserId = userId, LoginProvider = loginProvider });
                     return SignInStatus.RequiresVerification;
                 }
             }
-            await SignInAsync(user, isPersistent, cancellationToken);
+            await SignInAsync(user, isPersistent, loginProvider, cancellationToken);
             return SignInStatus.Success;
         }
     }

@@ -19,7 +19,13 @@ namespace Microsoft.AspNet.Identity
             CancellationToken cancellationToken = default(CancellationToken));
 
         // half cookie
-        Task StoreUserId(string userId);
-        Task<string> RetrieveUserId();
+        Task StoreTwoFactorInfo(TwoFactorAuthenticationInfo info, CancellationToken cancellationToken = default(CancellationToken));
+        Task<TwoFactorAuthenticationInfo> RetrieveTwoFactorInfo(CancellationToken cancellationToken = default(CancellationToken));
+    }
+
+    public class TwoFactorAuthenticationInfo
+    {
+        public string UserId { get; set; }
+        public string LoginProvider { get; set; }
     }
 }

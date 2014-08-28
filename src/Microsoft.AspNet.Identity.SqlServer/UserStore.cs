@@ -507,7 +507,7 @@ namespace Microsoft.AspNet.Identity.SqlServer
             return Task.FromResult(0);
         }
 
-        public virtual Task<IList<UserLoginInfo>> GetLoginsAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<IList<UserLoginInfo>> GetLoginsAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -516,9 +516,11 @@ namespace Microsoft.AspNet.Identity.SqlServer
                 throw new ArgumentNullException("user");
             }
             // todo: ensure logins loaded
-            IList<UserLoginInfo> result = user.Logins
-                .Select(l => new UserLoginInfo(l.LoginProvider, l.ProviderKey, l.ProviderDisplayName)).ToList();
-            return Task.FromResult(result);
+            //IList<UserLoginInfo> result = user.Logins
+            //    .Select(l => new UserLoginInfo(l.LoginProvider, l.ProviderKey, l.ProviderDisplayName)).ToList();
+            var userId = user.Id;
+            return await UserLogins.Where(l => l.UserId.Equals(userId))
+                .Select(l => new UserLoginInfo(l.LoginProvider, l.ProviderKey, l.ProviderDisplayName)).ToListAsync();
         }
 
         public async virtual Task<TUser> FindByLoginAsync(string loginProvider, string providerKey,

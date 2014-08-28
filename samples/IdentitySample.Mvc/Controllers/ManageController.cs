@@ -1,6 +1,10 @@
+﻿using IdentitySample.Models;
+using Microsoft.AspNet.Http;
+using Microsoft.AspNet.Http.Security;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Mvc;
-using IdentitySample.Models;
+using System.Linq;
+using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
 
@@ -21,6 +25,7 @@ namespace IdentitySample
 
         //
         // GET: /Account/Index
+        [HttpGet]
         public async Task<IActionResult> Index(ManageMessageId? message = null)
         {
             ViewBag.StatusMessage =
@@ -46,6 +51,7 @@ namespace IdentitySample
 
         //
         // GET: /Account/RemoveLogin
+        [HttpGet]
         public async Task<IActionResult> RemoveLogin()
         {
             var user = await GetCurrentUserAsync();
@@ -92,7 +98,10 @@ namespace IdentitySample
                 return View(model);
             }
             // Generate the token and send it
+<<<<<<< HEAD
 #if ASPNET50
+=======
+>>>>>>> Working google sign in and manage
             var code = await UserManager.GenerateChangePhoneNumberTokenAsync(await GetCurrentUserAsync(), model.Number);
             if (UserManager.SmsService != null)
             {
@@ -103,13 +112,13 @@ namespace IdentitySample
                 };
                 await UserManager.SmsService.SendAsync(message);
             }
-#endif
             return RedirectToAction("VerifyPhoneNumber", new { PhoneNumber = model.Number });
         }
 
         //
         // POST: /Manage/RememberBrowser
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> RememberBrowser()
         {
             var user = await GetCurrentUserAsync();
@@ -124,6 +133,7 @@ namespace IdentitySample
         //
         // POST: /Manage/ForgetBrowser
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ForgetBrowser()
         {
             await SignInManager.ForgetTwoFactorClientAsync();
@@ -133,6 +143,7 @@ namespace IdentitySample
         //
         // POST: /Manage/EnableTFA
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> EnableTFA()
         {
             var user = await GetCurrentUserAsync();
@@ -146,8 +157,8 @@ namespace IdentitySample
         }
 
         //
-        // POST: /Manage/DisableTFA
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DisableTFA()
         {
             var user = await GetCurrentUserAsync();
@@ -161,14 +172,13 @@ namespace IdentitySample
 
         //
         // GET: /Account/VerifyPhoneNumber
+        [HttpGet]
         public async Task<IActionResult> VerifyPhoneNumber(string phoneNumber)
         {
             // This code allows you exercise the flow without actually sending codes
             // For production use please register a SMS provider in IdentityConfig and generate a code here.
-#if ASPNET50
             var code = await UserManager.GenerateChangePhoneNumberTokenAsync(await GetCurrentUserAsync(), phoneNumber);
             ViewBag.Status = "For DEMO purposes only, the current code is " + code;
-#endif
             return phoneNumber == null ? View("Error") : View(new VerifyPhoneNumberViewModel { PhoneNumber = phoneNumber });
         }
 
@@ -199,6 +209,7 @@ namespace IdentitySample
 
         //
         // GET: /Account/RemovePhoneNumber
+        [HttpGet]
         public async Task<IActionResult> RemovePhoneNumber()
         {
             var user = await GetCurrentUserAsync();
@@ -216,6 +227,7 @@ namespace IdentitySample
 
         //
         // GET: /Manage/ChangePassword
+        [HttpGet]
         public IActionResult ChangePassword()
         {
             return View();
@@ -248,6 +260,7 @@ namespace IdentitySample
 
         //
         // GET: /Manage/SetPassword
+        [HttpGet]
         public IActionResult SetPassword()
         {
             return View();
@@ -279,51 +292,70 @@ namespace IdentitySample
             return RedirectToAction("Index", new { Message = ManageMessageId.Error });
         }
 
+
+        //GET: /Account/Manage
+        [HttpGet]
+        public async Task<IActionResult> ManageLogins(ManageMessageId? message = null)
+        {
+            ViewBag.StatusMessage =
+                message == ManageMessageId.RemoveLoginSuccess ? "The external login was removed."
+                : message == ManageMessageId.AddLoginSuccess ? "The external login was added."
+                : message == ManageMessageId.Error ? "An error has occurred."
+                : "";
+            var user = await GetCurrentUserAsync();
+            if (user == null)
+            {
+                return View("Error");
+            }
+            var userLogins = await UserManager.GetLoginsAsync(user);
+            var otherLogins = Context.GetExternalAuthenticationTypes().Where(auth => userLogins.All(ul => auth.AuthenticationType != ul.LoginProvider)).ToList();
+            ViewBag.ShowRemoveButton = user.PasswordHash != null || userLogins.Count > 1;
+            return View(new ManageLoginsViewModel
+            {
+                CurrentLogins = userLogins,
+                OtherLogins = otherLogins
+            });
+        }
+
         //
-        // GET: /Account/Manage
-        //public async Task<IActionResult> ManageLogins(ManageMessageId? message)
-        //{
-        //    ViewBag.StatusMessage =
-        //        message == ManageMessageId.RemoveLoginSuccess ? "The external login was removed."
-        //        : message == ManageMessageId.Error ? "An error has occurred."
-        //        : "";
-        //    var user = await GetCurrentUserAsync();
-        //    if (user == null)
-        //    {
-        //        return View("Error");
-        //    }
-        //    var userLogins = await UserManager.GetLoginsAsync(user);
-        //var otherLogins = AuthenticationManager.GetExternalAuthenticationTypes().Where(auth => userLogins.All(ul => auth.AuthenticationType != ul.LoginProvider)).ToList();
-        //ViewBag.ShowRemoveButton = user.PasswordHash != null || userLogins.Count > 1;
-        //return View(new ManageLoginsViewModel
-        //{
-        //    CurrentLogins = userLogins,
-        //    OtherLogins = otherLogins
-        //});
-        //}
+        // POST: /Manage/LinkLogin
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult LinkLogin(string provider)
+        {
+            var redirectUrl = Url.Action("LinkLoginCallback", "Manage");
+            // Request a redirect to the external login provider to link a login for the current user
+            var properties = new AuthenticationProperties { RedirectUri = redirectUrl };
+            return new ChallengeResult(provider, properties);//, 
 
-        ////
-        //// POST: /Manage/LinkLogin
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public IActionResult LinkLogin(string provider)
-        //{
-        //    // Request a redirect to the external login provider to link a login for the current user
-        //    return new AccountController.ChallengeResult(provider, Url.Action("LinkLoginCallback", "Manage"), User.Identity.GetUserId());
-        //}
+            // TODO: add user id for xsrf?
+            //return new AccountController.ChallengeResult(provider, Url.Action("LinkLoginCallback", "Manage"), User.Identity.GetUserId());
+        }
 
-        ////
-        //// GET: /Manage/LinkLoginCallback
-        //public async Task<ActionResult> LinkLoginCallback()
-        //{
-        //    var loginInfo = await AuthenticationManager.GetExternalLoginInfoAsync(XsrfKey, User.Identity.GetUserId());
-        //    if (loginInfo == null)
-        //    {
-        //        return RedirectToAction("ManageLogins", new { Message = ManageMessageId.Error });
-        //    }
-        //    var result = await UserManager.AddLoginAsync(User.Identity.GetUserId(), loginInfo.Login);
-        //    return result.Succeeded ? RedirectToAction("ManageLogins") : RedirectToAction("ManageLogins", new { Message = ManageMessageId.Error });
-        //}
+        //
+        // GET: /Manage/LinkLoginCallback
+        [HttpGet]
+        public async Task<ActionResult> LinkLoginCallback()
+        {
+            var user = await GetCurrentUserAsync();
+            if (user == null)
+            {
+                return View("Error");
+            }
+            var auth = await Context.AuthenticateAsync(ClaimsIdentityOptions.DefaultExternalLoginAuthenticationType);
+            //var loginInfo = await AuthenticationManager.GetExternalLoginInfoAsync(XsrfKey, User.Identity.GetUserId());
+            if (auth == null)
+            {
+                return RedirectToAction("ManageLogins", new { Message = ManageMessageId.Error });
+            }
+            // TODO: This used to be GetExternalLoginInfo
+            var providerKey = auth.Identity.FindFirstValue(ClaimTypes.NameIdentifier);
+            var provider = auth.Identity.FindFirst(ClaimTypes.NameIdentifier).Issuer;
+            var loginInfo = new UserLoginInfo(provider, providerKey, provider);
+            var result = await UserManager.AddLoginAsync(user, loginInfo);
+            var message = result.Succeeded ? ManageMessageId.AddLoginSuccess : ManageMessageId.Error;
+            return RedirectToAction("ManageLogins", new { Message = message });
+        }
 
         #region Helpers
         // Used for XSRF protection when adding external logins
@@ -350,6 +382,7 @@ namespace IdentitySample
         public enum ManageMessageId
         {
             AddPhoneSuccess,
+            AddLoginSuccess,
             ChangePasswordSuccess,
             SetTwoFactorSuccess,
             SetPasswordSuccess,

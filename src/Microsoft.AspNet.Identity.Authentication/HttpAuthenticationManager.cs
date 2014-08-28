@@ -2,11 +2,13 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System.Security.Claims;
+using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Http.Security;
 using Microsoft.Framework.DependencyInjection;
+using System;
 
 namespace Microsoft.AspNet.Identity.Authentication
 {
@@ -41,12 +43,17 @@ namespace Microsoft.AspNet.Identity.Authentication
             Context.Response.SignIn(rememberBrowserIdentity);
         }
 
-        public async Task<string> RetrieveUserId()
+        public async Task<TwoFactorAuthenticationInfo> RetrieveTwoFactorInfo(
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             var result = await Context.AuthenticateAsync(TwoFactorUserIdAuthenticationType);
             if (result != null && result.Identity != null)
             {
-                return result.Identity.Name;
+                return new TwoFactorAuthenticationInfo
+                {
+                    UserId = result.Identity.Name,
+                    LoginProvider = result.Identity.FindFirstValue(ClaimTypes.AuthenticationMethod)
+                };
             }
             return null;
         }
@@ -60,10 +67,19 @@ namespace Microsoft.AspNet.Identity.Authentication
             Context.Response.SignOut(authenticationType);
         }
 
-        public Task StoreUserId(string userId)
+        public Task StoreTwoFactorInfo(TwoFactorAuthenticationInfo info, 
+            CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (info == null)
+            {
+                throw new ArgumentNullException("info");
+            }
             var userIdentity = new ClaimsIdentity(TwoFactorUserIdAuthenticationType);
-            userIdentity.AddClaim(new Claim(ClaimTypes.Name, userId));
+            userIdentity.AddClaim(new Claim(ClaimTypes.Name, info.UserId));
+            if (info.LoginProvider != null)
+            {
+                userIdentity.AddClaim(new Claim(ClaimTypes.AuthenticationMethod, info.LoginProvider));
+            }
             Context.Response.SignIn(userIdentity);
             return Task.FromResult(0);
         }

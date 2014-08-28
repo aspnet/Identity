@@ -4,12 +4,15 @@ using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Authentication;
 using Microsoft.AspNet.Routing;
+using Microsoft.AspNet.Security.Google;
 using Microsoft.AspNet.Security.Cookies;
 using Microsoft.Data.Entity;
 using Microsoft.Framework.ConfigurationModel;
 using Microsoft.Framework.DependencyInjection;
 using IdentitySample.Models;
 using System;
+using Microsoft.AspNet.Security;
+using System.Threading.Tasks;
 
 namespace IdentitySamples
 {
@@ -62,6 +65,16 @@ namespace IdentitySamples
             // Add static files to the request pipeline
             app.UseStaticFiles();
 
+            app.SetDefaultSignInAsAuthenticationType(ClaimsIdentityOptions.DefaultExternalLoginAuthenticationType);
+            app.UseCookieAuthentication(new CookieAuthenticationOptions
+            {
+                AuthenticationType = ClaimsIdentityOptions.DefaultExternalLoginAuthenticationType,
+                AuthenticationMode = AuthenticationMode.Passive,
+                CookieName = ".ASP" + ClaimsIdentityOptions.DefaultExternalLoginAuthenticationType,
+                ExpireTimeSpan = TimeSpan.FromMinutes(5),
+            });
+
+
             // Add cookie-based authentication to the request pipeline
             app.UseCookieAuthentication(new CookieAuthenticationOptions
             {
@@ -75,6 +88,20 @@ namespace IdentitySamples
             });
 
             app.UseTwoFactorSignInCookies();
+
+            app.UseGoogleAuthentication(new GoogleAuthenticationOptions
+            {
+                ClientSecret = "qMYhSaXqL-c7LShdam3DcpDD",
+                ClientId = "691266903440-20chkmn7agdrq520bkjoje5uquur2skd.apps.googleusercontent.com",
+                Notifications = new MyNote()
+            });
+
+            //app.UseFacebookAuthentication(new FacebookAuthenticationOptions
+            //{
+            //    ClientSecret = "qMYhSaXqL-c7LShdam3DcpDD",
+            //    ClientId = "691266903440-20chkmn7agdrq520bkjoje5uquur2skd.apps.googleusercontent.com",
+            //    Notifications = new MyNote()
+            //});
 
             // Add MVC to the request pipeline
             app.UseMvc(routes =>
