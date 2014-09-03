@@ -1,10 +1,8 @@
 ﻿using IdentitySample.Models;
 using Microsoft.AspNet.Http;
-using Microsoft.AspNet.Http.Security;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Mvc;
 using System.Linq;
-using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
 
@@ -157,6 +155,7 @@ namespace IdentitySample
         }
 
         //
+        // POST: /Manage/DisableTFA
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DisableTFA()
@@ -292,7 +291,6 @@ namespace IdentitySample
             return RedirectToAction("Index", new { Message = ManageMessageId.Error });
         }
 
-
         //GET: /Account/Manage
         [HttpGet]
         public async Task<IActionResult> ManageLogins(ManageMessageId? message = null)
@@ -348,7 +346,7 @@ namespace IdentitySample
             {
                 return RedirectToAction("ManageLogins", new { Message = ManageMessageId.Error });
             }
-            var result = await UserManager.AddLoginAsync(user, info.LoginInfo);
+            var result = await UserManager.AddLoginAsync(user, info);
             var message = result.Succeeded ? ManageMessageId.AddLoginSuccess : ManageMessageId.Error;
             return RedirectToAction("ManageLogins", new { Message = message });
         }
