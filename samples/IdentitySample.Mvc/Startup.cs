@@ -67,30 +67,9 @@ namespace IdentitySamples
             // Add static files to the request pipeline
             app.UseStaticFiles();
 
-            // REVIEW: move to extension method? app.UseExternalLoginCookie()?
-            app.SetDefaultSignInAsAuthenticationType(ClaimsIdentityOptions.DefaultExternalLoginAuthenticationType);
-            app.UseCookieAuthentication(new CookieAuthenticationOptions
-            {
-                AuthenticationType = ClaimsIdentityOptions.DefaultExternalLoginAuthenticationType,
-                AuthenticationMode = AuthenticationMode.Passive,
-                CookieName = ".ASP" + ClaimsIdentityOptions.DefaultExternalLoginAuthenticationType,
-                ExpireTimeSpan = TimeSpan.FromMinutes(5),
-            });
-
-
+            // Setup identity cookie middleware
             // Add cookie-based authentication to the request pipeline
-            app.UseCookieAuthentication(new CookieAuthenticationOptions
-            {
-                AuthenticationType = ClaimsIdentityOptions.DefaultAuthenticationType,
-                LoginPath = new PathString("/Account/Login"),
-                Notifications = new CookieAuthenticationNotifications
-                {
-                    OnValidateIdentity = SecurityStampValidator.OnValidateIdentity<ApplicationUser>(
-                        validateInterval: TimeSpan.FromMinutes(30))
-                }
-            });
-
-            app.UseTwoFactorSignInCookies();
+            app.UseIdentity(new IdentityCookieOptions<ApplicationUser>());
 
             app.UseGoogleAuthentication(new GoogleAuthenticationOptions
             {

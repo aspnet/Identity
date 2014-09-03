@@ -14,9 +14,6 @@ namespace Microsoft.AspNet.Identity.Authentication
 {
     public class HttpAuthenticationManager : IAuthenticationManager
     {
-        public static readonly string TwoFactorUserIdAuthenticationType = "Microsoft.AspNet.Identity.TwoFactor.UserId";
-        public static readonly string TwoFactorRememberedAuthenticationType = "Microsoft.AspNet.Identity.TwoFactor.Remembered";
-
         public HttpAuthenticationManager(IContextAccessor<HttpContext> contextAccessor)
         {
             Context = contextAccessor.Value;
@@ -26,19 +23,19 @@ namespace Microsoft.AspNet.Identity.Authentication
 
         public virtual void ForgetClient()
         {
-            Context.Response.SignOut(TwoFactorRememberedAuthenticationType);
+            Context.Response.SignOut(ClaimsIdentityOptions.DefaultTwoFactorRememberMeAuthenticationType);
         }
 
         public virtual async Task<bool> IsClientRememeberedAsync(string userId, CancellationToken cancellationToken = default(CancellationToken))
         {
             var result =
-                await Context.AuthenticateAsync(TwoFactorRememberedAuthenticationType);
+                await Context.AuthenticateAsync(ClaimsIdentityOptions.DefaultTwoFactorRememberMeAuthenticationType);
             return (result != null && result.Identity != null && result.Identity.Name == userId);
         }
 
         public virtual void RememberClient(string userId)
         {
-            var rememberBrowserIdentity = new ClaimsIdentity(TwoFactorRememberedAuthenticationType);
+            var rememberBrowserIdentity = new ClaimsIdentity(ClaimsIdentityOptions.DefaultTwoFactorRememberMeAuthenticationType);
             rememberBrowserIdentity.AddClaim(new Claim(ClaimTypes.Name, userId));
             Context.Response.SignIn(rememberBrowserIdentity);
         }
@@ -46,7 +43,7 @@ namespace Microsoft.AspNet.Identity.Authentication
         public virtual async Task<TwoFactorAuthenticationInfo> RetrieveTwoFactorInfo(
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            var result = await Context.AuthenticateAsync(TwoFactorUserIdAuthenticationType);
+            var result = await Context.AuthenticateAsync(ClaimsIdentityOptions.DefaultTwoFactorUserIdAuthenticationType);
             if (result != null && result.Identity != null)
             {
                 return new TwoFactorAuthenticationInfo
@@ -74,7 +71,7 @@ namespace Microsoft.AspNet.Identity.Authentication
             {
                 return null;
             }
-            var identity = new ClaimsIdentity(TwoFactorUserIdAuthenticationType);
+            var identity = new ClaimsIdentity(ClaimsIdentityOptions.DefaultTwoFactorUserIdAuthenticationType);
             identity.AddClaim(new Claim(ClaimTypes.Name, info.UserId));
             if (info.LoginProvider != null)
             {

@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using Microsoft.AspNet.Identity.Authentication;
-using Microsoft.AspNet.Security.Cookies;
+using System;
+using Microsoft.AspNet.Identity;
 
 namespace Microsoft.AspNet.Builder
 {
@@ -11,20 +11,18 @@ namespace Microsoft.AspNet.Builder
     /// </summary>
     public static class BuilderExtensions
     {
-        public static IApplicationBuilder UseTwoFactorSignInCookies(this IApplicationBuilder builder)
+        public static IBuilder UseIdentity<TUser>(this IBuilder app, IdentityCookieOptions<TUser> options) where TUser : class
         {
-            // TODO: expose some way for them to customize these cookie lifetimes?
-            builder.UseCookieAuthentication(new CookieAuthenticationOptions
+            if (app == null)
             {
-                AuthenticationType = HttpAuthenticationManager.TwoFactorRememberedAuthenticationType,
-                AuthenticationMode = Security.AuthenticationMode.Passive
-            });
-            builder.UseCookieAuthentication(new CookieAuthenticationOptions
-            {
-                AuthenticationType = HttpAuthenticationManager.TwoFactorUserIdAuthenticationType,
-                AuthenticationMode = Security.AuthenticationMode.Passive
-            });
-            return builder;
+                throw new ArgumentNullException("app");
+            }
+            app.UseCookieAuthentication(options.ApplicationCookie);
+            app.SetDefaultSignInAsAuthenticationType(options.DefaultSignInAsAuthenticationType);
+            app.UseCookieAuthentication(options.ExternalCookie);
+            app.UseCookieAuthentication(options.TwoFactorRememberMeCookie);
+            app.UseCookieAuthentication(options.TwoFactorUserIdCookie);
+            return app;
         }
     }
 }

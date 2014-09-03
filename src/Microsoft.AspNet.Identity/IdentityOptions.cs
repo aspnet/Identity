@@ -8,24 +8,14 @@ namespace Microsoft.AspNet.Identity
     /// </summary>
     public class IdentityOptions
     {
-        public IdentityOptions()
-        {
-            ClaimsIdentity = new ClaimsIdentityOptions();
-            User = new UserOptions();
-            Password = new PasswordOptions();
-            Lockout = new LockoutOptions();
-            SignIn = new SignInOptions();
-        }
+        public ClaimsIdentityOptions ClaimsIdentity { get; set; } = new ClaimsIdentityOptions();
 
-        public ClaimsIdentityOptions ClaimsIdentity { get; set; }
+        public UserOptions User { get; set; } = new UserOptions();
 
-        public UserOptions User { get; set; }
+        public PasswordOptions Password { get; set; } = new PasswordOptions();
 
-        public PasswordOptions Password { get; set; }
+        public LockoutOptions Lockout { get; set; } = new LockoutOptions();
 
-        public LockoutOptions Lockout { get; set; }
-
-        public SignInOptions SignIn { get; set; }
-
+        public SignInOptions SignIn { get; set; } = new SignInOptions();
     }
 }

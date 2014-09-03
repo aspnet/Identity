@@ -13,6 +13,8 @@ namespace Microsoft.AspNet.Identity
         public static readonly string DefaultSecurityStampClaimType = "AspNet.Identity.SecurityStamp";
         public static readonly string DefaultAuthenticationType = typeof(ClaimsIdentityOptions).Namespace + ".Application";
         public static readonly string DefaultExternalLoginAuthenticationType = typeof(ClaimsIdentityOptions).Namespace + ".ExternalLogin";
+        public static readonly string DefaultTwoFactorRememberMeAuthenticationType = typeof(ClaimsIdentityOptions).Namespace + ".TwoFactorRememberMe";
+        public static readonly string DefaultTwoFactorUserIdAuthenticationType = typeof(ClaimsIdentityOptions).Namespace + ".TwoFactorUserId";
 
         public ClaimsIdentityOptions()
         {
