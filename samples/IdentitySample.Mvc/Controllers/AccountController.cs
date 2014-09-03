@@ -2,6 +2,9 @@
 using Microsoft.AspNet.Http.Security;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
@@ -23,6 +26,7 @@ namespace IdentitySample.Models
         public IActionResult Login(string returnUrl = null)
         {
             ViewBag.ReturnUrl = returnUrl;
+            ViewBag.LoginProviders = ExternalAuthHelper.GetExternalAuthenticationTypes(Context).ToList();
             return View();
         }
 
@@ -111,7 +115,10 @@ namespace IdentitySample.Models
             private const string LoginProviderKey = "LoginProvider";
             private const string XsrfKey = "XsrfId";
 
-            // TODO: support xsrf check (need to pass in user id and confirm it on way out for link)
+            public static IEnumerable<AuthenticationDescription> GetExternalAuthenticationTypes(HttpContext context)
+            {
+                return context.GetAuthenticationTypes().Where(d => !String.IsNullOrEmpty(d.Caption));
+            }
 
             public static async Task<ExternalLoginInfo> GetExternalLoginInfo(HttpContext context, string expectedXsrf = null)
             {

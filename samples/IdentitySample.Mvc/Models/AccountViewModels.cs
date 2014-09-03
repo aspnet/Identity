@@ -4,11 +4,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace IdentitySample.Models
 {
-    public class ExternalLoginListViewModel
-    {
-        public string ReturnUrl { get; set; }
-    }
-
     public class ExternalLoginConfirmationViewModel
     {
         [Required]
