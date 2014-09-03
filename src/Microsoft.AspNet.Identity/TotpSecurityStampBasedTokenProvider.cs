@@ -101,7 +101,7 @@ namespace Microsoft.AspNet.Identity
             {
                 throw new ArgumentNullException("manager");
             }
-            string userId = await manager.GetUserIdAsync(user);
+            var userId = await manager.GetUserIdAsync(user);
             return "Totp:" + purpose + ":" + userId;
         }
     }

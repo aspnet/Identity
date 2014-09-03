@@ -451,7 +451,7 @@ namespace Microsoft.AspNet.Identity
         public virtual async Task UpdateNormalizedUserName(TUser user,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            string userName = await GetUserNameAsync(user, cancellationToken);
+            var userName = await GetUserNameAsync(user, cancellationToken);
             await Store.SetNormalizedUserNameAsync(user, NormalizeUserName(userName), cancellationToken);
         }
 
@@ -496,7 +496,6 @@ namespace Microsoft.AspNet.Identity
             await Store.SetUserNameAsync(user, userName, cancellationToken);
             await UpdateNormalizedUserName(user, cancellationToken);
         }
-
 
         /// <summary>
         /// Get the user's id
@@ -973,7 +972,6 @@ namespace Microsoft.AspNet.Identity
             }
             return RemoveClaimsAsync(user, new Claim[] { claim }, cancellationToken);
         }
-
 
         /// <summary>
         ///     Remove a user claim
