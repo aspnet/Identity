@@ -67,6 +67,7 @@ namespace IdentitySamples
             // Add static files to the request pipeline
             app.UseStaticFiles();
 
+            // REVIEW: move to extension method? app.UseExternalLoginCookie()?
             app.SetDefaultSignInAsAuthenticationType(ClaimsIdentityOptions.DefaultExternalLoginAuthenticationType);
             app.UseCookieAuthentication(new CookieAuthenticationOptions
             {
@@ -85,7 +86,7 @@ namespace IdentitySamples
                 Notifications = new CookieAuthenticationNotifications
                 {
                     OnValidateIdentity = SecurityStampValidator.OnValidateIdentity<ApplicationUser>(
-                        validateInterval: TimeSpan.FromMinutes(0))
+                        validateInterval: TimeSpan.FromMinutes(30))
                 }
             });
 
@@ -119,7 +120,7 @@ namespace IdentitySamples
                     defaults: new { controller = "Home", action = "Index" });
             });
 
-            //Populates the MusicStore sample data
+            //Populates the Admin user and role
             SampleData.InitializeIdentityDatabaseAsync(app.ApplicationServices).Wait();
         }
     }

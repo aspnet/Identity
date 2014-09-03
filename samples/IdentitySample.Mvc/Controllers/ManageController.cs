@@ -316,12 +316,9 @@ namespace IdentitySample
         [ValidateAntiForgeryToken]
         public IActionResult LinkLogin(string provider)
         {
-            var redirectUrl = Url.Action("LinkLoginCallback", "Manage");
             // Request a redirect to the external login provider to link a login for the current user
-            return AccountController.ExternalAuthHelper.CreateChallengeResult(provider, redirectUrl);
-
-            // TODO: add user id for xsrf?
-            //return new AccountController.ChallengeResult(provider, Url.Action("LinkLoginCallback", "Manage"), User.Identity.GetUserId());
+            var redirectUrl = Url.Action("LinkLoginCallback", "Manage");
+            return AccountController.ExternalAuthHelper.CreateChallengeResult(provider, redirectUrl, User.Identity.GetUserId());
         }
 
         //
@@ -334,9 +331,7 @@ namespace IdentitySample
             {
                 return View("Error");
             }
-            // TODO: need to readd xsrf userId to external login info
-            var info = await AccountController.ExternalAuthHelper.GetExternalLoginInfo(Context);
-            //var loginInfo = await AuthenticationManager.GetExternalLoginInfoAsync(XsrfKey, User.Identity.GetUserId());
+            var info = await AccountController.ExternalAuthHelper.GetExternalLoginInfo(Context, User.Identity.GetUserId());
             if (info == null)
             {
                 return RedirectToAction("ManageLogins", new { Message = ManageMessageId.Error });
@@ -347,8 +342,6 @@ namespace IdentitySample
         }
 
         #region Helpers
-        // Used for XSRF protection when adding external logins
-        //private const string XsrfKey = "XsrfId";
 
         private void AddErrors(IdentityResult result)
         {

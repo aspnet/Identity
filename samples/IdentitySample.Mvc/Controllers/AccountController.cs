@@ -99,6 +99,7 @@ namespace IdentitySample.Models
             return RedirectToAction("Index", "Home");
         }
 
+        // TODO: Where does these classes belong?
         public class ExternalLoginInfo(ClaimsIdentity externalIdentity, string loginProvider, string providerKey, 
             string displayName) : UserLoginInfo(loginProvider, providerKey, displayName)
         {
@@ -108,16 +109,31 @@ namespace IdentitySample.Models
         internal static class ExternalAuthHelper
         {
             private const string LoginProviderKey = "LoginProvider";
+            private const string XsrfKey = "XsrfId";
 
             // TODO: support xsrf check (need to pass in user id and confirm it on way out for link)
 
-            public static async Task<ExternalLoginInfo> GetExternalLoginInfo(HttpContext context)
+            public static async Task<ExternalLoginInfo> GetExternalLoginInfo(HttpContext context, string expectedXsrf = null)
             {
                 var auth = await context.AuthenticateAsync(ClaimsIdentityOptions.DefaultExternalLoginAuthenticationType);
-                if (auth == null || auth.Properties == null || auth.Properties.Dictionary == null || !auth.Properties.Dictionary.ContainsKey(LoginProviderKey))
+                if (auth == null || auth.Identity == null || auth.Properties.Dictionary == null || !auth.Properties.Dictionary.ContainsKey(LoginProviderKey))
                 {
                     return null;
                 }
+
+                if (expectedXsrf != null)
+                {
+                    if (!auth.Properties.Dictionary.ContainsKey(XsrfKey))
+                    {
+                        return null;
+                    }
+                    var userId = auth.Properties.Dictionary[XsrfKey] as string;
+                    if (userId != expectedXsrf)
+                    {
+                        return null;
+                    }
+                }
+
                 var providerKey = auth.Identity.FindFirstValue(ClaimTypes.NameIdentifier);
                 var provider = auth.Properties.Dictionary[LoginProviderKey] as string;
                 if (providerKey == null || provider == null)
@@ -127,10 +143,14 @@ namespace IdentitySample.Models
                 return new ExternalLoginInfo(auth.Identity, provider, providerKey, auth.Description.Caption);
             }
 
-            public static ChallengeResult CreateChallengeResult(string provider, string redirectUrl)
+            public static ChallengeResult CreateChallengeResult(string provider, string redirectUrl, string userId = null)
             {
                 var properties = new AuthenticationProperties { RedirectUri = redirectUrl };
                 properties.Dictionary[LoginProviderKey] = provider;
+                if (userId != null)
+                {
+                    properties.Dictionary[XsrfKey] = userId;
+                }
                 return new ChallengeResult(provider, properties);
             }
         }
