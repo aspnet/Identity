@@ -91,10 +91,6 @@ namespace IdentitySample
                 return View(model);
             }
             // Generate the token and send it
-<<<<<<< HEAD
-#if ASPNET50
-=======
->>>>>>> Working google sign in and manage
             var code = await UserManager.GenerateChangePhoneNumberTokenAsync(await GetCurrentUserAsync(), model.Number);
             if (UserManager.SmsService != null)
             {

@@ -7,6 +7,8 @@ using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Http;
+using Microsoft.AspNet.Http.Security;
+using Microsoft.AspNet.Security;
 using Microsoft.Framework.OptionsModel;
 using Microsoft.Framework.DependencyInjection;
 
@@ -25,7 +27,7 @@ namespace Microsoft.AspNet.Identity
             {
                 throw new ArgumentNullException(nameof(userManager));
             }
-            if (contextAccessor == null || contextAccessor.Value)
+            if (contextAccessor == null || contextAccessor.Value == null)
             {
                 throw new ArgumentNullException(nameof(contextAccessor));
             }

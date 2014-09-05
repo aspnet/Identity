@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Security.Cookies;
 using Microsoft.Framework.DependencyInjection;
 
-namespace Microsoft.AspNet.Identity.Authentication
+namespace Microsoft.AspNet.Identity
 {
     /// <summary>
     ///     Static helper class used to configure a CookieAuthenticationProvider to validate a cookie against a user's security
