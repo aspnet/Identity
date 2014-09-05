@@ -1,10 +1,7 @@
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Diagnostics;
-using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.Authentication;
 using Microsoft.AspNet.Routing;
-using Microsoft.AspNet.Security.Cookies;
 using Microsoft.AspNet.Security.Facebook;
 using Microsoft.AspNet.Security.Google;
 using Microsoft.AspNet.Security.Twitter;
@@ -12,9 +9,6 @@ using Microsoft.Data.Entity;
 using Microsoft.Framework.ConfigurationModel;
 using Microsoft.Framework.DependencyInjection;
 using IdentitySample.Models;
-using System;
-using Microsoft.AspNet.Security;
-using System.Threading.Tasks;
 using Microsoft.Framework.OptionsModel;
 
 namespace IdentitySamples
@@ -44,7 +38,7 @@ namespace IdentitySamples
             configuration.AddJsonFile("LocalConfig.json");
             configuration.AddEnvironmentVariables(); //All environment variables in the process's context flow in as configuration values.
 
-            var identityOptions = new IdentityCookieOptions<ApplicationUser>();
+            var identityOptions = new IdentityOptions<ApplicationUser>();
             identityOptions.Password.RequireDigit = false;
             identityOptions.Password.RequireLowercase = false;
             identityOptions.Password.RequireUppercase = false;
@@ -67,8 +61,7 @@ namespace IdentitySamples
                 });
 
                 // Add Identity services to the services container
-                services.AddIdentitySqlServer<ApplicationDbContext, ApplicationUser>()
-                        .AddAuthentication();
+                services.AddIdentitySqlServer<ApplicationDbContext, ApplicationUser>();
 
                 // Add MVC services to the services container
                 services.AddMvc();
