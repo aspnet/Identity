@@ -12,7 +12,7 @@ namespace Microsoft.AspNet.Identity
     /// <summary>
     ///     Configuration for identity
     /// </summary>
-    public class IdentityCookieOptions<TUser> where TUser : class
+    public class IdentityCookieOptions<TUser> : IdentityOptions where TUser : class
     {
         public CookieAuthenticationOptions ApplicationCookie { get; set; } = new CookieAuthenticationOptions
         {

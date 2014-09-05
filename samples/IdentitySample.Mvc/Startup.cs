@@ -15,9 +15,23 @@ using IdentitySample.Models;
 using System;
 using Microsoft.AspNet.Security;
 using System.Threading.Tasks;
+using Microsoft.Framework.OptionsModel;
 
 namespace IdentitySamples
 {
+    public static class UseExt {
+
+        public class InstanceOptionsAccessor<TOptions>(TOptions options) : IOptionsAccessor<TOptions> where TOptions : class, new()
+        {
+            public TOptions Options { get; } = options;
+        }
+
+        public static void UseOptions<TOptions>(this IServiceCollection services, TOptions options) where TOptions : class, new()
+        {
+            services.AddInstance<IOptionsAccessor<TOptions>>(new InstanceOptionsAccessor<TOptions>(options));
+        }
+    }
+
     public class Startup
     {
         public void Configure(IApplicationBuilder app)
@@ -30,8 +44,16 @@ namespace IdentitySamples
             configuration.AddJsonFile("LocalConfig.json");
             configuration.AddEnvironmentVariables(); //All environment variables in the process's context flow in as configuration values.
 
+            var identityOptions = new IdentityCookieOptions<ApplicationUser>();
+            identityOptions.Password.RequireDigit = false;
+            identityOptions.Password.RequireLowercase = false;
+            identityOptions.Password.RequireUppercase = false;
+            identityOptions.Password.RequireNonLetterOrDigit = false;
+
             app.UseServices(services =>
             {
+                services.UseOptions(identityOptions);
+
                 // Add EF services to the services container
                 services.AddEntityFramework()
                         .AddSqlServer();
@@ -46,14 +68,7 @@ namespace IdentitySamples
 
                 // Add Identity services to the services container
                 services.AddIdentitySqlServer<ApplicationDbContext, ApplicationUser>()
-                        .AddAuthentication()
-                        .SetupOptions(options =>
-                        {
-                            options.Password.RequireDigit = false;
-                            options.Password.RequireLowercase = false;
-                            options.Password.RequireUppercase = false;
-                            options.Password.RequireNonLetterOrDigit = false;
-                        });
+                        .AddAuthentication();
 
                 // Add MVC services to the services container
                 services.AddMvc();
@@ -69,7 +84,7 @@ namespace IdentitySamples
 
             // Setup identity cookie middleware
             // Add cookie-based authentication to the request pipeline
-            app.UseIdentity(new IdentityCookieOptions<ApplicationUser>());
+            app.UseIdentity(identityOptions);
 
             app.UseGoogleAuthentication(new GoogleAuthenticationOptions
             {
@@ -85,7 +100,6 @@ namespace IdentitySamples
 
             app.UseTwitterAuthentication(new TwitterAuthenticationOptions
             {
-
                 ConsumerKey = "BSdJJ0CrDuvEhpkchnukXZBUv",
                 ConsumerSecret = "xKUNuKhsRdHD03eLn67xhPAyE1wFFEndFo1X2UJaK2m1jdAxf4"
             });
