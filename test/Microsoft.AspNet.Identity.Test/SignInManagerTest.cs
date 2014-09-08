@@ -322,13 +322,9 @@ namespace Microsoft.AspNet.Identity.Test
             var context = new Mock<HttpContext>();
             var response = new Mock<HttpResponse>();
             var contextAccessor = new Mock<IContextAccessor<HttpContext>>();
-            var twoFactorInfo = new TwoFactorAuthenticationInfo { UserId = user.Id };
+            var twoFactorInfo = new SignInManager<TestUser>.TwoFactorAuthenticationInfo { UserId = user.Id };
             var loginProvider = "loginprovider";
-            if (externalLogin)
-            {
-                twoFactorInfo.LoginProvider = loginProvider;
-            }
-            var id = SignInManager<TestUser>.CreateIdentity(twoFactorInfo);
+            var id = SignInManager<TestUser>.StoreTwoFactorInfo(user.Id, externalLogin ? loginProvider : null);
             var authResult = new AuthenticationResult(id, new AuthenticationProperties(), new AuthenticationDescription());
             var roleManager = MockHelpers.MockRoleManager<TestRole>();
             var claimsFactory = new ClaimsIdentityFactory<TestUser, TestRole>(manager.Object, roleManager.Object);
@@ -365,7 +361,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
-        public void RememberClientStoresUserId()
+        public async Task RememberClientStoresUserId()
         {
             // Setup
             var user = new TestUser { UserName = "Foo" };
@@ -387,7 +383,7 @@ namespace Microsoft.AspNet.Identity.Test
             var helper = new SignInManager<TestUser>(manager.Object, contextAccessor.Object, claimsFactory, options.Object);
 
             // Act
-            helper.RememberTwoFactorClient(user);
+            await helper.RememberTwoFactorClientAsync(user);
 
             // Assert
             manager.VerifyAll();

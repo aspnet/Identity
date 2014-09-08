@@ -145,7 +145,7 @@ namespace Microsoft.AspNet.Identity
             return SignInStatus.Failure;
         }
 
-        public static ClaimsIdentity CreateIdentity(TwoFactorAuthenticationInfo info)
+        private static ClaimsIdentity CreateIdentity(TwoFactorAuthenticationInfo info)
         {
             if (info == null)
             {
@@ -160,36 +160,10 @@ namespace Microsoft.AspNet.Identity
             return identity;
         }
 
-        public virtual Task StoreTwoFactorInfo(TwoFactorAuthenticationInfo info,
-            CancellationToken cancellationToken = default(CancellationToken))
-        {
-            if (info == null)
-            {
-                throw new ArgumentNullException("info");
-            }
-            Context.Response.SignIn(CreateIdentity(info));
-            return Task.FromResult(0);
-        }
-
-        public virtual async Task<TwoFactorAuthenticationInfo> RetrieveTwoFactorInfo(
-            CancellationToken cancellationToken = default(CancellationToken))
-        {
-            var result = await Context.AuthenticateAsync(ClaimsIdentityOptions.DefaultTwoFactorUserIdAuthenticationType);
-            if (result != null && result.Identity != null)
-            {
-                return new TwoFactorAuthenticationInfo
-                {
-                    UserId = result.Identity.Name,
-                    LoginProvider = result.Identity.FindFirstValue(ClaimTypes.AuthenticationMethod)
-                };
-            }
-            return null;
-        }
-
         public virtual async Task<bool> SendTwoFactorCodeAsync(string provider,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            var twoFactorInfo = await RetrieveTwoFactorInfo(cancellationToken);
+            var twoFactorInfo = await RetrieveTwoFactorInfoAsync(cancellationToken);
             if (twoFactorInfo == null || twoFactorInfo.UserId == null)
             {
                 return false;
@@ -215,7 +189,7 @@ namespace Microsoft.AspNet.Identity
             return (result != null && result.Identity != null && result.Identity.Name == userId);
         }
 
-        public virtual async Task RememberTwoFactorClient(TUser user,
+        public virtual async Task RememberTwoFactorClientAsync(TUser user,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             var userId = await UserManager.GetUserIdAsync(user, cancellationToken);
@@ -233,7 +207,7 @@ namespace Microsoft.AspNet.Identity
         public virtual async Task<SignInStatus> TwoFactorSignInAsync(string provider, string code, bool isPersistent,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            var twoFactorInfo = await RetrieveTwoFactorInfo(cancellationToken);
+            var twoFactorInfo = await RetrieveTwoFactorInfoAsync(cancellationToken);
             if (twoFactorInfo == null || twoFactorInfo.UserId == null)
             {
                 return SignInStatus.Failure;
@@ -283,12 +257,43 @@ namespace Microsoft.AspNet.Identity
                 {
                     // Store the userId for use after two factor check
                     var userId = await UserManager.GetUserIdAsync(user, cancellationToken);
-                    await StoreTwoFactorInfo(new TwoFactorAuthenticationInfo { UserId = userId, LoginProvider = loginProvider });
+                    Context.Response.SignIn(StoreTwoFactorInfo(userId, loginProvider));
                     return SignInStatus.RequiresVerification;
                 }
             }
             await SignInAsync(user, isPersistent, loginProvider, cancellationToken);
             return SignInStatus.Success;
+        }
+
+        private async Task<TwoFactorAuthenticationInfo> RetrieveTwoFactorInfoAsync(CancellationToken cancellationToken)
+        {
+            var result = await Context.AuthenticateAsync(ClaimsIdentityOptions.DefaultTwoFactorUserIdAuthenticationType);
+            if (result != null && result.Identity != null)
+            {
+                return new TwoFactorAuthenticationInfo
+                {
+                    UserId = result.Identity.Name,
+                    LoginProvider = result.Identity.FindFirstValue(ClaimTypes.AuthenticationMethod)
+                };
+            }
+            return null;
+        }
+
+        internal static ClaimsIdentity StoreTwoFactorInfo(string userId, string loginProvider)
+        {
+            var identity = new ClaimsIdentity(ClaimsIdentityOptions.DefaultTwoFactorUserIdAuthenticationType);
+            identity.AddClaim(new Claim(ClaimTypes.Name, userId));
+            if (loginProvider != null)
+            {
+                identity.AddClaim(new Claim(ClaimTypes.AuthenticationMethod, loginProvider));
+            }
+            return identity;
+        }
+
+        internal class TwoFactorAuthenticationInfo
+        {
+            public string UserId { get; set; }
+            public string LoginProvider { get; set; }
         }
     }
 }
