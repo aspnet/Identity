@@ -130,7 +130,7 @@ namespace Microsoft.AspNet.Identity.Test
                 services.AddIdentity<IdentityUser>().SetupOptions(options => options.User.RequireUniqueEmail = true);
             });
 
-            var optionsGetter = app.ApplicationServices.GetService<IOptionsAccessor<IdentityOptions>>();
+            var optionsGetter = app.ApplicationServices.GetService<IOptionsAccessor<IdentityOptions<IdentityUser>>>();
             Assert.NotNull(optionsGetter);
 
             var myOptions = optionsGetter.Options;

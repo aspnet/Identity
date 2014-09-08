@@ -18,7 +18,7 @@ namespace Microsoft.AspNet.Identity.Test
             var services = new ServiceCollection();
             services.Add(OptionsServices.GetDefaultServices());
             services.AddIdentity<TUser>().AddUserStore(storeFunc);
-            services.SetupOptions<IdentityOptions>(options =>
+            services.SetupOptions<IdentityOptions<TUser>>(options =>
             {
                 options.Password.RequireDigit = false;
                 options.Password.RequireLowercase = false;
@@ -32,7 +32,7 @@ namespace Microsoft.AspNet.Identity.Test
         public static Mock<UserManager<TUser>> MockUserManager<TUser>() where TUser : class
         {
             var store = new Mock<IUserStore<TUser>>();
-            var options = new OptionsAccessor<IdentityOptions>(null);
+            var options = new OptionsAccessor<IdentityOptions<TUser>>(null);
             return new Mock<UserManager<TUser>>(
                 store.Object,
                 options,

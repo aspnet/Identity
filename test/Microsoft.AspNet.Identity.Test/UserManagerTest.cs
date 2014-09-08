@@ -31,7 +31,7 @@ namespace Microsoft.AspNet.Identity.Test
         public void EnsureDefaultServicesDefaultsWithStoreWorks()
         {
             var services = new ServiceCollection {IdentityServices.GetDefaultUserServices<TestUser>()};
-            services.AddInstance<IOptionsAccessor<IdentityOptions>>(new OptionsAccessor<IdentityOptions>(null));
+            services.Add(OptionsServices.GetDefaultServices());
             services.AddTransient<IUserStore<TestUser>, NoopUserStore>();
             services.AddTransient<TestManager>();
             var manager = services.BuildServiceProvider().GetService<TestManager>();
