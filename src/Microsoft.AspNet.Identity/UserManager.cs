@@ -25,7 +25,7 @@ namespace Microsoft.AspNet.Identity
         private TimeSpan _defaultLockout = TimeSpan.Zero;
         private bool _disposed;
         private IPasswordHasher<TUser> _passwordHasher;
-        private IdentityOptions _options;
+        private IdentityOptions<TUser> _options;
 
         /// <summary>
         ///     Constructor which takes a service provider and user store
@@ -36,7 +36,7 @@ namespace Microsoft.AspNet.Identity
         /// <param name="userValidator"></param>
         /// <param name="passwordValidator"></param>
         /// <param name="claimsIdentityFactory"></param>
-        public UserManager(IUserStore<TUser> store, IOptionsAccessor<IdentityOptions> optionsAccessor,
+        public UserManager(IUserStore<TUser> store, IOptionsAccessor<IdentityOptions<TUser>> optionsAccessor,
             IPasswordHasher<TUser> passwordHasher, IUserValidator<TUser> userValidator,
             IPasswordValidator<TUser> passwordValidator, IUserNameNormalizer userNameNormalizer)
         {
@@ -117,7 +117,7 @@ namespace Microsoft.AspNet.Identity
         /// </summary>
         public IUserTokenProvider<TUser> UserTokenProvider { get; set; }
 
-        public IdentityOptions Options
+        public IdentityOptions<TUser> Options
         {
             get
             {

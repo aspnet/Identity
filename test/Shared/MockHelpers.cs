@@ -55,7 +55,7 @@ namespace Microsoft.AspNet.Identity.Test
 
         public static UserManager<TUser> TestUserManager<TUser>(IUserStore<TUser> store) where TUser : class
         {
-            var options = new OptionsAccessor<IdentityOptions>(null);
+            var options = new OptionsAccessor<IdentityOptions<TUser>>(null);
             var validator = new Mock<UserValidator<TUser>>();
             var userManager = new UserManager<TUser>(store, options, new PasswordHasher<TUser>(), 
                 validator.Object, new PasswordValidator<TUser>(), new UpperInvariantUserNameNormalizer());
