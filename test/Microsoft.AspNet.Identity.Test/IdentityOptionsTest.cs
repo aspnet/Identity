@@ -18,7 +18,7 @@ namespace Microsoft.AspNet.Identity.Test
         [Fact]
         public void VerifyDefaultOptions()
         {
-            var options = new IdentityOptions();
+            var options = new IdentityOptions<TestUser>();
             Assert.False(options.Lockout.EnabledByDefault);
             Assert.Equal(TimeSpan.FromMinutes(5), options.Lockout.DefaultLockoutTimeSpan);
             Assert.Equal(5, options.Lockout.MaxFailedAccessAttempts);
@@ -68,7 +68,7 @@ namespace Microsoft.AspNet.Identity.Test
 
             var services = new ServiceCollection {OptionsServices.GetDefaultServices()};
             services.AddIdentity(config.GetSubKey("identity"));
-            var accessor = services.BuildServiceProvider().GetService<IOptionsAccessor<IdentityOptions>>();
+            var accessor = services.BuildServiceProvider().GetService<IOptionsAccessor<IdentityOptions<IdentityUser>>>();
             Assert.NotNull(accessor);
             var options = accessor.Options;
             Assert.Equal(authType, options.ClaimsIdentity.AuthenticationType);
@@ -88,10 +88,10 @@ namespace Microsoft.AspNet.Identity.Test
             Assert.Equal(1000, options.Lockout.MaxFailedAccessAttempts);
         }
 
-        public class PasswordsNegativeLengthSetup : IOptionsSetup<IdentityOptions>
+        public class PasswordsNegativeLengthSetup : IOptionsSetup<IdentityOptions<TestUser>>
         {
             public int Order { get { return 0; } }
-            public void Setup(IdentityOptions options)
+            public void Setup(IdentityOptions<TestUser> options)
             {
                 options.Password.RequiredLength = -1;
             }
@@ -107,9 +107,9 @@ namespace Microsoft.AspNet.Identity.Test
                 services.AddSetup<PasswordsNegativeLengthSetup>();
             });
 
-            var setup = builder.ApplicationServices.GetService<IOptionsSetup<IdentityOptions>>();
+            var setup = builder.ApplicationServices.GetService<IOptionsSetup<IdentityOptions<TestUser>>>();
             Assert.IsType(typeof(PasswordsNegativeLengthSetup), setup);
-            var optionsGetter = builder.ApplicationServices.GetService<IOptionsAccessor<IdentityOptions>>();
+            var optionsGetter = builder.ApplicationServices.GetService<IOptionsAccessor<IdentityOptions<TestUser>>>();
             Assert.NotNull(optionsGetter);
             setup.Setup(optionsGetter.Options);
 

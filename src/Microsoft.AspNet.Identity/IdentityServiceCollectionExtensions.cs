@@ -12,7 +12,7 @@ namespace Microsoft.Framework.DependencyInjection
         public static IdentityBuilder<IdentityUser, IdentityRole> AddIdentity(this ServiceCollection services, 
             IConfiguration identityConfig)
         {
-            services.SetupOptions<IdentityOptions>(identityConfig);
+            services.SetupOptions<IdentityOptions<IdentityUser>>(identityConfig);
             return services.AddIdentity<IdentityUser, IdentityRole>();
         }
 
@@ -26,7 +26,7 @@ namespace Microsoft.Framework.DependencyInjection
             where TUser : class
             where TRole : class
         {
-            services.SetupOptions<IdentityOptions>(identityConfig);
+            services.SetupOptions<IdentityOptions<TUser>>(identityConfig);
             return services.AddIdentity<TUser, TRole>();
         }
 

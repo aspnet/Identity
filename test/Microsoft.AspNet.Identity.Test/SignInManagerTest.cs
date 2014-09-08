@@ -122,8 +122,8 @@ namespace Microsoft.AspNet.Identity.Test
             contextAccessor.Setup(a => a.Value).Returns(context.Object);
             var roleManager = MockHelpers.MockRoleManager<TestRole>();
             var claimsFactory = new Mock<ClaimsIdentityFactory<TestUser, TestRole>>(manager.Object, roleManager.Object);
-            var identityOptions = new IdentityOptions();
-            var options = new Mock<IOptionsAccessor<IdentityOptions>>();
+            var identityOptions = new IdentityOptions<TestUser>();
+            var options = new Mock<IOptionsAccessor<IdentityOptions<TestUser>>>();
             options.Setup(a => a.Options).Returns(identityOptions);
             var helper = new SignInManager<TestUser>(manager.Object, contextAccessor.Object, claimsFactory.Object, options.Object);
 
@@ -154,10 +154,10 @@ namespace Microsoft.AspNet.Identity.Test
             var contextAccessor = new Mock<IContextAccessor<HttpContext>>();
             contextAccessor.Setup(a => a.Value).Returns(context.Object);
             var roleManager = MockHelpers.MockRoleManager<TestRole>();
-            var identityOptions = new IdentityOptions();
+            var identityOptions = new IdentityOptions<TestUser>();
             var claimsFactory = new Mock<ClaimsIdentityFactory<TestUser, TestRole>>(manager.Object, roleManager.Object);
             claimsFactory.Setup(m => m.CreateAsync(user, identityOptions.ClaimsIdentity, CancellationToken.None)).ReturnsAsync(new ClaimsIdentity("Microsoft.AspNet.Identity")).Verifiable();
-            var options = new Mock<IOptionsAccessor<IdentityOptions>>();
+            var options = new Mock<IOptionsAccessor<IdentityOptions<TestUser>>>();
             options.Setup(a => a.Options).Returns(identityOptions);
             var helper = new SignInManager<TestUser>(manager.Object, contextAccessor.Object, claimsFactory.Object, options.Object);
 
@@ -191,8 +191,8 @@ namespace Microsoft.AspNet.Identity.Test
             contextAccessor.Setup(a => a.Value).Returns(context.Object);
             var roleManager = MockHelpers.MockRoleManager<TestRole>();
             var claimsFactory = new Mock<ClaimsIdentityFactory<TestUser, TestRole>>(manager.Object, roleManager.Object);
-            var identityOptions = new IdentityOptions();
-            var options = new Mock<IOptionsAccessor<IdentityOptions>>();
+            var identityOptions = new IdentityOptions<TestUser>();
+            var options = new Mock<IOptionsAccessor<IdentityOptions<TestUser>>>();
             options.Setup(a => a.Options).Returns(identityOptions);
             var helper = new SignInManager<TestUser>(manager.Object, contextAccessor.Object, claimsFactory.Object, options.Object);
 
@@ -232,8 +232,8 @@ namespace Microsoft.AspNet.Identity.Test
             var contextAccessor = new Mock<IContextAccessor<HttpContext>>();
             contextAccessor.Setup(a => a.Value).Returns(context.Object);
             var roleManager = MockHelpers.MockRoleManager<TestRole>();
-            var identityOptions = new IdentityOptions();
-            var options = new Mock<IOptionsAccessor<IdentityOptions>>();
+            var identityOptions = new IdentityOptions<TestUser>();
+            var options = new Mock<IOptionsAccessor<IdentityOptions<TestUser>>>();
             options.Setup(a => a.Options).Returns(identityOptions);
             var helper = new SignInManager<TestUser>(manager.Object, contextAccessor.Object, new ClaimsIdentityFactory<TestUser, TestRole>(manager.Object, roleManager.Object), options.Object);
 
@@ -275,10 +275,10 @@ namespace Microsoft.AspNet.Identity.Test
             var contextAccessor = new Mock<IContextAccessor<HttpContext>>();
             contextAccessor.Setup(a => a.Value).Returns(context.Object);
             var roleManager = MockHelpers.MockRoleManager<TestRole>();
-            var identityOptions = new IdentityOptions();
+            var identityOptions = new IdentityOptions<TestUser>();
             var claimsFactory = new Mock<ClaimsIdentityFactory<TestUser, TestRole>>(manager.Object, roleManager.Object);
             claimsFactory.Setup(m => m.CreateAsync(user, identityOptions.ClaimsIdentity, CancellationToken.None)).ReturnsAsync(new ClaimsIdentity("Microsoft.AspNet.Identity")).Verifiable();
-            var options = new Mock<IOptionsAccessor<IdentityOptions>>();
+            var options = new Mock<IOptionsAccessor<IdentityOptions<TestUser>>>();
             options.Setup(a => a.Options).Returns(identityOptions);
             var helper = new SignInManager<TestUser>(manager.Object, contextAccessor.Object, claimsFactory.Object, options.Object);
 
@@ -332,8 +332,8 @@ namespace Microsoft.AspNet.Identity.Test
             var authResult = new AuthenticationResult(id, new AuthenticationProperties(), new AuthenticationDescription());
             var roleManager = MockHelpers.MockRoleManager<TestRole>();
             var claimsFactory = new ClaimsIdentityFactory<TestUser, TestRole>(manager.Object, roleManager.Object);
-            var identityOptions = new IdentityOptions();
-            var options = new Mock<IOptionsAccessor<IdentityOptions>>();
+            var identityOptions = new IdentityOptions<TestUser>();
+            var options = new Mock<IOptionsAccessor<IdentityOptions<TestUser>>>();
             options.Setup(a => a.Options).Returns(identityOptions);
             if (externalLogin)
             {
@@ -375,8 +375,8 @@ namespace Microsoft.AspNet.Identity.Test
             var contextAccessor = new Mock<IContextAccessor<HttpContext>>();
             var roleManager = MockHelpers.MockRoleManager<TestRole>();
             var claimsFactory = new ClaimsIdentityFactory<TestUser, TestRole>(manager.Object, roleManager.Object);
-            var identityOptions = new IdentityOptions();
-            var options = new Mock<IOptionsAccessor<IdentityOptions>>();
+            var identityOptions = new IdentityOptions<TestUser>();
+            var options = new Mock<IOptionsAccessor<IdentityOptions<TestUser>>>();
 
             manager.Setup(m => m.GetUserIdAsync(user, CancellationToken.None)).ReturnsAsync(user.Id).Verifiable();
             context.Setup(c => c.Response).Returns(response.Object).Verifiable();
@@ -423,10 +423,10 @@ namespace Microsoft.AspNet.Identity.Test
             var contextAccessor = new Mock<IContextAccessor<HttpContext>>();
             contextAccessor.Setup(a => a.Value).Returns(context.Object);
             var roleManager = MockHelpers.MockRoleManager<TestRole>();
-            var identityOptions = new IdentityOptions();
+            var identityOptions = new IdentityOptions<TestUser>();
             var claimsFactory = new Mock<ClaimsIdentityFactory<TestUser, TestRole>>(manager.Object, roleManager.Object);
             claimsFactory.Setup(m => m.CreateAsync(user, identityOptions.ClaimsIdentity, CancellationToken.None)).ReturnsAsync(new ClaimsIdentity(ClaimsIdentityOptions.DefaultAuthenticationType)).Verifiable();
-            var options = new Mock<IOptionsAccessor<IdentityOptions>>();
+            var options = new Mock<IOptionsAccessor<IdentityOptions<TestUser>>>();
             options.Setup(a => a.Options).Returns(identityOptions);
             var helper = new SignInManager<TestUser>(manager.Object, contextAccessor.Object, claimsFactory.Object, options.Object);
 
@@ -457,8 +457,8 @@ namespace Microsoft.AspNet.Identity.Test
             contextAccessor.Setup(a => a.Value).Returns(context.Object);
             var roleManager = MockHelpers.MockRoleManager<TestRole>();
             var claimsFactory = new Mock<ClaimsIdentityFactory<TestUser, TestRole>>(manager.Object, roleManager.Object);
-            var identityOptions = new IdentityOptions();
-            var options = new Mock<IOptionsAccessor<IdentityOptions>>();
+            var identityOptions = new IdentityOptions<TestUser>();
+            var options = new Mock<IOptionsAccessor<IdentityOptions<TestUser>>>();
             options.Setup(a => a.Options).Returns(identityOptions);
             identityOptions.ClaimsIdentity.AuthenticationType = authenticationType;
             var helper = new SignInManager<TestUser>(manager.Object, contextAccessor.Object, claimsFactory.Object, options.Object);
@@ -486,8 +486,8 @@ namespace Microsoft.AspNet.Identity.Test
             contextAccessor.Setup(a => a.Value).Returns(context.Object);
             var roleManager = MockHelpers.MockRoleManager<TestRole>();
             var claimsFactory = new Mock<ClaimsIdentityFactory<TestUser, TestRole>>(manager.Object, roleManager.Object);
-            var identityOptions = new IdentityOptions();
-            var options = new Mock<IOptionsAccessor<IdentityOptions>>();
+            var identityOptions = new IdentityOptions<TestUser>();
+            var options = new Mock<IOptionsAccessor<IdentityOptions<TestUser>>>();
             options.Setup(a => a.Options).Returns(identityOptions);
             var helper = new SignInManager<TestUser>(manager.Object, contextAccessor.Object, claimsFactory.Object, options.Object);
             // Act
@@ -509,8 +509,8 @@ namespace Microsoft.AspNet.Identity.Test
             contextAccessor.Setup(a => a.Value).Returns(context.Object);
             var roleManager = MockHelpers.MockRoleManager<TestRole>();
             var claimsFactory = new Mock<ClaimsIdentityFactory<TestUser, TestRole>>(manager.Object, roleManager.Object);
-            var identityOptions = new IdentityOptions();
-            var options = new Mock<IOptionsAccessor<IdentityOptions>>();
+            var identityOptions = new IdentityOptions<TestUser>();
+            var options = new Mock<IOptionsAccessor<IdentityOptions<TestUser>>>();
             options.Setup(a => a.Options).Returns(identityOptions);
             var helper = new SignInManager<TestUser>(manager.Object, contextAccessor.Object, claimsFactory.Object, options.Object);
 
@@ -543,8 +543,8 @@ namespace Microsoft.AspNet.Identity.Test
             contextAccessor.Setup(a => a.Value).Returns(context.Object);
             var roleManager = MockHelpers.MockRoleManager<TestRole>();
             var claimsFactory = new Mock<ClaimsIdentityFactory<TestUser, TestRole>>(manager.Object, roleManager.Object);
-            var identityOptions = new IdentityOptions();
-            var options = new Mock<IOptionsAccessor<IdentityOptions>>();
+            var identityOptions = new IdentityOptions<TestUser>();
+            var options = new Mock<IOptionsAccessor<IdentityOptions<TestUser>>>();
             options.Setup(a => a.Options).Returns(identityOptions);
             var helper = new SignInManager<TestUser>(manager.Object, contextAccessor.Object, claimsFactory.Object, options.Object);
 

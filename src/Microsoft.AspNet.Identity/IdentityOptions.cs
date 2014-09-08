@@ -11,7 +11,7 @@ namespace Microsoft.AspNet.Identity
     /// <summary>
     ///     Configuration for identity
     /// </summary>
-    public class IdentityOptions
+    public class IdentityOptions<TUser> where TUser : class
     {
         public ClaimsIdentityOptions ClaimsIdentity { get; set; } = new ClaimsIdentityOptions();
 
@@ -22,10 +22,7 @@ namespace Microsoft.AspNet.Identity
         public LockoutOptions Lockout { get; set; } = new LockoutOptions();
 
         public SignInOptions SignIn { get; set; } = new SignInOptions();
-    }
 
-    public class IdentityOptions<TUser> : IdentityOptions where TUser : class
-    {
         public CookieAuthenticationOptions ApplicationCookie { get; set; } = new CookieAuthenticationOptions
         {
             AuthenticationType = ClaimsIdentityOptions.DefaultAuthenticationType,
