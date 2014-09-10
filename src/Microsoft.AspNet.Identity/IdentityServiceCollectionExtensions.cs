@@ -12,7 +12,7 @@ namespace Microsoft.Framework.DependencyInjection
         public static IdentityBuilder<IdentityUser, IdentityRole> AddIdentity(this ServiceCollection services, 
             IConfiguration identityConfig)
         {
-            services.SetupOptions<IdentityOptions<IdentityUser>>(identityConfig);
+            services.SetupOptions<IdentityOptions>(identityConfig);
             return services.AddIdentity<IdentityUser, IdentityRole>();
         }
 
@@ -26,7 +26,7 @@ namespace Microsoft.Framework.DependencyInjection
             where TUser : class
             where TRole : class
         {
-            services.SetupOptions<IdentityOptions<TUser>>(identityConfig);
+            services.SetupOptions<IdentityOptions>(identityConfig);
             return services.AddIdentity<TUser, TRole>();
         }
 
@@ -38,6 +38,7 @@ namespace Microsoft.Framework.DependencyInjection
             services.Add(IdentityServices.GetDefaultRoleServices<TRole>());
             services.AddScoped<UserManager<TUser>>();
             services.AddScoped<SignInManager<TUser>>();
+            services.AddScoped<ISecurityStampValidator, SecurityStampValidator<TUser>>();
             services.AddScoped<RoleManager<TRole>>();
             services.AddScoped<IClaimsIdentityFactory<TUser>, ClaimsIdentityFactory<TUser, TRole>>();
             return new IdentityBuilder<TUser, TRole>(services);

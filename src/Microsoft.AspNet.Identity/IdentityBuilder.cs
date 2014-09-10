@@ -44,13 +44,13 @@ namespace Microsoft.AspNet.Identity
             return AddInstance(func);
         }
 
-        public IdentityBuilder<TUser, TRole> SetupOptions(Action<IdentityOptions<TUser>> action, int order)
+        public IdentityBuilder<TUser, TRole> SetupOptions(Action<IdentityOptions> action, int order)
         {
-            Services.AddSetup(new OptionsSetup<IdentityOptions<TUser>>(action) { Order = order });
+            Services.AddSetup(new OptionsSetup<IdentityOptions>(action) { Order = order });
             return this;
         }
 
-        public IdentityBuilder<TUser, TRole> SetupOptions(Action<IdentityOptions<TUser>> action)
+        public IdentityBuilder<TUser, TRole> SetupOptions(Action<IdentityOptions> action)
         {
             return SetupOptions(action, 0);
         }

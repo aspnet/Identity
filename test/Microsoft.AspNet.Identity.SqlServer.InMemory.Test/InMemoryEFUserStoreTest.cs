@@ -25,7 +25,7 @@ namespace Microsoft.AspNet.Identity.SqlServer.InMemory.Test
             services.Add(OptionsServices.GetDefaultServices());
             services.AddEntityFramework().AddInMemoryStore();
             services.AddIdentityInMemory((InMemoryContext)context);
-            services.SetupOptions<IdentityOptions<IdentityUser>>(options =>
+            services.SetupOptions<IdentityOptions>(options =>
             {
                 options.Password.RequireDigit = false;
                 options.Password.RequireLowercase = false;

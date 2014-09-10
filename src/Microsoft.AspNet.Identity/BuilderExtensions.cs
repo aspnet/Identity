@@ -11,7 +11,7 @@ namespace Microsoft.AspNet.Builder
     /// </summary>
     public static class BuilderExtensions
     {
-        public static IBuilder UseIdentity<TUser>(this IBuilder app, IdentityOptions<TUser> options) where TUser : class
+        public static IBuilder UseIdentity<TUser>(this IBuilder app, IdentityOptions options) where TUser : class
         {
             if (app == null)
             {

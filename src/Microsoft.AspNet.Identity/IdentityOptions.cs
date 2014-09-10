@@ -11,7 +11,7 @@ namespace Microsoft.AspNet.Identity
     /// <summary>
     ///     Configuration for identity
     /// </summary>
-    public class IdentityOptions<TUser> where TUser : class
+    public class IdentityOptions
     {
         public ClaimsIdentityOptions ClaimsIdentity { get; set; } = new ClaimsIdentityOptions();
 
@@ -23,14 +23,15 @@ namespace Microsoft.AspNet.Identity
 
         public SignInOptions SignIn { get; set; } = new SignInOptions();
 
+        public TimeSpan SecurityStampValidationInterval { get; set; } = TimeSpan.FromMinutes(30);
+
         public CookieAuthenticationOptions ApplicationCookie { get; set; } = new CookieAuthenticationOptions
         {
             AuthenticationType = ClaimsIdentityOptions.DefaultAuthenticationType,
             LoginPath = new PathString("/Account/Login"),
             Notifications = new CookieAuthenticationNotifications
             {
-                OnValidateIdentity = SecurityStampValidator.OnValidateIdentity<TUser>(
-                        validateInterval: TimeSpan.FromMinutes(30))
+                OnValidateIdentity = SecurityStampValidator.OnValidateIdentity()
             }
         };
 

@@ -10,6 +10,7 @@ using Microsoft.Framework.ConfigurationModel;
 using Microsoft.Framework.DependencyInjection;
 using IdentitySample.Models;
 using Microsoft.Framework.OptionsModel;
+using System;
 
 namespace IdentitySamples
 {
@@ -38,11 +39,12 @@ namespace IdentitySamples
             configuration.AddJsonFile("LocalConfig.json");
             configuration.AddEnvironmentVariables(); //All environment variables in the process's context flow in as configuration values.
 
-            var identityOptions = new IdentityOptions<ApplicationUser>();
+            var identityOptions = new IdentityOptions();
             identityOptions.Password.RequireDigit = false;
             identityOptions.Password.RequireLowercase = false;
             identityOptions.Password.RequireUppercase = false;
             identityOptions.Password.RequireNonLetterOrDigit = false;
+            identityOptions.SecurityStampValidationInterval = TimeSpan.Zero;
 
             app.UseServices(services =>
             {
@@ -77,7 +79,7 @@ namespace IdentitySamples
 
             // Setup identity cookie middleware
             // Add cookie-based authentication to the request pipeline
-            app.UseIdentity(identityOptions);
+            app.UseIdentity<ApplicationUser>(identityOptions);
 
             app.UseGoogleAuthentication(new GoogleAuthenticationOptions
             {

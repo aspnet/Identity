@@ -55,7 +55,7 @@ namespace Microsoft.AspNet.Identity.Test
             {
                 userManager.Setup(m => m.GetClaimsAsync(user, CancellationToken.None)).ReturnsAsync(userClaims);
             }
-            userManager.Object.Options = new IdentityOptions<TestUser>();
+            userManager.Object.Options = new IdentityOptions();
 
             var admin = new TestRole() { Name = "Admin" };
             var local = new TestRole() { Name = "Local" };

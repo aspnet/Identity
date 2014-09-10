@@ -7,48 +7,46 @@ using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Security.Cookies;
 using Microsoft.Framework.DependencyInjection;
+using Microsoft.Framework.OptionsModel;
 
 namespace Microsoft.AspNet.Identity
 {
+    public class SecurityStampValidator<TUser> : ISecurityStampValidator where TUser : class
+    {
+        /// <summary>
+        ///     Rejects the identity if the stamp changes, and otherwise will sign in a new
+        ///     ClaimsIdentity
+        /// </summary>
+        /// <returns></returns>
+        public virtual async Task Validate(CookieValidateIdentityContext context, ClaimsIdentity identity)
+        {
+            var manager = context.HttpContext.RequestServices.GetService<SignInManager<TUser>>();
+            var userId = identity.GetUserId();
+            var user = await manager.ValidateSecurityStampAsync(identity, userId);
+            if (user != null)
+            {
+                bool isPersistent = false;
+                if (context.Properties != null)
+                {
+                    isPersistent = context.Properties.IsPersistent;
+                }
+                await manager.SignInAsync(user, isPersistent);
+            }
+            else
+            {
+                context.RejectIdentity();
+                manager.SignOut();
+            }
+        }
+    }
+
     /// <summary>
-    ///     Static helper class used to configure a CookieAuthenticationProvider to validate a cookie against a user's security
+    ///     Static helper class used to configure a CookieAuthenticationNotifications to validate a cookie against a user's security
     ///     stamp
     /// </summary>
     public static class SecurityStampValidator
     {
-        /// <summary>
-        ///     Can be used as the ValidateIdentity method for a CookieAuthenticationProvider which will check a user's security
-        ///     stamp after validateInterval
-        ///     Rejects the identity if the stamp changes, and otherwise will call regenerateIdentity to sign in a new
-        ///     ClaimsIdentity
-        /// </summary>
-        /// <typeparam name="TUser"></typeparam>
-        /// <param name="validateInterval"></param>
-        /// <param name="regenerateIdentity"></param>
-        /// <returns></returns>
-        public static Func<CookieValidateIdentityContext, Task> OnValidateIdentity<TUser>(
-            TimeSpan validateInterval)
-            where TUser : class
-        {
-            return OnValidateIdentity<TUser>(validateInterval, id => id.GetUserId());
-        }
-
-        /// <summary>
-        ///     Can be used as the ValidateIdentity method for a CookieAuthenticationProvider which will check a user's security
-        ///     stamp after validateInterval
-        ///     Rejects the identity if the stamp changes, and otherwise will call regenerateIdentity to sign in a new
-        ///     ClaimsIdentity
-        /// </summary>
-        /// <typeparam name="TUser"></typeparam>
-        /// <typeparam name="TKey"></typeparam>
-        /// <param name="validateInterval"></param>
-        /// <param name="regenerateIdentityCallback"></param>
-        /// <param name="getUserIdCallback"></param>
-        /// <returns></returns>
-        public static Func<CookieValidateIdentityContext, Task> OnValidateIdentity<TUser>(
-            TimeSpan validateInterval,
-            Func<ClaimsIdentity, string> getUserIdCallback)
-            where TUser : class
+        public static Func<CookieValidateIdentityContext, Task> OnValidateIdentity()
         {
             return async context =>
             {
@@ -64,27 +62,13 @@ namespace Microsoft.AspNet.Identity
                 if (issuedUtc != null)
                 {
                     var timeElapsed = currentUtc.Subtract(issuedUtc.Value);
-                    validate = timeElapsed > validateInterval;
+                    var identityOptions = context.HttpContext.RequestServices.GetService<IOptionsAccessor<IdentityOptions>>().Options;
+                    validate = timeElapsed > identityOptions.SecurityStampValidationInterval;
                 }
                 if (validate)
                 {
-                    var manager = context.HttpContext.RequestServices.GetService<SignInManager<TUser>>();
-                    var userId = getUserIdCallback(context.Identity);
-                    var user = await manager.ValidateSecurityStampAsync(context.Identity, userId);
-                    if (user != null)
-                    {
-                        bool isPersistent = false;
-                        if (context.Properties != null)
-                        {
-                            isPersistent = context.Properties.IsPersistent;
-                        }
-                        await manager.SignInAsync(user, isPersistent);
-                    }
-                    else
-                    {
-                        context.RejectIdentity();
-                        manager.SignOut();
-                    }
+                    var validator = context.HttpContext.RequestServices.GetService<ISecurityStampValidator>();
+                    await validator.Validate(context, context.Identity);
                 }
             };
         }

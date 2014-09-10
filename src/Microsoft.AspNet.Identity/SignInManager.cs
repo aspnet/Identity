@@ -21,7 +21,7 @@ namespace Microsoft.AspNet.Identity
     public class SignInManager<TUser> where TUser : class
     {
         public SignInManager(UserManager<TUser> userManager, IContextAccessor<HttpContext> contextAccessor, 
-            IClaimsIdentityFactory<TUser> claimsFactory, IOptionsAccessor<IdentityOptions<TUser>> optionsAccessor)
+            IClaimsIdentityFactory<TUser> claimsFactory, IOptionsAccessor<IdentityOptions> optionsAccessor)
         {
             if (userManager == null)
             {
@@ -48,7 +48,7 @@ namespace Microsoft.AspNet.Identity
         public UserManager<TUser> UserManager { get; private set; }
         public HttpContext Context { get; private set; }
         public IClaimsIdentityFactory<TUser> ClaimsFactory { get; private set; }
-        public IdentityOptions<TUser> Options { get; private set; }
+        public IdentityOptions Options { get; private set; }
 
         // Should this be a func?
         public virtual async Task<ClaimsIdentity> CreateUserIdentityAsync(TUser user,
