@@ -79,7 +79,7 @@ namespace IdentitySamples
 
             // Setup identity cookie middleware
             // Add cookie-based authentication to the request pipeline
-            app.UseIdentity<ApplicationUser>(identityOptions);
+            app.UseIdentity(identityOptions);
 
             app.UseGoogleAuthentication(new GoogleAuthenticationOptions
             {
