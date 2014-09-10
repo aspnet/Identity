@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -33,33 +32,32 @@ namespace Microsoft.AspNet.Identity
             {
                 throw new ArgumentNullException("manager");
             }
-            var errors = new List<string>();
+            var errors = new List<IdentityFailure>();
             var options = manager.Options.Password;
             if (string.IsNullOrWhiteSpace(password) || password.Length < options.RequiredLength)
             {
-                errors.Add(String.Format(CultureInfo.CurrentCulture, Resources.PasswordTooShort, 
-                    options.RequiredLength));
+                errors.Add(IdentityFailure.PasswordTooShort);
             }
             if (options.RequireNonLetterOrDigit && password.All(IsLetterOrDigit))
             {
-                errors.Add(Resources.PasswordRequireNonLetterOrDigit);
+                errors.Add(IdentityFailure.PasswordRequiresNonLetterAndDigit);
             }
             if (options.RequireDigit && !password.Any(IsDigit))
             {
-                errors.Add(Resources.PasswordRequireDigit);
+                errors.Add(IdentityFailure.PasswordRequiresDigit);
             }
             if (options.RequireLowercase && !password.Any(IsLower))
             {
-                errors.Add(Resources.PasswordRequireLower);
+                errors.Add(IdentityFailure.PasswordRequiresLower);
             }
             if (options.RequireUppercase && !password.Any(IsUpper))
             {
-                errors.Add(Resources.PasswordRequireUpper);
+                errors.Add(IdentityFailure.PasswordRequiresUpper);
             }
             return
                 Task.FromResult(errors.Count == 0
                     ? IdentityResult.Success
-                    : IdentityResult.Failed(String.Join(" ", errors)));
+                    : new IdentityResult(errors));
         }
 
         /// <summary>

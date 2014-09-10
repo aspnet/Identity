@@ -846,17 +846,17 @@ namespace Microsoft.AspNet.Identity.Test
 
             public Task<IdentityResult> ValidateAsync(UserManager<TUser> manager, TUser user, string password, CancellationToken cancellationToken = default(CancellationToken))
             {
-                return Task.FromResult(IdentityResult.Failed(ErrorMessage));
+                return Task.FromResult(IdentityResult.Failed());
             }
 
             public Task<IdentityResult> ValidateAsync(RoleManager<TRole> manager, TRole role, CancellationToken cancellationToken = default(CancellationToken))
             {
-                return Task.FromResult(IdentityResult.Failed(ErrorMessage));
+                return Task.FromResult(IdentityResult.Failed());
             }
 
             public Task<IdentityResult> ValidateAsync(UserManager<TUser> manager, TUser user, CancellationToken cancellationToken = default(CancellationToken))
             {
-                return Task.FromResult(IdentityResult.Failed(ErrorMessage));
+                return Task.FromResult(IdentityResult.Failed());
             }
         }
 

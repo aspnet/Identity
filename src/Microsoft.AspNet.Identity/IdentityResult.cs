@@ -14,10 +14,10 @@ namespace Microsoft.AspNet.Identity
         private static readonly IdentityResult _success = new IdentityResult(true);
 
         /// <summary>
-        ///     Failure constructor that takes error messages
+        ///     Failure constructor that takes failures
         /// </summary>
-        /// <param name="errors"></param>
-        public IdentityResult(params string[] errors) : this((IEnumerable<string>)errors)
+        /// <param name="failures"></param>
+        public IdentityResult(params IdentityFailure[] failures) : this((IEnumerable<IdentityFailure>)failures)
         {
         }
 
@@ -25,20 +25,20 @@ namespace Microsoft.AspNet.Identity
         ///     Failure constructor that takes error messages
         /// </summary>
         /// <param name="errors"></param>
-        public IdentityResult(IEnumerable<string> errors)
+        public IdentityResult(IEnumerable<IdentityFailure> failures)
         {
-            if (errors == null || !errors.Any())
+            if (failures == null || !failures.Any())
             {
-                errors = new[] { Resources.DefaultError };
+                failures = new[] { IdentityFailure.Unknown };
             }
             Succeeded = false;
-            Errors = errors;
+            Failures = failures;
         }
 
         protected IdentityResult(bool success)
         {
             Succeeded = success;
-            Errors = new string[0];
+            Failures = new IdentityFailure[0];
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace Microsoft.AspNet.Identity
         /// <summary>
         ///     List of errors
         /// </summary>
-        public IEnumerable<string> Errors { get; private set; }
+        public IEnumerable<IdentityFailure> Failures { get; private set; }
 
         /// <summary>
         ///     Static success result
@@ -65,9 +65,9 @@ namespace Microsoft.AspNet.Identity
         /// </summary>
         /// <param name="errors"></param>
         /// <returns></returns>
-        public static IdentityResult Failed(params string[] errors)
+        public static IdentityResult Failed(params IdentityFailure[] failures)
         {
-            return new IdentityResult(errors);
+            return new IdentityResult(failures);
         }
     }
 }

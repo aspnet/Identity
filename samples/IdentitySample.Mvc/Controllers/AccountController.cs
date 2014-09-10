@@ -396,9 +396,9 @@ namespace IdentitySample.Models
 
         private void AddErrors(IdentityResult result)
         {
-            foreach (var error in result.Errors)
+            foreach (var failure in result.Failures)
             {
-                ModelState.AddModelError("", error);
+                ModelState.AddModelError("", ApplicationErrors.GetDescription(failure));
             }
         }
 
@@ -416,6 +416,41 @@ namespace IdentitySample.Models
             else
             {
                 return RedirectToAction("Index", "Home");
+            }
+        }
+
+        public static class ApplicationErrors
+        {
+            public static string GetDescription(IdentityFailure failure)
+            {
+                switch (failure)
+                {
+                    case IdentityFailure.DuplicateUserName:
+                    case IdentityFailure.DuplicateEmail:
+                    case IdentityFailure.DuplicateRoleName:
+                    case IdentityFailure.UserValidationFailed:
+                    case IdentityFailure.UserNameTooShort:
+                    case IdentityFailure.RoleNameTooShort:
+                    case IdentityFailure.UserNameInvalid:
+                    case IdentityFailure.EmailInvalid:
+                    case IdentityFailure.UserAlreadyInRole:
+                    case IdentityFailure.UserAlreadyHasPassword:
+                    case IdentityFailure.LoginAlreadyAssociated:
+                    case IdentityFailure.UserNotInRole:
+                    case IdentityFailure.LockoutForUserNotEnabled:
+                    case IdentityFailure.RoleValidationFailed:
+                    case IdentityFailure.InvalidEmail:
+                    case IdentityFailure.InvalidToken:
+                    case IdentityFailure.PasswordMismatch:
+                    case IdentityFailure.PasswordRequiresDigit:
+                    case IdentityFailure.PasswordRequiresLower:
+                    case IdentityFailure.PasswordRequiresUpper:
+                    case IdentityFailure.PasswordTooShort:
+                    case IdentityFailure.PasswordRequiresNonLetterAndDigit:
+                    case IdentityFailure.Unknown:
+                    default:
+                        return failure.ToString();
+                }
             }
         }
 

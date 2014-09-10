@@ -20,11 +20,11 @@ namespace Microsoft.AspNet.Identity.Test
             Assert.False(result.Succeeded);
         }
 
-        public static void IsFailure(IdentityResult result, string error)
+        public static void IsFailure(IdentityResult result, IdentityFailure failure)
         {
             Assert.NotNull(result);
             Assert.False(result.Succeeded);
-            Assert.Equal(error, result.Errors.First());
+            Assert.Equal(failure, result.Failures.First());
         }
     }
 }
