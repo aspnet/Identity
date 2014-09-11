@@ -2,93 +2,249 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
-using Microsoft.Data.Entity;
-using Microsoft.Data.Entity.Metadata;
+using Xunit.Sdk;
+using Xunit.Abstractions;
+using System.Reflection;
+using System.Diagnostics;
+using System.IO;
+using System.Threading;
+using System.Linq;
 
-namespace Microsoft.AspNet.Identity.SqlServer.InMemory.Test
+namespace Microsoft.AspNet.Identity.Redis.Test
 {
-    public class InMemoryContext :
-        InMemoryContext<IdentityUser, IdentityRole, string, IdentityUserLogin, IdentityUserRole, IdentityUserClaim>
+    public class RedisXunitTestFramework : XunitTestFramework
     {
-        public InMemoryContext() { }
-        public InMemoryContext(IServiceProvider serviceProvider) : base(serviceProvider) { }
-    }
-
-    public class InMemoryContext<TUser> :
-        InMemoryContext<TUser, IdentityRole, string, IdentityUserLogin, IdentityUserRole, IdentityUserClaim>
-        where TUser : IdentityUser
-    {
-        public InMemoryContext() { }
-        public InMemoryContext(IServiceProvider serviceProvider) : base(serviceProvider) { }
-    }
-
-    public class InMemoryContext<TUser, TRole, TKey, TUserLogin, TUserRole, TUserClaim> : DbContext
-        where TUser : IdentityUser<TKey>
-        where TRole : IdentityRole<TKey>
-        where TUserLogin : IdentityUserLogin<TKey>
-        where TUserRole : IdentityUserRole<TKey>
-        where TUserClaim : IdentityUserClaim<TKey>
-        where TKey : IEquatable<TKey>
-    {
-
-        public DbSet<TUser> Users { get; set; }
-        public DbSet<TRole> Roles { get; set; }
-        public DbSet<IdentityRoleClaim> RoleClaims { get; set; }
-
-        public InMemoryContext(IServiceProvider serviceProvider)
-        : base(serviceProvider) { }
-
-        public InMemoryContext() { }
-
-        protected override void OnConfiguring(DbContextOptions builder)
+        protected override ITestFrameworkExecutor CreateExecutor(AssemblyName assemblyName)
         {
-            // Want fresh in memory store for tests always for now
-            builder.UseInMemoryStore(persist: false);
+            return new RedisXunitTestExecutor(assemblyName, SourceInformationProvider);
+        }
+    }
+
+    // TODO - should replace this whole approach with a CollectionFixture when
+    // Xunit CollectionFixtures are working correctly.
+    public class RedisXunitTestExecutor : XunitTestFrameworkExecutor, IDisposable
+    {
+        private bool _isDisposed;
+
+        public RedisXunitTestExecutor(
+            AssemblyName assemblyName, ISourceInformationProvider sourceInformationProvider)
+            : base(assemblyName, sourceInformationProvider)
+        {
+            try
+            {
+                RedisTestConfig.GetOrStartServer();
+            }
+            catch (Exception)
+            {
+                // do not let exceptions starting server prevent XunitTestFrameworkExecutor from being created
+            }
         }
 
-        protected override void OnModelCreating(ModelBuilder builder)
+        ~RedisXunitTestExecutor()
         {
-            builder.Entity<TUser>(b =>
-            {
-                b.Key(u => u.Id);
-                b.Property(u => u.UserName);
-                b.ToTable("AspNetUsers");
-            });
+            Dispose(false);
+        }
 
-            builder.Entity<TRole>(b =>
-            {
-                b.Key(r => r.Id);
-                b.ToTable("AspNetRoles");
-            });
+        void IDisposable.Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
-            builder.Entity<TUserRole>(b =>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_isDisposed)
             {
-                b.Key(r => new { r.UserId, r.RoleId });
-                b.ForeignKey<TUser>(f => f.UserId);
-                b.ForeignKey<TRole>(f => f.RoleId);
-                b.ToTable("AspNetUserRoles");
-            });
+                try
+                {
+                    RedisTestConfig.StopRedisServer();
+                }
+                catch (Exception)
+                {
+                    // do not let exceptions stopping server prevent XunitTestFrameworkExecutor from being disposed
+                }
 
-            builder.Entity<TUserLogin>(b =>
-            {
-                b.Key(l => new { l.LoginProvider, l.ProviderKey, l.UserId });
-                b.ForeignKey<TUser>(f => f.UserId);
-                b.ToTable("AspNetUserLogins");
-            });
+                _isDisposed = true;
+            }
+        }
+    }
 
-            builder.Entity<TUserClaim>(b =>
-            {
-                b.Key(c => c.Id);
-                b.ForeignKey<TUser>(f => f.UserId);
-                b.ToTable("AspNetUserClaims");
-            });
+    public static class RedisTestConfig
+    {
+        internal const string RedisServerExeName = "redis-server.exe";
+        internal const string FunctionalTestsRedisServerExeName = "RedisFuncTests-redis-server";
+        internal const string UserProfileRedisNugetPackageServerPath = @".kpm\packages\Redis-64\2.8.9";
+        internal const string CIMachineRedisNugetPackageServerPath = @"Redis-64\2.8.9";
 
-            builder.Entity<IdentityRoleClaim<TKey>>(b =>
+        private static volatile Process _redisServerProcess; // null implies if server exists it was not started by this code
+        private static readonly object _redisServerProcessLock = new object();
+        public static int RedisPort = 6375; // override default so that do not interfere with anyone else's server
+
+        public static void GetOrStartServer()
+        {
+            if (UserHasStartedOwnRedisServer())
             {
-                b.Key(c => c.Id);
-                b.ForeignKey<TRole>(f => f.RoleId);
-                b.ToTable("AspNetRoleClaims");
-            });
+                // user claims they have started their own
+                return;
+            }
+
+            if (AlreadyOwnRunningRedisServer())
+            {
+                return;
+            }
+
+            TryConnectToOrStartServer();
+        }
+
+        private static bool AlreadyOwnRunningRedisServer()
+        {
+            // Does RedisTestConfig already know about a running server?
+            if (_redisServerProcess != null
+                && !_redisServerProcess.HasExited)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private static bool TryConnectToOrStartServer()
+        {
+            if (CanFindExistingRedisServer())
+            {
+                return true;
+            }
+
+            return TryStartRedisServer();
+        }
+
+        public static void StopRedisServer()
+        {
+            if (UserHasStartedOwnRedisServer())
+            {
+                // user claims they have started their own - they are responsible for stopping it
+                return;
+            }
+
+            if (CanFindExistingRedisServer())
+            {
+                lock (_redisServerProcessLock)
+                {
+                    if (_redisServerProcess != null)
+                    {
+                        _redisServerProcess.Kill();
+                        _redisServerProcess = null;
+                    }
+                }
+            }
+        }
+
+        private static bool CanFindExistingRedisServer()
+        {
+            var process = Process.GetProcessesByName(FunctionalTestsRedisServerExeName).SingleOrDefault();
+            if (process == null || process.HasExited)
+            {
+                lock (_redisServerProcessLock)
+                {
+                    _redisServerProcess = null;
+                }
+                return false;
+            }
+
+            lock (_redisServerProcessLock)
+            {
+                _redisServerProcess = process;
+            }
+            return true;
+        }
+
+        private static bool TryStartRedisServer()
+        {
+            var serverPath = GetUserProfileServerPath();
+            if (!File.Exists(serverPath))
+            {
+                serverPath = GetCIMachineServerPath();
+                if (!File.Exists(serverPath))
+                {
+                    throw new Exception("Could not find " + RedisServerExeName +
+                                        " at path " + GetUserProfileServerPath() + " nor at " + GetCIMachineServerPath());
+                }
+            }
+
+            return RunServer(serverPath);
+        }
+
+        public static bool UserHasStartedOwnRedisServer()
+        {
+            // if the user sets this environment variable they are claiming they've started
+            // their own Redis Server and are responsible for starting/stopping it
+            return (Environment.GetEnvironmentVariable("STARTED_OWN_REDIS_SERVER") != null);
+        }
+
+        public static string GetUserProfileServerPath()
+        {
+            var configFilePath = Environment.GetEnvironmentVariable("USERPROFILE");
+            return Path.Combine(configFilePath, UserProfileRedisNugetPackageServerPath, RedisServerExeName);
+        }
+
+        public static string GetCIMachineServerPath()
+        {
+            var configFilePath = Environment.GetEnvironmentVariable("KRE_PACKAGES");
+            return Path.Combine(configFilePath, CIMachineRedisNugetPackageServerPath, RedisServerExeName);
+        }
+
+        private static bool RunServer(string serverExePath)
+        {
+            if (_redisServerProcess == null)
+            {
+                lock (_redisServerProcessLock)
+                {
+                    // copy the redis-server.exe to a directory under the user's TMP path under a different
+                    // name - so we know the difference between a redis-server started by us and a redis-server
+                    // which the customer already has running.
+                    var tempPath = Path.GetTempPath();
+                    var tempRedisServerFullPath =
+                        Path.Combine(tempPath, FunctionalTestsRedisServerExeName + ".exe");
+                    if (!File.Exists(tempRedisServerFullPath))
+                    {
+                        File.Copy(serverExePath, tempRedisServerFullPath);
+                    }
+
+                    if (_redisServerProcess == null)
+                    {
+                        var serverArgs = "--port " + RedisPort;
+                        var processInfo = new ProcessStartInfo
+                        {
+                            // start the process in users TMP dir (a .dat file will be created but will be removed when the server dies)
+                            Arguments = serverArgs,
+                            WorkingDirectory = tempPath,
+                            CreateNoWindow = true,
+                            FileName = tempRedisServerFullPath,
+                            RedirectStandardError = true,
+                            RedirectStandardOutput = true,
+                            UseShellExecute = false,
+                        };
+                        try
+                        {
+                            _redisServerProcess = Process.Start(processInfo);
+                            Thread.Sleep(3000); // to give server time to initialize
+                        }
+                        catch (Exception e)
+                        {
+                            throw new Exception("Could not start Redis Server at path "
+                                                + tempRedisServerFullPath + " with Arguments '" + serverArgs + "', working dir = " + tempPath, e);
+                        }
+
+                        if (_redisServerProcess == null)
+                        {
+                            throw new Exception("Got null process trying to  start Redis Server at path "
+                                                + tempRedisServerFullPath + " with Arguments '" + serverArgs + "', working dir = " + tempPath);
+                        }
+                    }
+                }
+            }
+
+            return true;
         }
     }
 }
