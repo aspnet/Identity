@@ -12,7 +12,6 @@ namespace Microsoft.AspNet.Identity
         UserNameTooShort,
         RoleNameTooShort,
         UserNameInvalid,
-        EmailInvalid,
         UserAlreadyInRole,
         UserAlreadyHasPassword,
         LoginAlreadyAssociated,

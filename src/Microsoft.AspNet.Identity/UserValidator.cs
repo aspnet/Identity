@@ -74,7 +74,7 @@ namespace Microsoft.AspNet.Identity
             var email = await manager.GetEmailAsync(user);
             if (string.IsNullOrWhiteSpace(email))
             {
-                errors.Add(IdentityFailure.EmailInvalid);
+                errors.Add(IdentityFailure.InvalidEmail);
                 return;
             }
 #if ASPNET50
@@ -84,7 +84,7 @@ namespace Microsoft.AspNet.Identity
             }
             catch (FormatException)
             {
-                errors.Add(IdentityFailure.EmailInvalid);
+                errors.Add(IdentityFailure.InvalidEmail);
                 return;
             }
 #endif
