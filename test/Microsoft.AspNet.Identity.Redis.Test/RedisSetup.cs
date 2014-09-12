@@ -78,7 +78,7 @@ namespace Microsoft.AspNet.Identity.Redis.Test
 
         private static volatile Process _redisServerProcess; // null implies if server exists it was not started by this code
         private static readonly object _redisServerProcessLock = new object();
-        public static int RedisPort = 6375; // override default so that do not interfere with anyone else's server
+        public static int RedisPort = 611; // override default so that do not interfere with anyone else's server
 
         public static void GetOrStartServer()
         {
