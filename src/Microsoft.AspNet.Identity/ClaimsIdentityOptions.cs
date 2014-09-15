@@ -7,9 +7,6 @@ namespace Microsoft.AspNet.Identity
 {
     public class ClaimsIdentityOptions
     {
-        /// <summary>
-        ///     ClaimTypes used for the security stamp by default
-        /// </summary>
         public static readonly string DefaultSecurityStampClaimType = "AspNet.Identity.SecurityStamp";
         public static readonly string DefaultAuthenticationType = typeof(ClaimsIdentityOptions).Namespace + ".Application";
         public static readonly string DefaultExternalLoginAuthenticationType = typeof(ClaimsIdentityOptions).Namespace + ".ExternalLogin";

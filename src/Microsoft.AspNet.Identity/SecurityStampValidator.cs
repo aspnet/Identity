@@ -25,7 +25,7 @@ namespace Microsoft.AspNet.Identity
             var user = await manager.ValidateSecurityStampAsync(identity, userId);
             if (user != null)
             {
-                bool isPersistent = false;
+                var isPersistent = false;
                 if (context.Properties != null)
                 {
                     isPersistent = context.Properties.IsPersistent;

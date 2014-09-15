@@ -8,9 +8,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Http.Security;
-using Microsoft.AspNet.Security;
-using Microsoft.Framework.OptionsModel;
 using Microsoft.Framework.DependencyInjection;
+using Microsoft.Framework.OptionsModel;
 
 namespace Microsoft.AspNet.Identity
 {
