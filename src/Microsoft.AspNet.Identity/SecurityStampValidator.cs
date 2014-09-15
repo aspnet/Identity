@@ -46,31 +46,29 @@ namespace Microsoft.AspNet.Identity
     /// </summary>
     public static class SecurityStampValidator
     {
-        public static Func<CookieValidateIdentityContext, Task> OnValidateIdentity()
+        public static Task ValidateIdentityAsync(CookieValidateIdentityContext context)
         {
-            return async context =>
+            var currentUtc = DateTimeOffset.UtcNow;
+            if (context.Options != null && context.Options.SystemClock != null)
             {
-                var currentUtc = DateTimeOffset.UtcNow;
-                if (context.Options != null && context.Options.SystemClock != null)
-                {
-                    currentUtc = context.Options.SystemClock.UtcNow;
-                }
-                var issuedUtc = context.Properties.IssuedUtc;
+                currentUtc = context.Options.SystemClock.UtcNow;
+            }
+            var issuedUtc = context.Properties.IssuedUtc;
 
-                // Only validate if enough time has elapsed
-                var validate = (issuedUtc == null);
-                if (issuedUtc != null)
-                {
-                    var timeElapsed = currentUtc.Subtract(issuedUtc.Value);
-                    var identityOptions = context.HttpContext.RequestServices.GetService<IOptionsAccessor<IdentityOptions>>().Options;
-                    validate = timeElapsed > identityOptions.SecurityStampValidationInterval;
-                }
-                if (validate)
-                {
-                    var validator = context.HttpContext.RequestServices.GetService<ISecurityStampValidator>();
-                    await validator.Validate(context, context.Identity);
-                }
-            };
+            // Only validate if enough time has elapsed
+            var validate = (issuedUtc == null);
+            if (issuedUtc != null)
+            {
+                var timeElapsed = currentUtc.Subtract(issuedUtc.Value);
+                var identityOptions = context.HttpContext.RequestServices.GetService<IOptionsAccessor<IdentityOptions>>().Options;
+                validate = timeElapsed > identityOptions.SecurityStampValidationInterval;
+            }
+            if (validate)
+            {
+                var validator = context.HttpContext.RequestServices.GetService<ISecurityStampValidator>();
+                return validator.Validate(context, context.Identity);
+            }
+            return Task.FromResult(0);
         }
     }
 }

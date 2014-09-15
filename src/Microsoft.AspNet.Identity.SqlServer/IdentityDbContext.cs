@@ -11,8 +11,6 @@ namespace Microsoft.AspNet.Identity.SqlServer
         IdentityDbContext<IdentityUser, IdentityRole, string>
     {
         public IdentityDbContext() { }
-        public IdentityDbContext(IServiceProvider serviceProvider) : base(serviceProvider) { }
-        public IdentityDbContext(DbContextOptions options) : base(options) { }
         public IdentityDbContext(IServiceProvider serviceProvider, DbContextOptions options) : base(serviceProvider, options) { }
     }
 
@@ -21,8 +19,6 @@ namespace Microsoft.AspNet.Identity.SqlServer
         where TUser : IdentityUser
     {
         public IdentityDbContext() { }
-        public IdentityDbContext(IServiceProvider serviceProvider) : base(serviceProvider) { }
-        public IdentityDbContext(DbContextOptions options) : base(options) { }
         public IdentityDbContext(IServiceProvider serviceProvider, DbContextOptions options) : base(serviceProvider, options) { }
     }
 
@@ -39,8 +35,6 @@ namespace Microsoft.AspNet.Identity.SqlServer
         public DbSet<IdentityRoleClaim<TKey>> RoleClaims { get; set; }
 
         public IdentityDbContext() { }
-        public IdentityDbContext(IServiceProvider serviceProvider) : base(serviceProvider) { }
-        public IdentityDbContext(DbContextOptions options) : base(options) { }
         public IdentityDbContext(IServiceProvider serviceProvider, DbContextOptions options) : base(serviceProvider, options) { }
 
         protected override void OnModelCreating(ModelBuilder builder)

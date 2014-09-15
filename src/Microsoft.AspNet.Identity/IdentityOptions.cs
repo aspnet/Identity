@@ -31,7 +31,7 @@ namespace Microsoft.AspNet.Identity
             LoginPath = new PathString("/Account/Login"),
             Notifications = new CookieAuthenticationNotifications
             {
-                OnValidateIdentity = SecurityStampValidator.OnValidateIdentity()
+                OnValidateIdentity = SecurityStampValidator.ValidateIdentityAsync
             }
         };
 

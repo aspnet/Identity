@@ -27,7 +27,7 @@ namespace Microsoft.AspNet.Identity.Test
             var id = new ClaimsIdentity(ClaimsIdentityOptions.DefaultAuthenticationType);
             var ticket = new AuthenticationTicket(id, new AuthenticationProperties { IssuedUtc = DateTimeOffset.UtcNow });
             var context = new CookieValidateIdentityContext(httpContext.Object, ticket, new CookieAuthenticationOptions());
-            await Assert.ThrowsAsync<Exception>(() => SecurityStampValidator.OnValidateIdentity().Invoke(context));
+            await Assert.ThrowsAsync<Exception>(() => SecurityStampValidator.ValidateIdentityAsync(context));
         }
 
         [Theory]
@@ -62,7 +62,7 @@ namespace Microsoft.AspNet.Identity.Test
             Assert.NotNull(context.Options);
             Assert.NotNull(context.Identity);
             await
-                SecurityStampValidator.OnValidateIdentity().Invoke(context);
+                SecurityStampValidator.ValidateIdentityAsync(context);
             Assert.NotNull(context.Identity);
             signInManager.VerifyAll();
         }
@@ -96,7 +96,7 @@ namespace Microsoft.AspNet.Identity.Test
             Assert.NotNull(context.Options);
             Assert.NotNull(context.Identity);
             await
-                SecurityStampValidator.OnValidateIdentity().Invoke(context);
+                SecurityStampValidator.ValidateIdentityAsync(context);
             Assert.Null(context.Identity);
             signInManager.VerifyAll();
         }
@@ -130,7 +130,7 @@ namespace Microsoft.AspNet.Identity.Test
             Assert.NotNull(context.Options);
             Assert.NotNull(context.Identity);
             await
-                SecurityStampValidator.OnValidateIdentity().Invoke(context);
+                SecurityStampValidator.ValidateIdentityAsync(context);
             Assert.Null(context.Identity);
             signInManager.VerifyAll();
         }
@@ -165,7 +165,7 @@ namespace Microsoft.AspNet.Identity.Test
             Assert.NotNull(context.Options);
             Assert.NotNull(context.Identity);
             await
-                SecurityStampValidator.OnValidateIdentity().Invoke(context);
+                SecurityStampValidator.ValidateIdentityAsync(context);
             Assert.NotNull(context.Identity);
         }
     }
