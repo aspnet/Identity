@@ -8,6 +8,7 @@ using System.Linq;
 #if ASPNET50
 using System.Net.Mail;
 #endif
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -95,7 +96,8 @@ namespace Microsoft.AspNet.Identity
             {
                 errors.Add(String.Format(CultureInfo.CurrentCulture, Resources.PropertyTooShort, "UserName"));
             }
-            else if (manager.Options.User.AllowOnlyAlphanumericNames && !userName.All(IsAlphaNumeric))
+            // REVIEW: should we cache/compile the regex?
+            else if (manager.Options.User.UserNameRegex != null && !Regex.IsMatch(userName, manager.Options.User.UserNameRegex))
             {
                 // If any characters are not letters or digits, its an illegal user name
                 errors.Add(String.Format(CultureInfo.CurrentCulture, Resources.InvalidUserName, userName));
