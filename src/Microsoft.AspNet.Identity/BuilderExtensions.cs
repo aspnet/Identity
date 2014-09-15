@@ -11,7 +11,7 @@ namespace Microsoft.AspNet.Builder
     /// </summary>
     public static class BuilderExtensions
     {
-        public static IBuilder UseIdentity(this IBuilder app, IdentityOptions options)
+        public static IApplicationBuilder UseIdentity(this IApplicationBuilder app, IdentityOptions options)
         {
             if (app == null)
             {
