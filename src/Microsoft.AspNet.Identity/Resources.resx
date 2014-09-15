@@ -146,11 +146,15 @@
     <comment>Name of the default token provider</comment>
   </data>
   <data name="DuplicateEmail" xml:space="preserve">
-    <value>Email '{0}' is already taken.</value>
+    <value>Email is already taken.</value>
     <comment>error for duplicate emails</comment>
   </data>
-  <data name="DuplicateName" xml:space="preserve">
-    <value>Name {0} is already taken.</value>
+  <data name="DuplicateRoleName" xml:space="preserve">
+    <value>Role Name is already taken.</value>
+    <comment>error for duplicate usernames</comment>
+  </data>
+  <data name="DuplicateUserName" xml:space="preserve">
+    <value>UserName is already taken.</value>
     <comment>error for duplicate usernames</comment>
   </data>
   <data name="ExternalLoginExists" xml:space="preserve">

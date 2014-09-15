@@ -9,6 +9,7 @@ namespace Microsoft.AspNet.Identity
         {
             switch (failure)
             {
+                case IdentityFailure.UserLockedOut:
                 case IdentityFailure.DuplicateUserName:
                 case IdentityFailure.DuplicateEmail:
                 case IdentityFailure.DuplicateRoleName:
@@ -35,16 +36,18 @@ namespace Microsoft.AspNet.Identity
                     return failure.ToString();
             }
         }
+    }
 
-        public enum IdentityFailure
+    public enum IdentityFailure
     {
         DuplicateUserName,
         DuplicateEmail,
         DuplicateRoleName,
         UserValidationFailed,
         UserNameTooShort,
+        UserNameNotFound,
         RoleNameTooShort,
-        UserNameInvalid,
+        UserNameHasInvalidCharacters,
         UserAlreadyInRole,
         UserAlreadyHasPassword,
         LoginAlreadyAssociated,
@@ -59,6 +62,10 @@ namespace Microsoft.AspNet.Identity
         PasswordRequiresUpper,
         PasswordTooShort,
         PasswordRequiresNonLetterAndDigit,
+        UserLockedOut,
+        LoginNotFound,
+        SignInRequiresTwoFactor,
+        TwoFactorVerificationFailed,
         Unknown
     }
 }

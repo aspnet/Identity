@@ -6,21 +6,22 @@ using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace IdentitySample.Models
 {
     [Authorize]
-    public class AccountController : Controller
+    public class AccountController(
+        UserManager<ApplicationUser> userManager, 
+        SignInManager<ApplicationUser> signInManager,
+        IdentityFailureDescriber failureDescriber)
+        : Controller
     {
-        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
-        {
-            UserManager = userManager;
-            SignInManager = signInManager;
-        }
+        public UserManager<ApplicationUser> UserManager { get; } = userManager;
 
-        public UserManager<ApplicationUser> UserManager { get; private set; }
+        public SignInManager<ApplicationUser> SignInManager { get; } = signInManager;
 
-        public SignInManager<ApplicationUser> SignInManager { get; private set; }
+        public IdentityFailureDescriber FailureDescriber { get; } = failureDescriber;
 
         //
         // GET: /Account/Login
@@ -43,19 +44,21 @@ namespace IdentitySample.Models
             ViewBag.ReturnUrl = returnUrl;
             if (ModelState.IsValid)
             {
-                var signInStatus = await SignInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, shouldLockout: false);
-                switch (signInStatus)
+                var result = await SignInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, shouldLockout: false);
+                if (result.Succeeded) {
+                    return RedirectToLocal(returnUrl);
+                }
+                switch (result.Failures.First())
                 {
-                    case SignInStatus.Success:
-                        return RedirectToLocal(returnUrl);
-                    case SignInStatus.LockedOut:
-                        ModelState.AddModelError("", "User is locked out, try again later.");
+                    case IdentityFailure.UserLockedOut:
+                        // todo move to framework resource?
+                        ModelState.AddModelError("", FailureDescriber.Describe(IdentityFailure.UserLockedOut));
                         return View(model);
                     case SignInStatus.RequiresVerification:
                         return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
-                    case SignInStatus.Failure:
+                    case IdentityFailure.PasswordMismatch:
                     default:
-                        ModelState.AddModelError("", "Invalid username or password.");
+                        ModelState.AddModelError("", FailureDescriber.Describe(IdentityFailure.PasswordMismatch));
                         return View(model);
                 }
             }
@@ -398,7 +401,7 @@ namespace IdentitySample.Models
         {
             foreach (var failure in result.Failures)
             {
-                ModelState.AddModelError("", ApplicationErrors.GetDescription(failure));
+                ModelState.AddModelError("", FailureDescriber.Describe(failure));
             }
         }
 

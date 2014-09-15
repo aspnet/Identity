@@ -35,6 +35,12 @@ namespace Microsoft.AspNet.Identity
             return AddScoped(typeof(IRoleValidator<>).MakeGenericType(RoleType), typeof(T));
         }
 
+        public IdentityBuilder AddFailureDescriber<TDescriber>() where TDescriber : IdentityFailureDescriber
+        {
+            Services.AddScoped<IdentityFailureDescriber, TDescriber>();
+            return this;
+        }
+
         public IdentityBuilder AddPasswordValidator<T>() where T : class
         {
             return AddScoped(typeof(IPasswordValidator<>).MakeGenericType(UserType), typeof(T));

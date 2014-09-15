@@ -55,7 +55,7 @@ namespace Microsoft.AspNet.Identity
             }
             else if (manager.Options.User.UserNameValidationRegex != null && !Regex.IsMatch(userName, manager.Options.User.UserNameValidationRegex))
             {
-                errors.Add(IdentityFailure.UserNameInvalid);
+                errors.Add(IdentityFailure.UserNameHasInvalidCharacters);
             }
             else
             {
