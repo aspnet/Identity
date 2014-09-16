@@ -297,7 +297,7 @@ namespace IdentitySample
                 return View("Error");
             }
             var userLogins = await UserManager.GetLoginsAsync(user);
-            var otherLogins = AccountController.ExternalAuthHelper.GetExternalAuthenticationTypes(Context).Where(auth => userLogins.All(ul => auth.AuthenticationType != ul.LoginProvider)).ToList();
+            var otherLogins = Context.GetExternalAuthenticationTypes().Where(auth => userLogins.All(ul => auth.AuthenticationType != ul.LoginProvider)).ToList();
             ViewBag.ShowRemoveButton = user.PasswordHash != null || userLogins.Count > 1;
             return View(new ManageLoginsViewModel
             {
@@ -314,7 +314,8 @@ namespace IdentitySample
         {
             // Request a redirect to the external login provider to link a login for the current user
             var redirectUrl = Url.Action("LinkLoginCallback", "Manage");
-            return AccountController.ExternalAuthHelper.CreateChallengeResult(provider, redirectUrl, User.Identity.GetUserId());
+            var properties = Context.ConfigureExternalAuthenticationProperties(provider, redirectUrl, User.Identity.GetUserId());
+            return new ChallengeResult(provider, properties);
         }
 
         //
@@ -327,7 +328,7 @@ namespace IdentitySample
             {
                 return View("Error");
             }
-            var info = await AccountController.ExternalAuthHelper.GetExternalLoginInfo(Context, User.Identity.GetUserId());
+            var info = await Context.GetExternalLoginInfo(User.Identity.GetUserId());
             if (info == null)
             {
                 return RedirectToAction("ManageLogins", new { Message = ManageMessageId.Error });
