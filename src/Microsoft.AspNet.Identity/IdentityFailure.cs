@@ -16,7 +16,7 @@ namespace Microsoft.AspNet.Identity
                 case IdentityFailure.UserValidationFailed:
                 case IdentityFailure.UserNameTooShort:
                 case IdentityFailure.RoleNameTooShort:
-                case IdentityFailure.UserNameInvalid:
+                case IdentityFailure.UserNameHasInvalidCharacters:
                 case IdentityFailure.UserAlreadyInRole:
                 case IdentityFailure.UserAlreadyHasPassword:
                 case IdentityFailure.LoginAlreadyAssociated:
