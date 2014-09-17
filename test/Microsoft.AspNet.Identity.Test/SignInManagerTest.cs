@@ -7,6 +7,7 @@ using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.OptionsModel;
 using Moq;
 using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading;
@@ -220,6 +221,9 @@ namespace Microsoft.AspNet.Identity.Test
             {
                 manager.Setup(m => m.IsLockedOutAsync(user, CancellationToken.None)).ReturnsAsync(false).Verifiable();
             }
+            IList<string> providers = new List<string>();
+            providers.Add("PhoneNumber");
+            manager.Setup(m => m.GetValidTwoFactorProvidersAsync(user, CancellationToken.None)).Returns(Task.FromResult(providers)).Verifiable();
             manager.Setup(m => m.SupportsUserTwoFactor).Returns(true).Verifiable();
             manager.Setup(m => m.GetTwoFactorEnabledAsync(user, CancellationToken.None)).ReturnsAsync(true).Verifiable();
             manager.Setup(m => m.FindByNameAsync(user.UserName, CancellationToken.None)).ReturnsAsync(user).Verifiable();
@@ -295,15 +299,24 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Theory]
-        [InlineData(true, true, true)]
-        [InlineData(true, true, false)]
-        [InlineData(true, false, true)]
-        [InlineData(true, false, false)]
-        [InlineData(false, true, true)]
-        [InlineData(false, true, false)]
-        [InlineData(false, false, true)]
-        [InlineData(false, false, false)]
-        public async Task CanTwoFactorSignIn(bool isPersistent, bool supportsLockout, bool externalLogin)
+        [InlineData(true, true, true, true)]
+        [InlineData(true, true, false, true)]
+        [InlineData(true, false, true, true)]
+        [InlineData(true, false, false, true)]
+        [InlineData(false, true, true, true)]
+        [InlineData(false, true, false, true)]
+        [InlineData(false, false, true, true)]
+        [InlineData(false, false, false, true)]
+        [InlineData(true, true, true, false)]
+        [InlineData(true, true, false, false)]
+        [InlineData(true, false, true, false)]
+        [InlineData(true, false, false, false)]
+        [InlineData(false, true, true, false)]
+        [InlineData(false, true, false, false)]
+        [InlineData(false, false, true, false)]
+        [InlineData(false, false, false, false)]
+
+        public async Task CanTwoFactorSignIn(bool isPersistent, bool supportsLockout, bool externalLogin, bool rememberClient)
         {
             // Setup
             var user = new TestUser { UserName = "Foo" };
@@ -344,13 +357,20 @@ namespace Microsoft.AspNet.Identity.Test
                     It.Is<AuthenticationProperties>(v => v.IsPersistent == isPersistent),
                     It.Is<ClaimsIdentity>(i => i.FindFirstValue(ClaimTypes.NameIdentifier) == user.Id))).Verifiable();
             }
+            if (rememberClient)
+            {
+                response.Setup(r => r.SignIn(
+                    It.Is<AuthenticationProperties>(v => v.IsPersistent == true),
+                    It.Is<ClaimsIdentity>(i => i.FindFirstValue(ClaimTypes.Name) == user.Id
+                        && i.AuthenticationType == ClaimsIdentityOptions.DefaultTwoFactorRememberMeAuthenticationType))).Verifiable();
+            }
             context.Setup(c => c.Response).Returns(response.Object).Verifiable();
             context.Setup(c => c.AuthenticateAsync(ClaimsIdentityOptions.DefaultTwoFactorUserIdAuthenticationType)).ReturnsAsync(authResult).Verifiable();
             contextAccessor.Setup(a => a.Value).Returns(context.Object);
             var helper = new SignInManager<TestUser>(manager.Object, contextAccessor.Object, claimsFactory, options.Object);
 
             // Act
-            var result = await helper.TwoFactorSignInAsync(provider, code, isPersistent);
+            var result = await helper.TwoFactorSignInAsync(provider, code, isPersistent, rememberClient);
 
             // Assert
             Assert.Equal(SignInStatus.Success, result);
@@ -376,7 +396,10 @@ namespace Microsoft.AspNet.Identity.Test
 
             manager.Setup(m => m.GetUserIdAsync(user, CancellationToken.None)).ReturnsAsync(user.Id).Verifiable();
             context.Setup(c => c.Response).Returns(response.Object).Verifiable();
-            response.Setup(r => r.SignIn(It.Is<ClaimsIdentity>(i => i.AuthenticationType == ClaimsIdentityOptions.DefaultTwoFactorRememberMeAuthenticationType))).Verifiable();
+            response.Setup(r => r.SignIn(
+                It.Is<AuthenticationProperties>(v => v.IsPersistent == true),
+                It.Is<ClaimsIdentity>(i => i.FindFirstValue(ClaimTypes.Name) == user.Id
+                    && i.AuthenticationType == ClaimsIdentityOptions.DefaultTwoFactorRememberMeAuthenticationType))).Verifiable();
             contextAccessor.Setup(a => a.Value).Returns(context.Object).Verifiable();
             options.Setup(a => a.Options).Returns(identityOptions).Verifiable();
 
@@ -402,6 +425,9 @@ namespace Microsoft.AspNet.Identity.Test
             var user = new TestUser { UserName = "Foo" };
             var manager = MockHelpers.MockUserManager<TestUser>();
             manager.Setup(m => m.GetTwoFactorEnabledAsync(user, CancellationToken.None)).ReturnsAsync(true).Verifiable();
+            IList<string> providers = new List<string>();
+            providers.Add("PhoneNumber");
+            manager.Setup(m => m.GetValidTwoFactorProvidersAsync(user, CancellationToken.None)).Returns(Task.FromResult(providers)).Verifiable();
             manager.Setup(m => m.SupportsUserLockout).Returns(true).Verifiable();
             manager.Setup(m => m.SupportsUserTwoFactor).Returns(true).Verifiable();
             manager.Setup(m => m.IsLockedOutAsync(user, CancellationToken.None)).ReturnsAsync(false).Verifiable();

@@ -460,7 +460,7 @@ namespace Microsoft.AspNet.Identity.Test
             await Assert.ThrowsAsync<NotSupportedException>(async () => await manager.GetPhoneNumberAsync(null));
         }
 
-        [Fact]
+        [Fact(Skip = "UserManager is constructing default token providers right now")]
         public async Task TokenMethodsThrowWithNoTokenProvider()
         {
             var manager = MockHelpers.TestUserManager(new NoopUserStore());
