@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Framework.OptionsModel;
+using Microsoft.AspNet.Security.DataProtection;
 
 namespace Microsoft.AspNet.Identity
 {
@@ -59,6 +60,17 @@ namespace Microsoft.AspNet.Identity
             PasswordValidator = passwordValidator;
             UserNameNormalizer = userNameNormalizer;
             // TODO: Email/Sms/Token services
+
+            RegisterTwoFactorProvider("PhoneCode", new PhoneNumberTokenProvider<TUser>
+            {
+                MessageFormat = "Your security code is: {0}"
+            });
+            RegisterTwoFactorProvider("EmailCode", new EmailTokenProvider<TUser>
+            {
+                Subject = "SecurityCode",
+                BodyFormat = "Your security code is {0}"
+            });
+            UserTokenProvider = new DataProtectorTokenProvider<TUser>(DataProtectionProvider.CreateFromDpapi().CreateProtector("ASP.NET Identity"));
         }
 
         /// <summary>

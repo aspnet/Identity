@@ -232,6 +232,23 @@ namespace Microsoft.AspNet.Identity
             return SignInStatus.Failure;
         }
 
+        /// <summary>
+        /// Returns the user who has started the two factor authentication process
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public virtual async Task<TUser> GetTwoFactorAuthenticationUserAsync(
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var info = await RetrieveTwoFactorInfoAsync(cancellationToken);
+            if (info == null)
+            {
+                return null;
+            }
+
+            return await UserManager.FindByIdAsync(info.UserId, cancellationToken);
+        }
+
         public async Task<SignInStatus> ExternalLoginSignInAsync(string loginProvider, string providerKey, bool isPersistent,
             CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -250,7 +267,9 @@ namespace Microsoft.AspNet.Identity
         private async Task<SignInStatus> SignInOrTwoFactorAsync(TUser user, bool isPersistent,
             CancellationToken cancellationToken, string loginProvider = null)
         {
-            if (UserManager.SupportsUserTwoFactor && await UserManager.GetTwoFactorEnabledAsync(user))
+            if (UserManager.SupportsUserTwoFactor && 
+                await UserManager.GetTwoFactorEnabledAsync(user, cancellationToken) &&
+                (await UserManager.GetValidTwoFactorProvidersAsync(user, cancellationToken)).Count > 0)
             {
                 if (!await IsTwoFactorClientRememberedAsync(user, cancellationToken))
                 {

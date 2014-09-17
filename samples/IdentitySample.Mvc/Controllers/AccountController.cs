@@ -1,10 +1,7 @@
 ﻿using Microsoft.AspNet.Http;
-using Microsoft.AspNet.Http.Security;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Mvc.Rendering;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
@@ -79,17 +76,17 @@ namespace IdentitySample.Models
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.UserName };
+                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                    await SignInManager.SignInAsync(user, isPersistent: false);
-                    return RedirectToAction("Index", "Home");
+                    var code = await UserManager.GenerateEmailConfirmationTokenAsync(user);
+                    var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Context.Request.Scheme);
+                    await UserManager.SendEmailAsync(user, "Confirm your account", "Please confirm your account by clicking this link: <a href=\"" + callbackUrl + "\">link</a>");
+                    ViewBag.Link = callbackUrl;
+                    return View("DisplayEmail");
                 }
-                else
-                {
-                    AddErrors(result);
-                }
+                AddErrors(result);
             }
 
             // If we got this far, something failed, redisplay form
@@ -191,11 +188,12 @@ namespace IdentitySample.Models
             return View(model);
         }
 
+        // REVIEW: We should make this a POST
         //
         // GET: /Account/ConfirmEmail
         [HttpGet]
         [AllowAnonymous]
-        public async Task<ActionResult> ConfirmEmail(string userId, string code)
+        public async Task<IActionResult> ConfirmEmail(string userId, string code)
         {
             if (userId == null || code == null)
             {
@@ -305,15 +303,13 @@ namespace IdentitySample.Models
         [AllowAnonymous]
         public async Task<ActionResult> SendCode(string returnUrl = null, bool rememberMe = false)
         {
-            //var userId = await SignInManager.GetVerifiedUserIdAsync();
-            //if (userId == null)
-            //{
-            //    return View("Error");
-            //}
-            //var userFactors = await UserManager.GetValidTwoFactorProvidersAsync(userId);
-            //var factorOptions = userFactors.Select(purpose => new SelectListItem { Text = purpose, Value = purpose }).ToList();
-            var factorOptions = new List<SelectListItem>();
-            factorOptions.Add(new SelectListItem { Text = "Phone", Value = "Phone" });
+            var user = await SignInManager.GetTwoFactorAuthenticationUserAsync();
+            if (user == null)
+            {
+                return View("Error");
+            }
+            var userFactors = await UserManager.GetValidTwoFactorProvidersAsync(user);
+            var factorOptions = userFactors.Select(purpose => new SelectListItem { Text = purpose, Value = purpose }).ToList();
             return View(new SendCodeViewModel { Providers = factorOptions, ReturnUrl = returnUrl, RememberMe = rememberMe });
         }
 
@@ -341,18 +337,15 @@ namespace IdentitySample.Models
         // GET: /Account/VerifyCode
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> VerifyCode(string provider, string returnUrl, bool rememberMe)
+        public async Task<IActionResult> VerifyCode(string provider, bool rememberMe, string returnUrl = null)
         {
-            // Require that the user has already logged in via username/password or external login
-            //if (!await SignInManager.IsTwoFactorClientRememberedAsync())
-            //{
-            //    return View("Error");
-            //}
-            //var user = await UserManager.FindByIdAsync(await SignInManager.GetVerifiedUserIdAsync());
-            //if (user != null)
-            //{
-            //    ViewBag.Status = "For DEMO purposes the current " + provider + " code is: " + await UserManager.GenerateTwoFactorTokenAsync(user.Id, provider);
-            //}
+            var user = await SignInManager.GetTwoFactorAuthenticationUserAsync();
+            if (user == null)
+            {
+                return View("Error");
+            }
+            // Remove before production
+            ViewBag.Status = "For DEMO purposes the current " + provider + " code is: " + await UserManager.GenerateTwoFactorTokenAsync(user, provider);
             return View(new VerifyCodeViewModel { Provider = provider, ReturnUrl = returnUrl, RememberMe = rememberMe });
         }
 
