@@ -98,9 +98,8 @@ namespace IdentitySample.Models
                     return "Password requires a non letter and non digit character.";
                 case IdentityFailure.Unknown:
                     return "Unknown error.";
-                default:
-                    return failure.ToString();
             }
+            return base.Describe(failure);
         }
     }
 }
