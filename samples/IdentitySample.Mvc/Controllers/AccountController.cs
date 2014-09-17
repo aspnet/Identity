@@ -48,6 +48,8 @@ namespace IdentitySample.Models
                     case SignInStatus.LockedOut:
                         ModelState.AddModelError("", "User is locked out, try again later.");
                         return View(model);
+                    case SignInStatus.RequiresVerification:
+                        return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
                     case SignInStatus.Failure:
                     default:
                         ModelState.AddModelError("", "Invalid username or password.");
