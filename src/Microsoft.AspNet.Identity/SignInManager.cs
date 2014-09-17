@@ -194,7 +194,7 @@ namespace Microsoft.AspNet.Identity
             var userId = await UserManager.GetUserIdAsync(user, cancellationToken);
             var rememberBrowserIdentity = new ClaimsIdentity(ClaimsIdentityOptions.DefaultTwoFactorRememberMeAuthenticationType);
             rememberBrowserIdentity.AddClaim(new Claim(ClaimTypes.Name, userId));
-            Context.Response.SignIn(rememberBrowserIdentity);
+            Context.Response.SignIn(new AuthenticationProperties { IsPersistent = true }, rememberBrowserIdentity);
         }
 
         public virtual Task ForgetTwoFactorClientAsync()
@@ -203,8 +203,8 @@ namespace Microsoft.AspNet.Identity
             return Task.FromResult(0);
         }
 
-        public virtual async Task<SignInStatus> TwoFactorSignInAsync(string provider, string code, bool isPersistent,
-            CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<SignInStatus> TwoFactorSignInAsync(string provider, string code, bool isPersistent, 
+            bool rememberClient, CancellationToken cancellationToken = default(CancellationToken))
         {
             var twoFactorInfo = await RetrieveTwoFactorInfoAsync(cancellationToken);
             if (twoFactorInfo == null || twoFactorInfo.UserId == null)
@@ -225,6 +225,10 @@ namespace Microsoft.AspNet.Identity
                 // When token is verified correctly, clear the access failed count used for lockout
                 await UserManager.ResetAccessFailedCountAsync(user, cancellationToken);
                 await SignInAsync(user, isPersistent, twoFactorInfo.LoginProvider, cancellationToken);
+                if (rememberClient)
+                {
+                    await RememberTwoFactorClientAsync(user, cancellationToken);
+                }
                 return SignInStatus.Success;
             }
             // If the token is incorrect, record the failure which also may cause the user to be locked out
