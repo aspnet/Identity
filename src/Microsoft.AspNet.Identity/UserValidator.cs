@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 #if ASPNET50
 using System.Net.Mail;
 #endif
@@ -96,10 +95,8 @@ namespace Microsoft.AspNet.Identity
             {
                 errors.Add(String.Format(CultureInfo.CurrentCulture, Resources.PropertyTooShort, "UserName"));
             }
-            // REVIEW: should we cache/compile the regex?
             else if (manager.Options.User.UserNameValidationRegex != null && !Regex.IsMatch(userName, manager.Options.User.UserNameValidationRegex))
             {
-                // If any characters are not letters or digits, its an illegal user name
                 errors.Add(String.Format(CultureInfo.CurrentCulture, Resources.InvalidUserName, userName));
             }
             else
