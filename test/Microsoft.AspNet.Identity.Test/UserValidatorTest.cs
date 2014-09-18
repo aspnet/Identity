@@ -76,7 +76,7 @@ namespace Microsoft.AspNet.Identity.Test
         {
             // Setup
             var manager = MockHelpers.TestUserManager(new NoopUserStore());
-            manager.Options.User.UserNameRegex = null;
+            manager.Options.User.UserNameValidationRegex = null;
             var validator = new UserValidator<TestUser>();
             var user = new TestUser {UserName = userName};
 

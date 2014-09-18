@@ -392,7 +392,7 @@ namespace Microsoft.AspNet.Identity.Test
         {
             var manager = CreateManager();
             manager.Options.User.UseUserNameAsEmail = true;
-            manager.Options.User.UserNameRegex = null;
+            manager.Options.User.UserNameValidationRegex = null;
             var user = CreateTestUser();
             var email = user.UserName + "@test.com";
             user.UserName = email;

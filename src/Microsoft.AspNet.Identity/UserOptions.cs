@@ -12,7 +12,7 @@ namespace Microsoft.AspNet.Identity
             //User.RequireUniqueEmail = true; // TODO: app decision?
         }
 
-        public string UserNameRegex { get; set; } = "^[a-zA-Z0-9@_\\.]+$";
+        public string UserNameValidationRegex { get; set; } = "^[a-zA-Z0-9@_\\.]+$";
 
         /// <summary>
         ///     If set, enforces that emails are non empty, valid, and unique
