@@ -46,48 +46,6 @@ namespace Microsoft.AspNet.Identity
             return errors.Count > 0 ? IdentityResult.Failed(errors.ToArray()) : IdentityResult.Success;
         }
 
-        // TODO: Revisit extensibility for Validators
-
-        /// <summary>
-        ///     Returns true if the character is a digit between '0' and '9'
-        /// </summary>
-        /// <param name="c"></param>
-        /// <returns></returns>
-        public virtual bool IsDigit(char c)
-        {
-            return c >= '0' && c <= '9';
-        }
-
-        /// <summary>
-        ///     Returns true if the character is between 'a' and 'z'
-        /// </summary>
-        /// <param name="c"></param>
-        /// <returns></returns>
-        public virtual bool IsLower(char c)
-        {
-            return c >= 'a' && c <= 'z';
-        }
-
-        /// <summary>
-        ///     Returns true if the character is between 'A' and 'Z'
-        /// </summary>
-        /// <param name="c"></param>
-        /// <returns></returns>
-        public virtual bool IsUpper(char c)
-        {
-            return c >= 'A' && c <= 'Z';
-        }
-
-        /// <summary>
-        ///     Returns true if the character is upper, lower, a digit, or a common email character [@_.]
-        /// </summary>
-        /// <param name="c"></param>
-        /// <returns></returns>
-        public virtual bool IsAlphaNumeric(char c)
-        {
-            return IsUpper(c) || IsLower(c) || IsDigit(c) || c == '@' || c == '_' || c == '.';
-        }
-
         private async Task ValidateUserName(UserManager<TUser> manager, TUser user, ICollection<string> errors)
         {
             var userName = await manager.GetUserNameAsync(user);
