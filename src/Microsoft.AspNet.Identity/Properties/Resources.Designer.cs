@@ -139,7 +139,7 @@ namespace Microsoft.AspNet.Identity
         }
 
         /// <summary>
-        /// No IUserTokenProvider is registered.
+        /// No IUserTokenProvider named '{0}' is registered.
         /// </summary>
         internal static string NoTokenProvider
         {
@@ -147,27 +147,11 @@ namespace Microsoft.AspNet.Identity
         }
 
         /// <summary>
-        /// No IUserTokenProvider is registered.
+        /// No IUserTokenProvider named '{0}' is registered.
         /// </summary>
-        internal static string FormatNoTokenProvider()
+        internal static string FormatNoTokenProvider(object p0)
         {
-            return GetString("NoTokenProvider");
-        }
-
-        /// <summary>
-        /// No IUserTwoFactorProvider for '{0}' is registered.
-        /// </summary>
-        internal static string NoTwoFactorProvider
-        {
-            get { return GetString("NoTwoFactorProvider"); }
-        }
-
-        /// <summary>
-        /// No IUserTwoFactorProvider for '{0}' is registered.
-        /// </summary>
-        internal static string FormatNoTwoFactorProvider(object p0)
-        {
-            return string.Format(CultureInfo.CurrentCulture, GetString("NoTwoFactorProvider"), p0);
+            return string.Format(CultureInfo.CurrentCulture, GetString("NoTokenProvider"), p0);
         }
 
         /// <summary>

@@ -150,12 +150,8 @@
     <comment>error when lockout is not enabled</comment>
   </data>
   <data name="NoTokenProvider" xml:space="preserve">
-    <value>No IUserTokenProvider is registered.</value>
+    <value>No IUserTokenProvider named '{0}' is registered.</value>
     <comment>Error when there is no IUserTokenProvider</comment>
-  </data>
-  <data name="NoTwoFactorProvider" xml:space="preserve">
-    <value>No IUserTwoFactorProvider for '{0}' is registered.</value>
-    <comment>Error when there is no provider found</comment>
   </data>
   <data name="PasswordMismatch" xml:space="preserve">
     <value>Incorrect password.</value>

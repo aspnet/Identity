@@ -39,7 +39,7 @@ namespace Microsoft.AspNet.Identity
         /// <param name="manager"></param>
         /// <param name="user"></param>
         /// <returns></returns>
-        public override async Task<bool> IsValidProviderForUserAsync(UserManager<TUser> manager, TUser user,
+        public override async Task<bool> CanGenerateTwoFactorTokenAsync(UserManager<TUser> manager, TUser user,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             var email = await manager.GetEmailAsync(user, cancellationToken);

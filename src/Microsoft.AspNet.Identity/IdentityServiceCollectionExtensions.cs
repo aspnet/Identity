@@ -9,19 +9,19 @@ namespace Microsoft.Framework.DependencyInjection
 {
     public static class IdentityServiceCollectionExtensions
     {
-        public static IdentityBuilder<IdentityUser, IdentityRole> AddIdentity(this ServiceCollection services, 
+        public static IdentityBuilder<IdentityUser, IdentityRole> AddIdentity(this IServiceCollection services, 
             IConfiguration identityConfig)
         {
             services.SetupOptions<IdentityOptions>(identityConfig);
             return services.AddIdentity<IdentityUser, IdentityRole>();
         }
 
-        public static IdentityBuilder<IdentityUser, IdentityRole> AddIdentity(this ServiceCollection services)
+        public static IdentityBuilder<IdentityUser, IdentityRole> AddIdentity(this IServiceCollection services)
         {
             return services.AddIdentity<IdentityUser, IdentityRole>();
         }
 
-        public static IdentityBuilder<TUser, TRole> AddIdentity<TUser, TRole>(this ServiceCollection services, 
+        public static IdentityBuilder<TUser, TRole> AddIdentity<TUser, TRole>(this IServiceCollection services, 
             IConfiguration identityConfig)
             where TUser : class
             where TRole : class
@@ -30,7 +30,7 @@ namespace Microsoft.Framework.DependencyInjection
             return services.AddIdentity<TUser, TRole>();
         }
 
-        public static IdentityBuilder<TUser, TRole> AddIdentity<TUser, TRole>(this ServiceCollection services)
+        public static IdentityBuilder<TUser, TRole> AddIdentity<TUser, TRole>(this IServiceCollection services)
             where TUser : class
             where TRole : class
         {
@@ -44,13 +44,13 @@ namespace Microsoft.Framework.DependencyInjection
             return new IdentityBuilder<TUser, TRole>(services);
         }
 
-        public static IdentityBuilder<TUser, IdentityRole> AddIdentity<TUser>(this ServiceCollection services)
+        public static IdentityBuilder<TUser, IdentityRole> AddIdentity<TUser>(this IServiceCollection services)
             where TUser : class
         {
             return services.AddIdentity<TUser, IdentityRole>();
         }
 
-        public static IdentityBuilder<TUser, IdentityRole> AddIdentity<TUser>(this ServiceCollection services, 
+        public static IdentityBuilder<TUser, IdentityRole> AddIdentity<TUser>(this IServiceCollection services, 
             IConfiguration identityConfig)
             where TUser : class
         {

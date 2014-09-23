@@ -120,15 +120,15 @@ namespace Microsoft.AspNet.Identity
         }
 
         /// <summary>
-        ///     Returns true if the provider can be used to generate tokens for this user
+        ///     Returns false because tokens are two long to be used for two factor
         /// </summary>
         /// <param name="manager"></param>
         /// <param name="user"></param>
         /// <returns></returns>
-        public Task<bool> IsValidProviderForUserAsync(UserManager<TUser> manager, TUser user, 
+        public Task<bool> CanGenerateTwoFactorTokenAsync(UserManager<TUser> manager, TUser user, 
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            return Task.FromResult(true);
+            return Task.FromResult(false);
         }
 
         /// <summary>

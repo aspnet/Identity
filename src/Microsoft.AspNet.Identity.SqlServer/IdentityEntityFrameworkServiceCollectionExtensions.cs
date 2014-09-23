@@ -10,25 +10,25 @@ namespace Microsoft.Framework.DependencyInjection
 {
     public static class IdentityEntityFrameworkServiceCollectionExtensions
     {
-        public static IdentityBuilder<IdentityUser, IdentityRole> AddIdentitySqlServer(this ServiceCollection services)
+        public static IdentityBuilder<IdentityUser, IdentityRole> AddIdentitySqlServer(this IServiceCollection services)
         {
             return services.AddIdentitySqlServer<IdentityDbContext, IdentityUser, IdentityRole>();
         }
 
-        public static IdentityBuilder<IdentityUser, IdentityRole> AddIdentitySqlServer<TContext>(this ServiceCollection services)
+        public static IdentityBuilder<IdentityUser, IdentityRole> AddIdentitySqlServer<TContext>(this IServiceCollection services)
             where TContext : DbContext
         {
             return services.AddIdentitySqlServer<TContext, IdentityUser, IdentityRole>();
         }
 
-        public static IdentityBuilder<TUser, IdentityRole> AddIdentitySqlServer<TContext, TUser>(this ServiceCollection services)
+        public static IdentityBuilder<TUser, IdentityRole> AddIdentitySqlServer<TContext, TUser>(this IServiceCollection services)
             where TUser : IdentityUser, new()
             where TContext : DbContext
         {
             return services.AddIdentitySqlServer<TContext, TUser, IdentityRole>();
         }
 
-        public static IdentityBuilder<TUser, TRole> AddIdentitySqlServer<TContext, TUser, TRole>(this ServiceCollection services)
+        public static IdentityBuilder<TUser, TRole> AddIdentitySqlServer<TContext, TUser, TRole>(this IServiceCollection services)
             where TUser : IdentityUser, new()
             where TRole : IdentityRole, new()
             where TContext : DbContext

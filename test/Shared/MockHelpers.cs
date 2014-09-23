@@ -13,11 +13,11 @@ namespace Microsoft.AspNet.Identity.Test
 {
     public static class MockHelpers
     {
-        public static UserManager<TUser> CreateManager<TUser>(Func<IUserStore<TUser>> storeFunc) where TUser : class
+        public static UserManager<TUser> CreateManager<TUser>(IUserStore<TUser> store) where TUser : class
         {
             var services = new ServiceCollection();
             services.Add(OptionsServices.GetDefaultServices());
-            services.AddIdentity<TUser>().AddUserStore(storeFunc);
+            services.AddIdentity<TUser>().AddUserStore(store);
             services.SetupOptions<IdentityOptions>(options =>
             {
                 options.Password.RequireDigit = false;

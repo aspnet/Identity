@@ -25,9 +25,9 @@ namespace Microsoft.AspNet.Identity
 
         public TimeSpan SecurityStampValidationInterval { get; set; } = TimeSpan.FromMinutes(30);
 
-        public string EmailConfirmationTokenProviderName { get; set; }
+        public string EmailConfirmationTokenProvider { get; set; } = "EmailConfirmation";
 
-        public string ForgotPasswordTokenProviderName { get; set; }
+        public string PasswordResetTokenProvider { get; set; } = "PasswordReset";
 
         //public string ApplicationCookieAuthenticationType { get; set; }
         //public string ExternalCookieAuthenticationType { get; set; }

@@ -460,14 +460,15 @@ namespace Microsoft.AspNet.Identity.Test
             await Assert.ThrowsAsync<NotSupportedException>(async () => await manager.GetPhoneNumberAsync(null));
         }
 
-        [Fact(Skip = "UserManager is constructing default token providers right now")]
+        [Fact]
         public async Task TokenMethodsThrowWithNoTokenProvider()
         {
             var manager = MockHelpers.TestUserManager(new NoopUserStore());
+            var user = new TestUser();
             await Assert.ThrowsAsync<NotSupportedException>(
-                async () => await manager.GenerateUserTokenAsync(null, null));
+                async () => await manager.GenerateUserTokenAsync(user, "bogus", null));
             await Assert.ThrowsAsync<NotSupportedException>(
-                async () => await manager.VerifyUserTokenAsync(null, null, null));
+                async () => await manager.VerifyUserTokenAsync(user, "bogus", null, null));
         }
 
         [Fact]
@@ -608,7 +609,7 @@ namespace Microsoft.AspNet.Identity.Test
             await Assert.ThrowsAsync<ArgumentNullException>("providerKey",
                 async () => await manager.RemoveLoginAsync(null, "", null));
             await Assert.ThrowsAsync<ArgumentNullException>("email", async () => await manager.FindByEmailAsync(null));
-            Assert.Throws<ArgumentNullException>("provider", () => manager.RegisterTwoFactorProvider(null));
+            Assert.Throws<ArgumentNullException>("provider", () => manager.RegisterTokenProvider(null));
             await Assert.ThrowsAsync<ArgumentNullException>("roles", async () => await manager.AddToRolesAsync(new TestUser(), null));
             await Assert.ThrowsAsync<ArgumentNullException>("roles", async () => await manager.RemoveFromRolesAsync(new TestUser(), null));
         }
@@ -617,7 +618,7 @@ namespace Microsoft.AspNet.Identity.Test
         public async Task MethodsFailWithUnknownUserTest()
         {
             var manager = MockHelpers.TestUserManager(new EmptyStore());
-            manager.UserTokenProvider = new NoOpTokenProvider();
+            manager.RegisterTokenProvider(new NoOpTokenProvider());
             await Assert.ThrowsAsync<ArgumentNullException>("user",
                 async () => await manager.GetUserNameAsync(null));
             await Assert.ThrowsAsync<ArgumentNullException>("user",
@@ -695,7 +696,7 @@ namespace Microsoft.AspNet.Identity.Test
             await Assert.ThrowsAsync<ArgumentNullException>("user",
                 async () => await manager.GetValidTwoFactorProvidersAsync(null));
             await Assert.ThrowsAsync<ArgumentNullException>("user",
-                async () => await manager.VerifyUserTokenAsync(null, null, null));
+                async () => await manager.VerifyUserTokenAsync(null, null, null, null));
             await Assert.ThrowsAsync<ArgumentNullException>("user",
                 async () => await manager.AccessFailedAsync(null));
             await Assert.ThrowsAsync<ArgumentNullException>("user",
@@ -1023,7 +1024,7 @@ namespace Microsoft.AspNet.Identity.Test
                 return Task.FromResult(0);
             }
 
-            public Task<bool> IsValidProviderForUserAsync(UserManager<TestUser> manager, TestUser user, CancellationToken cancellationToken = default(CancellationToken))
+            public Task<bool> CanGenerateTwoFactorTokenAsync(UserManager<TestUser> manager, TestUser user, CancellationToken cancellationToken = default(CancellationToken))
             {
                 return Task.FromResult(true);
             }

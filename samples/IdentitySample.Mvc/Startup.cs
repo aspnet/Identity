@@ -12,6 +12,7 @@ using Microsoft.Framework.DependencyInjection.Fallback;
 using IdentitySample.Models;
 using Microsoft.Framework.OptionsModel;
 using System;
+using Microsoft.AspNet.Security.DataProtection;
 
 namespace IdentitySamples
 {
@@ -90,7 +91,78 @@ namespace IdentitySamples
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseServices(ConfigureServices);
+            app.UseServices(services =>
+            {
+                // Add EF services to the services container
+                services.AddEntityFramework()
+                        .AddSqlServer();
+
+                // Configure DbContext           
+                services.SetupOptions<IdentityDbContextOptions>(options =>
+                {
+                    options.DefaultAdminUserName = Configuration.Get("DefaultAdminUsername");
+                    options.DefaultAdminPassword = Configuration.Get("DefaultAdminPassword");
+                    options.UseSqlServer(Configuration.Get("Data:IdentityConnection:ConnectionString"));
+                });
+
+            // Add Identity services to the services container
+            services.AddIdentitySqlServer<ApplicationDbContext, ApplicationUser>()
+                .AddTokenProvider(new DataProtectorTokenProvider<ApplicationUser>("DPAPI",
+                   DataProtectionProvider.CreateFromDpapi().CreateProtector("ASP.NET Identity")))
+                .AddTokenProvider(new PhoneNumberTokenProvider<ApplicationUser>("PhoneCode")
+                {
+                    MessageFormat = "Your security code is: {0}"
+                })
+                .AddTokenProvider(new EmailTokenProvider<ApplicationUser>("EmailCode")
+                {
+                    Subject = "SecurityCode",
+                    BodyFormat = "Your security code is {0}"
+                });
+
+                // move this into add identity along with the 
+                //service.SetupOptions<ExternalAuthenticationOptions>(options => options.SignInAsAuthenticationType = "External")
+
+                services.SetupOptions<IdentityOptions>(options =>
+                {
+                    options.Password.RequireDigit = false;
+                    options.Password.RequireLowercase = false;
+                    options.Password.RequireUppercase = false;
+                    options.Password.RequireNonLetterOrDigit = false;
+                    options.SecurityStampValidationInterval = TimeSpan.Zero;
+                    options.PasswordResetTokenProvider = "DPAPI";
+                    options.EmailConfirmationTokenProvider = "DPAPI";
+                });
+                services.SetupOptions<GoogleAuthenticationOptions>(options =>
+                {
+                    options.ClientId = "514485782433-fr3ml6sq0imvhi8a7qir0nb46oumtgn9.apps.googleusercontent.com";
+                    options.ClientSecret = "V2nDD9SkFbvLTqAUBWBBxYAL";
+                });
+                services.AddInstance(new GoogleAuthenticationOptions
+                {
+                    ClientId = "514485782433-fr3ml6sq0imvhi8a7qir0nb46oumtgn9.apps.googleusercontent.com",
+                    ClientSecret = "V2nDD9SkFbvLTqAUBWBBxYAL"
+                });
+                services.SetupOptions<FacebookAuthenticationOptions>(options =>
+                {
+                    options.AppId = "901611409868059";
+                    options.AppSecret = "4aa3c530297b1dcebc8860334b39668b";
+                });
+
+                services.SetupOptions<FacebookAuthenticationOptions>(options =>
+                {
+                    options.AppId = "901611409868059";
+                    options.AppSecret = "4aa3c530297b1dcebc8860334b39668b";
+                });
+
+                services.SetupOptions<TwitterAuthenticationOptions>(options =>
+                {
+                    options.ConsumerKey = "BSdJJ0CrDuvEhpkchnukXZBUv";
+                    options.ConsumerSecret = "xKUNuKhsRdHD03eLn67xhPAyE1wFFEndFo1X2UJaK2m1jdAxf4";
+                });
+
+                // Add MVC services to the services container
+                services.AddMvc();
+            });
 
             /* Error page middleware displays a nice formatted HTML page for any unhandled exceptions in the request pipeline.
              * Note: ErrorPageOptions.ShowAll to be used only at development time. Not recommended for production.
@@ -121,82 +193,11 @@ namespace IdentitySamples
             SampleData.InitializeIdentityDatabaseAsync(app.ApplicationServices).Wait();
         }
 
+        // TODO: Move services here
         public IServiceProvider ConfigureServices(ServiceCollection services)
         {
-            // Add EF services to the services container
-            services.AddEntityFramework()
-                    .AddSqlServer();
-
-            // Configure DbContext           
-            services.SetupOptions<IdentityDbContextOptions>(options =>
-            {
-                options.DefaultAdminUserName = Configuration.Get("DefaultAdminUsername");
-                options.DefaultAdminPassword = Configuration.Get("DefaultAdminPassword");
-                options.UseSqlServer(Configuration.Get("Data:IdentityConnection:ConnectionString"));
-            });
-
-            // Add Identity services to the services container
-            services.AddIdentitySqlServer<ApplicationDbContext, ApplicationUser>();
-
-            // move this into add identity along with the 
-            //service.SetupOptions<ExternalAuthenticationOptions>(options => options.SignInAsAuthenticationType = "External")
-
-            services.SetupOptions<IdentityOptions>(options =>
-            {
-                options.Password.RequireDigit = false;
-                options.Password.RequireLowercase = false;
-                options.Password.RequireUppercase = false;
-                options.Password.RequireNonLetterOrDigit = false;
-                options.SecurityStampValidationInterval = TimeSpan.Zero;
-            });
-            services.SetupOptions<GoogleAuthenticationOptions>(options =>
-            {
-                options.ClientId = "514485782433-fr3ml6sq0imvhi8a7qir0nb46oumtgn9.apps.googleusercontent.com";
-                options.ClientSecret = "V2nDD9SkFbvLTqAUBWBBxYAL";
-            });
-            services.AddInstance(new GoogleAuthenticationOptions
-            {
-                ClientId = "514485782433-fr3ml6sq0imvhi8a7qir0nb46oumtgn9.apps.googleusercontent.com",
-                ClientSecret = "V2nDD9SkFbvLTqAUBWBBxYAL"
-            });
-            services.SetupOptions<FacebookAuthenticationOptions>(options =>
-            {
-                options.AppId = "901611409868059";
-                options.AppSecret = "4aa3c530297b1dcebc8860334b39668b";
-            });
-
-            services.SetupOptions<FacebookAuthenticationOptions>(options =>
-            {
-                options.AppId = "901611409868059";
-                options.AppSecret = "4aa3c530297b1dcebc8860334b39668b";
-            });
-
-            services.SetupOptions<TwitterAuthenticationOptions>(options =>
-            {
-                options.ConsumerKey = "BSdJJ0CrDuvEhpkchnukXZBUv";
-                options.ConsumerSecret = "xKUNuKhsRdHD03eLn67xhPAyE1wFFEndFo1X2UJaK2m1jdAxf4";
-            });
-
-            // Add MVC services to the services container
-            services.AddMvc();
-
             return services.BuildServiceProvider();
         }
-
-        //.ConfigureManager(manager =>
-        //{
-        //    RegisterTwoFactorProvider("PhoneCode", new PhoneNumberTokenProvider<TUser>
-        //    {
-        //        Caption = "PhoneCode"
-        //            MessageFormat = "Your security code is: {0}"
-        //    });
-        //    RegisterTwoFactorProvider("EmailCode", new EmailTokenProvider<TUser>
-        //    {
-        //        Subject = "SecurityCode",
-        //        BodyFormat = "Your security code is {0}"
-        //    });
-        //    UserTokenProvider = new DataProtectorTokenProvider<TUser>(DataProtectionProvider.CreateFromDpapi().CreateProtector("ASP.NET Identity"));
-        //}
 
     }
 }
