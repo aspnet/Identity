@@ -3,6 +3,8 @@
 
 using System;
 using Microsoft.AspNet.Identity;
+using Microsoft.Framework.OptionsModel;
+using Microsoft.Framework.DependencyInjection;
 
 namespace Microsoft.AspNet.Builder
 {
@@ -11,12 +13,13 @@ namespace Microsoft.AspNet.Builder
     /// </summary>
     public static class BuilderExtensions
     {
-        public static IApplicationBuilder UseIdentity(this IApplicationBuilder app, IdentityOptions options)
+        public static IApplicationBuilder UseIdentity(this IApplicationBuilder app)
         {
             if (app == null)
             {
                 throw new ArgumentNullException("app");
             }
+            var options = app.ApplicationServices.GetService<IOptionsAccessor<IdentityOptions>>().Options;
             app.UseCookieAuthentication(options.ApplicationCookie);
             app.SetDefaultSignInAsAuthenticationType(options.DefaultSignInAsAuthenticationType);
             app.UseCookieAuthentication(options.ExternalCookie);

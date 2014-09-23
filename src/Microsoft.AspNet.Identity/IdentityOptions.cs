@@ -25,6 +25,15 @@ namespace Microsoft.AspNet.Identity
 
         public TimeSpan SecurityStampValidationInterval { get; set; } = TimeSpan.FromMinutes(30);
 
+        public string EmailConfirmationTokenProviderName { get; set; }
+
+        public string ForgotPasswordTokenProviderName { get; set; }
+
+        //public string ApplicationCookieAuthenticationType { get; set; }
+        //public string ExternalCookieAuthenticationType { get; set; }
+        //public string TwoFactorCookieAuthenticationType { get; set; }
+        //public string TwoFactorFactorCookieAuthenticationType { get; set; }
+
         public CookieAuthenticationOptions ApplicationCookie { get; set; } = new CookieAuthenticationOptions
         {
             AuthenticationType = ClaimsIdentityOptions.DefaultAuthenticationType,
@@ -34,6 +43,8 @@ namespace Microsoft.AspNet.Identity
                 OnValidateIdentity = SecurityStampValidator.ValidateIdentityAsync
             }
         };
+
+        // Move to setups for named per cookie option
 
         public string DefaultSignInAsAuthenticationType { get; set; } = ClaimsIdentityOptions.DefaultExternalLoginAuthenticationType;
 
@@ -53,6 +64,7 @@ namespace Microsoft.AspNet.Identity
         {
             AuthenticationType = ClaimsIdentityOptions.DefaultTwoFactorUserIdAuthenticationType,
             AuthenticationMode = AuthenticationMode.Passive
+
         };
     }
 }

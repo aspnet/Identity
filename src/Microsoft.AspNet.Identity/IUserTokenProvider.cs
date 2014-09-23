@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,6 +11,11 @@ namespace Microsoft.AspNet.Identity
     /// </summary>
     public interface IUserTokenProvider<TUser> where TUser : class
     {
+        /// <summary>
+        /// Name of the token provider
+        /// </summary>
+        string Name { get; }
+
         /// <summary>
         ///     Generate a token for a user
         /// </summary>

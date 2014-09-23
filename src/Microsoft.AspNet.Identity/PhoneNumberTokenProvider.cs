@@ -9,7 +9,7 @@ namespace Microsoft.AspNet.Identity
     ///     TokenProvider that generates tokens from the user's security stamp and notifies a user via their phone number
     /// </summary>
     /// <typeparam name="TUser"></typeparam>
-    public class PhoneNumberTokenProvider<TUser> : TotpSecurityStampBasedTokenProvider<TUser>
+    public class PhoneNumberTokenProvider<TUser>(string name) : TotpSecurityStampBasedTokenProvider<TUser>(name)
         where TUser : class
     {
         private string _body;

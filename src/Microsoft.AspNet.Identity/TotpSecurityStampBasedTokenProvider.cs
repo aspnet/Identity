@@ -10,9 +10,11 @@ namespace Microsoft.AspNet.Identity
     /// </summary>
     /// <typeparam name="TUser"></typeparam>
     /// <typeparam name="TKey"></typeparam>
-    public class TotpSecurityStampBasedTokenProvider<TUser> : IUserTokenProvider<TUser>
+    public class TotpSecurityStampBasedTokenProvider<TUser>(string name) : IUserTokenProvider<TUser>
         where TUser : class
     {
+        public string Name { get; } = name;
+
         /// <summary>
         ///     This token provider does not notify the user by default
         /// </summary>

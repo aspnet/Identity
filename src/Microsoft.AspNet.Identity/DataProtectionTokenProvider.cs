@@ -1,6 +1,5 @@
 using Microsoft.AspNet.Security.DataProtection;
 using System;
-using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -11,31 +10,26 @@ namespace Microsoft.AspNet.Identity
     /// <summary>
     ///     Token provider that uses an IDataProtector to generate encrypted tokens based off of the security stamp
     /// </summary>
-    public class DataProtectorTokenProvider<TUser> : IUserTokenProvider<TUser> where TUser : class
+    public class DataProtectorTokenProvider<TUser>(string name, IDataProtector protector) : IUserTokenProvider<TUser> where TUser : class
     {
-        /// <summary>
-        ///     Constructor
-        /// </summary>
-        /// <param name="protector"></param>
-        public DataProtectorTokenProvider(IDataProtector protector)
         {
             if (protector == null)
             {
                 throw new ArgumentNullException("protector");
             }
-            Protector = protector;
-            TokenLifespan = TimeSpan.FromDays(1);
         }
+
+        public string Name { get; } = name;
 
         /// <summary>
         ///     IDataProtector for the token
         /// </summary>
-        public IDataProtector Protector { get; private set; }
+        public IDataProtector Protector { get; } = protector;
 
         /// <summary>
         ///     Lifespan after which the token is considered expired
         /// </summary>
-        public TimeSpan TokenLifespan { get; set; }
+        public TimeSpan TokenLifespan { get; set; } = TimeSpan.FromDays(1);
 
         /// <summary>
         ///     Generate a protected string for a user

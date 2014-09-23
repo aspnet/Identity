@@ -20,7 +20,7 @@ namespace Microsoft.AspNet.Identity
     /// <typeparam name="TUser"></typeparam>
     public class UserManager<TUser> : IDisposable where TUser : class
     {
-        private readonly Dictionary<string, IUserTokenProvider<TUser>> _factors =
+        private readonly Dictionary<string, IUserTokenProvider<TUser>> _tokenProviders =
             new Dictionary<string, IUserTokenProvider<TUser>>();
 
         private TimeSpan _defaultLockout = TimeSpan.Zero;
@@ -39,19 +39,20 @@ namespace Microsoft.AspNet.Identity
         /// <param name="claimsIdentityFactory"></param>
         public UserManager(IUserStore<TUser> store, IOptionsAccessor<IdentityOptions> optionsAccessor,
             IPasswordHasher<TUser> passwordHasher, IUserValidator<TUser> userValidator,
-            IPasswordValidator<TUser> passwordValidator, IUserNameNormalizer userNameNormalizer)
+            IPasswordValidator<TUser> passwordValidator, IUserNameNormalizer userNameNormalizer,
+            IEnumerable<IUserTokenProvider<TUser>> tokenProviders)
         {
             if (store == null)
             {
-                throw new ArgumentNullException("store");
+                throw new ArgumentNullException(nameof(store));
             }
             if (optionsAccessor == null || optionsAccessor.Options == null)
             {
-                throw new ArgumentNullException("optionsAccessor");
+                throw new ArgumentNullException(nameof(optionsAccessor));
             }
             if (passwordHasher == null)
             {
-                throw new ArgumentNullException("passwordHasher");
+                throw new ArgumentNullException(nameof(passwordHasher));
             }
             Store = store;
             Options = optionsAccessor.Options;
@@ -61,16 +62,13 @@ namespace Microsoft.AspNet.Identity
             UserNameNormalizer = userNameNormalizer;
             // TODO: Email/Sms/Token services
 
-            RegisterTwoFactorProvider("PhoneCode", new PhoneNumberTokenProvider<TUser>
-            {
-                MessageFormat = "Your security code is: {0}"
-            });
-            RegisterTwoFactorProvider("EmailCode", new EmailTokenProvider<TUser>
-            {
-                Subject = "SecurityCode",
-                BodyFormat = "Your security code is {0}"
-            });
-            UserTokenProvider = new DataProtectorTokenProvider<TUser>(DataProtectionProvider.CreateFromDpapi().CreateProtector("ASP.NET Identity"));
+            if (tokenProviders != null) {
+                foreach (var tokenProvider in tokenProviders)
+                {
+                    RegisterTwoFactorProvider(tokenProvider);
+                }
+            }
+            UserTokenProvider = new DataProtectorTokenProvider<TUser>("UserToken", DataProtectionProvider.CreateFromDpapi().CreateProtector("ASP.NET Identity"));
         }
 
         /// <summary>
@@ -281,14 +279,6 @@ namespace Microsoft.AspNet.Identity
                 }
                 return queryableStore.Users;
             }
-        }
-
-        /// <summary>
-        ///     Dictionary mapping user two factor providers
-        /// </summary>
-        public IDictionary<string, IUserTokenProvider<TUser>> TwoFactorProviders
-        {
-            get { return _factors; }
         }
 
         /// <summary>
@@ -1514,18 +1504,14 @@ namespace Microsoft.AspNet.Identity
         /// </summary>
         /// <param name="twoFactorProvider"></param>
         /// <param name="provider"></param>
-        public virtual void RegisterTwoFactorProvider(string twoFactorProvider, IUserTokenProvider<TUser> provider)
+        public virtual void RegisterTwoFactorProvider(IUserTokenProvider<TUser> provider)
         {
             ThrowIfDisposed();
-            if (twoFactorProvider == null)
-            {
-                throw new ArgumentNullException("twoFactorProvider");
-            }
             if (provider == null)
             {
                 throw new ArgumentNullException("provider");
             }
-            TwoFactorProviders[twoFactorProvider] = provider;
+            _tokenProviders[provider.Name] = provider;
         }
 
         /// <summary>
@@ -1543,7 +1529,7 @@ namespace Microsoft.AspNet.Identity
                 throw new ArgumentNullException("user");
             }
             var results = new List<string>();
-            foreach (var f in TwoFactorProviders)
+            foreach (var f in _tokenProviders)
             {
                 if (await f.Value.IsValidProviderForUserAsync(this, user, cancellationToken))
                 {
@@ -1569,13 +1555,13 @@ namespace Microsoft.AspNet.Identity
             {
                 throw new ArgumentNullException("user");
             }
-            if (!_factors.ContainsKey(twoFactorProvider))
+            if (!_tokenProviders.ContainsKey(twoFactorProvider))
             {
                 throw new NotSupportedException(String.Format(CultureInfo.CurrentCulture,
                     Resources.NoTwoFactorProvider, twoFactorProvider));
             }
             // Make sure the token is valid
-            var provider = _factors[twoFactorProvider];
+            var provider = _tokenProviders[twoFactorProvider];
             return await provider.ValidateAsync(twoFactorProvider, token, this, user, cancellationToken);
         }
 
@@ -1594,12 +1580,12 @@ namespace Microsoft.AspNet.Identity
             {
                 throw new ArgumentNullException("user");
             }
-            if (!_factors.ContainsKey(twoFactorProvider))
+            if (!_tokenProviders.ContainsKey(twoFactorProvider))
             {
                 throw new NotSupportedException(String.Format(CultureInfo.CurrentCulture,
                     Resources.NoTwoFactorProvider, twoFactorProvider));
             }
-            return await _factors[twoFactorProvider].GenerateAsync(twoFactorProvider, this, user, cancellationToken);
+            return await _tokenProviders[twoFactorProvider].GenerateAsync(twoFactorProvider, this, user, cancellationToken);
         }
 
         /// <summary>
@@ -1618,12 +1604,12 @@ namespace Microsoft.AspNet.Identity
             {
                 throw new ArgumentNullException("user");
             }
-            if (!_factors.ContainsKey(twoFactorProvider))
+            if (!_tokenProviders.ContainsKey(twoFactorProvider))
             {
                 throw new NotSupportedException(String.Format(CultureInfo.CurrentCulture, 
                     Resources.NoTwoFactorProvider, twoFactorProvider));
             }
-            await _factors[twoFactorProvider].NotifyAsync(token, this, user, cancellationToken);
+            await _tokenProviders[twoFactorProvider].NotifyAsync(token, this, user, cancellationToken);
             return IdentityResult.Success;
         }
 
