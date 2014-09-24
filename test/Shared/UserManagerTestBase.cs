@@ -643,9 +643,9 @@ namespace Microsoft.AspNet.Identity.Test
         public async Task ConfirmTokenFailsAfterPasswordChange()
         {
             var manager = CreateManager();
-            manager.RegisterTokenProvider(new DataProtectorTokenProvider<TUser>("DPAPI",
+            manager.RegisterTokenProvider(new DataProtectorTokenProvider<TUser>(new DataProtectionTokenProviderOptions(),
                    DataProtectionProvider.CreateFromDpapi().CreateProtector("ASP.NET Identity")));
-            manager.Options.EmailConfirmationTokenProvider = "DPAPI";
+            manager.Options.EmailConfirmationTokenProvider = "DataProtection";
             var user = new TUser() { UserName = "test" };
             Assert.False(user.EmailConfirmed);
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user, "password"));

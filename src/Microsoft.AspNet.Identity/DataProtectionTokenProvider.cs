@@ -7,29 +7,33 @@ using System.Threading.Tasks;
 
 namespace Microsoft.AspNet.Identity
 {
+    public class DataProtectionTokenProviderOptions
+    {
+        public string Name { get; set; } = "DataProtection";
+        public TimeSpan TokenLifespan { get; set; } = TimeSpan.FromDays(1);
+
+    }
+
     /// <summary>
     ///     Token provider that uses an IDataProtector to generate encrypted tokens based off of the security stamp
     /// </summary>
-    public class DataProtectorTokenProvider<TUser>(string name, IDataProtector protector) : IUserTokenProvider<TUser> where TUser : class
+    public class DataProtectorTokenProvider<TUser>(DataProtectionTokenProviderOptions options, IDataProtector protector) : IUserTokenProvider<TUser> where TUser : class
     {
         {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
             if (protector == null)
             {
-                throw new ArgumentNullException("protector");
+                throw new ArgumentNullException(nameof(protector));
             }
         }
 
-        public string Name { get; } = name;
-
-        /// <summary>
-        ///     IDataProtector for the token
-        /// </summary>
+        public DataProtectionTokenProviderOptions Options { get; } = options;
         public IDataProtector Protector { get; } = protector;
 
-        /// <summary>
-        ///     Lifespan after which the token is considered expired
-        /// </summary>
-        public TimeSpan TokenLifespan { get; set; } = TimeSpan.FromDays(1);
+        public string Name { get { return Options.Name; } }
 
         /// <summary>
         ///     Generate a protected string for a user
@@ -81,7 +85,7 @@ namespace Microsoft.AspNet.Identity
                 using (var reader = ms.CreateReader())
                 {
                     var creationTime = reader.ReadDateTimeOffset();
-                    var expirationTime = creationTime + TokenLifespan;
+                    var expirationTime = creationTime + Options.TokenLifespan;
                     if (expirationTime < DateTimeOffset.UtcNow)
                     {
                         return false;

@@ -45,7 +45,11 @@ namespace Microsoft.Framework.DependencyInjection
             where TRole : class
         {
             return services.AddIdentity<TUser, TRole>(config)
-                .AddTokenProvider(new DataProtectorTokenProvider<TUser>(Resources.DefaultTokenProvider,
+                .AddTokenProvider(new DataProtectorTokenProvider<TUser>(
+                    new DataProtectionTokenProviderOptions
+                    {
+                        Name = Resources.DefaultTokenProvider,
+                    }, 
                     DataProtectionProvider.CreateFromDpapi().CreateProtector("ASP.NET Identity")))
                 .AddTokenProvider(new PhoneNumberTokenProvider<TUser>())
                 .AddTokenProvider(new EmailTokenProvider<TUser>());
