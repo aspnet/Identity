@@ -30,7 +30,7 @@ namespace Microsoft.AspNet.Identity.Test
         [Fact]
         public void EnsureDefaultServicesDefaultsWithStoreWorks()
         {
-            var services = new ServiceCollection {IdentityServices.GetDefaultUserServices<TestUser>()};
+            var services = new ServiceCollection {IdentityServices.GetDefaultServices<TestUser, IdentityRole>()};
             services.Add(OptionsServices.GetDefaultServices());
             services.AddTransient<IUserStore<TestUser>, NoopUserStore>();
             services.AddTransient<TestManager>();

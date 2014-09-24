@@ -4,6 +4,7 @@
 using System;
 using Microsoft.AspNet.Identity;
 using Microsoft.Framework.ConfigurationModel;
+using Microsoft.AspNet.Security.DataProtection;
 
 namespace Microsoft.Framework.DependencyInjection
 {
@@ -22,26 +23,32 @@ namespace Microsoft.Framework.DependencyInjection
         }
 
         public static IdentityBuilder<TUser, TRole> AddIdentity<TUser, TRole>(this IServiceCollection services, 
-            IConfiguration identityConfig)
+            IConfiguration identityConfig = null)
             where TUser : class
             where TRole : class
         {
-            services.SetupOptions<IdentityOptions>(identityConfig);
-            return services.AddIdentity<TUser, TRole>();
-        }
-
-        public static IdentityBuilder<TUser, TRole> AddIdentity<TUser, TRole>(this IServiceCollection services)
-            where TUser : class
-            where TRole : class
-        {
-            services.Add(IdentityServices.GetDefaultUserServices<TUser>());
-            services.Add(IdentityServices.GetDefaultRoleServices<TRole>());
+            if (identityConfig != null)
+            {
+                services.SetupOptions<IdentityOptions>(identityConfig);
+            }
+            services.Add(IdentityServices.GetDefaultServices<TUser, TRole>(identityConfig));
             services.AddScoped<UserManager<TUser>>();
             services.AddScoped<SignInManager<TUser>>();
             services.AddScoped<ISecurityStampValidator, SecurityStampValidator<TUser>>();
             services.AddScoped<RoleManager<TRole>>();
             services.AddScoped<IClaimsIdentityFactory<TUser>, ClaimsIdentityFactory<TUser, TRole>>();
             return new IdentityBuilder<TUser, TRole>(services);
+        }
+
+        public static IdentityBuilder<TUser, TRole> AddDefaultIdentity<TUser, TRole>(this IServiceCollection services, IConfiguration config = null)
+            where TUser : class
+            where TRole : class
+        {
+            return services.AddIdentity<TUser, TRole>(config)
+                .AddTokenProvider(new DataProtectorTokenProvider<TUser>(Resources.DefaultTokenProvider,
+                    DataProtectionProvider.CreateFromDpapi().CreateProtector("ASP.NET Identity")))
+                .AddTokenProvider(new PhoneNumberTokenProvider<TUser>())
+                .AddTokenProvider(new EmailTokenProvider<TUser>());
         }
 
         public static IdentityBuilder<TUser, IdentityRole> AddIdentity<TUser>(this IServiceCollection services)

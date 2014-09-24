@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Diagnostics;
 using Microsoft.AspNet.Identity;
@@ -9,10 +10,8 @@ using Microsoft.Data.Entity;
 using Microsoft.Framework.ConfigurationModel;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.DependencyInjection.Fallback;
-using IdentitySample.Models;
 using Microsoft.Framework.OptionsModel;
-using System;
-using Microsoft.AspNet.Security.DataProtection;
+using IdentitySample.Models;
 
 namespace IdentitySamples
 {
@@ -72,7 +71,6 @@ namespace IdentitySamples
         {
             return builder.UseTwitterAuthentication(func(builder));
         }
-
     }
 
     public partial class Startup()
@@ -105,19 +103,8 @@ namespace IdentitySamples
                     options.UseSqlServer(Configuration.Get("Data:IdentityConnection:ConnectionString"));
                 });
 
-            // Add Identity services to the services container
-            services.AddIdentitySqlServer<ApplicationDbContext, ApplicationUser>()
-                .AddTokenProvider(new DataProtectorTokenProvider<ApplicationUser>("DPAPI",
-                   DataProtectionProvider.CreateFromDpapi().CreateProtector("ASP.NET Identity")))
-                .AddTokenProvider(new PhoneNumberTokenProvider<ApplicationUser>("PhoneCode")
-                {
-                    MessageFormat = "Your security code is: {0}"
-                })
-                .AddTokenProvider(new EmailTokenProvider<ApplicationUser>("EmailCode")
-                {
-                    Subject = "SecurityCode",
-                    BodyFormat = "Your security code is {0}"
-                });
+                // Add Identity services to the services container
+                services.AddDefaultIdentity<ApplicationDbContext, ApplicationUser, IdentityRole>(Configuration);
 
                 // move this into add identity along with the 
                 //service.SetupOptions<ExternalAuthenticationOptions>(options => options.SignInAsAuthenticationType = "External")
@@ -129,8 +116,6 @@ namespace IdentitySamples
                     options.Password.RequireUppercase = false;
                     options.Password.RequireNonLetterOrDigit = false;
                     options.SecurityStampValidationInterval = TimeSpan.Zero;
-                    options.PasswordResetTokenProvider = "DPAPI";
-                    options.EmailConfirmationTokenProvider = "DPAPI";
                 });
                 services.SetupOptions<GoogleAuthenticationOptions>(options =>
                 {
