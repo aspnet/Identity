@@ -847,7 +847,7 @@ namespace Microsoft.AspNet.Identity.Test
         {
             public const string ErrorMessage = "I'm Bad.";
 
-            public Task<IdentityResult> ValidateAsync(string password, UserManager<TUser> manager, CancellationToken cancellationToken = default(CancellationToken))
+            public Task<IdentityResult> ValidateAsync(TUser user, string password, UserManager<TUser> manager, CancellationToken cancellationToken = default(CancellationToken))
             {
                 return Task.FromResult(IdentityResult.Failed(ErrorMessage));
             }

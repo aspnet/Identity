@@ -646,7 +646,7 @@ namespace Microsoft.AspNet.Identity
         {
             if (PasswordValidator != null)
             {
-                var result = await PasswordValidator.ValidateAsync(newPassword, this, cancellationToken);
+                var result = await PasswordValidator.ValidateAsync(user, newPassword, this, cancellationToken);
                 if (!result.Succeeded)
                 {
                     return result;
