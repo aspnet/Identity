@@ -46,9 +46,6 @@ namespace Microsoft.AspNet.Identity
         };
 
         // Move to setups for named per cookie option
-
-        public string DefaultSignInAsAuthenticationType { get; set; } = ClaimsIdentityOptions.DefaultExternalLoginAuthenticationType;
-
         public CookieAuthenticationOptions ExternalCookie { get; set; } = new CookieAuthenticationOptions
         {
             AuthenticationType = ClaimsIdentityOptions.DefaultExternalLoginAuthenticationType,

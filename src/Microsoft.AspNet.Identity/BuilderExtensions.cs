@@ -20,11 +20,12 @@ namespace Microsoft.AspNet.Builder
                 throw new ArgumentNullException("app");
             }
             var options = app.ApplicationServices.GetService<IOptionsAccessor<IdentityOptions>>().Options;
-            app.SetDefaultSignInAsAuthenticationType(options.DefaultSignInAsAuthenticationType);
+            app.SetDefaultSignInAsAuthenticationType(options.ExternalCookie.AuthenticationType);
             app.UseCookieAuthentication(options.ExternalCookie);
             app.UseCookieAuthentication(options.ApplicationCookie);
             app.UseCookieAuthentication(options.TwoFactorRememberMeCookie);
             app.UseCookieAuthentication(options.TwoFactorUserIdCookie);
+            app.UseCookieAuthentication(options.ApplicationCookie);
             return app;
         }
     }

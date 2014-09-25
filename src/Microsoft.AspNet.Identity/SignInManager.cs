@@ -10,6 +10,8 @@ using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Http.Security;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.OptionsModel;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Microsoft.AspNet.Identity
 {
@@ -268,6 +270,56 @@ namespace Microsoft.AspNet.Identity
             }
             return await SignInOrTwoFactorAsync(user, isPersistent, cancellationToken, loginProvider);
         }
+
+        private const string LoginProviderKey = "LoginProvider";
+        private const string XsrfKey = "XsrfId";
+
+        public IEnumerable<AuthenticationDescription> GetExternalAuthenticationTypes()
+        {
+            return Context.GetAuthenticationTypes().Where(d => !string.IsNullOrEmpty(d.Caption));
+        }
+
+        public async Task<ExternalLoginInfo> GetExternalLoginInfoAsync(string expectedXsrf = null)
+        {
+            var auth = await Context.AuthenticateAsync(Options.ExternalCookie.AuthenticationType);
+            if (auth == null || auth.Identity == null || auth.Properties.Dictionary == null || !auth.Properties.Dictionary.ContainsKey(LoginProviderKey))
+            {
+                return null;
+            }
+
+            if (expectedXsrf != null)
+            {
+                if (!auth.Properties.Dictionary.ContainsKey(XsrfKey))
+                {
+                    return null;
+                }
+                var userId = auth.Properties.Dictionary[XsrfKey] as string;
+                if (userId != expectedXsrf)
+                {
+                    return null;
+                }
+            }
+
+            var providerKey = auth.Identity.FindFirstValue(ClaimTypes.NameIdentifier);
+            var provider = auth.Properties.Dictionary[LoginProviderKey] as string;
+            if (providerKey == null || provider == null)
+            {
+                return null;
+            }
+            return new ExternalLoginInfo(auth.Identity, provider, providerKey, auth.Description.Caption);
+        }
+
+        public AuthenticationProperties ConfigureExternalAuthenticationProperties(string provider, string redirectUrl, string userId = null)
+        {
+            var properties = new AuthenticationProperties { RedirectUri = redirectUrl };
+            properties.Dictionary[LoginProviderKey] = provider;
+            if (userId != null)
+            {
+                properties.Dictionary[XsrfKey] = userId;
+            }
+            return properties;
+        }
+
 
         private async Task<SignInStatus> SignInOrTwoFactorAsync(TUser user, bool isPersistent,
             CancellationToken cancellationToken, string loginProvider = null)
