@@ -76,8 +76,6 @@ namespace Microsoft.AspNet.Identity
             CancellationToken cancellationToken = default(CancellationToken))
         {
             var userIdentity = await CreateUserIdentityAsync(user);
-            // Should always clear any external login cookies when signing in for real
-            Context.Response.SignOut(Options.ExternalCookie.AuthenticationType);
             if (authenticationMethod != null)
             {
                 userIdentity.AddClaim(new Claim(ClaimTypes.AuthenticationMethod, authenticationMethod));
@@ -227,6 +225,11 @@ namespace Microsoft.AspNet.Identity
             {
                 // When token is verified correctly, clear the access failed count used for lockout
                 await UserManager.ResetAccessFailedCountAsync(user, cancellationToken);
+                // Cleanup external cookie
+                if (twoFactorInfo.LoginProvider != null)
+                {
+                    Context.Response.SignOut(Options.ExternalCookie.AuthenticationType);
+                }
                 await SignInAsync(user, isPersistent, twoFactorInfo.LoginProvider, cancellationToken);
                 if (rememberClient)
                 {
@@ -335,6 +338,11 @@ namespace Microsoft.AspNet.Identity
                     Context.Response.SignIn(StoreTwoFactorInfo(userId, loginProvider));
                     return SignInStatus.RequiresVerification;
                 }
+            }
+            // Cleanup external cookie
+            if (loginProvider != null)
+            {
+                Context.Response.SignOut(Options.ExternalCookie.AuthenticationType);
             }
             await SignInAsync(user, isPersistent, loginProvider, cancellationToken);
             return SignInStatus.Success;
