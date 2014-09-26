@@ -87,8 +87,7 @@ namespace Microsoft.AspNet.Identity.Test
         public class PasswordsNegativeLengthSetup : IOptionsSetup<IdentityOptions>
         {
             public int Order { get { return 0; } }
-            public string Name { get; set; }
-            public void Setup(IdentityOptions options)
+            public void Setup(string name, IdentityOptions options)
             {
                 options.Password.RequiredLength = -1;
             }
@@ -108,8 +107,6 @@ namespace Microsoft.AspNet.Identity.Test
             Assert.IsType(typeof(PasswordsNegativeLengthSetup), setup);
             var optionsGetter = builder.ApplicationServices.GetService<IOptionsAccessor<IdentityOptions>>();
             Assert.NotNull(optionsGetter);
-            setup.Setup(optionsGetter.Options);
-
             var myOptions = optionsGetter.Options;
             Assert.True(myOptions.Password.RequireLowercase);
             Assert.True(myOptions.Password.RequireDigit);

@@ -156,10 +156,10 @@ namespace IdentitySamples
                 });
 
                 // Could agree on same default once this exists
-                services.SetupOptions<ExternalAuthenticationOptions>(options =>
-                {
-                    options.SignInAs = ClaimsIdentityOptions.DefaultExternalLoginAuthenticationType;
-                });
+                //services.SetupOptions<ExternalAuthenticationOptions>(options =>
+                //{
+                //    options.SignInAs = ClaimsIdentityOptions.DefaultExternalLoginAuthenticationType;
+                //});
 
                 //services.ConfigureApplicationPipeline(app =>
                 //{
