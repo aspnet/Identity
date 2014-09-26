@@ -155,6 +155,12 @@ namespace IdentitySamples
                     options.ConsumerSecret = "xKUNuKhsRdHD03eLn67xhPAyE1wFFEndFo1X2UJaK2m1jdAxf4";
                 });
 
+                // Could agree on same default once this exists
+                services.SetupOptions<ExternalAuthenticationOptions>(options =>
+                {
+                    options.SignInAs = ClaimsIdentityOptions.DefaultExternalLoginAuthenticationType;
+                });
+
                 //services.ConfigureApplicationPipeline(app =>
                 //{
                 //    app.UseErrorPage();
