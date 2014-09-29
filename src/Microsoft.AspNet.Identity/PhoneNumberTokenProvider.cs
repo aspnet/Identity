@@ -12,7 +12,7 @@ namespace Microsoft.AspNet.Identity
         /// <summary>
         ///     Message contents which should contain a format string which the token will be the only argument
         /// </summary>
-        public string MessageFormat { get; set; } = "Your security code is: {0}";
+        public string MessageFormat { get; set; } = Resources.DefaultPhoneNumberTokenProviderMessageFormat;
     }
 
     /// <summary>
@@ -26,7 +26,6 @@ namespace Microsoft.AspNet.Identity
         {
             Options = options;
         }
-
 
         public PhoneNumberTokenProvider() : this(new PhoneNumberTokenProviderOptions()) { }
 

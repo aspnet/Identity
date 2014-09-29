@@ -1,4 +1,5 @@
 using Microsoft.AspNet.Security.DataProtection;
+using Microsoft.Framework.OptionsModel;
 using System;
 using System.IO;
 using System.Text;
@@ -19,9 +20,9 @@ namespace Microsoft.AspNet.Identity
     /// </summary>
     public class DataProtectorTokenProvider<TUser> : IUserTokenProvider<TUser> where TUser : class
     {
-        public DataProtectorTokenProvider(DataProtectionTokenProviderOptions options, IDataProtector protector)
+        public DataProtectorTokenProvider(IOptionsAccessor<DataProtectionTokenProviderOptions> options, IDataProtector protector)
         {
-            if (options == null)
+            if (options == null || options.Options == null)
             {
                 throw new ArgumentNullException(nameof(options));
             }
@@ -29,7 +30,7 @@ namespace Microsoft.AspNet.Identity
             {
                 throw new ArgumentNullException(nameof(protector));
             }
-            Options = options;
+            Options = options.Options;
             Protector = protector;
         }
 
