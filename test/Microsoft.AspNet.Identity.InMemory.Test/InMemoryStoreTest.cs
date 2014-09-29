@@ -20,7 +20,9 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
         {
             var services = new ServiceCollection();
             services.Add(OptionsServices.GetDefaultServices());
-            services.AddIdentity().AddInMemory();
+            services.AddDefaultIdentity<IdentityUser, IdentityRole>();
+            services.AddSingleton<IUserStore<IdentityUser>, InMemoryUserStore<IdentityUser>>();
+            services.AddSingleton<IRoleStore<IdentityRole>, InMemoryRoleStore<IdentityRole>>();
             services.ConfigureIdentity(options =>
             {
                 options.Password.RequireDigit = false;
@@ -35,7 +37,8 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
         protected override RoleManager<IdentityRole> CreateRoleManager(object context)
         {
             var services = new ServiceCollection();
-            services.AddIdentity().AddInMemory();
+            services.AddIdentity();
+            services.AddSingleton<IRoleStore<IdentityRole>, InMemoryRoleStore<IdentityRole>>();
             return services.BuildServiceProvider().GetRequiredService<RoleManager<IdentityRole>>();
         }
     }

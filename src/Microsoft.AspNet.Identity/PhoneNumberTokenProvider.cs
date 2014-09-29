@@ -2,6 +2,7 @@ using System;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Framework.OptionsModel;
 
 namespace Microsoft.AspNet.Identity
 {
@@ -22,12 +23,14 @@ namespace Microsoft.AspNet.Identity
     public class PhoneNumberTokenProvider<TUser> : TotpSecurityStampBasedTokenProvider<TUser>
         where TUser : class
     {
-        public PhoneNumberTokenProvider(PhoneNumberTokenProviderOptions options)
+        public PhoneNumberTokenProvider(IOptionsAccessor<PhoneNumberTokenProviderOptions> options)
         {
-            Options = options;
+            if (options == null || options.Options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+            Options = options.Options;
         }
-
-        public PhoneNumberTokenProvider() : this(new PhoneNumberTokenProviderOptions()) { }
 
         public PhoneNumberTokenProviderOptions Options { get; private set; }
 
