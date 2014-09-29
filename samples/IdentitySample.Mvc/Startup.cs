@@ -15,6 +15,7 @@ using Microsoft.Framework.DependencyInjection.Fallback;
 using Microsoft.Framework.OptionsModel;
 using IdentitySample.Models;
 using System.Collections.Generic;
+using Microsoft.AspNet.Security;
 
 namespace IdentitySamples
 {
@@ -39,13 +40,6 @@ namespace IdentitySamples
 
         */
 
-        public static IApplicationBuilder UseGoogleAuthentication(this IApplicationBuilder builder)
-        {
-            return builder.UseMiddleware<GoogleAuthenticationMiddleware>();
-            //return builder.UseGoogleAuthentication(b => 
-            //    b.ApplicationServices.GetService<IOptionsAccessor<GoogleAuthenticationOptions>>().Options);
-        }
-
         public static IApplicationBuilder UsePipeline(this IApplicationBuilder builder)
         {
             var options = builder.ApplicationServices.GetService<IOptionsAccessor<ApplicationOptions>>().Options;
@@ -54,35 +48,6 @@ namespace IdentitySamples
                 builder.UseMiddleware(middlewareOptions.Type, middlewareOptions.Args);
             }
             return builder;
-        }
-
-
-        public static IApplicationBuilder UseGoogleAuthentication(this IApplicationBuilder builder, Func<IApplicationBuilder, GoogleAuthenticationOptions> func)
-        {
-            return builder.UseGoogleAuthentication(func(builder));
-        }
-
-        public static IApplicationBuilder UseFacebookAuthentication(this IApplicationBuilder builder)
-        {
-            // This should go inside of the middleware delegate
-            return builder.UseFacebookAuthentication(b =>
-                b.ApplicationServices.GetService<IOptionsAccessor<FacebookAuthenticationOptions>>().Options);
-        }
-
-        public static IApplicationBuilder UseFacebookAuthentication(this IApplicationBuilder builder, Func<IApplicationBuilder, FacebookAuthenticationOptions> func)
-        {
-            return builder.UseFacebookAuthentication(func(builder));
-        }
-
-        public static IApplicationBuilder UseTwitterAuthentication(this IApplicationBuilder builder)
-        {
-            return builder.UseTwitterAuthentication(b =>
-                b.ApplicationServices.GetService<IOptionsAccessor<TwitterAuthenticationOptions>>().Options);
-        }
-
-        public static IApplicationBuilder UseTwitterAuthentication(this IApplicationBuilder builder, Func<IApplicationBuilder, TwitterAuthenticationOptions> func)
-        {
-            return builder.UseTwitterAuthentication(func(builder));
         }
     }
 
@@ -122,9 +87,6 @@ namespace IdentitySamples
                 // Add Identity services to the services container
                 services.AddDefaultIdentity<ApplicationDbContext, ApplicationUser, IdentityRole>(Configuration);
 
-                // move this into add identity along with the 
-                //service.SetupOptions<ExternalAuthenticationOptions>(options => options.SignInAsAuthenticationType = "External")
-
                 services.SetupOptions<IdentityOptions>(options =>
                 {
                     options.Password.RequireDigit = false;
@@ -138,11 +100,11 @@ namespace IdentitySamples
                     options.ClientId = "514485782433-fr3ml6sq0imvhi8a7qir0nb46oumtgn9.apps.googleusercontent.com";
                     options.ClientSecret = "V2nDD9SkFbvLTqAUBWBBxYAL";
                 });
-                services.AddInstance(new GoogleAuthenticationOptions
-                {
-                    ClientId = "514485782433-fr3ml6sq0imvhi8a7qir0nb46oumtgn9.apps.googleusercontent.com",
-                    ClientSecret = "V2nDD9SkFbvLTqAUBWBBxYAL"
-                });
+                //services.AddInstance(new GoogleAuthenticationOptions
+                //{
+                //    ClientId = "514485782433-fr3ml6sq0imvhi8a7qir0nb46oumtgn9.apps.googleusercontent.com",
+                //    ClientSecret = "V2nDD9SkFbvLTqAUBWBBxYAL"
+                //});
                 services.SetupOptions<FacebookAuthenticationOptions>(options =>
                 {
                     options.AppId = "901611409868059";
@@ -192,76 +154,22 @@ namespace IdentitySamples
 
                 services.SetupOptions<ApplicationOptions>(options =>
                 {
-                    options.Pipeline.Add(new MiddlewareOptions
+                    options.AddMiddleware<ErrorPageMiddleware>(ErrorPageOptions.ShowAll, true);
+                    options.AddMiddleware<StaticFileMiddleware>(new StaticFileOptions());
+                    options.AddIdentity(idOptions); // should not need to take options
+                    options.AddFacebookAuthentication();
+                    options.AddGoogleAuthentication();
+                    //options.AddMiddleware<FacebookAuthenticationMiddleware>(new FacebookAuthenticationOptions
+                    //{
+                    //    AppId = "901611409868059",
+                    //    AppSecret = "4aa3c530297b1dcebc8860334b39668b",
+                    //    SignInAsAuthenticationType = idOptions.ExternalCookie.AuthenticationType
+                    //});
+                    options.AddMiddleware<TwitterAuthenticationMiddleware>(new TwitterAuthenticationOptions
                     {
-                        Type = typeof(ErrorPageMiddleware),
-                        Args = new object[] { ErrorPageOptions.ShowAll, true }
-                    });
-                    options.Pipeline.Add(new MiddlewareOptions
-                    {
-                        Type = typeof(StaticFileMiddleware),
-                        Args = new object[] { new StaticFileOptions() }
-                    });
-                    options.Pipeline.Add(new MiddlewareOptions
-                    {
-                        Type = typeof(CookieAuthenticationMiddleware),
-                        Args = new[] {
-                            idOptions.ExternalCookie
-                        }
-                    });
-                    options.Pipeline.Add(new MiddlewareOptions
-                    {
-                        Type = typeof(CookieAuthenticationMiddleware),
-                        Args = new[] {
-                            idOptions.TwoFactorRememberMeCookie
-                        }
-                    });
-                    options.Pipeline.Add(new MiddlewareOptions
-                    {
-                        Type = typeof(CookieAuthenticationMiddleware),
-                        Args = new[] {
-                            idOptions.TwoFactorUserIdCookie
-                        }
-                    });
-                    options.Pipeline.Add(new MiddlewareOptions
-                    {
-                        Type = typeof(CookieAuthenticationMiddleware),
-                        Args = new[] {
-                            idOptions.ApplicationCookie
-                        }
-                    });
-                    options.Pipeline.Add(new MiddlewareOptions
-                    {
-                        Type = typeof(GoogleAuthenticationMiddleware),
-                        Args = new[] {
-                            new GoogleAuthenticationOptions {
-                                ClientId = "514485782433-fr3ml6sq0imvhi8a7qir0nb46oumtgn9.apps.googleusercontent.com",
-                                ClientSecret = "V2nDD9SkFbvLTqAUBWBBxYAL",
-                                SignInAsAuthenticationType = idOptions.ExternalCookie.AuthenticationType
-                            }
-                        }
-                    });
-                    options.Pipeline.Add(new MiddlewareOptions
-                    {
-                        Type = typeof(FacebookAuthenticationMiddleware),
-                        Args = new[] {
-                            new FacebookAuthenticationOptions {
-                                AppId = "901611409868059",
-                                AppSecret = "4aa3c530297b1dcebc8860334b39668b",
-                                SignInAsAuthenticationType = idOptions.ExternalCookie.AuthenticationType
-                            }
-                        }
-                    });
-                    options.Pipeline.Add(new MiddlewareOptions
-                    {
-                        Type = typeof(TwitterAuthenticationMiddleware),
-                        Args = new[] {
-                            new TwitterAuthenticationOptions {
-                                ConsumerKey = "BSdJJ0CrDuvEhpkchnukXZBUv",
-                                ConsumerSecret = "xKUNuKhsRdHD03eLn67xhPAyE1wFFEndFo1X2UJaK2m1jdAxf4",
-                                SignInAsAuthenticationType = idOptions.ExternalCookie.AuthenticationType
-                            }
-                        }
+                        ConsumerKey = "BSdJJ0CrDuvEhpkchnukXZBUv",
+                        ConsumerSecret = "xKUNuKhsRdHD03eLn67xhPAyE1wFFEndFo1X2UJaK2m1jdAxf4",
+                        SignInAsAuthenticationType = idOptions.ExternalCookie.AuthenticationType
                     });
                 });
 
@@ -271,22 +179,6 @@ namespace IdentitySamples
 
             app.SetDefaultSignInAsAuthenticationType(idOptions.ExternalCookie.AuthenticationType);
             app.UsePipeline();
-
-            /* Error page middleware displays a nice formatted HTML page for any unhandled exceptions in the request pipeline.
-             * Note: ErrorPageOptions.ShowAll to be used only at development time. Not recommended for production.
-             */
-            app.UseErrorPage(ErrorPageOptions.ShowAll);
-
-            // Add static files to the request pipeline
-            //app.UseStaticFiles();
-
-            // Setup identity cookie middleware
-            // Add cookie-based authentication to the request pipeline
-            //app.UseIdentity();
-
-            //app.UseGoogleAuthentication();
-            //app.UseFacebookAuthentication();
-            //app.UseTwitterAuthentication();
 
             // Add MVC to the request pipeline
             app.UseMvc(routes =>
@@ -318,5 +210,32 @@ namespace IdentitySamples
     public class ApplicationOptions
     {
         public IList<MiddlewareOptions> Pipeline { get; } = new List<MiddlewareOptions>();
+
+        public void AddMiddleware<TMiddleware>(params object[] args) where TMiddleware : class {
+            Pipeline.Add(new MiddlewareOptions
+            {
+                Type = typeof(TMiddleware),
+                Args = args
+            });
+        }
+
+        public void AddIdentity(IdentityOptions options)
+        {
+            AddMiddleware<CookieAuthenticationMiddleware>(options.ExternalCookie); // This should take authType and look up options
+            AddMiddleware<CookieAuthenticationMiddleware>(options.TwoFactorRememberMeCookie); // This should take authType and look up options
+            AddMiddleware<CookieAuthenticationMiddleware>(options.TwoFactorUserIdCookie); // This should take authType and look up options
+            AddMiddleware<CookieAuthenticationMiddleware>(options.ApplicationCookie); // This should take authType and look up options
+        }
+
+        public void AddFacebookAuthentication()
+        {
+            AddMiddleware<FacebookAuthenticationMiddleware>();
+        }
+
+        public void AddGoogleAuthentication()
+        {
+            AddMiddleware<GoogleAuthenticationMiddleware>();
+        }
+
     }
 }

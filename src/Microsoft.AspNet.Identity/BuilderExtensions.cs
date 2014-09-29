@@ -5,6 +5,7 @@ using System;
 using Microsoft.AspNet.Identity;
 using Microsoft.Framework.OptionsModel;
 using Microsoft.Framework.DependencyInjection;
+using Microsoft.AspNet.Security.Cookies;
 
 namespace Microsoft.AspNet.Builder
 {
@@ -13,19 +14,27 @@ namespace Microsoft.AspNet.Builder
     /// </summary>
     public static class BuilderExtensions
     {
+        public static IApplicationBuilder UseCookieAuthentication(this IApplicationBuilder builder, string authenticationType)
+        {
+            var options = builder.ApplicationServices.GetService<IOptionsAccessor<CookieAuthenticationOptions>>().GetNamedOptions(authenticationType);
+            builder.UseCookieAuthentication(options);
+            return builder;
+        }
+
         public static IApplicationBuilder UseIdentity(this IApplicationBuilder app)
         {
             if (app == null)
             {
                 throw new ArgumentNullException("app");
             }
-            var options = app.ApplicationServices.GetService<IOptionsAccessor<IdentityOptions>>().Options;
-            app.SetDefaultSignInAsAuthenticationType(options.ExternalCookie.AuthenticationType);
-            app.UseCookieAuthentication(options.ExternalCookie);
-            app.UseCookieAuthentication(options.ApplicationCookie);
-            app.UseCookieAuthentication(options.TwoFactorRememberMeCookie);
-            app.UseCookieAuthentication(options.TwoFactorUserIdCookie);
-            app.UseCookieAuthentication(options.ApplicationCookie);
+            //var options = app.ApplicationServices.GetService<IOptionsAccessor<IdentityOptions>>().Options;
+            //app.SetDefaultSignInAsAuthenticationType(options.ExternalCookie.AuthenticationType);
+
+            app.UseCookieAuthentication(IdentityOptions.ExternalCookieAuthenticationType);
+            app.UseCookieAuthentication(IdentityOptions.ApplicationCookieAuthenticationType);
+            app.UseCookieAuthentication(IdentityOptions.TwoFactorRememberMeCookieAuthenticationType);
+            app.UseCookieAuthentication(IdentityOptions.TwoFactorUserIdCookieAuthenticationType);
+            app.UseCookieAuthentication(IdentityOptions.ApplicationCookieAuthenticationType);
             return app;
         }
     }

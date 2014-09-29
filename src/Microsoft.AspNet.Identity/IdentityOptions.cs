@@ -29,10 +29,11 @@ namespace Microsoft.AspNet.Identity
 
         public string PasswordResetTokenProvider { get; set; } = Resources.DefaultTokenProvider;
 
-        //public string ApplicationCookieAuthenticationType { get; set; }
-        //public string ExternalCookieAuthenticationType { get; set; }
-        //public string TwoFactorCookieAuthenticationType { get; set; }
-        //public string TwoFactorFactorCookieAuthenticationType { get; set; }
+        // Move these to CookieOptions sub type? (Make these constants/readonly?
+        public static string ApplicationCookieAuthenticationType { get; set; } = typeof(IdentityOptions).Namespace + ".Application";
+        public static string ExternalCookieAuthenticationType { get; set; } = typeof(IdentityOptions).Namespace + ".External";
+        public static string TwoFactorUserIdCookieAuthenticationType { get; set; } = typeof(IdentityOptions).Namespace + ".TwoFactorUserId";
+        public static string TwoFactorRememberMeCookieAuthenticationType { get; set; } = typeof(IdentityOptions).Namespace + ".TwoFactorRemeberMe";
 
         public CookieAuthenticationOptions ApplicationCookie { get; set; } = new CookieAuthenticationOptions
         {
@@ -48,7 +49,7 @@ namespace Microsoft.AspNet.Identity
         // Move to setups for named per cookie option
         public CookieAuthenticationOptions ExternalCookie { get; set; } = new CookieAuthenticationOptions
         {
-            AuthenticationType = ClaimsIdentityOptions.DefaultExternalLoginAuthenticationType,
+            AuthenticationType = ExternalAuthenticationOptions.DefaultSignInAsAuthenticationType,
             AuthenticationMode = AuthenticationMode.Passive,
             CookieName = ClaimsIdentityOptions.DefaultExternalLoginAuthenticationType,
             ExpireTimeSpan = TimeSpan.FromMinutes(5),

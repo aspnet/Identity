@@ -5,6 +5,9 @@ using System;
 using Microsoft.AspNet.Identity;
 using Microsoft.Framework.ConfigurationModel;
 using Microsoft.AspNet.Security.DataProtection;
+using Microsoft.AspNet.Security.Cookies;
+using Microsoft.AspNet.Http;
+using Microsoft.AspNet.Security;
 
 namespace Microsoft.Framework.DependencyInjection
 {
@@ -37,6 +40,41 @@ namespace Microsoft.Framework.DependencyInjection
             services.AddScoped<ISecurityStampValidator, SecurityStampValidator<TUser>>();
             services.AddScoped<RoleManager<TRole>>();
             services.AddScoped<IClaimsIdentityFactory<TUser>, ClaimsIdentityFactory<TUser, TRole>>();
+
+            services.SetupOptions<CookieAuthenticationOptions>(options =>
+            {
+                options.AuthenticationType = IdentityOptions.ApplicationCookieAuthenticationType;
+                //CookieName = ".AspNet.Identity." + ClaimsIdentityOptions.DefaultAuthenticationType,
+                options.LoginPath = new PathString("/Account/Login");
+                options.Notifications = new CookieAuthenticationNotifications
+                {
+                    OnValidateIdentity = SecurityStampValidator.ValidateIdentityAsync
+                };
+            }, IdentityOptions.ApplicationCookieAuthenticationType);
+
+            services.SetupOptions<CookieAuthenticationOptions>(options =>
+            {
+                options.AuthenticationType = IdentityOptions.ExternalCookieAuthenticationType;
+                options.AuthenticationMode = AuthenticationMode.Passive;
+                options.CookieName = IdentityOptions.ExternalCookieAuthenticationType;
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+            }, IdentityOptions.ExternalCookieAuthenticationType);
+
+            services.SetupOptions<CookieAuthenticationOptions>(options =>
+            {
+                options.AuthenticationType = IdentityOptions.TwoFactorRememberMeCookieAuthenticationType;
+                options.AuthenticationMode = AuthenticationMode.Passive;
+                options.CookieName = IdentityOptions.TwoFactorRememberMeCookieAuthenticationType;
+            }, IdentityOptions.TwoFactorRememberMeCookieAuthenticationType);
+
+            services.SetupOptions<CookieAuthenticationOptions>(options =>
+            {
+                options.AuthenticationType = IdentityOptions.TwoFactorUserIdCookieAuthenticationType;
+                options.AuthenticationMode = AuthenticationMode.Passive;
+                options.CookieName = IdentityOptions.TwoFactorUserIdCookieAuthenticationType;
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+            }, IdentityOptions.TwoFactorUserIdCookieAuthenticationType);
+
             return new IdentityBuilder<TUser, TRole>(services);
         }
 
