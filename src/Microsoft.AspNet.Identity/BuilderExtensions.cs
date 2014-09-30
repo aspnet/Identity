@@ -14,13 +14,6 @@ namespace Microsoft.AspNet.Builder
     /// </summary>
     public static class BuilderExtensions
     {
-        public static IApplicationBuilder UseCookieAuthentication(this IApplicationBuilder builder, string authenticationType)
-        {
-            var options = builder.ApplicationServices.GetService<IOptionsAccessor<CookieAuthenticationOptions>>().GetNamedOptions(authenticationType);
-            builder.UseCookieAuthentication(options);
-            return builder;
-        }
-
         public static IApplicationBuilder UseIdentity(this IApplicationBuilder app)
         {
             if (app == null)
@@ -29,7 +22,6 @@ namespace Microsoft.AspNet.Builder
             }
             //var options = app.ApplicationServices.GetService<IOptionsAccessor<IdentityOptions>>().Options;
             //app.SetDefaultSignInAsAuthenticationType(options.ExternalCookie.AuthenticationType);
-
             app.UseCookieAuthentication(IdentityOptions.ExternalCookieAuthenticationType);
             app.UseCookieAuthentication(IdentityOptions.ApplicationCookieAuthenticationType);
             app.UseCookieAuthentication(IdentityOptions.TwoFactorRememberMeCookieAuthenticationType);

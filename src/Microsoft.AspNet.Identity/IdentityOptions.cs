@@ -49,9 +49,9 @@ namespace Microsoft.AspNet.Identity
         // Move to setups for named per cookie option
         public CookieAuthenticationOptions ExternalCookie { get; set; } = new CookieAuthenticationOptions
         {
-            AuthenticationType = ExternalAuthenticationOptions.DefaultSignInAsAuthenticationType,
+            AuthenticationType = ExternalCookieAuthenticationType,
             AuthenticationMode = AuthenticationMode.Passive,
-            CookieName = ClaimsIdentityOptions.DefaultExternalLoginAuthenticationType,
+            CookieName = ExternalCookieAuthenticationType,
             ExpireTimeSpan = TimeSpan.FromMinutes(5),
         };
 

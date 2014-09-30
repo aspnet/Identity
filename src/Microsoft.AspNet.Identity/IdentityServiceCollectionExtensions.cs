@@ -41,6 +41,11 @@ namespace Microsoft.Framework.DependencyInjection
             services.AddScoped<RoleManager<TRole>>();
             services.AddScoped<IClaimsIdentityFactory<TUser>, ClaimsIdentityFactory<TUser, TRole>>();
 
+            services.SetupOptions<ExternalAuthenticationOptions>(options =>
+            {
+                options.SignInAsAuthenticationType = IdentityOptions.ExternalCookieAuthenticationType;
+            });
+
             services.SetupOptions<CookieAuthenticationOptions>(options =>
             {
                 options.AuthenticationType = IdentityOptions.ApplicationCookieAuthenticationType;

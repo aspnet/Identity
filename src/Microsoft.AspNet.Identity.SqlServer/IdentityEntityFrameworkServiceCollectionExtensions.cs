@@ -22,7 +22,7 @@ namespace Microsoft.Framework.DependencyInjection
             return services.AddIdentitySqlServer<TContext, IdentityUser, IdentityRole>();
         }
 
-        public static IdentityBuilder<TUser, TRole> AddDefaultIdentity<TContext, TUser, TRole>(this IServiceCollection services, IConfiguration config)
+        public static IdentityBuilder<TUser, TRole> AddDefaultIdentity<TContext, TUser, TRole>(this IServiceCollection services, IConfiguration config = null)
             where TUser : IdentityUser, new()
             where TRole : IdentityRole, new()
             where TContext : DbContext

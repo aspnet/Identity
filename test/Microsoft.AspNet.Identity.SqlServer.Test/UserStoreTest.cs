@@ -67,7 +67,7 @@ namespace Microsoft.AspNet.Identity.SqlServer.Test
             {
                 services.AddInstance<ILoggerFactory>(new NullLoggerFactory());
                 services.AddEntityFramework().AddSqlServer();
-                services.AddIdentitySqlServer<ApplicationDbContext, ApplicationUser>();
+                services.AddDefaultIdentity<ApplicationDbContext, ApplicationUser, IdentityRole>();
                 services.SetupOptions<DbContextOptions>(options => 
                     options.UseSqlServer(ConnectionString));
             });

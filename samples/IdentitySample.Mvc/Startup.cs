@@ -16,38 +16,150 @@ using Microsoft.Framework.OptionsModel;
 using IdentitySample.Models;
 using System.Collections.Generic;
 using Microsoft.AspNet.Security;
+using Microsoft.AspNet.Mvc;
+using Microsoft.AspNet.Mvc.Routing;
 
 namespace IdentitySamples
 {
-    public static class UseExt
-    {
-
-        /**
-        * TODO: Middleware constructors need to take IOptionsAccessor<TOptions>
-
-        * Move options setup into a different method?
-
-        * Cookie options need to be different, named service/option instances? i.e.  Singleton Named Options
-
-            SetupNamedOption("ApplicationCookie", options => { })
-            UseCookieAuthentication("ApplicationCookie")
-            SetupNamedOption("ExternalCookie", options => { })
-            UseCookieAuthentication("ApplicationCookie")
-
-            // Overloads which use default/no name
-            SetupOption(options => { })
-            UseGoogleAuthentication()
-
-        */
-
-        public static IApplicationBuilder UsePipeline(this IApplicationBuilder builder)
+    public static class UseExt {
+        public static IApplicationBuilder Configure(this IApplicationBuilder builder,
+            Action<ServiceCollection, PipelineBuilder> configure, IConfiguration config = null)
         {
-            var options = builder.ApplicationServices.GetService<IOptionsAccessor<ApplicationOptions>>().Options;
-            foreach (var middlewareOptions in options.Pipeline)
+            var serviceCollection = new ServiceCollection();
+            var pipelineBuilder = new PipelineBuilder(builder, serviceCollection, config);
+
+            serviceCollection.Add(OptionsServices.GetDefaultServices());
+
+            configure(serviceCollection, pipelineBuilder);
+            builder.ApplicationServices = serviceCollection.BuildServiceProvider(builder.ApplicationServices);
+
+            return builder;
+        }
+
+
+
+        public static IApplicationBuilder BuildPipeline(this IApplicationBuilder builder)
+        {
+            foreach (var middlewareOptions in builder.Pipeline)
             {
                 builder.UseMiddleware(middlewareOptions.Type, middlewareOptions.Args);
             }
             return builder;
+        }
+
+        public static PipelineBuilder ConfigurePipeline(this IApplicationBuilder app, IServiceCollection services, IConfiguration config = null, Action<PipelineBuilder> configure = null)
+        {
+            var pipeline = new PipelineBuilder(app, services, config);
+            if (configure != null)
+            {
+                configure(pipeline);
+            }
+            return pipeline;
+        }
+
+    }
+
+    public class PipelineBuilder
+    {
+        public PipelineBuilder(IApplicationBuilder app, IServiceCollection services, IConfiguration config)
+        {
+            App = app;
+            Services = services;
+            Configuration = config;
+        }
+
+        public IApplicationBuilder App { get; private set; }
+        public IServiceCollection Services { get; private set; }
+        public IConfiguration Configuration { get; private set; }
+
+        public PipelineBuilder UseMiddleware<TMiddleware>(params object[] args) where TMiddleware : class
+        {
+            App.Pipeline.Add(new MiddlewareOptions
+            {
+                Type = typeof(TMiddleware),
+                Args = args
+            });
+            return this;
+        }
+
+        public PipelineBuilder UseDefaultIdentity<TContext, TUser, TRole>(Action<IdentityOptions> configure = null)
+            where TUser : IdentityUser, new()
+            where TRole : IdentityRole, new()
+            where TContext : DbContext
+        {
+            Services.AddDefaultIdentity<TContext, TUser, TRole>(Configuration);
+            return UseIdentity(configure);
+        }
+
+
+        public PipelineBuilder UseIdentity(Action<IdentityOptions> configure = null)
+        {
+            if (configure != null)
+            {
+                Services.SetupOptions(configure);
+            }
+            UseMiddleware<CookieAuthenticationMiddleware>(IdentityOptions.ExternalCookieAuthenticationType); // This should take authType and look up options
+            UseMiddleware<CookieAuthenticationMiddleware>(IdentityOptions.TwoFactorRememberMeCookieAuthenticationType); // This should take authType and look up options
+            UseMiddleware<CookieAuthenticationMiddleware>(IdentityOptions.TwoFactorUserIdCookieAuthenticationType); // This should take authType and look up options
+            UseMiddleware<CookieAuthenticationMiddleware>(IdentityOptions.ApplicationCookieAuthenticationType); // This should take authType and look up options
+            return this;
+        }
+
+        public PipelineBuilder UseFacebookAuthentication(Action<FacebookAuthenticationOptions> configure = null)
+        {
+            if (configure != null)
+            {
+                Services.SetupOptions(configure);
+            }
+            return UseMiddleware<FacebookAuthenticationMiddleware>();
+        }
+
+        public PipelineBuilder UseGoogleAuthentication(Action<GoogleAuthenticationOptions> configure = null)
+        {
+            if (configure != null)
+            {
+                Services.SetupOptions(configure);
+            }
+            return UseMiddleware<GoogleAuthenticationMiddleware>();
+        }
+
+        public PipelineBuilder UseTwitterAuthentication(Action<TwitterAuthenticationOptions> configure = null)
+        {
+            if (configure != null)
+            {
+                Services.SetupOptions(configure);
+            }
+            return UseMiddleware<TwitterAuthenticationMiddleware>();
+        }
+
+        public PipelineBuilder UseMvc(Action<IRouteBuilder> configureRoutes = null)
+        {
+            Services.AddMvc();
+
+            // REVIEW: this uses services :(
+            var routes = new RouteBuilder
+            {
+                DefaultHandler = new MvcRouteHandler(),
+                ServiceProvider = App.ApplicationServices
+            };
+
+            routes.Routes.Add(AttributeRouting.CreateAttributeMegaRoute(
+                routes.DefaultHandler,
+                App.ApplicationServices));
+
+            configureRoutes(routes);
+
+            return UseMiddleware<RouterMiddleware>(routes);
+        }
+
+        public PipelineBuilder UseStaticFile()
+        {
+            return UseMiddleware<StaticFileMiddleware>(new StaticFileOptions());
+        }
+
+        public PipelineBuilder UseErrorPage(ErrorPageOptions option)
+        {
+            return UseMiddleware<ErrorPageMiddleware>(option, true);
         }
     }
 
@@ -68,9 +180,7 @@ namespace IdentitySamples
 
         public void Configure(IApplicationBuilder app)
         {
-            var idOptions = new IdentityOptions();
-
-            app.UseServices(services =>
+            app.Configure((services, pipeline) =>
             {
                 // Add EF services to the services container
                 services.AddEntityFramework()
@@ -85,157 +195,70 @@ namespace IdentitySamples
                 });
 
                 // Add Identity services to the services container
-                services.AddDefaultIdentity<ApplicationDbContext, ApplicationUser, IdentityRole>(Configuration);
-
-                services.SetupOptions<IdentityOptions>(options =>
-                {
-                    options.Password.RequireDigit = false;
-                    options.Password.RequireLowercase = false;
-                    options.Password.RequireUppercase = false;
-                    options.Password.RequireNonLetterOrDigit = false;
-                    options.SecurityStampValidationInterval = TimeSpan.FromMinutes(20);
-                });
-                services.SetupOptions<GoogleAuthenticationOptions>(options =>
-                {
-                    options.ClientId = "514485782433-fr3ml6sq0imvhi8a7qir0nb46oumtgn9.apps.googleusercontent.com";
-                    options.ClientSecret = "V2nDD9SkFbvLTqAUBWBBxYAL";
-                });
-                //services.AddInstance(new GoogleAuthenticationOptions
-                //{
-                //    ClientId = "514485782433-fr3ml6sq0imvhi8a7qir0nb46oumtgn9.apps.googleusercontent.com",
-                //    ClientSecret = "V2nDD9SkFbvLTqAUBWBBxYAL"
-                //});
-                services.SetupOptions<FacebookAuthenticationOptions>(options =>
-                {
-                    options.AppId = "901611409868059";
-                    options.AppSecret = "4aa3c530297b1dcebc8860334b39668b";
-                });
-
-                services.SetupOptions<TwitterAuthenticationOptions>(options =>
-                {
-                    options.ConsumerKey = "BSdJJ0CrDuvEhpkchnukXZBUv";
-                    options.ConsumerSecret = "xKUNuKhsRdHD03eLn67xhPAyE1wFFEndFo1X2UJaK2m1jdAxf4";
-                });
-
-                // Could agree on same default once this exists
-                //services.SetupOptions<ExternalAuthenticationOptions>(options =>
-                //{
-                //    options.SignInAs = ClaimsIdentityOptions.DefaultExternalLoginAuthenticationType;
-                //});
-
-                //services.ConfigureApplicationPipeline(app =>
-                //{
-                //    app.UseErrorPage();
-                //    app.UseStaticFiles();
-                //    app.UseIdentity();
-                //    app.UseGoogleAuthentication(options =>
-                //    {
-                //        options.ClientId = "514485782433-fr3ml6sq0imvhi8a7qir0nb46oumtgn9.apps.googleusercontent.com";
-                //        options.ClientSecret = "V2nDD9SkFbvLTqAUBWBBxYAL";
-                //    });
-                //    app.UseFacebookAuthentication(options =>
-                //    {
-                //        options.AppId = "901611409868059";
-                //        options.AppSecret = "4aa3c530297b1dcebc8860334b39668b";
-                //    });
-                //    app.UseTwitterAuthentication(options =>
-                //    {
-                //        options.ConsumerKey = "BSdJJ0CrDuvEhpkchnukXZBUv";
-                //        options.ConsumerSecret = "xKUNuKhsRdHD03eLn67xhPAyE1wFFEndFo1X2UJaK2m1jdAxf4";
-                //    });
-                //    app.UseMvc(routes =>
-                //    {
-                //        routes.MapRoute(
-                //            name: "default",
-                //            template: "{controller}/{action}/{id?}",
-                //            defaults: new { controller = "Home", action = "Index" });
-                //    });
-                //});
-
-                services.SetupOptions<ApplicationOptions>(options =>
-                {
-                    options.AddMiddleware<ErrorPageMiddleware>(ErrorPageOptions.ShowAll, true);
-                    options.AddMiddleware<StaticFileMiddleware>(new StaticFileOptions());
-                    options.AddIdentity(idOptions); // should not need to take options
-                    options.AddFacebookAuthentication();
-                    options.AddGoogleAuthentication();
-                    //options.AddMiddleware<FacebookAuthenticationMiddleware>(new FacebookAuthenticationOptions
-                    //{
-                    //    AppId = "901611409868059",
-                    //    AppSecret = "4aa3c530297b1dcebc8860334b39668b",
-                    //    SignInAsAuthenticationType = idOptions.ExternalCookie.AuthenticationType
-                    //});
-                    options.AddMiddleware<TwitterAuthenticationMiddleware>(new TwitterAuthenticationOptions
-                    {
-                        ConsumerKey = "BSdJJ0CrDuvEhpkchnukXZBUv",
-                        ConsumerSecret = "xKUNuKhsRdHD03eLn67xhPAyE1wFFEndFo1X2UJaK2m1jdAxf4",
-                        SignInAsAuthenticationType = idOptions.ExternalCookie.AuthenticationType
-                    });
-                });
-
-                // Add MVC services to the services container
-                services.AddMvc();
+                pipeline.UseErrorPage(ErrorPageOptions.ShowAll)
+                        .UseStaticFile()
+                        .UseDefaultIdentity<ApplicationDbContext, ApplicationUser, IdentityRole>(options =>
+                        {
+                            options.Password.RequireDigit = false;
+                            options.Password.RequireLowercase = false;
+                            options.Password.RequireUppercase = false;
+                            options.Password.RequireNonLetterOrDigit = false;
+                            options.SecurityStampValidationInterval = TimeSpan.FromMinutes(20);
+                        })
+                        .UseFacebookAuthentication(options =>
+                        {
+                            options.AppId = "901611409868059";
+                            options.AppSecret = "4aa3c530297b1dcebc8860334b39668b";
+                        })
+                        .UseGoogleAuthentication(options =>
+                        {
+                            options.ClientId = "514485782433-fr3ml6sq0imvhi8a7qir0nb46oumtgn9.apps.googleusercontent.com";
+                            options.ClientSecret = "V2nDD9SkFbvLTqAUBWBBxYAL";
+                        })
+                        .UseTwitterAuthentication(options =>
+                        {
+                            options.ConsumerKey = "BSdJJ0CrDuvEhpkchnukXZBUv";
+                            options.ConsumerSecret = "xKUNuKhsRdHD03eLn67xhPAyE1wFFEndFo1X2UJaK2m1jdAxf4";
+                        })
+                        .UseMvc(routes =>
+                        {
+                            routes.MapRoute(
+                                name: "default",
+                                template: "{controller}/{action}/{id?}",
+                                defaults: new { controller = "Home", action = "Index" });
+                        });
             });
 
-            app.SetDefaultSignInAsAuthenticationType(idOptions.ExternalCookie.AuthenticationType);
-            app.UsePipeline();
-
-            // Add MVC to the request pipeline
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller}/{action}/{id?}",
-                    defaults: new { controller = "Home", action = "Index" });
-            });
+            // Can this be built automagically?
+            app.BuildPipeline();
 
             //Populates the Admin user and role
             SampleData.InitializeIdentityDatabaseAsync(app.ApplicationServices).Wait();
         }
 
-        // TODO: Move services here
-        public IServiceProvider ConfigureServices(ServiceCollection services)
-        {
-            return services.BuildServiceProvider();
-        }
-
-    }
-
-    public class MiddlewareOptions
-    {
-        public Type Type { get; set; }
-        public object[] Args { get; set; }
-    }
-
-    public class ApplicationOptions
-    {
-        public IList<MiddlewareOptions> Pipeline { get; } = new List<MiddlewareOptions>();
-
-        public void AddMiddleware<TMiddleware>(params object[] args) where TMiddleware : class {
-            Pipeline.Add(new MiddlewareOptions
-            {
-                Type = typeof(TMiddleware),
-                Args = args
-            });
-        }
-
-        public void AddIdentity(IdentityOptions options)
-        {
-            AddMiddleware<CookieAuthenticationMiddleware>(options.ExternalCookie); // This should take authType and look up options
-            AddMiddleware<CookieAuthenticationMiddleware>(options.TwoFactorRememberMeCookie); // This should take authType and look up options
-            AddMiddleware<CookieAuthenticationMiddleware>(options.TwoFactorUserIdCookie); // This should take authType and look up options
-            AddMiddleware<CookieAuthenticationMiddleware>(options.ApplicationCookie); // This should take authType and look up options
-        }
-
-        public void AddFacebookAuthentication()
-        {
-            AddMiddleware<FacebookAuthenticationMiddleware>();
-        }
-
-        public void AddGoogleAuthentication()
-        {
-            AddMiddleware<GoogleAuthenticationMiddleware>();
-        }
+        //services.SetupOptions<IdentityOptions>(options =>
+        //        {
+        //    options.Password.RequireDigit = false;
+        //    options.Password.RequireLowercase = false;
+        //    options.Password.RequireUppercase = false;
+        //    options.Password.RequireNonLetterOrDigit = false;
+        //    options.SecurityStampValidationInterval = TimeSpan.FromMinutes(20);
+        //});
+        //        services.SetupOptions<GoogleAuthenticationOptions>(options =>
+        //        {
+        //    options.ClientId = "514485782433-fr3ml6sq0imvhi8a7qir0nb46oumtgn9.apps.googleusercontent.com";
+        //    options.ClientSecret = "V2nDD9SkFbvLTqAUBWBBxYAL";
+        //});
+        //        services.SetupOptions<FacebookAuthenticationOptions>(options =>
+        //        {
+        //    options.AppId = "901611409868059";
+        //    options.AppSecret = "4aa3c530297b1dcebc8860334b39668b";
+        //});
+        //        services.SetupOptions<TwitterAuthenticationOptions>(options =>
+        //        {
+        //    options.ConsumerKey = "BSdJJ0CrDuvEhpkchnukXZBUv";
+        //    options.ConsumerSecret = "xKUNuKhsRdHD03eLn67xhPAyE1wFFEndFo1X2UJaK2m1jdAxf4";
+        //});
 
     }
 }
