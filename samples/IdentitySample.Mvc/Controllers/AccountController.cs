@@ -22,7 +22,6 @@ namespace IdentitySample.Models
 
         public SignInManager<ApplicationUser> SignInManager { get; private set; }
 
-
         //
         // GET: /Account/Login
         [HttpGet]

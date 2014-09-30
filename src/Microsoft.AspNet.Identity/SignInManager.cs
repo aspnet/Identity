@@ -86,7 +86,7 @@ namespace Microsoft.AspNet.Identity
         // TODO: Should this be async?
         public virtual void SignOut()
         {
-            Context.Response.SignOut(Options.ApplicationCookie.AuthenticationType);
+            Context.Response.SignOut(IdentityOptions.ApplicationCookieAuthenticationType);
         }
 
         private async Task<bool> IsLockedOut(TUser user, CancellationToken token)
@@ -185,7 +185,7 @@ namespace Microsoft.AspNet.Identity
         {
             var userId = await UserManager.GetUserIdAsync(user, cancellationToken);
             var result =
-                await Context.AuthenticateAsync(Options.TwoFactorRememberMeCookie.AuthenticationType);
+                await Context.AuthenticateAsync(IdentityOptions.TwoFactorRememberMeCookieAuthenticationType);
             return (result != null && result.Identity != null && result.Identity.Name == userId);
         }
 
@@ -193,14 +193,14 @@ namespace Microsoft.AspNet.Identity
             CancellationToken cancellationToken = default(CancellationToken))
         {
             var userId = await UserManager.GetUserIdAsync(user, cancellationToken);
-            var rememberBrowserIdentity = new ClaimsIdentity(ClaimsIdentityOptions.DefaultTwoFactorRememberMeAuthenticationType);
+            var rememberBrowserIdentity = new ClaimsIdentity(IdentityOptions.TwoFactorRememberMeCookieAuthenticationType);
             rememberBrowserIdentity.AddClaim(new Claim(ClaimTypes.Name, userId));
             Context.Response.SignIn(new AuthenticationProperties { IsPersistent = true }, rememberBrowserIdentity);
         }
 
         public virtual Task ForgetTwoFactorClientAsync()
         {
-            Context.Response.SignOut(Options.TwoFactorRememberMeCookie.AuthenticationType);
+            Context.Response.SignOut(IdentityOptions.TwoFactorRememberMeCookieAuthenticationType);
             return Task.FromResult(0);
         }
 
@@ -228,7 +228,7 @@ namespace Microsoft.AspNet.Identity
                 // Cleanup external cookie
                 if (twoFactorInfo.LoginProvider != null)
                 {
-                    Context.Response.SignOut(Options.ExternalCookie.AuthenticationType);
+                    Context.Response.SignOut(IdentityOptions.ExternalCookieAuthenticationType);
                 }
                 await SignInAsync(user, isPersistent, twoFactorInfo.LoginProvider, cancellationToken);
                 if (rememberClient)
@@ -284,7 +284,7 @@ namespace Microsoft.AspNet.Identity
 
         public async Task<ExternalLoginInfo> GetExternalLoginInfoAsync(string expectedXsrf = null)
         {
-            var auth = await Context.AuthenticateAsync(Options.ExternalCookie.AuthenticationType);
+            var auth = await Context.AuthenticateAsync(IdentityOptions.ExternalCookieAuthenticationType);
             if (auth == null || auth.Identity == null || auth.Properties.Dictionary == null || !auth.Properties.Dictionary.ContainsKey(LoginProviderKey))
             {
                 return null;
@@ -342,7 +342,7 @@ namespace Microsoft.AspNet.Identity
             // Cleanup external cookie
             if (loginProvider != null)
             {
-                Context.Response.SignOut(Options.ExternalCookie.AuthenticationType);
+                Context.Response.SignOut(IdentityOptions.ExternalCookieAuthenticationType);
             }
             await SignInAsync(user, isPersistent, loginProvider, cancellationToken);
             return SignInStatus.Success;
@@ -350,7 +350,7 @@ namespace Microsoft.AspNet.Identity
 
         private async Task<TwoFactorAuthenticationInfo> RetrieveTwoFactorInfoAsync(CancellationToken cancellationToken)
         {
-            var result = await Context.AuthenticateAsync(ClaimsIdentityOptions.DefaultTwoFactorUserIdAuthenticationType);
+            var result = await Context.AuthenticateAsync(IdentityOptions.TwoFactorUserIdCookieAuthenticationType);
             if (result != null && result.Identity != null)
             {
                 return new TwoFactorAuthenticationInfo
@@ -364,7 +364,7 @@ namespace Microsoft.AspNet.Identity
 
         internal static ClaimsIdentity StoreTwoFactorInfo(string userId, string loginProvider)
         {
-            var identity = new ClaimsIdentity(ClaimsIdentityOptions.DefaultTwoFactorUserIdAuthenticationType);
+            var identity = new ClaimsIdentity(IdentityOptions.TwoFactorUserIdCookieAuthenticationType);
             identity.AddClaim(new Claim(ClaimTypes.Name, userId));
             if (loginProvider != null)
             {

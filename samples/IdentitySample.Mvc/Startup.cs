@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using Microsoft.AspNet.Security;
 using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Mvc.Routing;
+using Microsoft.AspNet.RequestContainer;
 
 namespace IdentitySamples
 {
@@ -25,6 +26,7 @@ namespace IdentitySamples
         public static IApplicationBuilder Configure(this IApplicationBuilder builder,
             Action<ServiceCollection, PipelineBuilder> configure, IConfiguration config = null)
         {
+            // This is what Use Services is doing
             var serviceCollection = new ServiceCollection();
             var pipelineBuilder = new PipelineBuilder(builder, serviceCollection, config);
 
@@ -36,10 +38,10 @@ namespace IdentitySamples
             return builder;
         }
 
-
-
         public static IApplicationBuilder BuildPipeline(this IApplicationBuilder builder)
         {
+            // Services always go first
+            builder.UseMiddleware(typeof(ContainerMiddleware));
             foreach (var middlewareOptions in builder.Pipeline)
             {
                 builder.UseMiddleware(middlewareOptions.Type, middlewareOptions.Args);
@@ -111,7 +113,7 @@ namespace IdentitySamples
             {
                 Services.SetupOptions(configure);
             }
-            return UseMiddleware<FacebookAuthenticationMiddleware>();
+            return UseMiddleware<FacebookAuthenticationMiddleware>("");
         }
 
         public PipelineBuilder UseGoogleAuthentication(Action<GoogleAuthenticationOptions> configure = null)
@@ -120,7 +122,7 @@ namespace IdentitySamples
             {
                 Services.SetupOptions(configure);
             }
-            return UseMiddleware<GoogleAuthenticationMiddleware>();
+            return UseMiddleware<GoogleAuthenticationMiddleware>("");
         }
 
         public PipelineBuilder UseTwitterAuthentication(Action<TwitterAuthenticationOptions> configure = null)
@@ -129,7 +131,7 @@ namespace IdentitySamples
             {
                 Services.SetupOptions(configure);
             }
-            return UseMiddleware<TwitterAuthenticationMiddleware>();
+            return UseMiddleware<TwitterAuthenticationMiddleware>("");
         }
 
         public PipelineBuilder UseMvc(Action<IRouteBuilder> configureRoutes = null)
@@ -137,19 +139,21 @@ namespace IdentitySamples
             Services.AddMvc();
 
             // REVIEW: this uses services :(
-            var routes = new RouteBuilder
-            {
-                DefaultHandler = new MvcRouteHandler(),
-                ServiceProvider = App.ApplicationServices
-            };
+            //var sp = Services.BuildServiceProvider();
+            //var routes = new RouteBuilder
+            //{
+            //    DefaultHandler = new MvcRouteHandler(),
+            //    ServiceProvider = sp
+            //};
 
-            routes.Routes.Add(AttributeRouting.CreateAttributeMegaRoute(
-                routes.DefaultHandler,
-                App.ApplicationServices));
+            //routes.Routes.Add(AttributeRouting.CreateAttributeMegaRoute(
+            //    routes.DefaultHandler,
+            //    sp));
 
-            configureRoutes(routes);
+            //configureRoutes(routes);
 
-            return UseMiddleware<RouterMiddleware>(routes);
+            //return UseMiddleware<RouterMiddleware>(routes);
+            return this;
         }
 
         public PipelineBuilder UseStaticFile()
@@ -231,6 +235,15 @@ namespace IdentitySamples
 
             // Can this be built automagically?
             app.BuildPipeline();
+
+            // TODO: not working above
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                    name: "default",
+                    template: "{controller}/{action}/{id?}",
+                    defaults: new { controller = "Home", action = "Index" });
+            });
 
             //Populates the Admin user and role
             SampleData.InitializeIdentityDatabaseAsync(app.ApplicationServices).Wait();
