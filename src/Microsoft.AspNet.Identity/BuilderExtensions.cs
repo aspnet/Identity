@@ -6,6 +6,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.Framework.OptionsModel;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.AspNet.Security.Cookies;
+using Microsoft.Framework.ConfigurationModel;
 
 namespace Microsoft.AspNet.Builder
 {
@@ -14,14 +15,17 @@ namespace Microsoft.AspNet.Builder
     /// </summary>
     public static class BuilderExtensions
     {
-        public static IApplicationBuilder UseIdentity(this IApplicationBuilder app)
+        public static IApplicationBuilder UseIdentity(this IApplicationBuilder app, Action<IdentityOptions> configure = null)
         {
             if (app == null)
             {
                 throw new ArgumentNullException("app");
             }
-            //var options = app.ApplicationServices.GetService<IOptionsAccessor<IdentityOptions>>().Options;
-            //app.SetDefaultSignInAsAuthenticationType(options.ExternalCookie.AuthenticationType);
+            if (configure != null)
+            {
+                app.UseServices.SetupOptions(configure);
+            }
+
             app.UseCookieAuthentication(IdentityOptions.ExternalCookieAuthenticationType);
             app.UseCookieAuthentication(IdentityOptions.ApplicationCookieAuthenticationType);
             app.UseCookieAuthentication(IdentityOptions.TwoFactorRememberMeCookieAuthenticationType);

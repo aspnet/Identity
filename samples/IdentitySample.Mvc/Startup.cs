@@ -4,13 +4,7 @@ using Microsoft.AspNet.Diagnostics;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Mvc.Routing;
-using Microsoft.AspNet.RequestContainer;
 using Microsoft.AspNet.Routing;
-using Microsoft.AspNet.Security.Cookies;
-using Microsoft.AspNet.Security.Facebook;
-using Microsoft.AspNet.Security.Google;
-using Microsoft.AspNet.Security.Twitter;
-using Microsoft.AspNet.StaticFiles;
 using Microsoft.Data.Entity;
 using Microsoft.Framework.ConfigurationModel;
 using Microsoft.Framework.DependencyInjection;
@@ -37,7 +31,6 @@ namespace IdentitySamples
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseOptions();
 
             app.UseEntityFramework()
                .AddSqlServer();
@@ -52,7 +45,7 @@ namespace IdentitySamples
             });
 
             app.UseErrorPage(ErrorPageOptions.ShowAll)
-               .UseStaticFile()
+               .UseStaticFiles()
                 //.UseSignalR()
                 .UseDefaultIdentity<ApplicationDbContext, ApplicationUser, IdentityRole>(Configuration, options =>
                 {
@@ -85,7 +78,8 @@ namespace IdentitySamples
                         defaults: new { controller = "Home", action = "Index" });
                 });
 
-            //Populates the Admin user and role
+            // This doesn't work now since ApplicationServices doesn't contain the services anymore until after Build
+            //Populates the Admin user and role 
             //SampleData.InitializeIdentityDatabaseAsync(app.ApplicationServices).Wait();
         }
     }
@@ -107,33 +101,12 @@ namespace IdentitySamples
             return builder.UseServices.AddEntityFramework();
         }
 
-        public static IApplicationBuilder UseDefaultIdentity<TContext, TUser, TRole>(this IApplicationBuilder builder, IConfiguration config = null, Action<IdentityOptions> configure = null)
-            where TUser : IdentityUser, new()
-            where TRole : IdentityRole, new()
-            where TContext : DbContext
-        {
-            builder.UseServices.AddDefaultIdentity<TContext, TUser, TRole>(config);
-            return builder.UseIdentity(configure);
-        }
-
-        public static IApplicationBuilder UseIdentity(this IApplicationBuilder builder, Action<IdentityOptions> configure = null)
-        {
-            if (configure != null)
-            {
-                builder.UseServices.SetupOptions(configure);
-            }
-            builder.UseCookieAuthentication(IdentityOptions.ExternalCookieAuthenticationType); // This should take authType and look up options
-            builder.UseCookieAuthentication(IdentityOptions.TwoFactorRememberMeCookieAuthenticationType); // This should take authType and look up options
-            builder.UseCookieAuthentication(IdentityOptions.TwoFactorUserIdCookieAuthenticationType); // This should take authType and look up options
-            builder.UseCookieAuthentication(IdentityOptions.ApplicationCookieAuthenticationType); // This should take authType and look up options
-            return builder;
-        }
-
         public static IApplicationBuilder UseMvc(this IApplicationBuilder builder, Action<IRouteBuilder> configureRoutes = null)
         {
             builder.UseServices.AddMvc();
 
             // TODO: this should switch to pulling some kind of RouterOptions instead
+            builder.UseOptions(); // temporary workaround for mvc
             var sp = builder.UseServices.BuildServiceProvider(builder.ApplicationServices);
             var routes = new RouteBuilder
             {
@@ -148,16 +121,6 @@ namespace IdentitySamples
             configureRoutes(routes);
 
             return builder.UseMiddleware<RouterMiddleware>(routes.Build());
-        }
-
-        public static IApplicationBuilder UseStaticFile(this IApplicationBuilder builder)
-        {
-            return builder.UseMiddleware<StaticFileMiddleware>(new StaticFileOptions());
-        }
-
-        public static IApplicationBuilder UseErrorPage(this IApplicationBuilder builder, ErrorPageOptions option)
-        {
-            return builder.UseMiddleware<ErrorPageMiddleware>(option, true);
         }
     }
 }

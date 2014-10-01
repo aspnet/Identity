@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.SqlServer;
 using Microsoft.Data.Entity;
@@ -11,6 +12,16 @@ namespace Microsoft.Framework.DependencyInjection
 {
     public static class IdentityEntityFrameworkServiceCollectionExtensions
     {
+        // MOVE to builder extension
+        public static IApplicationBuilder UseDefaultIdentity<TContext, TUser, TRole>(this IApplicationBuilder builder, IConfiguration config = null, Action<IdentityOptions> configure = null)
+            where TUser : IdentityUser, new()
+            where TRole : IdentityRole, new()
+            where TContext : DbContext
+        {
+            builder.UseServices.AddDefaultIdentity<TContext, TUser, TRole>(config);
+            return builder.UseIdentity(configure);
+        }
+
         public static IdentityBuilder<IdentityUser, IdentityRole> AddIdentitySqlServer(this IServiceCollection services)
         {
             return services.AddIdentitySqlServer<IdentityDbContext, IdentityUser, IdentityRole>();
