@@ -364,10 +364,10 @@ namespace Microsoft.AspNet.Identity.Test
                 response.Setup(r => r.SignIn(
                     It.Is<AuthenticationProperties>(v => v.IsPersistent == true),
                     It.Is<ClaimsIdentity>(i => i.FindFirstValue(ClaimTypes.Name) == user.Id
-                        && i.AuthenticationType == ClaimsIdentityOptions.DefaultTwoFactorRememberMeAuthenticationType))).Verifiable();
+                        && i.AuthenticationType == IdentityOptions.TwoFactorRememberMeCookieAuthenticationType))).Verifiable();
             }
             context.Setup(c => c.Response).Returns(response.Object).Verifiable();
-            context.Setup(c => c.AuthenticateAsync(ClaimsIdentityOptions.DefaultTwoFactorUserIdAuthenticationType)).ReturnsAsync(authResult).Verifiable();
+            context.Setup(c => c.AuthenticateAsync(IdentityOptions.TwoFactorUserIdCookieAuthenticationType)).ReturnsAsync(authResult).Verifiable();
             contextAccessor.Setup(a => a.Value).Returns(context.Object);
             var helper = new SignInManager<TestUser>(manager.Object, contextAccessor.Object, claimsFactory, options.Object);
 
@@ -402,7 +402,7 @@ namespace Microsoft.AspNet.Identity.Test
             response.Setup(r => r.SignIn(
                 It.Is<AuthenticationProperties>(v => v.IsPersistent == true),
                 It.Is<ClaimsIdentity>(i => i.FindFirstValue(ClaimTypes.Name) == user.Id
-                    && i.AuthenticationType == ClaimsIdentityOptions.DefaultTwoFactorRememberMeAuthenticationType))).Verifiable();
+                    && i.AuthenticationType == IdentityOptions.TwoFactorRememberMeCookieAuthenticationType))).Verifiable();
             contextAccessor.Setup(a => a.Value).Returns(context.Object).Verifiable();
             options.Setup(a => a.Options).Returns(identityOptions).Verifiable();
 
@@ -440,11 +440,11 @@ namespace Microsoft.AspNet.Identity.Test
             var context = new Mock<HttpContext>();
             var response = new Mock<HttpResponse>();
             context.Setup(c => c.Response).Returns(response.Object).Verifiable();
-            response.Setup(r => r.SignIn(It.Is<AuthenticationProperties>(v => v.IsPersistent == isPersistent), It.Is<ClaimsIdentity>(i => i.AuthenticationType == ClaimsIdentityOptions.DefaultAuthenticationType))).Verifiable();
-            var id = new ClaimsIdentity(ClaimsIdentityOptions.DefaultTwoFactorRememberMeAuthenticationType);
+            response.Setup(r => r.SignIn(It.Is<AuthenticationProperties>(v => v.IsPersistent == isPersistent), It.Is<ClaimsIdentity>(i => i.AuthenticationType == IdentityOptions.ApplicationCookieAuthenticationType))).Verifiable();
+            var id = new ClaimsIdentity(IdentityOptions.TwoFactorRememberMeCookieAuthenticationType);
             id.AddClaim(new Claim(ClaimTypes.Name, user.Id));
             var authResult = new AuthenticationResult(id, new AuthenticationProperties(), new AuthenticationDescription());
-            context.Setup(c => c.AuthenticateAsync(ClaimsIdentityOptions.DefaultTwoFactorRememberMeAuthenticationType)).ReturnsAsync(authResult).Verifiable();
+            context.Setup(c => c.AuthenticateAsync(IdentityOptions.TwoFactorRememberMeCookieAuthenticationType)).ReturnsAsync(authResult).Verifiable();
             var contextAccessor = new Mock<IContextAccessor<HttpContext>>();
             contextAccessor.Setup(a => a.Value).Returns(context.Object);
             var roleManager = MockHelpers.MockRoleManager<TestRole>();

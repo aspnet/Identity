@@ -151,7 +151,7 @@ namespace Microsoft.AspNet.Identity
             {
                 return null;
             }
-            var identity = new ClaimsIdentity(ClaimsIdentityOptions.DefaultTwoFactorUserIdAuthenticationType);
+            var identity = new ClaimsIdentity(IdentityOptions.TwoFactorUserIdCookieAuthenticationType);
             identity.AddClaim(new Claim(ClaimTypes.Name, info.UserId));
             if (info.LoginProvider != null)
             {
@@ -259,7 +259,7 @@ namespace Microsoft.AspNet.Identity
             return await UserManager.FindByIdAsync(info.UserId, cancellationToken);
         }
 
-        public async Task<SignInStatus> ExternalLoginSignInAsync(string loginProvider, string providerKey, bool isPersistent,
+        public virtual async Task<SignInStatus> ExternalLoginSignInAsync(string loginProvider, string providerKey, bool isPersistent,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             var user = await UserManager.FindByLoginAsync(loginProvider, providerKey, cancellationToken);
@@ -277,12 +277,13 @@ namespace Microsoft.AspNet.Identity
         private const string LoginProviderKey = "LoginProvider";
         private const string XsrfKey = "XsrfId";
 
-        public IEnumerable<AuthenticationDescription> GetExternalAuthenticationTypes()
+        public virtual IEnumerable<AuthenticationDescription> GetExternalAuthenticationTypes()
         {
             return Context.GetAuthenticationTypes().Where(d => !string.IsNullOrEmpty(d.Caption));
         }
 
-        public async Task<ExternalLoginInfo> GetExternalLoginInfoAsync(string expectedXsrf = null)
+        public virtual async Task<ExternalLoginInfo> GetExternalLoginInfoAsync(string expectedXsrf = null, 
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             var auth = await Context.AuthenticateAsync(IdentityOptions.ExternalCookieAuthenticationType);
             if (auth == null || auth.Identity == null || auth.Properties.Dictionary == null || !auth.Properties.Dictionary.ContainsKey(LoginProviderKey))
@@ -322,7 +323,6 @@ namespace Microsoft.AspNet.Identity
             }
             return properties;
         }
-
 
         private async Task<SignInStatus> SignInOrTwoFactorAsync(TUser user, bool isPersistent,
             CancellationToken cancellationToken, string loginProvider = null)
