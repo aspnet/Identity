@@ -2,17 +2,10 @@ using IdentitySample.Models;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Diagnostics;
 using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Mvc.Routing;
 using Microsoft.AspNet.Routing;
-using Microsoft.AspNet.Security.Facebook;
-using Microsoft.AspNet.Security.Google;
-using Microsoft.AspNet.Security.Twitter;
 using Microsoft.Data.Entity;
 using Microsoft.Framework.ConfigurationModel;
 using Microsoft.Framework.DependencyInjection;
-using Microsoft.Framework.DependencyInjection.Fallback;
-using Microsoft.Framework.OptionsModel;
 using System;
 
 namespace IdentitySamples
@@ -91,46 +84,5 @@ namespace IdentitySamples
             //Populates the Admin user and role 
             SampleData.InitializeIdentityDatabaseAsync(app.ApplicationServices).Wait();
         }
-    }
-
-    //            .UseFacebookAuthentication(options =>
-    //            {
-    //    options.AppId = "901611409868059";
-    //    options.AppSecret = "4aa3c530297b1dcebc8860334b39668b";
-    //})
-    //            .UseGoogleAuthentication(options =>
-    //            {
-    //    options.ClientId = "514485782433-fr3ml6sq0imvhi8a7qir0nb46oumtgn9.apps.googleusercontent.com";
-    //    options.ClientSecret = "V2nDD9SkFbvLTqAUBWBBxYAL";
-    //})
-    //            .UseTwitterAuthentication(options =>
-    //            {
-    //    options.ConsumerKey = "BSdJJ0CrDuvEhpkchnukXZBUv";
-    //    options.ConsumerSecret = "xKUNuKhsRdHD03eLn67xhPAyE1wFFEndFo1X2UJaK2m1jdAxf4";
-    //})
-
-    public static class UseExt
-    {
-        //public static IApplicationBuilder UseMvc(this IApplicationBuilder builder, Action<IRouteBuilder> configureRoutes = null)
-        //{
-        //    builder.UseServices.AddMvc();
-
-        //    // TODO: this should switch to pulling some kind of RouterOptions instead
-        //    builder.UseOptions(); // temporary workaround for mvc
-        //    var sp = builder.UseServices.BuildServiceProvider(builder.ApplicationServices);
-        //    var routes = new RouteBuilder
-        //    {
-        //        DefaultHandler = new MvcRouteHandler(),
-        //        ServiceProvider = sp
-        //    };
-
-        //    routes.Routes.Add(AttributeRouting.CreateAttributeMegaRoute(
-        //        routes.DefaultHandler,
-        //        sp));
-
-        //    configureRoutes(routes);
-
-        //    return builder.UseMiddleware<RouterMiddleware>(routes.Build());
-        //}
     }
 }

@@ -49,9 +49,9 @@ namespace Microsoft.AspNet.Identity
             return AddInstance(tokenProvider);
         }
 
-        public IdentityBuilder<TUser, TRole> SetupOptions(Action<IdentityOptions> action, int order)
+        public IdentityBuilder<TUser, TRole> ConfigureIdentity(Action<IdentityOptions> action, int order)
         {
-            Services.AddSetup(new OptionsSetup<IdentityOptions>(action) { Order = order });
+            Services.AddSetup(new OptionsSetup<IdentityOptions>(new OptionsAction<IdentityOptions> { Action = action, Order = order });
             return this;
         }
 
