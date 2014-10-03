@@ -19,7 +19,7 @@ namespace Microsoft.AspNet.Identity.Test
             var services = new ServiceCollection();
             services.Add(OptionsServices.GetDefaultServices());
             services.AddIdentity<TUser>().AddUserStore(store);
-            services.SetupOptions<IdentityOptions>(options =>
+            services.ConfigureIdentity(options =>
             {
                 options.Password.RequireDigit = false;
                 options.Password.RequireLowercase = false;

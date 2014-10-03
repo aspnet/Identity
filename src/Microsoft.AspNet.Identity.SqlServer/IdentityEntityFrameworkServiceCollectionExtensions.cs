@@ -13,15 +13,6 @@ namespace Microsoft.Framework.DependencyInjection
     public static class IdentityEntityFrameworkServiceCollectionExtensions
     {
         // MOVE to builder extension
-        public static IApplicationBuilder UseDefaultIdentity<TContext, TUser, TRole>(this IApplicationBuilder builder, IConfiguration config = null, Action<IdentityOptions> configure = null)
-            where TUser : IdentityUser, new()
-            where TRole : IdentityRole, new()
-            where TContext : DbContext
-        {
-            builder.UseServices.AddDefaultIdentity<TContext, TUser, TRole>(config);
-            return builder.UseIdentity(configure);
-        }
-
         public static IdentityBuilder<IdentityUser, IdentityRole> AddIdentitySqlServer(this IServiceCollection services)
         {
             return services.AddIdentitySqlServer<IdentityDbContext, IdentityUser, IdentityRole>();
@@ -33,11 +24,16 @@ namespace Microsoft.Framework.DependencyInjection
             return services.AddIdentitySqlServer<TContext, IdentityUser, IdentityRole>();
         }
 
-        public static IdentityBuilder<TUser, TRole> AddDefaultIdentity<TContext, TUser, TRole>(this IServiceCollection services, IConfiguration config = null)
+        public static IdentityBuilder<TUser, TRole> AddDefaultIdentity<TContext, TUser, TRole>(this IServiceCollection services, IConfiguration config = null,
+            Action<IdentityOptions> configureOptions = null)
             where TUser : IdentityUser, new()
             where TRole : IdentityRole, new()
             where TContext : DbContext
         {
+            if (configureOptions != null)
+            {
+                services.ConfigureOptions<IdentityOptions>(configureOptions);
+            }
             return services.AddDefaultIdentity<TUser, TRole>(config)
                 .AddEntityFramework<TContext, TUser, TRole>();
         }

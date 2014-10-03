@@ -49,7 +49,7 @@ namespace Microsoft.AspNet.Identity.SqlServer.Test
             services.AddInstance<ILoggerFactory>(new NullLoggerFactory());
             services.AddEntityFramework().AddSqlServer();
             services.Add(OptionsServices.GetDefaultServices());
-            services.SetupOptions<DbContextOptions>(options =>
+            services.ConfigureOptions<DbContextOptions>(options =>
                 options.UseSqlServer(ConnectionString));
             var serviceProvider = services.BuildServiceProvider();
             var db = new ApplicationDbContext(serviceProvider,
@@ -68,7 +68,7 @@ namespace Microsoft.AspNet.Identity.SqlServer.Test
                 services.AddInstance<ILoggerFactory>(new NullLoggerFactory());
                 services.AddEntityFramework().AddSqlServer();
                 services.AddDefaultIdentity<ApplicationDbContext, ApplicationUser, IdentityRole>();
-                services.SetupOptions<DbContextOptions>(options => 
+                services.ConfigureOptions<DbContextOptions>(options => 
                     options.UseSqlServer(ConnectionString));
             });
 
@@ -103,7 +103,7 @@ namespace Microsoft.AspNet.Identity.SqlServer.Test
                     options.Password.RequireUppercase = false;
                     options.Password.RequireDigit = false;
                 });
-                services.SetupOptions<DbContextOptions>(options =>
+                services.ConfigureOptions<DbContextOptions>(options =>
                     options.UseSqlServer(ConnectionString));
             });
 

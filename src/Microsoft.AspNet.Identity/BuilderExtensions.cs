@@ -15,22 +15,17 @@ namespace Microsoft.AspNet.Builder
     /// </summary>
     public static class BuilderExtensions
     {
-        public static IApplicationBuilder UseIdentity(this IApplicationBuilder app, Action<IdentityOptions> configure = null)
+        public static IApplicationBuilder UseIdentity(this IApplicationBuilder app)
         {
             if (app == null)
             {
                 throw new ArgumentNullException("app");
             }
-            if (configure != null)
-            {
-                app.UseServices.SetupOptions(configure);
-            }
-
-            app.UseCookieAuthentication(IdentityOptions.ExternalCookieAuthenticationType);
-            app.UseCookieAuthentication(IdentityOptions.ApplicationCookieAuthenticationType);
-            app.UseCookieAuthentication(IdentityOptions.TwoFactorRememberMeCookieAuthenticationType);
-            app.UseCookieAuthentication(IdentityOptions.TwoFactorUserIdCookieAuthenticationType);
-            app.UseCookieAuthentication(IdentityOptions.ApplicationCookieAuthenticationType);
+            app.UseCookieAuthentication(null, IdentityOptions.ExternalCookieAuthenticationType);
+            app.UseCookieAuthentication(null, IdentityOptions.ApplicationCookieAuthenticationType);
+            app.UseCookieAuthentication(null, IdentityOptions.TwoFactorRememberMeCookieAuthenticationType);
+            app.UseCookieAuthentication(null, IdentityOptions.TwoFactorUserIdCookieAuthenticationType);
+            app.UseCookieAuthentication(null, IdentityOptions.ApplicationCookieAuthenticationType);
             return app;
         }
     }
