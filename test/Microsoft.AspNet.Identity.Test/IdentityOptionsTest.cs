@@ -84,13 +84,11 @@ namespace Microsoft.AspNet.Identity.Test
             Assert.Equal(1000, options.Lockout.MaxFailedAccessAttempts);
         }
 
-        public class PasswordsNegativeLengthSetup : IOptionsSetup<IdentityOptions>
+        public class PasswordsNegativeLengthSetup : ConfigureOptions<IdentityOptions>
         {
-            public int Order { get { return 0; } }
-            public void Setup(string name, IdentityOptions options)
-            {
-                options.Password.RequiredLength = -1;
-            }
+            public PasswordsNegativeLengthSetup() 
+                : base(options => options.Password.RequiredLength = -1)
+            { }
         }
 
         [Fact]
@@ -100,10 +98,10 @@ namespace Microsoft.AspNet.Identity.Test
             builder.UseServices(services =>
             {
                 services.AddIdentity<IdentityUser>();
-                services.AddSetup<PasswordsNegativeLengthSetup>();
+                services.AddConfigureOptions<PasswordsNegativeLengthSetup>();
             });
 
-            var setup = builder.ApplicationServices.GetService<IOptionsSetup<IdentityOptions>>();
+            var setup = builder.ApplicationServices.GetService<IConfigureOptions<IdentityOptions>>();
             Assert.IsType(typeof(PasswordsNegativeLengthSetup), setup);
             var optionsGetter = builder.ApplicationServices.GetService<IOptionsAccessor<IdentityOptions>>();
             Assert.NotNull(optionsGetter);
