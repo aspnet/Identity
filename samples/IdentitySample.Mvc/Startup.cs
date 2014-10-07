@@ -66,7 +66,7 @@ namespace IdentitySamples
         public void Configure(IApplicationBuilder app)
         {
             app.UseErrorPage(ErrorPageOptions.ShowAll)
-               .UseServices(services => ConfigureServices(services))
+               .UseServices()
                .UseStaticFiles()
                .UseIdentity()
                .UseFacebookAuthentication()
@@ -80,7 +80,6 @@ namespace IdentitySamples
                         defaults: new { controller = "Home", action = "Index" });
                 });
 
-            // This doesn't work now since ApplicationServices doesn't contain the services anymore until after Build
             //Populates the Admin user and role 
             SampleData.InitializeIdentityDatabaseAsync(app.ApplicationServices).Wait();
         }

@@ -29,45 +29,9 @@ namespace Microsoft.AspNet.Identity
 
         public string PasswordResetTokenProvider { get; set; } = Resources.DefaultTokenProvider;
 
-        // Move these to CookieOptions sub type? (Make these constants/readonly?
         public static string ApplicationCookieAuthenticationType { get; set; } = typeof(IdentityOptions).Namespace + ".Application";
         public static string ExternalCookieAuthenticationType { get; set; } = typeof(IdentityOptions).Namespace + ".External";
         public static string TwoFactorUserIdCookieAuthenticationType { get; set; } = typeof(IdentityOptions).Namespace + ".TwoFactorUserId";
         public static string TwoFactorRememberMeCookieAuthenticationType { get; set; } = typeof(IdentityOptions).Namespace + ".TwoFactorRemeberMe";
-
-        //public CookieAuthenticationOptions ApplicationCookie { get; set; } = new CookieAuthenticationOptions
-        //{
-        //    AuthenticationType = ClaimsIdentityOptions.DefaultAuthenticationType,
-        //    //CookieName = ".AspNet.Identity." + ClaimsIdentityOptions.DefaultAuthenticationType,
-        //    LoginPath = new PathString("/Account/Login"),
-        //    Notifications = new CookieAuthenticationNotifications
-        //    {
-        //        OnValidateIdentity = SecurityStampValidator.ValidateIdentityAsync
-        //    }
-        //};
-
-        //// Move to setups for named per cookie option
-        //public CookieAuthenticationOptions ExternalCookie { get; set; } = new CookieAuthenticationOptions
-        //{
-        //    AuthenticationType = ExternalCookieAuthenticationType,
-        //    AuthenticationMode = AuthenticationMode.Passive,
-        //    CookieName = ExternalCookieAuthenticationType,
-        //    ExpireTimeSpan = TimeSpan.FromMinutes(5),
-        //};
-
-        //public CookieAuthenticationOptions TwoFactorRememberMeCookie { get; set; } = new CookieAuthenticationOptions
-        //{
-        //    AuthenticationType = ClaimsIdentityOptions.DefaultTwoFactorRememberMeAuthenticationType,
-        //    AuthenticationMode = AuthenticationMode.Passive,
-        //    CookieName = ClaimsIdentityOptions.DefaultTwoFactorRememberMeAuthenticationType
-        //};
-
-        //public CookieAuthenticationOptions TwoFactorUserIdCookie { get; set; } = new CookieAuthenticationOptions
-        //{
-        //    AuthenticationType = ClaimsIdentityOptions.DefaultTwoFactorUserIdAuthenticationType,
-        //    AuthenticationMode = AuthenticationMode.Passive,
-        //    CookieName = ClaimsIdentityOptions.DefaultTwoFactorUserIdAuthenticationType,
-        //    ExpireTimeSpan = TimeSpan.FromMinutes(5),
-        //};
     }
 }

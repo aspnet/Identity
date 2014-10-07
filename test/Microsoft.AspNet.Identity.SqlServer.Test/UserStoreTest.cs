@@ -95,7 +95,7 @@ namespace Microsoft.AspNet.Identity.SqlServer.Test
             {
                 services.AddInstance<ILoggerFactory>(new NullLoggerFactory());
                 services.AddEntityFramework().AddSqlServer();
-                services.AddIdentitySqlServer<ApplicationDbContext, ApplicationUser>().SetupOptions(options =>
+                services.AddIdentitySqlServer<ApplicationDbContext, ApplicationUser>(options =>
                 {
                     options.Password.RequiredLength = 1;
                     options.Password.RequireLowercase = false;

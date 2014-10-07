@@ -31,7 +31,7 @@ namespace Microsoft.Framework.DependencyInjection
         }
 
         public static IdentityBuilder<TUser, TRole> AddIdentity<TUser, TRole>(this IServiceCollection services, 
-            IConfiguration identityConfig = null)
+            IConfiguration identityConfig = null, Action<IdentityOptions> configureOptions = null)
             where TUser : class
             where TRole : class
         {
@@ -39,6 +39,11 @@ namespace Microsoft.Framework.DependencyInjection
             {
                 services.ConfigureOptions<IdentityOptions>(identityConfig);
             }
+            if (configureOptions != null)
+            {
+                services.ConfigureIdentity(configureOptions);
+            }
+
             services.Add(IdentityServices.GetDefaultServices<TUser, TRole>(identityConfig));
             services.AddScoped<UserManager<TUser>>();
             services.AddScoped<SignInManager<TUser>>();
@@ -88,11 +93,11 @@ namespace Microsoft.Framework.DependencyInjection
             return new IdentityBuilder<TUser, TRole>(services);
         }
 
-        public static IdentityBuilder<TUser, TRole> AddDefaultIdentity<TUser, TRole>(this IServiceCollection services, IConfiguration config = null)
+        public static IdentityBuilder<TUser, TRole> AddDefaultIdentity<TUser, TRole>(this IServiceCollection services, IConfiguration config = null, Action<IdentityOptions> configureOptions = null)
             where TUser : class
             where TRole : class
         {
-            return services.AddIdentity<TUser, TRole>(config)
+            return services.AddIdentity<TUser, TRole>(config, configureOptions)
                 .AddTokenProvider(new DataProtectorTokenProvider<TUser>(
                     new DataProtectionTokenProviderOptions
                     {

@@ -30,53 +30,36 @@ namespace Microsoft.Framework.DependencyInjection
             where TRole : IdentityRole, new()
             where TContext : DbContext
         {
-            if (configureOptions != null)
-            {
-                services.ConfigureOptions<IdentityOptions>(configureOptions);
-            }
-            return services.AddDefaultIdentity<TUser, TRole>(config)
+            return services.AddDefaultIdentity<TUser, TRole>(config, configureOptions)
                 .AddEntityFramework<TContext, TUser, TRole>();
         }
 
-
-        public static IdentityBuilder<TUser, IdentityRole> AddIdentitySqlServer<TContext, TUser>(this IServiceCollection services)
+        public static IdentityBuilder<TUser, IdentityRole> AddIdentitySqlServer<TContext, TUser>(this IServiceCollection services, Action<IdentityOptions> configureOptions = null)
             where TUser : IdentityUser, new()
             where TContext : DbContext
         {
-            return services.AddIdentitySqlServer<TContext, TUser, IdentityRole>();
+            return services.AddIdentitySqlServer<TContext, TUser, IdentityRole>(null, configureOptions);
         }
 
-        public static IdentityBuilder<TUser, TRole> AddSqlServer<TContext, TUser, TRole>(this IServiceCollection services)
+        public static IdentityBuilder<TUser, TRole> AddIdentitySqlServer<TContext, TUser, TRole>(this IServiceCollection services, IConfiguration config = null, Action<IdentityOptions> configureOptions = null)
             where TUser : IdentityUser, new()
             where TRole : IdentityRole, new()
             where TContext : DbContext
         {
-            var builder = services.AddIdentity<TUser, TRole>();
+            var builder = services.AddIdentity<TUser, TRole>(config, configureOptions);
             services.AddScoped<IUserStore<TUser>, UserStore<TUser, TRole, TContext>>();
             services.AddScoped<IRoleStore<TRole>, RoleStore<TRole, TContext>>();
             services.AddScoped<TContext>();
             return builder;
         }
 
-        public static IdentityBuilder<TUser, TRole> AddIdentitySqlServer<TContext, TUser, TRole>(this IServiceCollection services)
-            where TUser : IdentityUser, new()
-            where TRole : IdentityRole, new()
-            where TContext : DbContext
-        {
-            var builder = services.AddIdentity<TUser, TRole>();
-            services.AddScoped<IUserStore<TUser>, UserStore<TUser, TRole, TContext>>();
-            services.AddScoped<IRoleStore<TRole>, RoleStore<TRole, TContext>>();
-            services.AddScoped<TContext>();
-            return builder;
-        }
-
-        public static IdentityBuilder<TUser, TRole> AddIdentitySqlServer<TContext, TUser, TRole, TKey>(this IServiceCollection services)
+        public static IdentityBuilder<TUser, TRole> AddIdentitySqlServer<TContext, TUser, TRole, TKey>(this IServiceCollection services, IConfiguration config = null, Action<IdentityOptions> configureOptions = null)
             where TUser : IdentityUser<TKey>, new()
             where TRole : IdentityRole<TKey>, new()
             where TContext : DbContext
             where TKey : IEquatable<TKey>
         {
-            var builder = services.AddIdentity<TUser, TRole>();
+            var builder = services.AddIdentity<TUser, TRole>(config, configureOptions);
             services.AddScoped<IUserStore<TUser>, UserStore<TUser, TRole, TContext, TKey>>();
             services.AddScoped<IRoleStore<TRole>, RoleStore<TRole, TContext, TKey>>();
             services.AddScoped<TContext>();
