@@ -22,13 +22,6 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
     {
         private readonly string ConnectionString = @"Server=(localdb)\v11.0;Database=SqlUserStoreTest" + DateTime.Now.Month + "-" + DateTime.Now.Day + "-" + DateTime.Now.Year + ";Trusted_Connection=True;";
 
-        public class ApplicationUser : IdentityUser { }
-
-        public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
-        {
-            public ApplicationDbContext(IServiceProvider services, IOptions<DbContextOptions> options) : base(services, options.Options) { }
-        }
-
         [TestPriority(-1000)]
         [Fact]
         public void DropDatabaseStart()
@@ -45,9 +38,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
 
         public void DropDb()
         {
-            var serviceProvider = ConfigureDbServices(ConnectionString).BuildServiceProvider();
-            var db = new ApplicationDbContext(serviceProvider,
-                serviceProvider.GetService<IOptions<DbContextOptions>>());
+            var db = DbUtil.Create<ApplicationDbContext>(ConnectionString);
             db.Database.EnsureDeleted();
         }
 
@@ -59,8 +50,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
 
             builder.UseServices(services =>
             {
-                ConfigureDbServices(ConnectionString, services);
-                services.AddScoped<ApplicationDbContext>();
+                DbUtil.ConfigureDbServices<ApplicationDbContext>(ConnectionString, services);
                 services.AddDefaultIdentity<ApplicationDbContext, ApplicationUser, IdentityRole>();
             });
 
@@ -87,7 +77,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             {
                 services.AddInstance<ILoggerFactory>(new NullLoggerFactory());
                 services.AddEntityFramework().AddSqlServer();
-                services.AddIdentitySqlServer<ApplicationDbContext, ApplicationUser>(options =>
+                services.AddIdentityEntityFramework<ApplicationDbContext, ApplicationUser>(options =>
                 {
                     options.Password.RequiredLength = 1;
                     options.Password.RequireLowercase = false;
@@ -127,8 +117,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
 
         public IdentityDbContext CreateContext(bool delete = false)
         {
-            var serviceProvider = ConfigureDbServices(ConnectionString).BuildServiceProvider();
-            var db = new IdentityDbContext(serviceProvider, serviceProvider.GetService<IOptions<DbContextOptions>>().Options);
+            var db = DbUtil.Create<IdentityDbContext>(ConnectionString);
             if (delete)
             {
                 db.Database.EnsureDeleted();
@@ -147,25 +136,9 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             CreateContext();
         }
 
-        public static IServiceCollection ConfigureDbServices(string connectionString, IServiceCollection services = null)
-        {
-            if (services == null)
-            {
-                services = new ServiceCollection();
-            }
-            services.AddEntityFramework().AddSqlServer();
-            services.Add(OptionsServices.GetDefaultServices());
-            services.AddInstance<ILoggerFactory>(new NullLoggerFactory());
-            services.Configure<DbContextOptions>(options =>
-                options.UseSqlServer(connectionString));
-            return services;
-        }
-
         public ApplicationDbContext CreateAppContext()
         {
-            CreateContext();
-            var serviceProvider = ConfigureDbServices(ConnectionString).BuildServiceProvider();
-            var db = new ApplicationDbContext(serviceProvider, serviceProvider.GetService<IOptions<DbContextOptions>>());
+            var db = DbUtil.Create<ApplicationDbContext>(ConnectionString);
             db.Database.EnsureCreated();
             return db;
         }
@@ -186,7 +159,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
 
         public RoleManager<IdentityRole> CreateRoleManager(IdentityDbContext context)
         {
-            var services = ConfigureDbServices(ConnectionString);
+            var services = DbUtil.ConfigureDbServices(ConnectionString);
             services.AddIdentity().AddRoleStore(new RoleStore<IdentityRole>(context));
             return services.BuildServiceProvider().GetService<RoleManager<IdentityRole>>();
         }

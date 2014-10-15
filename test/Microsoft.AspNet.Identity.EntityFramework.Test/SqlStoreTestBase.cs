@@ -25,11 +25,6 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
     {
         public abstract string ConnectionString { get; }
 
-        public class ApplicationDbContext : IdentityDbContext<TUser, TRole, TKey>
-        {
-            public ApplicationDbContext(IServiceProvider services, IOptions<DbContextOptions> options) : base(services, options.Options) { }
-        }
-
         [TestPriority(-1000)]
         [Fact]
         public void DropDatabaseStart()
@@ -46,17 +41,13 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
 
         public void DropDb()
         {
-            var serviceProvider = UserStoreTest.ConfigureDbServices(ConnectionString).BuildServiceProvider();
-            var db = new ApplicationDbContext(serviceProvider,
-                serviceProvider.GetService<IOptions<DbContextOptions>>());
+            var db = DbUtil.Create<ApplicationDbContext>(ConnectionString);
             db.Database.EnsureDeleted();
         }
 
         public ApplicationDbContext CreateContext(bool delete = false)
         {
-            var serviceProvider = UserStoreTest.ConfigureDbServices(ConnectionString).BuildServiceProvider();
-            var db = new ApplicationDbContext(serviceProvider,
-                serviceProvider.GetService<IOptions<DbContextOptions>>());
+            var db = DbUtil.Create<ApplicationDbContext>(ConnectionString);
             if (delete)
             {
                 db.Database.EnsureDeleted();
@@ -81,11 +72,11 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
 
         protected override RoleManager<TRole> CreateRoleManager(object context = null)
         {
+            var services = DbUtil.ConfigureDbServices<ApplicationDbContext>(ConnectionString);
             if (context == null)
             {
                 context = CreateTestContext();
             }
-            var services = UserStoreTest.ConfigureDbServices(ConnectionString);
             services.AddIdentity<TUser, TRole>().AddRoleStore(new RoleStore<TRole, ApplicationDbContext, TKey>((ApplicationDbContext)context));
             return services.BuildServiceProvider().GetService<RoleManager<TRole>>();
         }
@@ -103,8 +94,8 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
 
             builder.UseServices(services =>
             {
-                UserStoreTest.ConfigureDbServices(ConnectionString, services);
-                services.AddIdentitySqlServer<ApplicationDbContext, TUser, TRole, TKey>();
+                DbUtil.ConfigureDbServices<ApplicationDbContext>(ConnectionString, services);
+                services.AddIdentityEntityFramework<ApplicationDbContext, TUser, TRole, TKey>();
             });
 
             var userStore = builder.ApplicationServices.GetService<IUserStore<TUser>>();
@@ -128,8 +119,8 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
 
             builder.UseServices(services =>
             {
-                UserStoreTest.ConfigureDbServices(ConnectionString, services);
-                services.AddIdentitySqlServer<ApplicationDbContext, TUser, TRole, TKey>();
+                DbUtil.ConfigureDbServices<ApplicationDbContext>(ConnectionString, services);
+                services.AddIdentityEntityFramework<ApplicationDbContext, TUser, TRole, TKey>();
                 services.ConfigureIdentity(options =>
                 {
                     options.Password.RequiredLength = 1;
@@ -159,7 +150,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         {
             using (var db = CreateContext())
             {
-                var user = CreateTestUser();
+                var user = CreateTestUser() as ApplicationUser;
                 db.Users.Add(user);
                 db.SaveChanges();
                 Assert.True(db.Users.Any(u => u.UserName == user.UserName));
