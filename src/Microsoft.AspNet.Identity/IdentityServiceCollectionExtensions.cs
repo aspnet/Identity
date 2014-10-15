@@ -102,7 +102,7 @@ namespace Microsoft.Framework.DependencyInjection
             });
             // TODO: This needs to get IDataProtectionProvider from the environment 
             services.AddInstance<IDataProtector>(
-                DataProtectionProvider.CreateFromDpapi().CreateProtector("ASP.NET Identity"));
+                new EphemeralDataProtectionProvider().CreateProtector("ASP.NET Identity"));
             return services.AddIdentity<TUser, TRole>(config)
                 .AddTokenProvider<DataProtectorTokenProvider<TUser>>()
                 .AddTokenProvider<PhoneNumberTokenProvider<TUser>>()

@@ -25,7 +25,7 @@ namespace Microsoft.AspNet.Identity
     public class EmailTokenProvider<TUser> : TotpSecurityStampBasedTokenProvider<TUser>
         where TUser : class
     {
-        public EmailTokenProvider(IOptionsAccessor<EmailTokenProviderOptions> options)
+        public EmailTokenProvider(IOptions<EmailTokenProviderOptions> options)
         {
             if (options == null || options.Options == null)
             {

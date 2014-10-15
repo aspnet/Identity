@@ -23,7 +23,7 @@ namespace Microsoft.AspNet.Identity
     public class PhoneNumberTokenProvider<TUser> : TotpSecurityStampBasedTokenProvider<TUser>
         where TUser : class
     {
-        public PhoneNumberTokenProvider(IOptionsAccessor<PhoneNumberTokenProviderOptions> options)
+        public PhoneNumberTokenProvider(IOptions<PhoneNumberTokenProviderOptions> options)
         {
             if (options == null || options.Options == null)
             {

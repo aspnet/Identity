@@ -20,7 +20,7 @@ namespace Microsoft.AspNet.Identity
     /// </summary>
     public class DataProtectorTokenProvider<TUser> : IUserTokenProvider<TUser> where TUser : class
     {
-        public DataProtectorTokenProvider(IOptionsAccessor<DataProtectionTokenProviderOptions> options, IDataProtector protector)
+        public DataProtectorTokenProvider(IOptions<DataProtectionTokenProviderOptions> options, IDataProtector protector)
         {
             if (options == null || options.Options == null)
             {
