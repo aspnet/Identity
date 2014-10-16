@@ -7,12 +7,8 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Identity.Test;
-using Microsoft.Data.Entity;
-using Microsoft.Data.Entity.Services;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.DependencyInjection.Fallback;
-using Microsoft.Framework.Logging;
-using Microsoft.Framework.OptionsModel;
 using Xunit;
 
 namespace Microsoft.AspNet.Identity.EntityFramework.Test
@@ -24,6 +20,8 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         where TKey : IEquatable<TKey>
     {
         public abstract string ConnectionString { get; }
+
+        public class TestDbContext : IdentityDbContext<TUser, TRole, TKey> { }
 
         [TestPriority(-1000)]
         [Fact]
@@ -41,13 +39,13 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
 
         public void DropDb()
         {
-            var db = DbUtil.Create<ApplicationDbContext>(ConnectionString);
+            var db = DbUtil.Create<TestDbContext>(ConnectionString);
             db.Database.EnsureDeleted();
         }
 
-        public ApplicationDbContext CreateContext(bool delete = false)
+        public TestDbContext CreateContext(bool delete = false)
         {
-            var db = DbUtil.Create<ApplicationDbContext>(ConnectionString);
+            var db = DbUtil.Create<TestDbContext>(ConnectionString);
             if (delete)
             {
                 db.Database.EnsureDeleted();
@@ -67,17 +65,17 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             {
                 context = CreateTestContext();
             }
-            return MockHelpers.CreateManager(new UserStore<TUser, TRole, ApplicationDbContext, TKey>((ApplicationDbContext)context));
+            return MockHelpers.CreateManager(new UserStore<TUser, TRole, TestDbContext, TKey>((TestDbContext)context));
         }
 
         protected override RoleManager<TRole> CreateRoleManager(object context = null)
         {
-            var services = DbUtil.ConfigureDbServices<ApplicationDbContext>(ConnectionString);
+            var services = DbUtil.ConfigureDbServices<TestDbContext>(ConnectionString);
             if (context == null)
             {
                 context = CreateTestContext();
             }
-            services.AddIdentity<TUser, TRole>().AddRoleStore(new RoleStore<TRole, ApplicationDbContext, TKey>((ApplicationDbContext)context));
+            services.AddIdentity<TUser, TRole>().AddRoleStore(new RoleStore<TRole, TestDbContext, TKey>((TestDbContext)context));
             return services.BuildServiceProvider().GetService<RoleManager<TRole>>();
         }
 
@@ -94,8 +92,8 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
 
             builder.UseServices(services =>
             {
-                DbUtil.ConfigureDbServices<ApplicationDbContext>(ConnectionString, services);
-                services.AddIdentityEntityFramework<ApplicationDbContext, TUser, TRole, TKey>();
+                DbUtil.ConfigureDbServices<TestDbContext>(ConnectionString, services);
+                services.AddIdentityEntityFramework<TestDbContext, TUser, TRole, TKey>();
             });
 
             var userStore = builder.ApplicationServices.GetService<IUserStore<TUser>>();
@@ -119,8 +117,8 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
 
             builder.UseServices(services =>
             {
-                DbUtil.ConfigureDbServices<ApplicationDbContext>(ConnectionString, services);
-                services.AddIdentityEntityFramework<ApplicationDbContext, TUser, TRole, TKey>();
+                DbUtil.ConfigureDbServices<TestDbContext>(ConnectionString, services);
+                services.AddIdentityEntityFramework<TestDbContext, TUser, TRole, TKey>();
                 services.ConfigureIdentity(options =>
                 {
                     options.Password.RequiredLength = 1;
@@ -150,7 +148,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         {
             using (var db = CreateContext())
             {
-                var user = CreateTestUser() as ApplicationUser;
+                var user = CreateTestUser();
                 db.Users.Add(user);
                 db.SaveChanges();
                 Assert.True(db.Users.Any(u => u.UserName == user.UserName));

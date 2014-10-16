@@ -21,9 +21,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         private readonly string ConnectionString = @"Server=(localdb)\v11.0;Database=DefaultSchemaTest" + DateTime.Now.Month + "-" + DateTime.Now.Day + "-" + DateTime.Now.Year + ";Trusted_Connection=True;";
         public IdentityDbContext CreateContext(bool ensureCreated = false)
         {
-            var services = DbUtil.ConfigureDbServices<IdentityDbContext>(ConnectionString);
-            var serviceProvider = services.BuildServiceProvider();
-            var db = new IdentityDbContext();
+            var db = DbUtil.Create(ConnectionString);
             if (ensureCreated)
             {
                 db.Database.EnsureCreated();

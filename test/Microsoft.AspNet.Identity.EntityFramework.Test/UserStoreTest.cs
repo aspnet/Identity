@@ -6,17 +6,19 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Builder;
+using Microsoft.AspNet.Hosting;
 using Microsoft.AspNet.Identity.Test;
 using Microsoft.Data.Entity;
 using Microsoft.Data.Entity.Services;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.DependencyInjection.Fallback;
 using Microsoft.Framework.Logging;
-using Microsoft.Framework.OptionsModel;
 using Xunit;
 
 namespace Microsoft.AspNet.Identity.EntityFramework.Test
 {
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser> { }
+
     [TestCaseOrderer("Microsoft.AspNet.Identity.Test.PriorityOrderer", "Microsoft.AspNet.Identity.EntityFramework.Test")]
     public class UserStoreTest : UserManagerTestBase<IdentityUser, IdentityRole>
     {
@@ -76,7 +78,10 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             builder.UseServices(services =>
             {
                 services.AddInstance<ILoggerFactory>(new NullLoggerFactory());
-                services.AddEntityFramework().AddSqlServer();
+                services.Add(HostingServices.GetDefaultServices());
+                services.AddEntityFramework()
+                        .AddSqlServer()
+                        .AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(ConnectionString));
                 services.AddIdentityEntityFramework<ApplicationDbContext, ApplicationUser>(options =>
                 {
                     options.Password.RequiredLength = 1;
@@ -85,8 +90,6 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
                     options.Password.RequireUppercase = false;
                     options.Password.RequireDigit = false;
                 });
-                services.Configure<DbContextOptions>(options =>
-                    options.UseSqlServer(ConnectionString));
             });
 
             var userStore = builder.ApplicationServices.GetService<IUserStore<ApplicationUser>>();
