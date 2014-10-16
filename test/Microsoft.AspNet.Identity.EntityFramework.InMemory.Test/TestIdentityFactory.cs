@@ -23,16 +23,6 @@ namespace Microsoft.AspNet.Identity.EntityFramework.InMemory.Test
             return db;
         }
 
-        public static UserManager<IdentityUser> CreateManager(InMemoryContext context)
-        {
-            return MockHelpers.CreateManager<IdentityUser>(new InMemoryUserStore<IdentityUser>(context));
-        }
-
-        public static UserManager<IdentityUser> CreateManager()
-        {
-            return CreateManager(CreateContext());
-        }
-
         public static RoleManager<IdentityRole> CreateRoleManager(InMemoryContext context)
         {
             var services = new ServiceCollection();

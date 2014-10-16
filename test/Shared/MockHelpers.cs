@@ -14,22 +14,22 @@ namespace Microsoft.AspNet.Identity.Test
 {
     public static class MockHelpers
     {
-        public static UserManager<TUser> CreateManager<TUser>(IUserStore<TUser> store) where TUser : class
-        {
-            var services = new ServiceCollection();
-            services.Add(OptionsServices.GetDefaultServices());
-            services.Add(HostingServices.GetDefaultServices());
-            services.AddDefaultIdentity<TUser, IdentityRole>().AddUserStore(store);
-            services.ConfigureIdentity(options =>
-            {
-                options.Password.RequireDigit = false;
-                options.Password.RequireLowercase = false;
-                options.Password.RequireNonLetterOrDigit = false;
-                options.Password.RequireUppercase = false;
-                options.User.UserNameValidationRegex = null;
-            });
-            return services.BuildServiceProvider().GetService<UserManager<TUser>>();
-        }
+        //public static UserManager<TUser> CreateManager<TUser>(IUserStore<TUser> store) where TUser : class
+        //{
+        //    var services = new ServiceCollection();
+        //    services.Add(OptionsServices.GetDefaultServices());
+        //    services.Add(HostingServices.GetDefaultServices());
+        //    services.AddDefaultIdentity<TUser, IdentityRole>().AddUserStore(store);
+        //    services.ConfigureIdentity(options =>
+        //    {
+        //        options.Password.RequireDigit = false;
+        //        options.Password.RequireLowercase = false;
+        //        options.Password.RequireNonLetterOrDigit = false;
+        //        options.Password.RequireUppercase = false;
+        //        options.User.UserNameValidationRegex = null;
+        //    });
+        //    return services.BuildServiceProvider().GetService<UserManager<TUser>>();
+        //}
 
         public static Mock<UserManager<TUser>> MockUserManager<TUser>() where TUser : class
         {
