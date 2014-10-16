@@ -13,6 +13,7 @@ using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.DependencyInjection.Fallback;
 using Microsoft.Framework.Logging;
 using Xunit;
+using Microsoft.AspNet.Hosting;
 
 namespace Microsoft.AspNet.Identity.EntityFramework.Test
 {

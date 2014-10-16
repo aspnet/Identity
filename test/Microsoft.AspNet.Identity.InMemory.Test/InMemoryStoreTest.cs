@@ -6,6 +6,7 @@ using Microsoft.AspNet.Identity.Test;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.DependencyInjection.Fallback;
 using Microsoft.Framework.OptionsModel;
+using Microsoft.AspNet.Hosting;
 
 namespace Microsoft.AspNet.Identity.InMemory.Test
 {
@@ -20,6 +21,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
         {
             var services = new ServiceCollection();
             services.Add(OptionsServices.GetDefaultServices());
+            services.Add(HostingServices.GetDefaultServices());
             services.AddDefaultIdentity<IdentityUser, IdentityRole>();
             services.AddSingleton<IUserStore<IdentityUser>, InMemoryUserStore<IdentityUser>>();
             services.AddSingleton<IRoleStore<IdentityRole>, InMemoryRoleStore<IdentityRole>>();

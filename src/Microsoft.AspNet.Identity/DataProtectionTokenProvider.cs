@@ -12,7 +12,6 @@ namespace Microsoft.AspNet.Identity
     {
         public string Name { get; set; } = "DataProtection";
         public TimeSpan TokenLifespan { get; set; } = TimeSpan.FromDays(1);
-
     }
 
     /// <summary>
@@ -20,18 +19,19 @@ namespace Microsoft.AspNet.Identity
     /// </summary>
     public class DataProtectorTokenProvider<TUser> : IUserTokenProvider<TUser> where TUser : class
     {
-        public DataProtectorTokenProvider(IOptions<DataProtectionTokenProviderOptions> options, IDataProtector protector)
+        public DataProtectorTokenProvider(IDataProtectionProvider dataProtectionProvider, IOptions<DataProtectionTokenProviderOptions> options)
         {
             if (options == null || options.Options == null)
             {
                 throw new ArgumentNullException(nameof(options));
             }
-            if (protector == null)
+            if (dataProtectionProvider == null)
             {
-                throw new ArgumentNullException(nameof(protector));
+                throw new ArgumentNullException(nameof(dataProtectionProvider));
             }
             Options = options.Options;
-            Protector = protector;
+            // Use the Name as the purpose which should usually be distinct from others
+            Protector = dataProtectionProvider.CreateProtector(Name); 
         }
 
         public DataProtectionTokenProviderOptions Options { get; private set; }

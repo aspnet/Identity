@@ -1,14 +1,14 @@
 // Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNet.Hosting;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.DependencyInjection.Fallback;
 using Microsoft.Framework.OptionsModel;
 using Moq;
-using System;
-using System.Collections.Generic;
 
 namespace Microsoft.AspNet.Identity.Test
 {
@@ -18,6 +18,7 @@ namespace Microsoft.AspNet.Identity.Test
         {
             var services = new ServiceCollection();
             services.Add(OptionsServices.GetDefaultServices());
+            services.Add(HostingServices.GetDefaultServices());
             services.AddDefaultIdentity<TUser, IdentityRole>().AddUserStore(store);
             services.ConfigureIdentity(options =>
             {

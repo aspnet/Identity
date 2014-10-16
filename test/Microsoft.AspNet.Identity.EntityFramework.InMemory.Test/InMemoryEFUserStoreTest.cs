@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using Microsoft.AspNet.Hosting;
 using Microsoft.AspNet.Identity.Test;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.DependencyInjection.Fallback;
@@ -23,6 +24,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.InMemory.Test
             }
             var services = new ServiceCollection();
             services.Add(OptionsServices.GetDefaultServices());
+            services.Add(HostingServices.GetDefaultServices());
             services.AddEntityFramework().AddInMemoryStore();
             services.AddIdentityInMemory((InMemoryContext)context);
             services.ConfigureIdentity(options =>

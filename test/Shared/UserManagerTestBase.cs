@@ -1169,7 +1169,7 @@ namespace Microsoft.AspNet.Identity.Test
                     "No IUserTokenProvider named 'Bogus' is registered.");
         }
 
-        [Fact(Skip="Need to figure out how to DI options with tests")]
+        [Fact]
         public async Task EmailTokenFactorWithFormatTest()
         {
             var manager = CreateManager();
@@ -1216,7 +1216,6 @@ namespace Microsoft.AspNet.Identity.Test
             IdentityResultAssert.IsSuccess(await manager.UpdateSecurityStampAsync(user));
             Assert.False(await manager.VerifyTwoFactorTokenAsync(user, factorId, token));
         }
-
 
         [Fact]
         public async Task EnableTwoFactorChangesSecurityStamp()
