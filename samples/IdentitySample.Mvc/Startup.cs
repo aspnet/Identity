@@ -38,10 +38,6 @@ namespace IdentitySamples
 
             services.AddDefaultIdentity<ApplicationDbContext, ApplicationUser, IdentityRole>(Configuration, options =>
             {
-                options.Password.RequireDigit = false;
-                options.Password.RequireLowercase = false;
-                options.Password.RequireUppercase = false;
-                options.Password.RequireNonLetterOrDigit = false;
                 options.SecurityStampValidationInterval = TimeSpan.FromMinutes(20);
             });
 
