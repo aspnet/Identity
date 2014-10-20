@@ -61,12 +61,12 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
 
         protected override void AddUserStore(IServiceCollection services, object context = null)
         {
-            services.AddInstance<IUserStore<GuidUser>>(new ApplicationUserStore((ApplicationDbContext)context));
+            services.AddInstance<IUserStore<GuidUser>>(new ApplicationUserStore((TestDbContext)context));
         }
 
         protected override void AddRoleStore(IServiceCollection services, object context = null)
         {
-            services.AddInstance<IRoleStore<GuidRole>>(new ApplicationRoleStore((ApplicationDbContext)context));
+            services.AddInstance<IRoleStore<GuidRole>>(new ApplicationRoleStore((TestDbContext)context));
         }
     }
 }

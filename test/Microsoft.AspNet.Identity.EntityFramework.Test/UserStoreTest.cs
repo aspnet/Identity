@@ -13,15 +13,14 @@ using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.DependencyInjection.Fallback;
 using Microsoft.Framework.Logging;
 using Xunit;
-using Microsoft.AspNet.Hosting;
 
 namespace Microsoft.AspNet.Identity.EntityFramework.Test
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser> { }
-
     [TestCaseOrderer("Microsoft.AspNet.Identity.Test.PriorityOrderer", "Microsoft.AspNet.Identity.EntityFramework.Test")]
     public class UserStoreTest : UserManagerTestBase<IdentityUser, IdentityRole>
     {
+        public class ApplicationDbContext : IdentityDbContext<ApplicationUser> { }
+
         private readonly string ConnectionString = @"Server=(localdb)\v11.0;Database=SqlUserStoreTest" + DateTime.Now.Month + "-" + DateTime.Now.Day + "-" + DateTime.Now.Year + ";Trusted_Connection=True;";
 
         [TestPriority(-1000)]
@@ -148,12 +147,12 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
 
         protected override void AddUserStore(IServiceCollection services, object context = null)
         {
-            services.AddInstance<IUserStore<IdentityUser>>(new UserStore<IdentityUser, IdentityRole, ApplicationDbContext>((ApplicationDbContext)context));
+            services.AddInstance<IUserStore<IdentityUser>>(new UserStore<IdentityUser, IdentityRole, IdentityDbContext>((IdentityDbContext)context));
         }
 
         protected override void AddRoleStore(IServiceCollection services, object context = null)
         {
-            services.AddInstance<IRoleStore<IdentityRole>>(new RoleStore<IdentityRole, ApplicationDbContext>((ApplicationDbContext)context));
+            services.AddInstance<IRoleStore<IdentityRole>>(new RoleStore<IdentityRole, IdentityDbContext>((IdentityDbContext)context));
         }
 
         [Fact]

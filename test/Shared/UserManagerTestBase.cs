@@ -1222,18 +1222,20 @@ namespace Microsoft.AspNet.Identity.Test
         [Fact]
         public async Task EmailTokenFactorWithFormatTest()
         {
-            var manager = CreateManager();
-            var messageService = new TestMessageService();
-            manager.EmailService = messageService;
-            const string factorId = "EmailTestCode";
+            // CONSIDER: do we want to support multiple email token options?
+            const string factorId = "Email"; // default
             const string subject = "Custom subject";
             const string body = "Your code is {0}!";
-            //manager.RegisterTokenProvider(new EmailTokenProvider<TUser>(new EmailTokenProviderOptions
-            //{
-            //    Name = factorId,
-            //    Subject = subject,
-            //    BodyFormat = body
-            //}));
+            var services = new ServiceCollection();
+            services.Configure<EmailTokenProviderOptions>(o =>
+            {
+                o.Name = factorId;
+                o.Subject = subject;
+                o.BodyFormat = body;
+            });
+            var manager = CreateManager(null, services);
+            var messageService = new TestMessageService();
+            manager.EmailService = messageService;
             var user = CreateTestUser();
             user.Email = user.UserName + "@foo.com";
             const string password = "password";
@@ -1330,18 +1332,19 @@ namespace Microsoft.AspNet.Identity.Test
             Assert.True(await manager.VerifyTwoFactorTokenAsync(user, factorId, token));
         }
 
-        [Fact(Skip = "Need to figure out how to DI options with tests")]
+        [Fact]
         public async Task PhoneTokenFactorFormatTest()
         {
-            var manager = CreateManager();
+            const string factorId = "Phone"; // default
+            var services = new ServiceCollection();
+            services.Configure<PhoneNumberTokenProviderOptions>(o =>
+            {
+                o.Name = factorId;
+                o.MessageFormat = "Your code is: {0}";
+            });
+            var manager = CreateManager(null, services);
             var messageService = new TestMessageService();
             manager.SmsService = messageService;
-            const string factorId = "PhoneTestFactors";
-            //manager.RegisterTokenProvider(new PhoneNumberTokenProvider<TUser>(new PhoneNumberTokenProviderOptions
-            //{
-            //    Name = factorId,
-            //    MessageFormat = "Your code is: {0}"
-            //}));
             var user = CreateTestUser();
             user.PhoneNumber = "4251234567";
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));

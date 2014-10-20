@@ -36,7 +36,7 @@ namespace IdentitySamples
                 options.DefaultAdminPassword = Configuration.Get("DefaultAdminPassword");
             });
 
-            services.AddDefaultIdentity<ApplicationDbContext, ApplicationUser, IdentityRole>(Configuration, options =>
+            services.AddDefaultIdentity<ApplicationDbContext, ApplicationUser, IdentityRole>(Configuration.GetSubKey("Identity"), options =>
             {
                 options.SecurityStampValidationInterval = TimeSpan.FromMinutes(20);
             });
