@@ -31,7 +31,7 @@ namespace Microsoft.AspNet.Identity
             }
             Options = options.Options;
             // Use the Name as the purpose which should usually be distinct from others
-            Protector = dataProtectionProvider.CreateProtector(Name); 
+            Protector = dataProtectionProvider.CreateProtector(Name ?? "DataProtectorTokenProvider"); 
         }
 
         public DataProtectionTokenProviderOptions Options { get; private set; }
