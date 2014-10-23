@@ -441,6 +441,31 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             return Task.FromResult(0);
         }
 
+        public Task ReplaceClaimAsync(TUser user, Claim claim, Claim newClaim, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            ThrowIfDisposed();
+            if (user == null)
+            {
+                throw new ArgumentNullException("user");
+            }
+            if (claim == null)
+            {
+                throw new ArgumentNullException("claim");
+            }
+            if (newClaim == null)
+            {
+                throw new ArgumentNullException("newClaim");
+            }
+
+            var matchedClaim = UserClaims.FirstOrDefault(uc => uc.ClaimValue == claim.Value && uc.ClaimType == claim.Type);
+            if(matchedClaim != null)
+            {
+                matchedClaim.ClaimValue = newClaim.Value;
+                matchedClaim.ClaimType = newClaim.Type;
+            }
+            return Task.FromResult(0);
+        }
+
         public Task RemoveClaimsAsync(TUser user, IEnumerable<Claim> claims, CancellationToken cancellationToken = default(CancellationToken))
         {
             ThrowIfDisposed();
@@ -530,7 +555,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
             // todo: ensure logins loaded
-            var userLogin = 
+            var userLogin =
                 UserLogins.FirstOrDefault(l => l.LoginProvider == loginProvider && l.ProviderKey == providerKey);
             if (userLogin != null)
             {

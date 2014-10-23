@@ -47,6 +47,17 @@ namespace Microsoft.AspNet.Identity.InMemory
             return Task.FromResult(0);
         }
 
+        public Task ReplaceClaimAsync(TUser user, Claim claim, Claim newClaim, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var matchedClaim = user.Claims.FirstOrDefault(uc => uc.ClaimValue == claim.Value && uc.ClaimType == claim.Type);
+            if(matchedClaim != null)
+            {
+                matchedClaim.ClaimValue = newClaim.Value;
+                matchedClaim.ClaimType = newClaim.Type;
+            }
+            return Task.FromResult(0);
+        }
+
         public Task RemoveClaimsAsync(TUser user, IEnumerable<Claim> claims, CancellationToken cancellationToken = default(CancellationToken))
         {
             foreach (var claim in claims)
