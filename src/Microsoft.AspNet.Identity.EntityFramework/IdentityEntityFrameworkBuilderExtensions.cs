@@ -33,8 +33,7 @@ namespace Microsoft.Framework.DependencyInjection
             where TRole : IdentityRole, new()
             where TContext : DbContext
         {
-            builder.Services.AddScoped<IUserStore<TUser>, UserStore<TUser, TRole, TContext>>();
-            builder.Services.AddScoped<IRoleStore<TRole>, RoleStore<TRole, TContext>>();
+            builder.Services.Add(IdentityEntityFrameworkServices.GetDefaultServices<TContext, TUser, TRole>());
             return builder;
         }
 
@@ -44,9 +43,7 @@ namespace Microsoft.Framework.DependencyInjection
             where TContext : DbContext
             where TKey : IEquatable<TKey>
         {
-            builder.Services.AddScoped<IUserStore<TUser>, UserStore<TUser, TRole, TContext, TKey>>();
-            builder.Services.AddScoped<IRoleStore<TRole>, RoleStore<TRole, TContext, TKey>>();
-            builder.Services.AddScoped<TContext>();
+            builder.Services.Add(IdentityEntityFrameworkServices.GetDefaultServices<TContext, TUser, TRole, TKey>());
             return builder;
         }
     }

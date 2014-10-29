@@ -38,8 +38,10 @@ namespace Microsoft.AspNet.Identity.Test
             Assert.Equal(ClaimsIdentityOptions.DefaultSecurityStampClaimType, options.ClaimsIdentity.SecurityStampClaimType);
         }
 
-        [Fact]
-        public void IdentityOptionsFromConfig()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void IdentityOptionsFromConfig(bool useDefaultSubKey)
         {
             const string roleClaimType = "rolez";
             const string usernameClaimType = "namez";
@@ -65,7 +67,14 @@ namespace Microsoft.AspNet.Identity.Test
             Assert.Equal(roleClaimType, config.Get("identity:claimsidentity:roleclaimtype"));
 
             var services = new ServiceCollection {OptionsServices.GetDefaultServices()};
-            services.AddIdentity(config.GetSubKey("identity"));
+            if (useDefaultSubKey)
+            {
+                services.AddIdentity(config);
+            }
+            else
+            {
+                services.AddIdentity(config.GetSubKey("identity"), null, useDefaultSubKey);
+            }
             var accessor = services.BuildServiceProvider().GetRequiredService<IOptions<IdentityOptions>>();
             Assert.NotNull(accessor);
             var options = accessor.Options;
@@ -94,7 +103,7 @@ namespace Microsoft.AspNet.Identity.Test
             };
             var config = new Configuration { new MemoryConfigurationSource(dic) };
             var services = new ServiceCollection { OptionsServices.GetDefaultServices() };
-            services.AddIdentity(config.GetSubKey("identity"), 
+            services.AddIdentity(config, 
                 o => { o.User.RequireUniqueEmail = false; o.Lockout.MaxFailedAccessAttempts++; });
             var accessor = services.BuildServiceProvider().GetRequiredService<IOptions<IdentityOptions>>();
             Assert.NotNull(accessor);
@@ -116,7 +125,7 @@ namespace Microsoft.AspNet.Identity.Test
             var builder = new ApplicationBuilder(new ServiceCollection().BuildServiceProvider());
             builder.UseServices(services =>
             {
-                services.AddIdentity<IdentityUser>();
+                services.AddIdentity();
                 services.ConfigureOptions<PasswordsNegativeLengthSetup>();
             });
 
@@ -138,7 +147,7 @@ namespace Microsoft.AspNet.Identity.Test
             var app = new ApplicationBuilder(new ServiceCollection().BuildServiceProvider());
             app.UseServices(services =>
             {
-                services.AddIdentity<IdentityUser>().ConfigureIdentity(options => options.User.RequireUniqueEmail = true);
+                services.ConfigureIdentity(options => options.User.RequireUniqueEmail = true);
             });
 
             var optionsGetter = app.ApplicationServices.GetRequiredService<IOptions<IdentityOptions>>();
