@@ -49,8 +49,8 @@ namespace Microsoft.AspNet.Identity.InMemory
 
         public Task ReplaceClaimAsync(TUser user, Claim claim, Claim newClaim, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var matchedClaim = user.Claims.FirstOrDefault(uc => uc.ClaimValue == claim.Value && uc.ClaimType == claim.Type);
-            if(matchedClaim != null)
+            var matchedClaims = user.Claims.Where(uc => uc.ClaimValue == claim.Value && uc.ClaimType == claim.Type).ToList();
+            foreach(var matchedClaim in matchedClaims)
             {
                 matchedClaim.ClaimValue = newClaim.Value;
                 matchedClaim.ClaimType = newClaim.Type;

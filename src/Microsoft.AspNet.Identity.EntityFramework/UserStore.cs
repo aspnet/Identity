@@ -457,12 +457,13 @@ namespace Microsoft.AspNet.Identity.EntityFramework
                 throw new ArgumentNullException("newClaim");
             }
 
-            var matchedClaim = UserClaims.FirstOrDefault(uc => uc.ClaimValue == claim.Value && uc.ClaimType == claim.Type);
-            if(matchedClaim != null)
+            var matchedClaims = UserClaims.Where(uc => uc.ClaimValue == claim.Value && uc.ClaimType == claim.Type).ToList();
+            foreach(var matchedClaim in matchedClaims)
             {
                 matchedClaim.ClaimValue = newClaim.Value;
                 matchedClaim.ClaimType = newClaim.Type;
             }
+
             return Task.FromResult(0);
         }
 
