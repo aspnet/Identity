@@ -72,7 +72,7 @@ namespace Microsoft.AspNet.Identity.Redis.Test
     public static class IdentityRedisTestConfig
     {
         internal const string RedisServerExeName = "redis-server.exe";
-        internal const string FunctionalTestsRedisServerExeName = "RedisFuncTests-redis-server";
+        internal const string FunctionalTestsRedisServerExeName = "Identity-redis-server";
         internal const string UserProfileRedisNugetPackageServerPath = @".kpm\packages\Redis-64\2.8.9";
         internal const string CIMachineRedisNugetPackageServerPath = @"Redis-64\2.8.9";
 
