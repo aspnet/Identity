@@ -18,7 +18,7 @@ namespace Microsoft.AspNet.Identity.Redis.Test
         {
             var options = new DbContextOptions()
                 .UseModel(CreateModel())
-                .UseRedis("127.0.0.1", RedisTestConfig.RedisPort);
+                .UseRedis("127.0.0.1", IdentityRedisTestConfig.RedisPort);
 
             return new DbContext(options);
         }

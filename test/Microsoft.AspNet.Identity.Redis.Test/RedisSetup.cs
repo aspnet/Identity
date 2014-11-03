@@ -32,7 +32,7 @@ namespace Microsoft.AspNet.Identity.Redis.Test
         {
             try
             {
-                RedisTestConfig.GetOrStartServer();
+                IdentityRedisTestConfig.GetOrStartServer();
             }
             catch (Exception)
             {
@@ -57,7 +57,7 @@ namespace Microsoft.AspNet.Identity.Redis.Test
             {
                 try
                 {
-                    RedisTestConfig.StopRedisServer();
+                    IdentityRedisTestConfig.StopRedisServer();
                 }
                 catch (Exception)
                 {
