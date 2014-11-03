@@ -3,4 +3,4 @@
 
 using Xunit;
 
-[assembly: TestFramework("Microsoft.AspNet.Identity.Redis.Test.RedisXunitTestFramework", "Identity.Redis.Test")]
+[assembly: TestFramework("Microsoft.AspNet.Identity.Redis.Test.RedisXunitTestFramework", "Microsoft.AspNet.Identity.Redis.Test")]

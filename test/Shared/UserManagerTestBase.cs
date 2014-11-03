@@ -330,7 +330,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
-        public async Task CanAddRemoveUserClaim()
+        public virtual async Task CanAddRemoveUserClaim()
         {
             var manager = CreateManager();
             var user = CreateTestUser();
@@ -850,7 +850,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
-        public async Task CanAddRemoveRoleClaim()
+        public virtual async Task CanAddRemoveRoleClaim()
         {
             var manager = CreateRoleManager();
             var role = CreateRole("ClaimsAddRemove");
