@@ -12,19 +12,74 @@ using Xunit;
 
 namespace Microsoft.AspNet.Identity.Redis.Test
 {
-    public class RedisTests : UserManagerTestBase<IdentityUser, IdentityRole>, IClassFixture<SimpleFixture>
+    public class RedisTests : UserManagerTestBase<IdentityUser, IdentityRole>
     {
-        private readonly DbContext _context;
-
-        public RedisTests(SimpleFixture fixture)
-        {
-            _context = fixture.CreateContext();
-        }
-
-
         protected override object CreateTestContext()
         {
-            return _context;
+            var options = new DbContextOptions()
+                .UseModel(CreateModel())
+                .UseRedis("127.0.0.1", RedisTestConfig.RedisPort);
+
+            return new DbContext(options);
+        }
+
+        public IModel CreateModel()
+        {
+            var model = new Model();
+            var builder = new BasicModelBuilder(model);
+            builder.Entity<IdentityUser>(b =>
+            {
+                b.Key(u => u.Id);
+                b.Property(u => u.UserName);
+                b.Property(u => u.PasswordHash);
+                b.Property(u => u.PhoneNumber);
+                b.Property(u => u.PhoneNumberConfirmed);
+                b.Property(u => u.NormalizedUserName);
+                b.Property(u => u.LockoutEnabled);
+                b.Property(u => u.LockoutEnd);
+                b.Property(u => u.SecurityStamp);
+                b.Property(u => u.TwoFactorEnabled);
+                b.Property(u => u.Email);
+                b.Property(u => u.EmailConfirmed);
+            });
+
+            builder.Entity<IdentityRole>(b =>
+            {
+                b.Key(r => r.Id);
+                b.Property(r => r.Name);
+            });
+
+            builder.Entity<IdentityUserRole<string>>(b =>
+            {
+                b.Key(ur => new { ur.UserId, ur.RoleId });
+                b.ForeignKey<IdentityUser>(ur => ur.UserId);
+                b.ForeignKey<IdentityRole>(ur => ur.RoleId);
+            });
+
+            builder.Entity<IdentityUserLogin<string>>(b =>
+            {
+                b.Key(ul => new { ul.LoginProvider, ul.ProviderKey });
+                b.Property(ul => ul.UserId);
+                b.ForeignKey<IdentityUser>(ul => ul.UserId);
+            });
+
+            builder.Entity<IdentityUserClaim<string>>(b =>
+            {
+                b.Key(uc => uc.Id);
+                b.Property(uc => uc.ClaimType);
+                b.Property(uc => uc.ClaimValue);
+                b.ForeignKey<IdentityUser>(ul => ul.UserId);
+            });
+
+            builder.Entity<IdentityRoleClaim<string>>(b =>
+            {
+                b.Key(rc => rc.Id);
+                b.Property(rc => rc.ClaimType);
+                b.Property(rc => rc.ClaimValue);
+                b.ForeignKey<IdentityRole>(rc => rc.RoleId);
+            });
+
+            return model;
         }
 
         protected override void AddUserStore(IServiceCollection services, object context = null)
@@ -47,78 +102,6 @@ namespace Microsoft.AspNet.Identity.Redis.Test
         public override Task CanAddRemoveRoleClaim()
         {
             return base.CanAddRemoveRoleClaim();
-        }
-    }
-
-    public class SimpleFixture
-    {
-        public DbContext CreateContext()
-        {
-            var options = new DbContextOptions()
-                .UseModel(CreateModel())
-                .UseRedis("127.0.0.1", RedisTestConfig.RedisPort);
-
-            //return new IdentityDbContext(options);
-            return new DbContext(options);
-        }
-
-        public IModel CreateModel()
-        {
-            var model = new Model();
-            var builder = new BasicModelBuilder(model);
-            builder.Entity<IdentityUser>(b =>
-                {
-                    b.Key(u => u.Id);
-                    b.Property(u => u.UserName);
-                    b.Property(u => u.PasswordHash);
-                    b.Property(u => u.PhoneNumber);
-                    b.Property(u => u.PhoneNumberConfirmed);
-                    b.Property(u => u.NormalizedUserName);
-                    b.Property(u => u.LockoutEnabled);
-                    b.Property(u => u.LockoutEnd);
-                    b.Property(u => u.SecurityStamp);
-                    b.Property(u => u.TwoFactorEnabled);
-                    b.Property(u => u.Email);
-                    b.Property(u => u.EmailConfirmed);
-                });
-
-            builder.Entity<IdentityRole>(b =>
-                {
-                    b.Key(r => r.Id);
-                    b.Property(r => r.Name);
-                });
-
-            builder.Entity<IdentityUserRole<string>>(b =>
-                {
-                    b.Key(ur => new { ur.UserId, ur.RoleId });
-                    b.ForeignKey<IdentityUser>(ur => ur.UserId);
-                    b.ForeignKey<IdentityRole>(ur => ur.RoleId);
-                });
-
-            builder.Entity<IdentityUserLogin<string>>(b =>
-                {
-                    b.Key(ul => new { ul.LoginProvider, ul.ProviderKey });
-                    b.Property(ul => ul.UserId);
-                    b.ForeignKey<IdentityUser>(ul => ul.UserId);
-                });
-
-            builder.Entity<IdentityUserClaim<string>>(b =>
-                {
-                    b.Key(uc => uc.Id);
-                    b.Property(uc => uc.ClaimType);
-                    b.Property(uc => uc.ClaimValue);
-                    b.ForeignKey<IdentityUser>(ul => ul.UserId);
-                });
-
-            builder.Entity<IdentityRoleClaim<string>>(b =>
-                {
-                    b.Key(rc => rc.Id);
-                    b.Property(rc => rc.ClaimType);
-                    b.Property(rc => rc.ClaimValue);
-                    b.ForeignKey<IdentityRole>(rc => rc.RoleId);
-                });
-
-            return model;
         }
     }
 }
