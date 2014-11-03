@@ -11,7 +11,6 @@
     "EntityFramework.InMemory": "7.0.0-*",
     "EntityFramework.SqlServer": "7.0.0-*",
     "Microsoft.Framework.OptionsModel" : "1.0.0-*",
-    "System.Security.Claims": "1.0.0-*",
     "Xunit.KRunner": "1.0.0-*"
   },
   "code": "**\\*.cs;..\\Shared\\*.cs",

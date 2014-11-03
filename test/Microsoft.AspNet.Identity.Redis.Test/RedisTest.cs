@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using Microsoft.AspNet.Identity.SqlServer;
+using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Test;
 using Microsoft.Data.Entity;
 using Microsoft.Data.Entity.Metadata;
@@ -28,46 +28,14 @@ namespace Microsoft.AspNet.Identity.Redis.Test
             return _context;
         }
 
-
-        protected override UserManager<IdentityUser> CreateManager(object context)
+        protected override void AddUserStore(IServiceCollection services, object context = null)
         {
-            if (context == null)
-            {
-                context = _context;
-            }
-            var services = new ServiceCollection();
-            services.AddEntityFramework().AddRedis();
-            services.Add(OptionsServices.GetDefaultServices());
-            services.AddIdentity();
-            services.AddInstance<IUserStore<IdentityUser>>(new UserStore((DbContext)context));
-            services.SetupOptions<IdentityOptions>(options =>
-            {
-                options.Password.RequireDigit = false;
-                options.Password.RequireLowercase = false;
-                options.Password.RequireNonLetterOrDigit = false;
-                options.Password.RequireUppercase = false;
-                options.User.AllowOnlyAlphanumericNames = false;
-            });
-            return services.BuildServiceProvider().GetService<UserManager<IdentityUser>>();
+            services.AddInstance<IUserStore<IdentityUser>>(new UserStore<IdentityUser, IdentityRole, DbContext>((DbContext)context));
         }
 
-        protected override RoleManager<IdentityRole> CreateRoleManager(object context)
+        protected override void AddRoleStore(IServiceCollection services, object context = null)
         {
-            if (context == null)
-            {
-                context = _context;
-            }
-            var services = new ServiceCollection();
-            services.AddEntityFramework().AddRedis();
-            services.AddIdentity();
-            services.AddInstance<IRoleStore<IdentityRole>>(new RoleStore<IdentityRole>((DbContext)context));
-            return services.BuildServiceProvider().GetService<RoleManager<IdentityRole>>();
-        }
-
-        [Fact]
-        public void SimpleTest()
-        {
-
+            services.AddInstance<IRoleStore<IdentityRole>>(new RoleStore<IdentityRole, DbContext>((DbContext)context));
         }
     }
 
@@ -96,7 +64,7 @@ namespace Microsoft.AspNet.Identity.Redis.Test
                     b.Property(u => u.PhoneNumberConfirmed);
                     b.Property(u => u.NormalizedUserName);
                     b.Property(u => u.LockoutEnabled);
-                    //b.Property(u => u.LockoutEnd);
+                    b.Property(u => u.LockoutEnd);
                     b.Property(u => u.SecurityStamp);
                     b.Property(u => u.TwoFactorEnabled);
                     b.Property(u => u.Email);

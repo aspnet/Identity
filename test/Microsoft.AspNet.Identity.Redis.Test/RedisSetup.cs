@@ -99,13 +99,8 @@ namespace Microsoft.AspNet.Identity.Redis.Test
         private static bool AlreadyOwnRunningRedisServer()
         {
             // Does RedisTestConfig already know about a running server?
-            if (_redisServerProcess != null
-                && !_redisServerProcess.HasExited)
-            {
-                return true;
-            }
-
-            return false;
+            return _redisServerProcess != null
+                   && !_redisServerProcess.HasExited;
         }
 
         private static bool TryConnectToOrStartServer()
@@ -142,7 +137,8 @@ namespace Microsoft.AspNet.Identity.Redis.Test
         private static bool CanFindExistingRedisServer()
         {
             var process = Process.GetProcessesByName(FunctionalTestsRedisServerExeName).SingleOrDefault();
-            if (process == null || process.HasExited)
+            if (process == null
+                || process.HasExited)
             {
                 lock (_redisServerProcessLock)
                 {
@@ -212,22 +208,30 @@ namespace Microsoft.AspNet.Identity.Redis.Test
 
                     if (_redisServerProcess == null)
                     {
-                        var serverArgs = "--port " + RedisPort;
+                        var serverArgs = "--port " + RedisPort + " --maxheap 512MB";
                         var processInfo = new ProcessStartInfo
-                        {
-                            // start the process in users TMP dir (a .dat file will be created but will be removed when the server dies)
-                            Arguments = serverArgs,
-                            WorkingDirectory = tempPath,
-                            CreateNoWindow = true,
-                            FileName = tempRedisServerFullPath,
-                            RedirectStandardError = true,
-                            RedirectStandardOutput = true,
-                            UseShellExecute = false,
-                        };
+                            {
+                                // start the process in users TMP dir (a .dat file will be created but will be removed when the server dies)
+                                Arguments = serverArgs,
+                                WorkingDirectory = tempPath,
+                                CreateNoWindow = true,
+                                FileName = tempRedisServerFullPath,
+                                RedirectStandardError = true,
+                                RedirectStandardOutput = true,
+                                UseShellExecute = false,
+                            };
                         try
                         {
                             _redisServerProcess = Process.Start(processInfo);
                             Thread.Sleep(3000); // to give server time to initialize
+
+                            if (_redisServerProcess.HasExited)
+                            {
+                                throw new Exception("Could not start Redis Server at path "
+                                                    + tempRedisServerFullPath + " with Arguments '" + serverArgs + "', working dir = " + tempPath + Environment.NewLine
+                                                    + _redisServerProcess.StandardError.ReadToEnd() + Environment.NewLine
+                                                    + _redisServerProcess.StandardOutput.ReadToEnd());
+                            }
                         }
                         catch (Exception e)
                         {
