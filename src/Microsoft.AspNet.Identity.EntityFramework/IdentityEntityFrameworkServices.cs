@@ -15,10 +15,7 @@ namespace Microsoft.AspNet.Identity
     /// </summary>
     public class IdentityEntityFrameworkServices
     {
-        public static IEnumerable<IServiceDescriptor> GetDefaultServices<TContext, TUser, TRole>(IConfiguration config = null)
-            where TUser : IdentityUser, new()
-            where TRole : IdentityRole, new()
-            where TContext : DbContext
+        public static IEnumerable<IServiceDescriptor> GetDefaultServices(Type userType, Type roleType, Type contextType, Type keyType = null, IConfiguration config = null)
         {
             ServiceDescriber describe;
             if (config == null)
@@ -29,28 +26,25 @@ namespace Microsoft.AspNet.Identity
             {
                 describe = new ServiceDescriber(config);
             }
-            yield return describe.Scoped<IUserStore<TUser>, UserStore<TUser, TRole, TContext>>();
-            yield return describe.Scoped<IRoleStore<TRole>, RoleStore<TRole, TContext>>();
-        }
-
-        public static IEnumerable<IServiceDescriptor> GetDefaultServices<TContext, TUser, TRole, TKey>(IConfiguration config = null)
-            where TUser : IdentityUser<TKey>, new()
-            where TRole : IdentityRole<TKey>, new()
-            where TContext : DbContext
-            where TKey : IEquatable<TKey>
-        {
-            ServiceDescriber describe;
-            if (config == null)
+            Type userStoreType;
+            Type roleStoreType;
+            if (keyType != null)
             {
-                describe = new ServiceDescriber();
+                userStoreType = typeof(UserStore<,,,>).MakeGenericType(userType, roleType, contextType, keyType);
+                roleStoreType = typeof(RoleStore<,,>).MakeGenericType(roleType, contextType, keyType);
             }
             else
             {
-                describe = new ServiceDescriber(config);
+                userStoreType = typeof(UserStore<,,>).MakeGenericType(userType, roleType, contextType);
+                roleStoreType = typeof(RoleStore<,>).MakeGenericType(roleType, contextType);
             }
-            yield return describe.Scoped<IUserStore<TUser>, UserStore<TUser, TRole, TContext, TKey>>();
-            yield return describe.Scoped<IRoleStore<TRole>, RoleStore<TRole, TContext, TKey>>();
-        }
 
+            yield return describe.Scoped(
+                typeof(IUserStore<>).MakeGenericType(userType),
+                userStoreType);
+            yield return describe.Scoped(
+                typeof(IRoleStore<>).MakeGenericType(roleType),
+                roleStoreType);
+        }
     }
 }

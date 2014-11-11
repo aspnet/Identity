@@ -94,23 +94,5 @@ namespace Microsoft.Framework.DependencyInjection
 
             return new IdentityBuilder<TUser, TRole>(services);
         }
-
-        public static IdentityBuilder<TUser, TRole> AddDefaultIdentity<TUser, TRole>(
-            this IServiceCollection services,
-            IConfiguration config = null,
-            Action<IdentityOptions> configureOptions = null,
-            bool useDefaultSubKey = true)
-            where TUser : class
-            where TRole : class
-        {
-            services.Configure<DataProtectionTokenProviderOptions>(options =>
-            {
-                options.Name = Resources.DefaultTokenProvider;
-            });
-            return services.AddIdentity<TUser, TRole>(config, configureOptions, useDefaultSubKey)
-                .AddTokenProvider<DataProtectorTokenProvider<TUser>>()
-                .AddTokenProvider<PhoneNumberTokenProvider<TUser>>()
-                .AddTokenProvider<EmailTokenProvider<TUser>>();
-        }
     }
 }
