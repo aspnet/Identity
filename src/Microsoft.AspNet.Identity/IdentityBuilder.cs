@@ -76,6 +76,12 @@ namespace Microsoft.AspNet.Identity
             return this;
         }
 
+        public IdentityBuilder<TUser, TRole> AddMessageProvider<TMessageProvider>() where TMessageProvider : class, IUserMessageProvider<TUser>
+        {
+            Services.AddScoped<IUserMessageProvider<TUser>, TMessageProvider>();
+            return this;
+        }
+
         public IdentityBuilder<TUser, TRole> ConfigureIdentity(Action<IdentityOptions> action, int order = 0)
         {
             Services.Configure(action, order);
