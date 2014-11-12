@@ -47,7 +47,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             builder.UseServices(services =>
             {
                 DbUtil.ConfigureDbServices<IdentityDbContext>(ConnectionString, services);
-                services.AddDefaultIdentity<IdentityDbContext, IdentityUser, IdentityRole>();
+                services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<IdentityDbContext>();
             });
 
             var userStore = builder.ApplicationServices.GetRequiredService<IUserStore<IdentityUser>>();
