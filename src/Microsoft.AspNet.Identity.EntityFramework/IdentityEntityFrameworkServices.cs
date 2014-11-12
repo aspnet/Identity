@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Framework.ConfigurationModel;
 using Microsoft.Framework.DependencyInjection;
-using Microsoft.Data.Entity;
 using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace Microsoft.AspNet.Identity
