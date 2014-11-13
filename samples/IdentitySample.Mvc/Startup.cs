@@ -38,12 +38,9 @@ namespace IdentitySamples
                 options.DefaultAdminPassword = Configuration.Get("DefaultAdminPassword");
             });
 
-            services.AddIdentity<ApplicationUser, IdentityRole>(Configuration, options =>
-            {
-                options.SecurityStampValidationInterval = TimeSpan.FromMinutes(20);
-            })
+            services.AddIdentity<ApplicationUser, IdentityRole>(Configuration)
                     .AddEntityFrameworkStores<ApplicationDbContext>()
-                    .AddDefaultTokenProviders();
+                    .AddDefaultTokenProviders()
                     .AddMessageProvider<EmailMessageProvider>()
                     .AddMessageProvider<SmsMessageProvider>();
 

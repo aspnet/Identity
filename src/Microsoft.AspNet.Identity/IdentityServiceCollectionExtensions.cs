@@ -17,12 +17,12 @@ namespace Microsoft.Framework.DependencyInjection
             return services.Configure(configure);
         }
 
-        public static IdentityBuilder<IdentityUser, IdentityRole> AddIdentity(this IServiceCollection services)
+        public static IdentityBuilder AddIdentity(this IServiceCollection services)
         {
             return services.AddIdentity<IdentityUser, IdentityRole>();
         }
 
-        public static IdentityBuilder<IdentityUser, IdentityRole> AddIdentity(
+        public static IdentityBuilder AddIdentity(
             this IServiceCollection services, 
             IConfiguration identityConfig = null,
             Action<IdentityOptions> configureOptions = null,
@@ -31,7 +31,7 @@ namespace Microsoft.Framework.DependencyInjection
             return services.AddIdentity<IdentityUser, IdentityRole>(identityConfig, configureOptions, useDefaultSubKey);
         }
 
-        public static IdentityBuilder<TUser, TRole> AddIdentity<TUser, TRole>(
+        public static IdentityBuilder AddIdentity<TUser, TRole>(
             this IServiceCollection services, 
             IConfiguration identityConfig = null, 
             Action<IdentityOptions> configureOptions = null, 
@@ -92,7 +92,7 @@ namespace Microsoft.Framework.DependencyInjection
                 options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
             }, IdentityOptions.TwoFactorUserIdCookieAuthenticationType);
 
-            return new IdentityBuilder<TUser, TRole>(services);
+            return new IdentityBuilder(typeof(TUser), typeof(TRole), services);
         }
     }
 }
