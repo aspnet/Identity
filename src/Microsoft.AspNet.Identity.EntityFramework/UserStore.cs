@@ -408,16 +408,15 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         private DbSet<IdentityUserRole<TKey>> UserRoles { get { return Context.Set<IdentityUserRole<TKey>>(); } }
         private DbSet<IdentityUserLogin<TKey>> UserLogins { get { return Context.Set<IdentityUserLogin<TKey>>(); } }
 
-        public Task<IList<Claim>> GetClaimsAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<IList<Claim>> GetClaimsAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             ThrowIfDisposed();
             if (user == null)
             {
                 throw new ArgumentNullException("user");
             }
-            var result = UserClaims.Where(uc => uc.UserId.Equals(user.Id)).Select(c => new Claim(c.ClaimType, c.ClaimValue)).ToList();
 
-            return Task.FromResult<IList<Claim>>(result);
+            return await UserClaims.Where(uc => uc.UserId.Equals(user.Id)).Select(c => new Claim(c.ClaimType, c.ClaimValue)).ToListAsync();
         }
 
         public async Task AddClaimsAsync(TUser user, IEnumerable<Claim> claims, CancellationToken cancellationToken = default(CancellationToken))
@@ -525,7 +524,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             }
         }
 
-        public virtual Task<IList<UserLoginInfo>> GetLoginsAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public async virtual Task<IList<UserLoginInfo>> GetLoginsAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -537,10 +536,9 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             //IList<UserLoginInfo> result = user.Logins
             //    .Select(l => new UserLoginInfo(l.LoginProvider, l.ProviderKey, l.ProviderDisplayName)).ToList();
             var userId = user.Id;
-            var result = UserLogins.Where(l => l.UserId.Equals(userId))
-                .Select(l => new UserLoginInfo(l.LoginProvider, l.ProviderKey, l.ProviderDisplayName)).ToList();
 
-            return Task.FromResult<IList<UserLoginInfo>>(result);
+            return await UserLogins.Where(l => l.UserId.Equals(userId))
+                .Select(l => new UserLoginInfo(l.LoginProvider, l.ProviderKey, l.ProviderDisplayName)).ToListAsync();
         }
 
         public async virtual Task<TUser> FindByLoginAsync(string loginProvider, string providerKey,
