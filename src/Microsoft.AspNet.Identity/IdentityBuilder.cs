@@ -3,68 +3,78 @@
 
 using System;
 using Microsoft.Framework.DependencyInjection;
-using Microsoft.Framework.OptionsModel;
 
 namespace Microsoft.AspNet.Identity
 {
-    public class IdentityBuilder<TUser, TRole> where TUser : class where TRole : class
+    public class IdentityBuilder
     {
-        public IServiceCollection Services { get; private set; }
-
-        public IdentityBuilder(IServiceCollection services)
+        public IdentityBuilder(Type user, Type role, IServiceCollection services)
         {
+            UserType = user;
+            RoleType = role;
             Services = services;
         }
 
-        public IdentityBuilder<TUser, TRole> AddInstance<TService>(TService instance)
-            where TService : class
+        public Type UserType { get; private set; }
+        public Type RoleType { get; private set; }
+        public IServiceCollection Services { get; private set; }
+
+        private IdentityBuilder AddScoped(Type serviceType, Type concreteType)
         {
-            Services.AddInstance(instance);
+            Services.AddScoped(serviceType, concreteType);
             return this;
         }
 
-        public IdentityBuilder<TUser, TRole> AddUserStore(IUserStore<TUser> store)
+        public IdentityBuilder AddUserValidator<T>() where T : class
         {
-            return AddInstance(store);
+            return AddScoped(typeof(IUserValidator<>).MakeGenericType(UserType), typeof(T));
         }
 
-        public IdentityBuilder<TUser, TRole> AddRoleStore(IRoleStore<TRole> store)
+        public IdentityBuilder AddRoleValidator<T>() where T : class
         {
-            return AddInstance(store);
+            return AddScoped(typeof(IRoleValidator<>).MakeGenericType(RoleType), typeof(T));
         }
 
-        public IdentityBuilder<TUser, TRole> AddPasswordValidator(IPasswordValidator<TUser> validator)
+        public IdentityBuilder AddPasswordValidator<T>() where T : class
         {
-            return AddInstance(validator);
+            return AddScoped(typeof(IPasswordValidator<>).MakeGenericType(UserType), typeof(T));
         }
 
-        public IdentityBuilder<TUser, TRole> AddUserValidator(IUserValidator<TUser> validator)
+        public IdentityBuilder AddUserStore<T>() where T : class
         {
-            return AddInstance(validator);
+            return AddScoped(typeof(IUserStore<>).MakeGenericType(UserType), typeof(T));
         }
 
-        public IdentityBuilder<TUser, TRole> AddTokenProvider<TTokenProvider>() where TTokenProvider : class, IUserTokenProvider<TUser>
+        public IdentityBuilder AddRoleStore<T>() where T : class
         {
-            Services.AddScoped<IUserTokenProvider<TUser>, TTokenProvider>();
-            return this;
+            return AddScoped(typeof(IRoleStore<>).MakeGenericType(RoleType), typeof(T));
         }
 
-        public IdentityBuilder<TUser, TRole> ConfigureIdentity(Action<IdentityOptions> action, int order = 0)
+        public IdentityBuilder AddTokenProvider<TProvider>() where TProvider : class
         {
-            Services.Configure(action, order);
-            return this;
+            return AddTokenProvider(typeof(TProvider));
         }
 
-        public IdentityBuilder<TUser, TRole> AddUserManager<TManager>() where TManager : UserManager<TUser>
+        public IdentityBuilder AddTokenProvider(Type provider)
         {
-            Services.AddScoped<TManager>();
-            return this;
+            return AddScoped(typeof(IUserTokenProvider<>).MakeGenericType(UserType), provider);
         }
 
-        public IdentityBuilder<TUser, TRole> AddRoleManager<TManager>() where TManager : RoleManager<TRole>
+        public IdentityBuilder AddMessageProvider<TProvider>() where TProvider : class
         {
-            Services.AddScoped<TManager>();
-            return this;
+            return AddScoped(typeof(IUserMessageProvider<>).MakeGenericType(UserType), typeof(TProvider));
+        }
+
+        public IdentityBuilder AddDefaultTokenProviders()
+        {
+            Services.Configure<DataProtectionTokenProviderOptions>(options =>
+            {
+                options.Name = Resources.DefaultTokenProvider;
+            });
+
+            return AddTokenProvider(typeof(DataProtectorTokenProvider<>).MakeGenericType(UserType))
+                .AddTokenProvider(typeof(PhoneNumberTokenProvider<>).MakeGenericType(UserType))
+                .AddTokenProvider(typeof(EmailTokenProvider<>).MakeGenericType(UserType));
         }
     }
 }

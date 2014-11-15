@@ -87,7 +87,12 @@ namespace IdentitySample.Models
                 {
                     var code = await UserManager.GenerateEmailConfirmationTokenAsync(user);
                     var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Context.Request.Scheme);
-                    await UserManager.SendEmailAsync(user, "Confirm your account", "Please confirm your account by clicking this link: <a href=\"" + callbackUrl + "\">link</a>");
+                    var email = new IdentityMessage
+                    {
+                        Subject = "Confirm your account",
+                        Body = "Please confirm your account by clicking this link: <a href=\"" + callbackUrl + "\">link</a>"
+                    };
+                    await UserManager.SendUserMessageAsync(user, "Email", email);
                     ViewBag.Link = callbackUrl;
                     return View("DisplayEmail");
                 }
@@ -240,7 +245,12 @@ namespace IdentitySample.Models
 
                 var code = await UserManager.GeneratePasswordResetTokenAsync(user);
                 var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: Context.Request.Scheme);
-                await UserManager.SendEmailAsync(user, "Reset Password", "Please reset your password by clicking here: <a href=\"" + callbackUrl + "\">link</a>");
+                var email = new IdentityMessage
+                {
+                    Subject = "Reset Password",
+                    Body = "Please reset your password by clicking here: <a href=\"" + callbackUrl + "\">link</a>"
+                };
+                await UserManager.SendUserMessageAsync(user, "Email", email);
                 ViewBag.Link = callbackUrl;
                 return View("ForgotPasswordConfirmation");
             }
