@@ -59,7 +59,7 @@ namespace Microsoft.AspNet.Identity
         }
 
         /// <summary>
-        /// Security Code
+        /// Security code
         /// </summary>
         internal static string DefaultEmailTokenProviderSubject
         {
@@ -67,7 +67,7 @@ namespace Microsoft.AspNet.Identity
         }
 
         /// <summary>
-        /// Security Code
+        /// Security code
         /// </summary>
         internal static string FormatDefaultEmailTokenProviderSubject()
         {
@@ -123,7 +123,7 @@ namespace Microsoft.AspNet.Identity
         }
 
         /// <summary>
-        /// DefaultTokenProvider
+        /// Default Token Provider
         /// </summary>
         internal static string DefaultTokenProvider
         {
@@ -131,7 +131,7 @@ namespace Microsoft.AspNet.Identity
         }
 
         /// <summary>
-        /// DefaultTokenProvider
+        /// Default Token Provider
         /// </summary>
         internal static string FormatDefaultTokenProvider()
         {
@@ -155,7 +155,7 @@ namespace Microsoft.AspNet.Identity
         }
 
         /// <summary>
-        /// Role Name '{0}' is already taken.
+        /// Role name '{0}' is already taken.
         /// </summary>
         internal static string DuplicateRoleName
         {
@@ -163,7 +163,7 @@ namespace Microsoft.AspNet.Identity
         }
 
         /// <summary>
-        /// Role Name '{0}' is already taken.
+        /// Role name '{0}' is already taken.
         /// </summary>
         internal static string FormatDuplicateRoleName(object p0)
         {
@@ -171,7 +171,7 @@ namespace Microsoft.AspNet.Identity
         }
 
         /// <summary>
-        /// UserName '{0}' is already taken.
+        /// User name '{0}' is already taken.
         /// </summary>
         internal static string DuplicateUserName
         {
@@ -179,7 +179,7 @@ namespace Microsoft.AspNet.Identity
         }
 
         /// <summary>
-        /// UserName '{0}' is already taken.
+        /// User name '{0}' is already taken.
         /// </summary>
         internal static string FormatDuplicateUserName(object p0)
         {
@@ -744,6 +744,102 @@ namespace Microsoft.AspNet.Identity
         internal static string FormatUserNotInRole(object p0)
         {
             return string.Format(CultureInfo.CurrentCulture, GetString("UserNotInRole"), p0);
+        }
+
+        /// <summary>
+        /// {0} : Failed : {1}
+        /// </summary>
+        internal static string LogIdentityResultFailure
+        {
+            get { return GetString("LogIdentityResultFailure"); }
+        }
+
+        /// <summary>
+        /// {0} : Failed : {1}
+        /// </summary>
+        internal static string FormatLogIdentityResultFailure(object p0, object p1)
+        {
+            return string.Format(CultureInfo.CurrentCulture, GetString("LogIdentityResultFailure"), p0, p1);
+        }
+
+        /// <summary>
+        /// {0} : Success
+        /// </summary>
+        internal static string LogIdentityResultSuccess
+        {
+            get { return GetString("LogIdentityResultSuccess"); }
+        }
+
+        /// <summary>
+        /// {0} : Success
+        /// </summary>
+        internal static string FormatLogIdentityResultSuccess(object p0)
+        {
+            return string.Format(CultureInfo.CurrentCulture, GetString("LogIdentityResultSuccess"), p0);
+        }
+
+        /// <summary>
+        /// {0} for user: {1} : Result : {2}
+        /// </summary>
+        internal static string LoggingSigninStatus
+        {
+            get { return GetString("LoggingSigninStatus"); }
+        }
+
+        /// <summary>
+        /// {0} for user: {1} : Result : {2}
+        /// </summary>
+        internal static string FormatLoggingSigninStatus(object p0, object p1, object p2)
+        {
+            return string.Format(CultureInfo.CurrentCulture, GetString("LoggingSigninStatus"), p0, p1, p2);
+        }
+
+        /// <summary>
+        /// {0} for user: {1}
+        /// </summary>
+        internal static string LoggingIdentityResultMessage
+        {
+            get { return GetString("LoggingIdentityResultMessage"); }
+        }
+
+        /// <summary>
+        /// {0} for user: {1}
+        /// </summary>
+        internal static string FormatLoggingIdentityResultMessage(object p0, object p1)
+        {
+            return string.Format(CultureInfo.CurrentCulture, GetString("LoggingIdentityResultMessage"), p0, p1);
+        }
+
+        /// <summary>
+        /// {0} for role: {1}
+        /// </summary>
+        internal static string LoggingIdentityResultMessageForRole
+        {
+            get { return GetString("LoggingIdentityResultMessageForRole"); }
+        }
+
+        /// <summary>
+        /// {0} for role: {1}
+        /// </summary>
+        internal static string FormatLoggingIdentityResultMessageForRole(object p0, object p1)
+        {
+            return string.Format(CultureInfo.CurrentCulture, GetString("LoggingIdentityResultMessageForRole"), p0, p1);
+        }
+
+        /// <summary>
+        /// Given password cannot be verified
+        /// </summary>
+        internal static string IncorrectPassword
+        {
+            get { return GetString("IncorrectPassword"); }
+        }
+
+        /// <summary>
+        /// Given password cannot be verified
+        /// </summary>
+        internal static string FormatIncorrectPassword()
+        {
+            return GetString("IncorrectPassword");
         }
 
         private static string GetString(string name, params string[] formatterNames)
