@@ -167,5 +167,104 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             IdentityResultAssert.IsSuccess(await roleManager.AddClaimAsync(r, c));
             Assert.NotNull(r.Claims.Single(cl => cl.ClaimValue == c.Value && cl.ClaimType == c.Type));
         }
+
+        private async Task LazyLoadTestSetup(TestDbContext db, TUser user)
+        {
+            var context = CreateContext();
+            var manager = CreateManager(context);
+            var role = CreateRoleManager(context);
+            var admin = CreateRole("Admin");
+            var local = CreateRole("Local");
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
+            IdentityResultAssert.IsSuccess(await manager.AddLoginAsync(user, new UserLoginInfo("provider", user.Id.ToString(), "display")));
+            IdentityResultAssert.IsSuccess(await role.CreateAsync(admin));
+            IdentityResultAssert.IsSuccess(await role.CreateAsync(local));
+            IdentityResultAssert.IsSuccess(await manager.AddToRoleAsync(user, admin.Name));
+            IdentityResultAssert.IsSuccess(await manager.AddToRoleAsync(user, local.Name));
+            Claim[] userClaims =
+            {
+                new Claim("Whatever", "Value"),
+                new Claim("Whatever2", "Value2")
+            };
+            foreach (var c in userClaims)
+            {
+                IdentityResultAssert.IsSuccess(await manager.AddClaimAsync(user, c));
+            }
+        }
+
+        [Fact]
+        public async Task LoadFromDbFindByIdTest()
+        {
+            var db = CreateContext();
+            var user = CreateTestUser();
+            await LazyLoadTestSetup(db, user);
+
+            db = CreateContext();
+            var manager = CreateManager(db);
+
+            var userById = await manager.FindByIdAsync(user.Id.ToString());
+            Assert.Equal(2, (await manager.GetClaimsAsync(userById)).Count);
+            Assert.Equal(1, (await manager.GetLoginsAsync(userById)).Count);
+            Assert.Equal(2, (await manager.GetRolesAsync(userById)).Count);
+
+            //Assert.True(userById.Claims.Count == 2);
+            //Assert.True(userById.Logins.Count == 1);
+            //Assert.True(userById.Roles.Count == 2);
+        }
+
+        [Fact]
+        public async Task LoadFromDbFindByNameTest()
+        {
+            var db = CreateContext();
+            var user = CreateTestUser();
+            await LazyLoadTestSetup(db, user);
+
+            db = CreateContext();
+            var manager = CreateManager(db);
+            var userByName = await manager.FindByNameAsync(user.UserName);
+            Assert.Equal(2, (await manager.GetClaimsAsync(userByName)).Count);
+            Assert.Equal(1, (await manager.GetLoginsAsync(userByName)).Count);
+            Assert.Equal(2, (await manager.GetRolesAsync(userByName)).Count);
+            //Assert.True(userByName.Claims.Count == 2);
+            //Assert.True(userByName.Logins.Count == 1);
+            //Assert.True(userByName.Roles.Count == 2);
+        }
+
+        [Fact]
+        public async Task LoadFromDbFindByLoginTest()
+        {
+            var db = CreateContext();
+            var user = CreateTestUser();
+            await LazyLoadTestSetup(db, user);
+
+            db = CreateContext();
+            var manager = CreateManager(db);
+            var userByLogin = await manager.FindByLoginAsync("provider", user.Id.ToString());
+            Assert.Equal(2, (await manager.GetClaimsAsync(userByLogin)).Count);
+            Assert.Equal(1, (await manager.GetLoginsAsync(userByLogin)).Count);
+            Assert.Equal(2, (await manager.GetRolesAsync(userByLogin)).Count);
+            //Assert.True(userByLogin.Claims.Count == 2);
+            //Assert.True(userByLogin.Logins.Count == 1);
+            //Assert.True(userByLogin.Roles.Count == 2);
+        }
+
+        [Fact]
+        public async Task LoadFromDbFindByEmailTest()
+        {
+            var db = CreateContext();
+            var user = CreateTestUser();
+            user.Email = "fooz@fizzy.pop";
+            await LazyLoadTestSetup(db, user);
+
+            db = CreateContext();
+            var manager = CreateManager(db);
+            var userByEmail = await manager.FindByEmailAsync(user.Email);
+            Assert.Equal(2, (await manager.GetClaimsAsync(userByEmail)).Count);
+            Assert.Equal(1, (await manager.GetLoginsAsync(userByEmail)).Count);
+            Assert.Equal(2, (await manager.GetRolesAsync(userByEmail)).Count);
+            //Assert.True(userByEmail.Claims.Count == 2);
+            //Assert.True(userByEmail.Logins.Count == 1);
+            //Assert.True(userByEmail.Roles.Count == 2);
+        }
     }
 }
