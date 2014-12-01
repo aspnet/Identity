@@ -910,6 +910,60 @@ namespace Microsoft.AspNet.Identity.EntityFramework.InMemory.Test
             return Task.FromResult(user.TwoFactorEnabled);
         }
 
+        /// <summary>
+        ///     Get all users with given claim
+        /// </summary>
+        /// <param name="claim"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public Task<IList<TUser>> GetUsersForClaimAsync(Claim claim, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            ThrowIfDisposed();
+            if (claim == null)
+            {
+                throw new ArgumentNullException("claim");
+            }
+
+            var query = from userclaims in Context.Set<TUserClaim>()
+                        where (userclaims.ClaimValue == claim.Value
+                        && userclaims.ClaimType == claim.Type)
+                        join user in Users on userclaims.UserId equals user.Id
+                        select user;
+
+            return Task.FromResult<IList<TUser>>(query.ToList());
+        }
+
+        /// <summary>
+        ///     Get all users in given role
+        /// </summary>
+        /// <param name="roleName"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public async Task<IList<TUser>> GetUsersInRoleAsync(string roleName, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            ThrowIfDisposed();
+            if (String.IsNullOrEmpty(roleName))
+            {
+                throw new ArgumentNullException("role");
+            }
+
+            var role = await Context.Set<TRole>().Where(x => x.Name.Equals(roleName)).FirstOrDefaultAsync();
+
+            if (role != null)
+            {
+                var query = from userrole in Context.Set<TUserRole>()
+                            where userrole.RoleId.Equals(role.Id)
+                            join user in Users on userrole.UserId equals user.Id
+                            select user;
+
+                return query.ToList();
+            }
+
+            return new List<TUser>();
+        }
+
         private void ThrowIfDisposed()
         {
             if (_disposed)
@@ -925,5 +979,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.InMemory.Test
         {
             _disposed = true;
         }
+
+        
     }
 }

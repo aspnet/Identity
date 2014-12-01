@@ -348,7 +348,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
                 throw new ArgumentNullException("user");
             }
             var userId = user.Id;
-// TODO:            var query = from userRole in UserRoles
+            // TODO:            var query = from userRole in UserRoles
             var query = from userRole in user.Roles
                         join role in Roles on userRole.RoleId equals role.Id
                         select role.Name;
@@ -432,7 +432,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             }
             foreach (var claim in claims)
             {
-               await UserClaims.AddAsync(new IdentityUserClaim<TKey> { UserId = user.Id, ClaimType = claim.Type, ClaimValue = claim.Value });
+                await UserClaims.AddAsync(new IdentityUserClaim<TKey> { UserId = user.Id, ClaimType = claim.Type, ClaimValue = claim.Value });
             }
         }
 
@@ -453,7 +453,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             }
 
             var matchedClaims = await UserClaims.Where(uc => uc.ClaimValue == claim.Value && uc.ClaimType == claim.Type).ToListAsync();
-            foreach(var matchedClaim in matchedClaims)
+            foreach (var matchedClaim in matchedClaims)
             {
                 matchedClaim.ClaimValue = newClaim.Value;
                 matchedClaim.ClaimType = newClaim.Type;
@@ -471,7 +471,8 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             {
                 throw new ArgumentNullException("claims");
             }
-            foreach (var claim in claims) {
+            foreach (var claim in claims)
+            {
                 var matchedClaims = await UserClaims.Where(uc => uc.ClaimValue == claim.Value && uc.ClaimType == claim.Type).ToListAsync();
                 foreach (var c in matchedClaims)
                 {
@@ -912,6 +913,60 @@ namespace Microsoft.AspNet.Identity.EntityFramework
                 throw new ArgumentNullException("user");
             }
             return Task.FromResult(user.TwoFactorEnabled);
+        }
+
+        /// <summary>
+        ///     Get all users with given claim
+        /// </summary>
+        /// <param name="claim"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public Task<IList<TUser>> GetUsersForClaimAsync(Claim claim, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            ThrowIfDisposed();
+            if (claim == null)
+            {
+                throw new ArgumentNullException("claim");
+            }
+
+            var query = from userclaims in UserClaims
+                        where (userclaims.ClaimValue.Equals(claim.Value, StringComparison.OrdinalIgnoreCase)
+                        && userclaims.ClaimType.Equals(claim.Type, StringComparison.OrdinalIgnoreCase))
+                        join user in Users on userclaims.UserId equals user.Id
+                        select user;
+
+            return Task.FromResult<IList<TUser>>(query.ToList());
+        }
+
+        /// <summary>
+        ///     Get all users in given role
+        /// </summary>
+        /// <param name="roleName"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public async Task<IList<TUser>> GetUsersInRoleAsync(string roleName, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            ThrowIfDisposed();
+            if (String.IsNullOrEmpty(roleName))
+            {
+                throw new ArgumentNullException("role");
+            }
+
+            var role = await Roles.Where(x => x.Name.Equals(roleName)).FirstOrDefaultAsync();
+
+            if (role != null)
+            {
+                var query = from userrole in UserRoles
+                            where userrole.RoleId.Equals(role.Id)
+                            join user in Users on userrole.UserId equals user.Id
+                            select user;
+
+                return query.ToList();
+            }
+
+            return new List<TUser>();
         }
     }
 }

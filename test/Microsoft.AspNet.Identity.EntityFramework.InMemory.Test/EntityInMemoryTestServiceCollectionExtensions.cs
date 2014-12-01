@@ -16,13 +16,13 @@ namespace Microsoft.AspNet.Identity
         }
 
         public static IdentityBuilder AddIdentityInMemory<TUser, TRole, TDbContext>(this ServiceCollection services, TDbContext context)
-            where TUser : IdentityUser
-            where TRole : IdentityRole
+            where TUser : IdentityUser, new()
+            where TRole : IdentityRole, new()
             where TDbContext : DbContext
         {
             var builder = services.AddIdentity<TUser, TRole>();
             builder.AddDefaultTokenProviders();
-            services.AddInstance<IUserStore<TUser>>(new InMemoryUserStore<TUser, TDbContext>(context));
+            services.AddInstance<IUserStore<TUser>>(new UserStore<TUser,TRole,TDbContext>(context));
             var store = new RoleStore<TRole, TDbContext>(context);
             services.AddInstance<IRoleStore<TRole>>(store);
             return builder;
