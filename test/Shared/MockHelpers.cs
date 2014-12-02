@@ -35,12 +35,16 @@ namespace Microsoft.AspNet.Identity.Test
         {
             var store = new Mock<IUserStore<TUser>>();
             var options = new OptionsManager<IdentityOptions>(null);
+            var userValidators = new List<IUserValidator<TUser>>();
+            userValidators.Add(new UserValidator<TUser>());
+            var pwdValidators = new List<IPasswordValidator<TUser>>();
+            pwdValidators.Add(new PasswordValidator<TUser>());
             return new Mock<UserManager<TUser>>(
                 store.Object,
                 options,
                 new PasswordHasher<TUser>(new PasswordHasherOptionsAccessor()),
-                new UserValidator<TUser>(),
-                new PasswordValidator<TUser>(),
+                userValidators,
+                pwdValidators,
                 new UpperInvariantUserNameNormalizer(),
                 new List<IUserTokenProvider<TUser>>(),
                 new List<IIdentityMessageProvider>());
@@ -62,7 +66,9 @@ namespace Microsoft.AspNet.Identity.Test
             var options = new OptionsManager<IdentityOptions>(null);
             var validator = new Mock<UserValidator<TUser>>();
             var userManager = new UserManager<TUser>(store, options, new PasswordHasher<TUser>(new PasswordHasherOptionsAccessor()), 
-                validator.Object, new PasswordValidator<TUser>(), new UpperInvariantUserNameNormalizer(), null, null);
+                null, null, new UpperInvariantUserNameNormalizer(), null, null);
+            userManager.UserValidators.Add(validator.Object);
+            userManager.PasswordValidators.Add(new PasswordValidator<TUser>());
             validator.Setup(v => v.ValidateAsync(userManager, It.IsAny<TUser>(), CancellationToken.None))
                 .Returns(Task.FromResult(IdentityResult.Success)).Verifiable();
             return userManager;

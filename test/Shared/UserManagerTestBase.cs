@@ -146,7 +146,8 @@ namespace Microsoft.AspNet.Identity.Test
         {
             var manager = CreateManager();
             var user = CreateTestUser();
-            manager.UserValidator = new AlwaysBadValidator();
+            manager.UserValidators.Clear();
+            manager.UserValidators.Add(new AlwaysBadValidator());
             IdentityResultAssert.IsFailure(await manager.CreateAsync(user), AlwaysBadValidator.ErrorMessage);
         }
 
@@ -156,7 +157,8 @@ namespace Microsoft.AspNet.Identity.Test
             var manager = CreateManager();
             var user = CreateTestUser();
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
-            manager.UserValidator = new AlwaysBadValidator();
+            manager.UserValidators.Clear();
+            manager.UserValidators.Add(new AlwaysBadValidator());
             IdentityResultAssert.IsFailure(await manager.UpdateAsync(user), AlwaysBadValidator.ErrorMessage);
         }
 
@@ -190,7 +192,8 @@ namespace Microsoft.AspNet.Identity.Test
             var manager = CreateManager();
             var user = CreateTestUser();
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
-            manager.PasswordValidator = new AlwaysBadValidator();
+            manager.PasswordValidators.Clear();
+            manager.PasswordValidators.Add(new AlwaysBadValidator());
             IdentityResultAssert.IsFailure(await manager.AddPasswordAsync(user, "password"),
                 AlwaysBadValidator.ErrorMessage);
         }
@@ -201,7 +204,8 @@ namespace Microsoft.AspNet.Identity.Test
             var manager = CreateManager();
             var user = CreateTestUser();
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user, "password"));
-            manager.PasswordValidator = new AlwaysBadValidator();
+            manager.PasswordValidators.Clear();
+            manager.PasswordValidators.Add(new AlwaysBadValidator());
             IdentityResultAssert.IsFailure(await manager.ChangePasswordAsync(user, "password", "new"),
                 AlwaysBadValidator.ErrorMessage);
         }
@@ -539,7 +543,7 @@ namespace Microsoft.AspNet.Identity.Test
             Assert.NotNull(stamp);
             var token = await manager.GeneratePasswordResetTokenAsync(user);
             Assert.NotNull(token);
-            manager.PasswordValidator = new AlwaysBadValidator();
+            manager.PasswordValidators.Add(new AlwaysBadValidator());
             IdentityResultAssert.IsFailure(await manager.ResetPasswordAsync(user, token, newPassword),
                 AlwaysBadValidator.ErrorMessage);
             Assert.True(await manager.CheckPasswordAsync(user, password));
@@ -814,7 +818,7 @@ namespace Microsoft.AspNet.Identity.Test
         {
             public const string ErrorMessage = "I'm Bad.";
 
-            public Task<IdentityResult> ValidateAsync(TUser user, string password, UserManager<TUser> manager, CancellationToken cancellationToken = default(CancellationToken))
+            public Task<IdentityResult> ValidateAsync(UserManager<TUser> manager, TUser user, string password, CancellationToken cancellationToken = default(CancellationToken))
             {
                 return Task.FromResult(IdentityResult.Failed(ErrorMessage));
             }
