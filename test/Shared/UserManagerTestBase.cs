@@ -8,9 +8,9 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Testing;
-using Xunit;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.DependencyInjection.Fallback;
+using Xunit;
 
 namespace Microsoft.AspNet.Identity.Test
 {
@@ -162,6 +162,18 @@ namespace Microsoft.AspNet.Identity.Test
             IdentityResultAssert.IsFailure(await manager.UpdateAsync(user), AlwaysBadValidator.ErrorMessage);
         }
 
+        [Fact]
+        public async Task CanChainUserValidators()
+        {
+            var manager = CreateManager();
+            manager.UserValidators.Clear();
+            manager.UserValidators.Add(new AlwaysBadValidator());
+            manager.UserValidators.Add(new AlwaysBadValidator());
+            var result = await manager.CreateAsync(CreateTestUser());
+            IdentityResultAssert.IsFailure(result, AlwaysBadValidator.ErrorMessage);
+            Assert.Equal(2, result.Errors.Count());
+        }
+
         [Theory]
         [InlineData("")]
         [InlineData(null)]
@@ -196,6 +208,20 @@ namespace Microsoft.AspNet.Identity.Test
             manager.PasswordValidators.Add(new AlwaysBadValidator());
             IdentityResultAssert.IsFailure(await manager.AddPasswordAsync(user, "password"),
                 AlwaysBadValidator.ErrorMessage);
+        }
+
+        [Fact]
+        public async Task CanChainPasswordValidators()
+        {
+            var manager = CreateManager();
+            manager.PasswordValidators.Clear();
+            manager.PasswordValidators.Add(new AlwaysBadValidator());
+            manager.PasswordValidators.Add(new AlwaysBadValidator());
+            var user = CreateTestUser();
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
+            var result = await manager.AddPasswordAsync(user, "pwd");
+            IdentityResultAssert.IsFailure(result, AlwaysBadValidator.ErrorMessage);
+            Assert.Equal(2, result.Errors.Count());
         }
 
         [Fact]
@@ -838,9 +864,22 @@ namespace Microsoft.AspNet.Identity.Test
         public async Task BadValidatorBlocksCreateRole()
         {
             var manager = CreateRoleManager();
-            manager.RoleValidator = new AlwaysBadValidator();
+            manager.RoleValidators.Clear();
+            manager.RoleValidators.Add(new AlwaysBadValidator());
             IdentityResultAssert.IsFailure(await manager.CreateAsync(CreateRole("blocked")),
                 AlwaysBadValidator.ErrorMessage);
+        }
+
+        [Fact]
+        public async Task CanChainRoleValidators()
+        {
+            var manager = CreateRoleManager();
+            manager.RoleValidators.Clear();
+            manager.RoleValidators.Add(new AlwaysBadValidator());
+            manager.RoleValidators.Add(new AlwaysBadValidator());
+            var result = await manager.CreateAsync(CreateRole("blocked"));
+            IdentityResultAssert.IsFailure(result, AlwaysBadValidator.ErrorMessage);
+            Assert.Equal(2, result.Errors.Count());
         }
 
         [Fact]
@@ -850,7 +889,8 @@ namespace Microsoft.AspNet.Identity.Test
             var role = CreateRole("poorguy");
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(role));
             var error = AlwaysBadValidator.ErrorMessage;
-            manager.RoleValidator = new AlwaysBadValidator();
+            manager.RoleValidators.Clear();
+            manager.RoleValidators.Add(new AlwaysBadValidator());
             IdentityResultAssert.IsFailure(await manager.UpdateAsync(role), error);
         }
 

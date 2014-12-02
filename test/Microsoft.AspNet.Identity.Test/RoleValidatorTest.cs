@@ -16,7 +16,7 @@ namespace Microsoft.AspNet.Identity.Test
         {
             // Setup
             var validator = new RoleValidator<TestRole>();
-            var manager = new RoleManager<TestRole>(new NoopRoleStore(), validator);
+            var manager = new RoleManager<TestRole>(new NoopRoleStore(), null);
 
             // Act
             // Assert
@@ -31,7 +31,7 @@ namespace Microsoft.AspNet.Identity.Test
         {
             // Setup
             var validator = new RoleValidator<TestRole>();
-            var manager = new RoleManager<TestRole>(new NoopRoleStore(), validator);
+            var manager = new RoleManager<TestRole>(new NoopRoleStore(), null);
             var user = new TestRole {Name = input};
 
             // Act
