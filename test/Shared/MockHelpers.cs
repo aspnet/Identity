@@ -4,9 +4,6 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNet.Hosting;
-using Microsoft.Framework.DependencyInjection;
-using Microsoft.Framework.DependencyInjection.Fallback;
 using Microsoft.Framework.OptionsModel;
 using Moq;
 
@@ -14,23 +11,6 @@ namespace Microsoft.AspNet.Identity.Test
 {
     public static class MockHelpers
     {
-        //public static UserManager<TUser> CreateManager<TUser>(IUserStore<TUser> store) where TUser : class
-        //{
-        //    var services = new ServiceCollection();
-        //    services.Add(OptionsServices.GetDefaultServices());
-        //    services.Add(HostingServices.GetDefaultServices());
-        //    services.AddDefaultIdentity<TUser, IdentityRole>().AddUserStore(store);
-        //    services.ConfigureIdentity(options =>
-        //    {
-        //        options.Password.RequireDigit = false;
-        //        options.Password.RequireLowercase = false;
-        //        options.Password.RequireNonLetterOrDigit = false;
-        //        options.Password.RequireUppercase = false;
-        //        options.User.UserNameValidationRegex = null;
-        //    });
-        //    return services.BuildServiceProvider().GetService<UserManager<TUser>>();
-        //}
-
         public static Mock<UserManager<TUser>> MockUserManager<TUser>() where TUser : class
         {
             var store = new Mock<IUserStore<TUser>>();
@@ -53,7 +33,9 @@ namespace Microsoft.AspNet.Identity.Test
         public static Mock<RoleManager<TRole>> MockRoleManager<TRole>() where TRole : class
         {
             var store = new Mock<IRoleStore<TRole>>();
-            return new Mock<RoleManager<TRole>>(store.Object, new RoleValidator<TRole>());
+            var roles = new List<IRoleValidator<TRole>>();
+            roles.Add(new RoleValidator<TRole>());
+            return new Mock<RoleManager<TRole>>(store.Object, roles);
         }
 
         public static UserManager<TUser> TestUserManager<TUser>() where TUser : class
