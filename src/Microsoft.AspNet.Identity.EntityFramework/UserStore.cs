@@ -931,8 +931,8 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             }
 
             var query = from userclaims in UserClaims
-                        where (userclaims.ClaimValue.Equals(claim.Value, StringComparison.OrdinalIgnoreCase)
-                        && userclaims.ClaimType.Equals(claim.Type, StringComparison.OrdinalIgnoreCase))
+                        where (userclaims.ClaimValue == claim.Value
+                        && userclaims.ClaimType == claim.Type)
                         join user in Users on userclaims.UserId equals user.Id
                         select user;
 
