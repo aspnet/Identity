@@ -931,9 +931,9 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             }
 
             var query = from userclaims in UserClaims
+                        join user in Users on userclaims.UserId equals user.Id
                         where (userclaims.ClaimValue == claim.Value
                         && userclaims.ClaimType == claim.Type)
-                        join user in Users on userclaims.UserId equals user.Id
                         select user;
 
             return Task.FromResult<IList<TUser>>(query.ToList());
@@ -959,8 +959,8 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             if (role != null)
             {
                 var query = from userrole in UserRoles
-                            where userrole.RoleId.Equals(role.Id)
                             join user in Users on userrole.UserId equals user.Id
+                            where userrole.RoleId.Equals(role.Id)
                             select user;
 
                 return query.ToList();
