@@ -2,15 +2,13 @@
   "dependencies": {
     "Microsoft.AspNet.Hosting": "1.0.0-*",
     "Microsoft.AspNet.Http": "1.0.0-*",
-    "Microsoft.AspNet.Identity": "3.0.0-*",
-    "Microsoft.AspNet.Identity.EntityFramework": "1.0.0-*",
+    "Microsoft.AspNet.Identity": "",
+    "Microsoft.AspNet.Identity.EntityFramework": "",
     "Microsoft.AspNet.PipelineCore": "1.0.0-*",
-    "Microsoft.AspNet.RequestContainer": "1.0.0-*",
     "Microsoft.AspNet.Security.DataProtection": "1.0.0-*",
     "Microsoft.AspNet.Testing": "1.0.0-*",
-    "EntityFramework.InMemory": "7.0.0-*",
-    "EntityFramework.SqlServer": "7.0.0-*",
-    "Microsoft.Framework.OptionsModel" : "1.0.0-*",
+    "EntityFramework.Redis": "7.0.0-*",
+    "Redis-64": "2.8.9",
     "Xunit.KRunner": "1.0.0-*"
   },
   "code": "**\\*.cs;..\\Shared\\*.cs",
@@ -21,6 +19,7 @@
       }
     }
   },
+  "code": "**\\*.cs;..\\Shared\\*.cs",
   "commands": {
     "test": "Xunit.KRunner"
   }
