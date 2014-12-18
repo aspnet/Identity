@@ -225,9 +225,6 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             Assert.Equal(2, (await manager.GetClaimsAsync(userByName)).Count);
             Assert.Equal(1, (await manager.GetLoginsAsync(userByName)).Count);
             Assert.Equal(2, (await manager.GetRolesAsync(userByName)).Count);
-            //Assert.True(userByName.Claims.Count == 2);
-            //Assert.True(userByName.Logins.Count == 1);
-            //Assert.True(userByName.Roles.Count == 2);
         }
 
         [Fact]
@@ -243,9 +240,6 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             Assert.Equal(2, (await manager.GetClaimsAsync(userByLogin)).Count);
             Assert.Equal(1, (await manager.GetLoginsAsync(userByLogin)).Count);
             Assert.Equal(2, (await manager.GetRolesAsync(userByLogin)).Count);
-            //Assert.True(userByLogin.Claims.Count == 2);
-            //Assert.True(userByLogin.Logins.Count == 1);
-            //Assert.True(userByLogin.Roles.Count == 2);
         }
 
         [Fact]
@@ -262,9 +256,6 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             Assert.Equal(2, (await manager.GetClaimsAsync(userByEmail)).Count);
             Assert.Equal(1, (await manager.GetLoginsAsync(userByEmail)).Count);
             Assert.Equal(2, (await manager.GetRolesAsync(userByEmail)).Count);
-            //Assert.True(userByEmail.Claims.Count == 2);
-            //Assert.True(userByEmail.Logins.Count == 1);
-            //Assert.True(userByEmail.Roles.Count == 2);
         }
     }
 }
