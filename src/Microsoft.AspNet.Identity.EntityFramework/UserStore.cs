@@ -72,11 +72,6 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             return AutoSaveChanges ? Context.SaveChangesAsync(cancellationToken) : Task.FromResult(0);
         }
 
-        private Task<TUser> GetUser(Expression<Func<TUser, bool>> filter, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            return Users.FirstOrDefaultAsync(filter, cancellationToken);
-        }
-
         public Task<string> GetUserIdAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -181,7 +176,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
             var id = ConvertIdFromString(userId);
-            return GetUser(u => u.Id.Equals(id), cancellationToken);
+            return Users.FirstOrDefaultAsync(u => u.Id.Equals(id), cancellationToken);
         }
 
         public virtual TKey ConvertIdFromString(string id)
@@ -212,7 +207,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
-            return GetUser(u => u.NormalizedUserName == normalizedUserName, cancellationToken);
+            return Users.FirstOrDefaultAsync(u => u.NormalizedUserName == normalizedUserName, cancellationToken);
         }
 
         public IQueryable<TUser> Users
@@ -533,7 +528,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
                 UserLogins.FirstOrDefaultAsync(l => l.LoginProvider == loginProvider && l.ProviderKey == providerKey);
             if (userLogin != null)
             {
-                return await GetUser(u => u.Id.Equals(userLogin.UserId), cancellationToken);
+                return await Users.FirstOrDefaultAsync(u => u.Id.Equals(userLogin.UserId), cancellationToken);
             }
             return null;
         }
@@ -620,9 +615,9 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
-            return GetUser(u => u.Email == email, cancellationToken);
+            return Users.FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
             // todo: ToUpper blows up with Null Ref
-            //return GetUser(u => u.Email.ToUpper() == email.ToUpper(), cancellationToken);
+            //return Users.FirstOrDefaultAsync(u => u.Email.ToUpper() == email.ToUpper(), cancellationToken);
         }
 
         /// <summary>
