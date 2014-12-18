@@ -72,14 +72,9 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             return AutoSaveChanges ? Context.SaveChangesAsync(cancellationToken) : Task.FromResult(0);
         }
 
-        protected virtual Task<TUser> GetUserAggregate(Expression<Func<TUser, bool>> filter, CancellationToken cancellationToken = default(CancellationToken))
+        private Task<TUser> GetUser(Expression<Func<TUser, bool>> filter, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return Users
-                // TODO: EF support for include not there yet
-                //.Include(u => u.Claims)
-                //.Include(u => u.Logins)
-                //.Include(u => u.Roles)
-                .FirstOrDefaultAsync(filter, cancellationToken);
+            return Users.FirstOrDefaultAsync(filter, cancellationToken);
         }
 
         public Task<string> GetUserIdAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
@@ -186,7 +181,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
             var id = ConvertIdFromString(userId);
-            return GetUserAggregate(u => u.Id.Equals(id), cancellationToken);
+            return GetUser(u => u.Id.Equals(id), cancellationToken);
         }
 
         public virtual TKey ConvertIdFromString(string id)
@@ -217,7 +212,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
-            return GetUserAggregate(u => u.NormalizedUserName == normalizedUserName, cancellationToken);
+            return GetUser(u => u.NormalizedUserName == normalizedUserName, cancellationToken);
         }
 
         public IQueryable<TUser> Users
@@ -298,10 +293,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
                 throw new InvalidOperationException(String.Format(CultureInfo.CurrentCulture, Resources.RoleNotFound, roleName));
             }
             var ur = new IdentityUserRole<TKey> { UserId = user.Id, RoleId = roleEntity.Id };
-            // TODO: rely on fixup?
             await UserRoles.AddAsync(ur);
-            //user.Roles.Add(ur);
-            //roleEntity.Users.Add(ur);
         }
 
         /// <summary>
@@ -330,7 +322,6 @@ namespace Microsoft.AspNet.Identity.EntityFramework
                 if (userRole != null)
                 {
                     UserRoles.Remove(userRole);
-                    //user.Roles.Remove(userRole);
                 }
             }
         }
@@ -501,7 +492,6 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             };
             // TODO: fixup so we don't have to update both
             await UserLogins.AddAsync(l);
-            //user.Logins.Add(l);
         }
 
         public virtual async Task RemoveLoginAsync(TUser user, string loginProvider, string providerKey,
@@ -514,12 +504,10 @@ namespace Microsoft.AspNet.Identity.EntityFramework
                 throw new ArgumentNullException("user");
             }
             var userId = user.Id;
-            // todo: ensure logins loaded
             var entry = await UserLogins.SingleOrDefaultAsync(l => l.UserId.Equals(userId) && l.LoginProvider == loginProvider && l.ProviderKey == providerKey);
             if (entry != null)
             {
                 UserLogins.Remove(entry);
-                //user.Logins.Remove(entry);
             }
         }
 
@@ -531,11 +519,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             {
                 throw new ArgumentNullException("user");
             }
-            // todo: ensure logins loaded
-            //IList<UserLoginInfo> result = user.Logins
-            //    .Select(l => new UserLoginInfo(l.LoginProvider, l.ProviderKey, l.ProviderDisplayName)).ToList();
             var userId = user.Id;
-
             return await UserLogins.Where(l => l.UserId.Equals(userId))
                 .Select(l => new UserLoginInfo(l.LoginProvider, l.ProviderKey, l.ProviderDisplayName)).ToListAsync();
         }
@@ -545,12 +529,11 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
-            // todo: ensure logins loaded
             var userLogin = await
                 UserLogins.FirstOrDefaultAsync(l => l.LoginProvider == loginProvider && l.ProviderKey == providerKey);
             if (userLogin != null)
             {
-                return await GetUserAggregate(u => u.Id.Equals(userLogin.UserId), cancellationToken);
+                return await GetUser(u => u.Id.Equals(userLogin.UserId), cancellationToken);
             }
             return null;
         }
@@ -637,9 +620,9 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
-            return GetUserAggregate(u => u.Email == email, cancellationToken);
+            return GetUser(u => u.Email == email, cancellationToken);
             // todo: ToUpper blows up with Null Ref
-            //return GetUserAggregate(u => u.Email.ToUpper() == email.ToUpper(), cancellationToken);
+            //return GetUser(u => u.Email.ToUpper() == email.ToUpper(), cancellationToken);
         }
 
         /// <summary>
