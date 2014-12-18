@@ -206,10 +206,6 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             Assert.Equal(2, (await manager.GetClaimsAsync(userById)).Count);
             Assert.Equal(1, (await manager.GetLoginsAsync(userById)).Count);
             Assert.Equal(2, (await manager.GetRolesAsync(userById)).Count);
-
-            //Assert.True(userById.Claims.Count == 2);
-            //Assert.True(userById.Logins.Count == 1);
-            //Assert.True(userById.Roles.Count == 2);
         }
 
         [Fact]
