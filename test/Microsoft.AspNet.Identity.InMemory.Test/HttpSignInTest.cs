@@ -53,7 +53,7 @@ namespace Microsoft.AspNet.Identity.InMemory.Test
             var result = await signInManager.PasswordSignInAsync(user.UserName, password, isPersistent, false);
 
             // Assert
-            Assert.Equal(SignInStatus.Success, result);
+            IdentityResultAssert.IsSuccess(result);
             context.VerifyAll();
             response.VerifyAll();
             contextAccessor.VerifyAll();

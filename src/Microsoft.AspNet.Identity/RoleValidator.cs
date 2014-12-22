@@ -33,7 +33,7 @@ namespace Microsoft.AspNet.Identity
             {
                 throw new ArgumentNullException("role");
             }
-            var errors = new List<string>();
+            var errors = new List<IdentityFailure>();
             await ValidateRoleName(manager, role, errors);
             if (errors.Count > 0)
             {
@@ -43,12 +43,12 @@ namespace Microsoft.AspNet.Identity
         }
 
         private static async Task ValidateRoleName(RoleManager<TRole> manager, TRole role,
-            ICollection<string> errors)
+            ICollection<IdentityFailure> errors)
         {
             var roleName = await manager.GetRoleNameAsync(role);
             if (string.IsNullOrWhiteSpace(roleName))
             {
-                errors.Add(String.Format(CultureInfo.CurrentCulture, Resources.PropertyTooShort, "Name"));
+                errors.Add(IdentityFailure.RoleNameTooShort);
             }
             else
             {
@@ -56,7 +56,7 @@ namespace Microsoft.AspNet.Identity
                 if (owner != null && 
                     !string.Equals(await manager.GetRoleIdAsync(owner), await manager.GetRoleIdAsync(role)))
                 {
-                    errors.Add(String.Format(CultureInfo.CurrentCulture, Resources.DuplicateName, roleName));
+                    errors.Add(IdentityFailure.DuplicateRoleName);
                 }
             }
         }

@@ -38,11 +38,13 @@ namespace IdentitySamples
                 options.DefaultAdminPassword = Configuration.Get("DefaultAdminPassword");
             });
 
+<<<<<<< HEAD
             services.AddIdentity<ApplicationUser, IdentityRole>(Configuration)
                     .AddEntityFrameworkStores<ApplicationDbContext>()
                     .AddDefaultTokenProviders()
                     .AddMessageProvider<EmailMessageProvider>()
-                    .AddMessageProvider<SmsMessageProvider>();
+                    .AddMessageProvider<SmsMessageProvider>()
+                    .AddFailureDescriber<ApplicationFailureDescriber>();
 
             services.ConfigureFacebookAuthentication(options =>
             {

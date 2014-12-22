@@ -2,7 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -40,14 +40,13 @@ namespace Microsoft.AspNet.Identity.Test
         [InlineData("abcde")]
         public async Task FailsIfTooShortTests(string input)
         {
-            const string error = "Passwords must be at least 6 characters.";
             var manager = MockHelpers.TestUserManager<IdentityUser>();
             var valid = new PasswordValidator<IdentityUser>();
             manager.Options.Password.RequireUppercase = false;
             manager.Options.Password.RequireNonLetterOrDigit = false;
             manager.Options.Password.RequireLowercase = false;
             manager.Options.Password.RequireDigit = false;
-            IdentityResultAssert.IsFailure(await valid.ValidateAsync(manager, null, input), error);
+            IdentityResultAssert.IsFailure(await valid.ValidateAsync(input, manager), IdentityFailure.PasswordTooShort);
         }
 
         [Theory]
@@ -76,8 +75,7 @@ namespace Microsoft.AspNet.Identity.Test
             manager.Options.Password.RequireLowercase = false;
             manager.Options.Password.RequireDigit = false;
             manager.Options.Password.RequiredLength = 0;
-            IdentityResultAssert.IsFailure(await valid.ValidateAsync(manager, null, input),
-                "Passwords must have at least one non letter and non digit character.");
+            IdentityResultAssert.IsFailure(await valid.ValidateAsync(input, manager), IdentityFailure.PasswordRequiresNonLetterAndDigit);
         }
 
         [Theory]
@@ -105,41 +103,36 @@ namespace Microsoft.AspNet.Identity.Test
         [InlineData("aB1@df", Errors.None)]
         public async Task UberMixedRequiredTests(string input, Errors errorMask)
         {
-            const string alphaError = "Passwords must have at least one non letter and non digit character.";
-            const string upperError = "Passwords must have at least one uppercase ('A'-'Z').";
-            const string lowerError = "Passwords must have at least one lowercase ('a'-'z').";
-            const string digitError = "Passwords must have at least one digit ('0'-'9').";
-            const string lengthError = "Passwords must be at least 6 characters.";
             var manager = MockHelpers.TestUserManager<IdentityUser>();
             var valid = new PasswordValidator<IdentityUser>();
-            var errors = new List<string>();
-            if ((errorMask & Errors.Length) != Errors.None)
-            {
-                errors.Add(lengthError);
-            }
-            if ((errorMask & Errors.Alpha) != Errors.None)
-            {
-                errors.Add(alphaError);
-            }
-            if ((errorMask & Errors.Digit) != Errors.None)
-            {
-                errors.Add(digitError);
-            }
-            if ((errorMask & Errors.Lower) != Errors.None)
-            {
-                errors.Add(lowerError);
-            }
-            if ((errorMask & Errors.Upper) != Errors.None)
-            {
-                errors.Add(upperError);
-            }
-            if (errors.Count == 0)
+            if (errorMask == Errors.None)
             {
                 IdentityResultAssert.IsSuccess(await valid.ValidateAsync(manager, null, input));
             }
             else
             {
-                IdentityResultAssert.IsFailure(await valid.ValidateAsync(manager, null, input), string.Join(" ", errors));
+                var result = await valid.ValidateAsync(input, manager);
+                IdentityResultAssert.IsFailure(result);
+                if ((errorMask & Errors.Length) != Errors.None)
+                {
+                    Assert.True(result.Failures.Contains(IdentityFailure.PasswordTooShort));
+                }
+                if ((errorMask & Errors.Alpha) != Errors.None)
+                {
+                    Assert.True(result.Failures.Contains(IdentityFailure.PasswordRequiresNonLetterAndDigit));
+                }
+                if ((errorMask & Errors.Digit) != Errors.None)
+                {
+                    Assert.True(result.Failures.Contains(IdentityFailure.PasswordRequiresDigit));
+                }
+                if ((errorMask & Errors.Lower) != Errors.None)
+                {
+                    Assert.True(result.Failures.Contains(IdentityFailure.PasswordRequiresLower));
+                }
+                if ((errorMask & Errors.Upper) != Errors.None)
+                {
+                    Assert.True(result.Failures.Contains(IdentityFailure.PasswordRequiresUpper));
+                }
             }
         }
     }

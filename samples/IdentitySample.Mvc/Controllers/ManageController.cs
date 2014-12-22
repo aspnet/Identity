@@ -8,17 +8,16 @@ using Microsoft.AspNet.Mvc;
 namespace IdentitySample
 {
     [Authorize]
-    public class ManageController : Controller
+    public class ManageController(UserManager<ApplicationUser> userManager,
+        SignInManager<ApplicationUser> signInManager,
+        IdentityFailureDescriber failureDescriber)
+        : Controller
     {
-        public ManageController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
-        {
-            UserManager = userManager;
-            SignInManager = signInManager;
-        }
+        public UserManager<ApplicationUser> UserManager { get; } = userManager;
 
-        public UserManager<ApplicationUser> UserManager { get; private set; }
+        public SignInManager<ApplicationUser> SignInManager { get; } = signInManager;
 
-        public SignInManager<ApplicationUser> SignInManager { get; private set; }
+        public IdentityFailureDescriber FailureDescriber { get; } = failureDescriber;
 
         //
         // GET: /Account/Index
@@ -344,9 +343,9 @@ namespace IdentitySample
 
         private void AddErrors(IdentityResult result)
         {
-            foreach (var error in result.Errors)
+            foreach (var failure in result.Failures)
             {
-                ModelState.AddModelError("", error);
+                ModelState.AddModelError("", FailureDescriber.Describe(failure));
             }
         }
 
