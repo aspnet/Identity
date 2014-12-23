@@ -443,38 +443,6 @@ namespace Microsoft.AspNet.Identity
         }
 
         /// <summary>
-        /// Sign in failed.
-        /// </summary>
-        internal static string SignInFailed
-        {
-            get { return GetString("SignInFailed"); }
-        }
-
-        /// <summary>
-        /// Sign in failed.
-        /// </summary>
-        internal static string FormatSignInFailed()
-        {
-            return GetString("SignInFailed");
-        }
-
-        /// <summary>
-        /// SignIn not allowed.
-        /// </summary>
-        internal static string SignInNotAllowed
-        {
-            get { return GetString("SignInNotAllowed"); }
-        }
-
-        /// <summary>
-        /// SignIn not allowed.
-        /// </summary>
-        internal static string FormatSignInNotAllowed()
-        {
-            return GetString("SignInNotAllowed");
-        }
-
-        /// <summary>
         /// Store does not implement IQueryableRoleStore&lt;TRole&gt;.
         /// </summary>
         internal static string StoreNotIQueryableRoleStore
