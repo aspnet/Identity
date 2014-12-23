@@ -3,12 +3,11 @@
 
 namespace Microsoft.AspNet.Identity
 {
-    public enum SignInStatus
+    public enum SignInFailure
     {
-        Success,
+        Failed,
+        RequiresTwoFactor,
         LockedOut,
-        RequiresVerification,
-        NotAllowed,
-        Failure
+        NotAllowed
     }
 }
