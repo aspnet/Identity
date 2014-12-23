@@ -1,16 +1,15 @@
 // Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using Microsoft.Framework.DependencyInjection;
-using Microsoft.Framework.DependencyInjection.Fallback;
-using Microsoft.Framework.OptionsModel;
-using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Framework.DependencyInjection;
+using Microsoft.Framework.DependencyInjection.Fallback;
+using Moq;
 using Xunit;
 
 namespace Microsoft.AspNet.Identity.Test
@@ -1228,5 +1227,57 @@ namespace Microsoft.AspNet.Identity.Test
                 throw new NotImplementedException();
             }
         }
+
+        [Fact]
+        public async Task CanCustomizeUserValidatorErrors()
+        {
+            var services = new ServiceCollection();
+            var store = new Mock<IUserEmailStore<TestUser>>();
+            var describer = new TestErrorDescriber();
+            services.AddInstance<IdentityErrorDescriber>(describer)
+                .AddInstance<IUserStore<TestUser>>(store.Object)
+                .AddIdentity<TestUser, IdentityRole>();
+
+            var manager = services.BuildServiceProvider().GetRequiredService<UserManager<TestUser>>();
+
+            manager.Options.User.RequireUniqueEmail = true;
+            var user = new TestUser() { UserName = "dupeEmail", Email = "dupe@email.com" };
+            var user2 = new TestUser() { UserName = "dupeEmail2", Email = "dupe@email.com" };
+            store.Setup(s => s.FindByEmailAsync(user.Email, CancellationToken.None))
+                .Returns(Task.FromResult(user2))
+                .Verifiable();
+            store.Setup(s => s.GetUserIdAsync(user2, CancellationToken.None))
+                .Returns(Task.FromResult(user2.Id))
+                .Verifiable();
+            store.Setup(s => s.GetUserNameAsync(user, CancellationToken.None))
+                .Returns(Task.FromResult(user.UserName))
+                .Verifiable();
+            store.Setup(s => s.GetEmailAsync(user, CancellationToken.None))
+                .Returns(Task.FromResult(user.Email))
+                .Verifiable();
+
+            Assert.Same(describer, manager.ErrorDescriber);
+            IdentityResultAssert.IsFailure(await manager.CreateAsync(user), describer.FormatDuplicateEmail(user.Email));
+
+            store.VerifyAll();
+        }
+
+        public class TestErrorDescriber : IdentityErrorDescriber
+        {
+            public static string Error = "Error";
+            public static string FormatError = "FormatError {0}";
+
+            public override string FormatDuplicateEmail(object email)
+            {
+                return string.Format(FormatError, email);
+            }
+
+            public override string UserAlreadyHasPassword()
+            {
+                return Error;
+            }
+
+        }
+
     }
 }

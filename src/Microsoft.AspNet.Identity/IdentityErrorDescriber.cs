@@ -7,21 +7,6 @@ namespace Microsoft.AspNet.Identity
     {
         public static IdentityErrorDescriber Default = new IdentityErrorDescriber();
 
-        public virtual string DuplicateUserName()
-        {
-            return Resources.DuplicateUserName;
-        }
-
-        public virtual string DuplicateEmail()
-        {
-            return Resources.DuplicateEmail;
-        }
-
-        public virtual string DuplicateRoleName()
-        {
-            return Resources.DuplicateRoleName;
-        }
-
         public virtual string PasswordMismatch()
         {
             return Resources.PasswordMismatch;
