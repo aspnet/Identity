@@ -15,6 +15,13 @@ namespace Microsoft.AspNet.Identity
     /// <typeparam name="TRole"></typeparam>
     public class RoleValidator<TRole> : IRoleValidator<TRole> where TRole : class
     {
+        public RoleValidator(IdentityErrorDescriber errors = null)
+        {
+            Describer = errors ?? new IdentityErrorDescriber();
+        }
+
+        private IdentityErrorDescriber Describer { get; set; }
+
         /// <summary>
         ///     Validates a role before saving
         /// </summary>
@@ -42,13 +49,13 @@ namespace Microsoft.AspNet.Identity
             return IdentityResult.Success;
         }
 
-        private static async Task ValidateRoleName(RoleManager<TRole> manager, TRole role,
+        private async Task ValidateRoleName(RoleManager<TRole> manager, TRole role,
             ICollection<string> errors)
         {
             var roleName = await manager.GetRoleNameAsync(role);
             if (string.IsNullOrWhiteSpace(roleName))
             {
-                errors.Add(String.Format(CultureInfo.CurrentCulture, Resources.PropertyTooShort, "Name"));
+                errors.Add(Describer.FormatInvalidRoleName(roleName));
             }
             else
             {
@@ -56,7 +63,7 @@ namespace Microsoft.AspNet.Identity
                 if (owner != null && 
                     !string.Equals(await manager.GetRoleIdAsync(owner), await manager.GetRoleIdAsync(role)))
                 {
-                    errors.Add(String.Format(CultureInfo.CurrentCulture, Resources.DuplicateName, roleName));
+                    errors.Add(Describer.FormatDuplicateRoleName(roleName));
                 }
             }
         }

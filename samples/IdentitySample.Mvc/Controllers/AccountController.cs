@@ -6,6 +6,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
+using System;
 
 namespace IdentitySample.Models
 {
@@ -43,17 +44,17 @@ namespace IdentitySample.Models
             ViewBag.ReturnUrl = returnUrl;
             if (ModelState.IsValid)
             {
-                var signInStatus = await SignInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, shouldLockout: false);
-                switch (signInStatus)
+                var result = await SignInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, shouldLockout: false);
+                if (result.Succeeded)
                 {
-                    case SignInStatus.Success:
-                        return RedirectToLocal(returnUrl);
-                    case SignInStatus.LockedOut:
-                        ModelState.AddModelError("", "User is locked out, try again later.");
-                        return View(model);
-                    case SignInStatus.RequiresVerification:
+                    return RedirectToLocal(returnUrl);
+                }
+                switch (result.Failure)
+                {
+                    case SignInFailure.RequiresTwoFactor:
                         return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
-                    case SignInStatus.Failure:
+                    case SignInFailure.LockedOut:
+                        return View("Lockout");
                     default:
                         ModelState.AddModelError("", "Invalid username or password.");
                         return View(model);
@@ -143,15 +144,16 @@ namespace IdentitySample.Models
             // Sign in the user with this external login provider if the user already has a login
             var result = await SignInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey,
                 isPersistent: false);
-            switch (result)
+            if (result.Succeeded)
             {
-                case SignInStatus.Success:
-                    return RedirectToLocal(returnUrl);
-                case SignInStatus.LockedOut:
-                    return View("Lockout");
-                case SignInStatus.RequiresVerification:
+                return RedirectToLocal(returnUrl);
+            }
+            switch (result.Failure)
+            {
+                case SignInFailure.RequiresTwoFactor:
                     return RedirectToAction("SendCode", new { ReturnUrl = returnUrl });
-                case SignInStatus.Failure:
+                case SignInFailure.LockedOut:
+                    return View("Lockout");
                 default:
                     // If the user does not have an account, then prompt the user to create an account
                     ViewBag.ReturnUrl = returnUrl;
@@ -380,11 +382,13 @@ namespace IdentitySample.Models
             }
 
             var result = await SignInManager.TwoFactorSignInAsync(model.Provider, model.Code, model.RememberMe, model.RememberBrowser);
-            switch (result)
+            if (result.Succeeded)
             {
-                case SignInStatus.Success:
-                    return RedirectToLocal(model.ReturnUrl);
-                case SignInStatus.LockedOut:
+                return RedirectToLocal(model.ReturnUrl);
+            }
+            switch (result.Failure)
+            {
+                case SignInFailure.LockedOut:
                     return View("Lockout");
                 default:
                     ModelState.AddModelError("", "Invalid code.");
