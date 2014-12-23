@@ -116,10 +116,5 @@ namespace Microsoft.AspNet.Identity
         {
             return Resources.PasswordRequiresUpper;
         }
-
-        public virtual string SignInFailed()
-        {
-            return Resources.SignInFailed;
-        }
     }
 }

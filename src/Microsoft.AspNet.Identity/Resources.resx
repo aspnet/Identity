@@ -217,21 +217,9 @@
     <value>Passwords must be at least {0} characters.</value>
     <comment>Error message for passwords that are too short</comment>
   </data>
-  <data name="PropertyTooShort" xml:space="preserve">
-    <value>{0} cannot be null or empty.</value>
-    <comment>error for empty or null usernames</comment>
-  </data>
   <data name="RoleNotFound" xml:space="preserve">
     <value>Role {0} does not exist.</value>
     <comment>error when a role does not exist</comment>
-  </data>
-  <data name="SignInFailed" xml:space="preserve">
-    <value>Sign in failed.</value>
-    <comment>error used for sign in failures.</comment>
-  </data>
-  <data name="SignInNotAllowed" xml:space="preserve">
-    <value>SignIn not allowed.</value>
-    <comment>error when sign in has been blocked for this user</comment>
   </data>
   <data name="StoreNotIQueryableRoleStore" xml:space="preserve">
     <value>Store does not implement IQueryableRoleStore&lt;TRole&gt;.</value>
