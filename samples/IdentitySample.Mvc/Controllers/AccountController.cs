@@ -47,15 +47,18 @@ namespace IdentitySample.Models
                 {
                     return RedirectToLocal(returnUrl);
                 }
-                switch (result.Failure)
+                if (result.RequiresTwoFactor)
                 {
-                    case SignInFailure.RequiresTwoFactor:
-                        return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
-                    case SignInFailure.LockedOut:
-                        return View("Lockout");
-                    default:
-                        ModelState.AddModelError("", "Invalid username or password.");
-                        return View(model);
+                    return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
+                }
+                if (result.IsLockedOut)
+                {
+                    return View("Lockout");
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Invalid username or password.");
+                    return View(model);
                 }
             }
 
@@ -146,19 +149,22 @@ namespace IdentitySample.Models
             {
                 return RedirectToLocal(returnUrl);
             }
-            switch (result.Failure)
+            if (result.RequiresTwoFactor)
             {
-                case SignInFailure.RequiresTwoFactor:
-                    return RedirectToAction("SendCode", new { ReturnUrl = returnUrl });
-                case SignInFailure.LockedOut:
-                    return View("Lockout");
-                default:
-                    // If the user does not have an account, then prompt the user to create an account
-                    ViewBag.ReturnUrl = returnUrl;
-                    ViewBag.LoginProvider = info.LoginProvider;
-                    // REVIEW: handle case where email not in claims?
-                    var email = info.ExternalIdentity.FindFirstValue(ClaimTypes.Email);
-                    return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = email });
+                return RedirectToAction("SendCode", new { ReturnUrl = returnUrl });
+            }
+            if (result.IsLockedOut)
+            {
+                return View("Lockout");
+            }
+            else
+            {
+                // If the user does not have an account, then prompt the user to create an account
+                ViewBag.ReturnUrl = returnUrl;
+                ViewBag.LoginProvider = info.LoginProvider;
+                // REVIEW: handle case where email not in claims?
+                var email = info.ExternalIdentity.FindFirstValue(ClaimTypes.Email);
+                return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = email });
             }
         }
 
@@ -384,13 +390,14 @@ namespace IdentitySample.Models
             {
                 return RedirectToLocal(model.ReturnUrl);
             }
-            switch (result.Failure)
+            if (result.IsLockedOut)
             {
-                case SignInFailure.LockedOut:
-                    return View("Lockout");
-                default:
-                    ModelState.AddModelError("", "Invalid code.");
-                    return View(model);
+                return View("Lockout");
+            }
+            else
+            {
+                ModelState.AddModelError("", "Invalid code.");
+                return View(model);
             }
         }
 

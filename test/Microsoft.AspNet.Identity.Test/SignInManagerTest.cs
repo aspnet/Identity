@@ -131,7 +131,7 @@ namespace Microsoft.AspNet.Identity.Test
 
             // Assert
             Assert.False(result.Succeeded);
-            Assert.Equal(SignInFailure.LockedOut, result.Failure);
+            Assert.True(result.IsLockedOut);
             manager.VerifyAll();
         }
             
@@ -251,7 +251,7 @@ namespace Microsoft.AspNet.Identity.Test
 
             // Assert
             Assert.False(result.Succeeded);
-            Assert.Equal(SignInFailure.RequiresTwoFactor, result.Failure);
+            Assert.True(result.RequiresTwoFactor);
             manager.VerifyAll();
             context.VerifyAll();
             response.VerifyAll();
@@ -531,7 +531,6 @@ namespace Microsoft.AspNet.Identity.Test
 
             // Assert
             Assert.False(result.Succeeded);
-            Assert.Equal(SignInFailure.Failed, result.Failure);
             manager.VerifyAll();
             context.VerifyAll();
             contextAccessor.VerifyAll();
@@ -558,7 +557,6 @@ namespace Microsoft.AspNet.Identity.Test
 
             // Assert
             Assert.False(result.Succeeded);
-            Assert.Equal(SignInFailure.Failed, result.Failure);
             manager.VerifyAll();
             context.VerifyAll();
             contextAccessor.VerifyAll();
@@ -595,7 +593,7 @@ namespace Microsoft.AspNet.Identity.Test
 
             // Assert
             Assert.False(result.Succeeded);
-            Assert.Equal(SignInFailure.LockedOut, result.Failure);
+            Assert.True(result.IsLockedOut);
             manager.VerifyAll();
         }
 
@@ -636,10 +634,7 @@ namespace Microsoft.AspNet.Identity.Test
             // Assert
 
             Assert.Equal(confirmed, result.Succeeded);
-            if (!confirmed)
-            {
-                Assert.Equal(SignInFailure.NotAllowed, result.Failure);
-            }
+            Assert.NotEqual(confirmed, result.IsNotAllowed);
             manager.VerifyAll();
             context.VerifyAll();
             response.VerifyAll();
@@ -679,10 +674,7 @@ namespace Microsoft.AspNet.Identity.Test
 
             // Assert
             Assert.Equal(confirmed, result.Succeeded);
-            if (!confirmed)
-            {
-                Assert.Equal(SignInFailure.NotAllowed, result.Failure);
-            }
+            Assert.NotEqual(confirmed, result.IsNotAllowed);
             manager.VerifyAll();
             context.VerifyAll();
             response.VerifyAll();

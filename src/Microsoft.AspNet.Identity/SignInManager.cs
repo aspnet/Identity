@@ -98,11 +98,11 @@ namespace Microsoft.AspNet.Identity
         {
             if (!await CanSignInAsync(user, token))
             {
-                return new SignInResult(SignInFailure.NotAllowed);
+                return SignInResult.NotAllowed;
             }
             if (await IsLockedOut(user, token))
             {
-                return new SignInResult(SignInFailure.LockedOut);
+                return SignInResult.LockedOut;
             }
             return null;
         }
@@ -153,7 +153,7 @@ namespace Microsoft.AspNet.Identity
             }
             if (await IsLockedOut(user, cancellationToken))
             {
-                return new SignInResult(SignInFailure.LockedOut);
+                return SignInResult.LockedOut;
             }
             if (await UserManager.CheckPasswordAsync(user, password, cancellationToken))
             {
@@ -166,10 +166,10 @@ namespace Microsoft.AspNet.Identity
                 await UserManager.AccessFailedAsync(user, cancellationToken);
                 if (await UserManager.IsLockedOutAsync(user, cancellationToken))
                 {
-                    return new SignInResult(SignInFailure.LockedOut);
+                    return SignInResult.LockedOut;
                 }
             }
-            return new SignInResult(SignInFailure.Failed);
+            return SignInResult.Failed;
         }
 
         public virtual async Task<SignInResult> PasswordSignInAsync(string userName, string password,
@@ -178,7 +178,7 @@ namespace Microsoft.AspNet.Identity
             var user = await UserManager.FindByNameAsync(userName, cancellationToken);
             if (user == null)
             {
-                return new SignInResult(SignInFailure.Failed);
+                return SignInResult.Failed;
             }
             return await PasswordSignInAsync(user, password, isPersistent, shouldLockout, cancellationToken);
         }
@@ -213,7 +213,6 @@ namespace Microsoft.AspNet.Identity
                 return false;
             }
             var token = await UserManager.GenerateTwoFactorTokenAsync(user, provider, cancellationToken);
-            // See IdentityConfig.cs to plug in Email/SMS services to actually send the code
             await UserManager.NotifyTwoFactorTokenAsync(user, provider, token, cancellationToken);
             return true;
         }
@@ -248,12 +247,12 @@ namespace Microsoft.AspNet.Identity
             var twoFactorInfo = await RetrieveTwoFactorInfoAsync(cancellationToken);
             if (twoFactorInfo == null || twoFactorInfo.UserId == null)
             {
-                return new SignInResult(SignInFailure.Failed);
+                return SignInResult.Failed;
             }
             var user = await UserManager.FindByIdAsync(twoFactorInfo.UserId, cancellationToken);
             if (user == null)
             {
-                return new SignInResult(SignInFailure.Failed);
+                return SignInResult.Failed;
             }
             var error = await PreSignInCheck(user, cancellationToken);
             if (error != null)
@@ -280,7 +279,7 @@ namespace Microsoft.AspNet.Identity
             }
             // If the token is incorrect, record the failure which also may cause the user to be locked out
             await UserManager.AccessFailedAsync(user, cancellationToken);
-            return new SignInResult(SignInFailure.Failed);
+            return SignInResult.Failed;
         }
 
         /// <summary>
@@ -306,7 +305,7 @@ namespace Microsoft.AspNet.Identity
             var user = await UserManager.FindByLoginAsync(loginProvider, providerKey, cancellationToken);
             if (user == null)
             {
-                return new SignInResult(SignInFailure.Failed);
+                return SignInResult.Failed;
             }
             var error = await PreSignInCheck(user, cancellationToken);
             if (error != null)
@@ -378,7 +377,7 @@ namespace Microsoft.AspNet.Identity
                     // Store the userId for use after two factor check
                     var userId = await UserManager.GetUserIdAsync(user, cancellationToken);
                     Context.Response.SignIn(StoreTwoFactorInfo(userId, loginProvider));
-                    return new SignInResult(SignInFailure.RequiresTwoFactor);
+                    return SignInResult.TwoFactorRequired;
                 }
             }
             // Cleanup external cookie
