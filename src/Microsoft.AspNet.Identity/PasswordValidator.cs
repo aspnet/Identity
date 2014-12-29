@@ -19,7 +19,7 @@ namespace Microsoft.AspNet.Identity
             Describer = errors ?? new IdentityErrorDescriber();
         }
 
-        private IdentityErrorDescriber Describer { get; set; }
+        public IdentityErrorDescriber Describer { get; private set; }
 
         /// <summary>
         ///     Ensures that the password is of the required length and meets the configured requirements

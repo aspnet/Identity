@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 #if ASPNET50
 using System.Net.Mail;
 #endif
@@ -24,7 +23,7 @@ namespace Microsoft.AspNet.Identity
             Describer = errors ?? new IdentityErrorDescriber();
         }
 
-        private IdentityErrorDescriber Describer { get; set; }
+        public IdentityErrorDescriber Describer { get; private set; }
 
         /// <summary>
         ///     Validates a user before saving
