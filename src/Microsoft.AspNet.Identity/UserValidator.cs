@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 #if ASPNET50
 using System.Net.Mail;
 #endif
@@ -19,6 +18,13 @@ namespace Microsoft.AspNet.Identity
     /// <typeparam name="TUser"></typeparam>
     public class UserValidator<TUser> : IUserValidator<TUser> where TUser : class
     {
+        public UserValidator(IdentityErrorDescriber errors = null)
+        {
+            Describer = errors ?? new IdentityErrorDescriber();
+        }
+
+        public IdentityErrorDescriber Describer { get; private set; }
+
         /// <summary>
         ///     Validates a user before saving
         /// </summary>
@@ -43,7 +49,7 @@ namespace Microsoft.AspNet.Identity
             {
                 await ValidateEmail(manager, user, errors);
             }
-            return errors.Count > 0 ? IdentityResult.Failed(errors.ToArray()) : IdentityResult.Success;
+            return errors.Count > 0 ? new IdentityResult(errors) : IdentityResult.Success;
         }
 
         private async Task ValidateUserName(UserManager<TUser> manager, TUser user, ICollection<string> errors)
@@ -51,11 +57,11 @@ namespace Microsoft.AspNet.Identity
             var userName = await manager.GetUserNameAsync(user);
             if (string.IsNullOrWhiteSpace(userName))
             {
-                errors.Add(String.Format(CultureInfo.CurrentCulture, Resources.PropertyTooShort, "UserName"));
+                errors.Add(Describer.FormatUserNameTooShort(userName));
             }
             else if (manager.Options.User.UserNameValidationRegex != null && !Regex.IsMatch(userName, manager.Options.User.UserNameValidationRegex))
             {
-                errors.Add(String.Format(CultureInfo.CurrentCulture, Resources.InvalidUserName, userName));
+                errors.Add(Describer.FormatInvalidUserName(userName));
             }
             else
             {
@@ -63,18 +69,18 @@ namespace Microsoft.AspNet.Identity
                 if (owner != null && 
                     !string.Equals(await manager.GetUserIdAsync(owner), await manager.GetUserIdAsync(user)))
                 {
-                    errors.Add(String.Format(CultureInfo.CurrentCulture, Resources.DuplicateName, userName));
+                    errors.Add(Describer.FormatDuplicateUserName(userName));
                 }
             }
         }
 
         // make sure email is not empty, valid, and unique
-        private static async Task ValidateEmail(UserManager<TUser> manager, TUser user, List<string> errors)
+        private async Task ValidateEmail(UserManager<TUser> manager, TUser user, List<string> errors)
         {
             var email = await manager.GetEmailAsync(user);
             if (string.IsNullOrWhiteSpace(email))
             {
-                errors.Add(String.Format(CultureInfo.CurrentCulture, Resources.PropertyTooShort, "Email"));
+                errors.Add(Describer.FormatInvalidEmail(email));
                 return;
             }
 #if ASPNET50
@@ -84,7 +90,7 @@ namespace Microsoft.AspNet.Identity
             }
             catch (FormatException)
             {
-                errors.Add(String.Format(CultureInfo.CurrentCulture, Resources.InvalidEmail, email));
+                errors.Add(Describer.FormatInvalidEmail(email));
                 return;
             }
 #endif
@@ -92,7 +98,7 @@ namespace Microsoft.AspNet.Identity
             if (owner != null && 
                 !string.Equals(await manager.GetUserIdAsync(owner), await manager.GetUserIdAsync(user)))
             {
-                errors.Add(String.Format(CultureInfo.CurrentCulture, Resources.DuplicateEmail, email));
+                errors.Add(Describer.FormatDuplicateEmail(email));
             }
         }
     }
