@@ -1267,16 +1267,10 @@ namespace Microsoft.AspNet.Identity.Test
             public static string Error = "Error";
             public static string FormatError = "FormatError {0}";
 
-            public override string FormatDuplicateEmail(object email)
+            public override string FormatDuplicateEmail(string email)
             {
                 return string.Format(FormatError, email);
             }
-
-            public override string UserAlreadyHasPassword()
-            {
-                return Error;
-            }
-
         }
 
     }

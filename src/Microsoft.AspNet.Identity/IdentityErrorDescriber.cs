@@ -22,37 +22,37 @@ namespace Microsoft.AspNet.Identity
             return Resources.LoginAlreadyAssociated;
         }
 
-        public virtual string FormatUserNameTooShort(object name)
+        public virtual string FormatUserNameTooShort(string name)
         {
             return Resources.FormatInvalidUserName(name);
         }
 
-        public virtual string FormatInvalidUserName(object name)
+        public virtual string FormatInvalidUserName(string name)
         {
             return Resources.FormatInvalidUserName(name);
         }
 
-        public virtual string FormatInvalidEmail(object email)
+        public virtual string FormatInvalidEmail(string email)
         {
             return Resources.FormatInvalidEmail(email);
         }
 
-        public virtual string FormatDuplicateUserName(object name)
+        public virtual string FormatDuplicateUserName(string name)
         {
             return Resources.FormatDuplicateUserName(name);
         }
 
-        public virtual string FormatDuplicateEmail(object email)
+        public virtual string FormatDuplicateEmail(string email)
         {
             return Resources.FormatDuplicateEmail(email);
         }
 
-        public virtual string FormatInvalidRoleName(object name)
+        public virtual string FormatInvalidRoleName(string name)
         {
             return Resources.FormatInvalidRoleName(name);
         }
 
-        public virtual string FormatDuplicateRoleName(object name)
+        public virtual string FormatDuplicateRoleName(string name)
         {
             return Resources.FormatDuplicateRoleName(name);
         }
@@ -67,17 +67,17 @@ namespace Microsoft.AspNet.Identity
             return Resources.UserLockoutNotEnabled;
         }
 
-        public virtual string FormatUserAlreadyInRole(object role)
+        public virtual string FormatUserAlreadyInRole(string role)
         {
             return Resources.FormatUserAlreadyInRole(role);
         }
 
-        public virtual string FormatUserNotInRole(object role)
+        public virtual string FormatUserNotInRole(string role)
         {
             return Resources.FormatUserNotInRole(role);
         }
 
-        public virtual string FormatPasswordTooShort(object length)
+        public virtual string FormatPasswordTooShort(int length)
         {
             return Resources.FormatPasswordTooShort(length);
         }
