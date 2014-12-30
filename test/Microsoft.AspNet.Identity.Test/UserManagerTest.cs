@@ -201,7 +201,7 @@ namespace Microsoft.AspNet.Identity.Test
             var result = await userManager.AddToRolesAsync(user, roles);
 
             // Assert
-            IdentityResultAssert.IsFailure(result, IdentityErrorDescriber.Default.FormatUserAlreadyInRole("B"));
+            IdentityResultAssert.IsFailure(result, IdentityErrorDescriber.Default.UserAlreadyInRole("B"));
             store.VerifyAll();
         }
 
@@ -263,7 +263,7 @@ namespace Microsoft.AspNet.Identity.Test
             var result = await userManager.RemoveFromRolesAsync(user, roles);
 
             // Assert
-            IdentityResultAssert.IsFailure(result, IdentityErrorDescriber.Default.FormatUserNotInRole("B"));
+            IdentityResultAssert.IsFailure(result, IdentityErrorDescriber.Default.UserNotInRole("B"));
             store.VerifyAll();
         }
 
@@ -702,7 +702,7 @@ namespace Microsoft.AspNet.Identity.Test
 
         private class BadPasswordValidator<TUser> : IPasswordValidator<TUser> where TUser : class
         {
-            public const string ErrorMessage = "I'm Bad.";
+            public static readonly IdentityError ErrorMessage = new IdentityError { Description = "I'm Bad." };
 
             public Task<IdentityResult> ValidateAsync(UserManager<TUser> manager, TUser user, string password, CancellationToken cancellationToken = default(CancellationToken))
             {
@@ -1237,19 +1237,19 @@ namespace Microsoft.AspNet.Identity.Test
                 .Verifiable();
 
             Assert.Same(describer, manager.ErrorDescriber);
-            IdentityResultAssert.IsFailure(await manager.CreateAsync(user), describer.FormatDuplicateEmail(user.Email));
+            IdentityResultAssert.IsFailure(await manager.CreateAsync(user), describer.DuplicateEmail(user.Email));
 
             store.VerifyAll();
         }
 
         public class TestErrorDescriber : IdentityErrorDescriber
         {
-            public static string Error = "Error";
+            public static string Code = "Error";
             public static string FormatError = "FormatError {0}";
 
-            public override string FormatDuplicateEmail(string email)
+            public override IdentityError DuplicateEmail(string email)
             {
-                return string.Format(FormatError, email);
+                return new IdentityError { Code = Code, Description = string.Format(FormatError, email) };
             }
         }
 
