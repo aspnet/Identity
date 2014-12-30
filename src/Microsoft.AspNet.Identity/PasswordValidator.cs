@@ -39,11 +39,11 @@ namespace Microsoft.AspNet.Identity
             {
                 throw new ArgumentNullException("manager");
             }
-            var errors = new List<string>();
+            var errors = new List<IdentityError>();
             var options = manager.Options.Password;
             if (string.IsNullOrWhiteSpace(password) || password.Length < options.RequiredLength)
             {
-                errors.Add(Describer.FormatPasswordTooShort(options.RequiredLength));
+                errors.Add(Describer.PasswordTooShort(options.RequiredLength));
             }
             if (options.RequireNonLetterOrDigit && password.All(IsLetterOrDigit))
             {
@@ -64,7 +64,7 @@ namespace Microsoft.AspNet.Identity
             return
                 Task.FromResult(errors.Count == 0
                     ? IdentityResult.Success
-                    : IdentityResult.Failed(string.Join(" ", errors)));
+                    : IdentityResult.Failed(errors.ToArray()));
         }
 
         /// <summary>
