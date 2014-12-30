@@ -300,7 +300,7 @@ namespace Microsoft.AspNet.Identity
 
         private async Task<IdentityResult> ValidateUserInternal(TUser user, CancellationToken cancellationToken)
         {
-            var errors = new List<string>();
+            var errors = new List<IdentityError>();
             foreach (var v in UserValidators)
             {
                 var result = await v.ValidateAsync(this, user, cancellationToken);
@@ -314,7 +314,7 @@ namespace Microsoft.AspNet.Identity
 
         private async Task<IdentityResult> ValidatePasswordInternal(TUser user, string password, CancellationToken cancellationToken)
         {
-            var errors = new List<string>();
+            var errors = new List<IdentityError>();
             foreach (var v in PasswordValidators)
             {
                 var result = await v.ValidateAsync(this, user, password, cancellationToken);
@@ -1081,7 +1081,7 @@ namespace Microsoft.AspNet.Identity
             var userRoles = await userRoleStore.GetRolesAsync(user, cancellationToken);
             if (userRoles.Contains(role))
             {
-                return IdentityResult.Failed(ErrorDescriber.FormatUserAlreadyInRole(role));
+                return IdentityResult.Failed(ErrorDescriber.UserAlreadyInRole(role));
             }
             await userRoleStore.AddToRoleAsync(user, role, cancellationToken);
             return await UpdateAsync(user, cancellationToken);
@@ -1112,7 +1112,7 @@ namespace Microsoft.AspNet.Identity
             {
                 if (userRoles.Contains(role))
                 {
-                    return IdentityResult.Failed(ErrorDescriber.FormatUserAlreadyInRole(role));
+                    return IdentityResult.Failed(ErrorDescriber.UserAlreadyInRole(role));
                 }
                 await userRoleStore.AddToRoleAsync(user, role, cancellationToken);
             }
@@ -1137,7 +1137,7 @@ namespace Microsoft.AspNet.Identity
             }
             if (!await userRoleStore.IsInRoleAsync(user, role, cancellationToken))
             {
-                return IdentityResult.Failed(ErrorDescriber.FormatUserNotInRole(role));
+                return IdentityResult.Failed(ErrorDescriber.UserNotInRole(role));
             }
             await userRoleStore.RemoveFromRoleAsync(user, role, cancellationToken);
             return await UpdateAsync(user, cancellationToken);
@@ -1167,7 +1167,7 @@ namespace Microsoft.AspNet.Identity
             {
                 if (!await userRoleStore.IsInRoleAsync(user, role, cancellationToken))
                 {
-                    return IdentityResult.Failed(ErrorDescriber.FormatUserNotInRole(role));
+                    return IdentityResult.Failed(ErrorDescriber.UserNotInRole(role));
                 }
                 await userRoleStore.RemoveFromRoleAsync(user, role, cancellationToken);
             }

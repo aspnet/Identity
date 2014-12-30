@@ -182,7 +182,7 @@ namespace Microsoft.AspNet.Identity.Test
             var manager = CreateManager();
             var user = CreateTestUser();
             manager.Options.User.RequireUniqueEmail = true;
-            IdentityResultAssert.IsFailure(await manager.CreateAsync(user), IdentityErrorDescriber.Default.FormatInvalidEmail(email));
+            IdentityResultAssert.IsFailure(await manager.CreateAsync(user), IdentityErrorDescriber.Default.InvalidEmail(email));
         }
 
 #if ASPNET50
@@ -194,7 +194,7 @@ namespace Microsoft.AspNet.Identity.Test
             var manager = CreateManager();
             var user = new TUser() { UserName = "UpdateBlocked", Email = email };
             manager.Options.User.RequireUniqueEmail = true;
-            IdentityResultAssert.IsFailure(await manager.CreateAsync(user), IdentityErrorDescriber.Default.FormatInvalidEmail(email));
+            IdentityResultAssert.IsFailure(await manager.CreateAsync(user), IdentityErrorDescriber.Default.InvalidEmail(email));
         }
 #endif
 
@@ -414,7 +414,7 @@ namespace Microsoft.AspNet.Identity.Test
             var user = CreateTestUser();
             var user2 = new TUser() { UserName = user.UserName };
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
-            IdentityResultAssert.IsFailure(await manager.CreateAsync(user2), IdentityErrorDescriber.Default.FormatDuplicateUserName(user.UserName));
+            IdentityResultAssert.IsFailure(await manager.CreateAsync(user2), IdentityErrorDescriber.Default.DuplicateUserName(user.UserName));
         }
 
         [Fact]
@@ -440,7 +440,7 @@ namespace Microsoft.AspNet.Identity.Test
             user.Email = email;
             user2.Email = email;
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
-            IdentityResultAssert.IsFailure(await manager.CreateAsync(user2), IdentityErrorDescriber.Default.FormatDuplicateEmail(user.Email));
+            IdentityResultAssert.IsFailure(await manager.CreateAsync(user2), IdentityErrorDescriber.Default.DuplicateEmail(user.Email));
         }
 
         [Fact]
@@ -842,7 +842,7 @@ namespace Microsoft.AspNet.Identity.Test
         private class AlwaysBadValidator : IUserValidator<TUser>, IRoleValidator<TRole>,
             IPasswordValidator<TUser>
         {
-            public const string ErrorMessage = "I'm Bad.";
+            public static readonly IdentityError ErrorMessage = new IdentityError { Description = "I'm Bad." };
 
             public Task<IdentityResult> ValidateAsync(UserManager<TUser> manager, TUser user, string password, CancellationToken cancellationToken = default(CancellationToken))
             {
@@ -1142,7 +1142,7 @@ namespace Microsoft.AspNet.Identity.Test
             IdentityResultAssert.IsSuccess(await userMgr.CreateAsync(user));
             IdentityResultAssert.IsSuccess(await roleMgr.CreateAsync(role));
             var result = await userMgr.RemoveFromRoleAsync(user, role.Name);
-            IdentityResultAssert.IsFailure(result, IdentityErrorDescriber.Default.FormatUserNotInRole(role.Name));
+            IdentityResultAssert.IsFailure(result, IdentityErrorDescriber.Default.UserNotInRole(role.Name));
         }
 
         [Fact]
@@ -1157,7 +1157,7 @@ namespace Microsoft.AspNet.Identity.Test
             IdentityResultAssert.IsSuccess(await roleMgr.CreateAsync(role));
             IdentityResultAssert.IsSuccess(await userMgr.AddToRoleAsync(user, role.Name));
             Assert.True(await userMgr.IsInRoleAsync(user, role.Name));
-            IdentityResultAssert.IsFailure(await userMgr.AddToRoleAsync(user, role.Name), IdentityErrorDescriber.Default.FormatUserAlreadyInRole(role.Name));
+            IdentityResultAssert.IsFailure(await userMgr.AddToRoleAsync(user, role.Name), IdentityErrorDescriber.Default.UserAlreadyInRole(role.Name));
         }
 
         [Fact]

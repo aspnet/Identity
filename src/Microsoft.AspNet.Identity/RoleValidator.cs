@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -40,7 +39,7 @@ namespace Microsoft.AspNet.Identity
             {
                 throw new ArgumentNullException("role");
             }
-            var errors = new List<string>();
+            var errors = new List<IdentityError>();
             await ValidateRoleName(manager, role, errors);
             if (errors.Count > 0)
             {
@@ -50,12 +49,12 @@ namespace Microsoft.AspNet.Identity
         }
 
         private async Task ValidateRoleName(RoleManager<TRole> manager, TRole role,
-            ICollection<string> errors)
+            ICollection<IdentityError> errors)
         {
             var roleName = await manager.GetRoleNameAsync(role);
             if (string.IsNullOrWhiteSpace(roleName))
             {
-                errors.Add(Describer.FormatInvalidRoleName(roleName));
+                errors.Add(Describer.InvalidRoleName(roleName));
             }
             else
             {
@@ -63,7 +62,7 @@ namespace Microsoft.AspNet.Identity
                 if (owner != null && 
                     !string.Equals(await manager.GetRoleIdAsync(owner), await manager.GetRoleIdAsync(role)))
                 {
-                    errors.Add(Describer.FormatDuplicateRoleName(roleName));
+                    errors.Add(Describer.DuplicateRoleName(roleName));
                 }
             }
         }

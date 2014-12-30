@@ -110,7 +110,7 @@ namespace Microsoft.AspNet.Identity
 
         private async Task<IdentityResult> ValidateRoleInternal(TRole role, CancellationToken cancellationToken)
         {
-            var errors = new List<string>();
+            var errors = new List<IdentityError>();
             foreach (var v in RoleValidators)
             {
                 var result = await v.ValidateAsync(this, role, cancellationToken);

@@ -7,99 +7,175 @@ namespace Microsoft.AspNet.Identity
     {
         public static IdentityErrorDescriber Default = new IdentityErrorDescriber();
 
-        public virtual string PasswordMismatch()
+        public virtual IdentityError DefaultError()
         {
-            return Resources.PasswordMismatch;
+            return new IdentityError
+            {
+                Code = nameof(DefaultError),
+                Description = Resources.DefaultError
+            };
         }
 
-        public virtual string InvalidToken()
+        public virtual IdentityError PasswordMismatch()
         {
-            return Resources.InvalidToken;
+            return new IdentityError
+            {
+                Code = nameof(PasswordMismatch),
+                Description = Resources.PasswordMismatch
+            };
         }
 
-        public virtual string LoginAlreadyAssociated()
+        public virtual IdentityError InvalidToken()
         {
-            return Resources.LoginAlreadyAssociated;
+            return new IdentityError
+            {
+                Code = nameof(InvalidToken),
+                Description = Resources.InvalidToken
+            };
         }
 
-        public virtual string FormatUserNameTooShort(string name)
+        public virtual IdentityError LoginAlreadyAssociated()
         {
-            return Resources.FormatInvalidUserName(name);
+            return new IdentityError
+            {
+                Code = nameof(LoginAlreadyAssociated),
+                Description = Resources.LoginAlreadyAssociated
+            };
         }
 
-        public virtual string FormatInvalidUserName(string name)
+        public virtual IdentityError InvalidUserName(string name)
         {
-            return Resources.FormatInvalidUserName(name);
+            return new IdentityError
+            {
+                Code = nameof(InvalidUserName),
+                Description = Resources.FormatInvalidUserName(name)
+            };
         }
 
-        public virtual string FormatInvalidEmail(string email)
+        public virtual IdentityError InvalidEmail(string email)
         {
-            return Resources.FormatInvalidEmail(email);
+            return new IdentityError
+            {
+                Code = nameof(InvalidEmail),
+                Description = Resources.FormatInvalidEmail(email)
+            };
         }
 
-        public virtual string FormatDuplicateUserName(string name)
+        public virtual IdentityError DuplicateUserName(string name)
         {
-            return Resources.FormatDuplicateUserName(name);
+            return new IdentityError
+            {
+                Code = nameof(DuplicateUserName),
+                Description = Resources.FormatDuplicateUserName(name)
+            };
         }
 
-        public virtual string FormatDuplicateEmail(string email)
+        public virtual IdentityError DuplicateEmail(string email)
         {
-            return Resources.FormatDuplicateEmail(email);
+            return new IdentityError
+            {
+                Code = nameof(DuplicateEmail),
+                Description = Resources.FormatDuplicateEmail(email)
+            };
         }
 
-        public virtual string FormatInvalidRoleName(string name)
+        public virtual IdentityError InvalidRoleName(string name)
         {
-            return Resources.FormatInvalidRoleName(name);
+            return new IdentityError
+            {
+                Code = nameof(InvalidRoleName),
+                Description = Resources.FormatInvalidRoleName(name)
+            };
         }
 
-        public virtual string FormatDuplicateRoleName(string name)
+        public virtual IdentityError DuplicateRoleName(string name)
         {
-            return Resources.FormatDuplicateRoleName(name);
+            return new IdentityError
+            {
+                Code = nameof(DuplicateRoleName),
+                Description = Resources.FormatDuplicateRoleName(name)
+            };
         }
 
-        public virtual string UserAlreadyHasPassword()
+        public virtual IdentityError UserAlreadyHasPassword()
         {
-            return Resources.UserAlreadyHasPassword;
+            return new IdentityError
+            {
+                Code = nameof(UserAlreadyHasPassword),
+                Description = Resources.UserAlreadyHasPassword
+            };
         }
 
-        public virtual string UserLockoutNotEnabled()
+        public virtual IdentityError UserLockoutNotEnabled()
         {
-            return Resources.UserLockoutNotEnabled;
+            return new IdentityError
+            {
+                Code = nameof(UserLockoutNotEnabled),
+                Description = Resources.UserLockoutNotEnabled
+            };
         }
 
-        public virtual string FormatUserAlreadyInRole(string role)
+        public virtual IdentityError UserAlreadyInRole(string role)
         {
-            return Resources.FormatUserAlreadyInRole(role);
+            return new IdentityError
+            {
+                Code = nameof(UserAlreadyInRole),
+                Description = Resources.FormatUserAlreadyInRole(role)
+            };
         }
 
-        public virtual string FormatUserNotInRole(string role)
+        public virtual IdentityError UserNotInRole(string role)
         {
-            return Resources.FormatUserNotInRole(role);
+            return new IdentityError
+            {
+                Code = nameof(UserNotInRole),
+                Description = Resources.FormatUserNotInRole(role)
+            };
         }
 
-        public virtual string FormatPasswordTooShort(int length)
+        public virtual IdentityError PasswordTooShort(int length)
         {
-            return Resources.FormatPasswordTooShort(length);
+            return new IdentityError
+            {
+                Code = nameof(PasswordTooShort),
+                Description = Resources.FormatPasswordTooShort(length)
+            };
         }
 
-        public virtual string PasswordRequiresNonLetterAndDigit()
+        public virtual IdentityError PasswordRequiresNonLetterAndDigit()
         {
-            return Resources.PasswordRequiresNonLetterAndDigit;
+            return new IdentityError
+            {
+                Code = nameof(PasswordRequiresNonLetterAndDigit),
+                Description = Resources.PasswordRequiresNonLetterAndDigit
+            };
         }
 
-        public virtual string PasswordRequiresDigit()
+        public virtual IdentityError PasswordRequiresDigit()
         {
-            return Resources.PasswordRequiresDigit;
+            return new IdentityError
+            {
+                Code = nameof(PasswordRequiresDigit),
+                Description = Resources.PasswordRequiresDigit
+            };
         }
 
-        public virtual string PasswordRequiresLower()
+        public virtual IdentityError PasswordRequiresLower()
         {
-            return Resources.PasswordRequiresLower;
+            return new IdentityError
+            {
+                Code = nameof(PasswordRequiresLower),
+                Description = Resources.PasswordRequiresLower
+            };
         }
 
-        public virtual string PasswordRequiresUpper()
+        public virtual IdentityError PasswordRequiresUpper()
         {
-            return Resources.PasswordRequiresUpper;
+            return new IdentityError
+            {
+                Code = nameof(PasswordRequiresUpper),
+                Description = Resources.PasswordRequiresUpper
+            };
         }
     }
 }
