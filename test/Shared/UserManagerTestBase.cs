@@ -385,6 +385,7 @@ namespace Microsoft.AspNet.Identity.Test
             var user = CreateTestUser();
             var user2 = CreateTestUser();
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user2));
             Claim[] claims = { new Claim("c", "v"), new Claim("c2", "v2"), new Claim("c2", "v3") };
             foreach (Claim c in claims)
             {
@@ -393,22 +394,16 @@ namespace Microsoft.AspNet.Identity.Test
             }
             var userClaims = await manager.GetClaimsAsync(user);
             Assert.Equal(3, userClaims.Count);
-            var userClaims2 = await manager.GetClaimsAsync(user2);
-            Assert.Equal(3, userClaims2.Count);
             IdentityResultAssert.IsSuccess(await manager.RemoveClaimAsync(user, claims[0]));
             userClaims = await manager.GetClaimsAsync(user);
             Assert.Equal(2, userClaims.Count);
-            userClaims2 = await manager.GetClaimsAsync(user2);
-            Assert.Equal(3, userClaims2.Count);
             IdentityResultAssert.IsSuccess(await manager.RemoveClaimAsync(user, claims[1]));
             userClaims = await manager.GetClaimsAsync(user);
             Assert.Equal(1, userClaims.Count);
-            userClaims2 = await manager.GetClaimsAsync(user2);
-            Assert.Equal(3, userClaims2.Count);
             IdentityResultAssert.IsSuccess(await manager.RemoveClaimAsync(user, claims[2]));
             userClaims = await manager.GetClaimsAsync(user);
             Assert.Equal(0, userClaims.Count);
-            userClaims2 = await manager.GetClaimsAsync(user2);
+            var userClaims2 = await manager.GetClaimsAsync(user2);
             Assert.Equal(3, userClaims2.Count);
         }
 
