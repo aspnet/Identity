@@ -455,7 +455,7 @@ namespace Microsoft.AspNet.Identity
             {
                 throw new ArgumentNullException("password");
             }
-            var result = await UpdatePasswordInternal(passwordStore, user, password, cancellationToken);
+            var result = await UpdatePasswordHash(passwordStore, user, password, cancellationToken);
             if (!result.Succeeded)
             {
                 return result;
@@ -557,7 +557,12 @@ namespace Microsoft.AspNet.Identity
             {
                 return false;
             }
-            return await VerifyPasswordAsync(passwordStore, user, password, cancellationToken);
+            var result = await VerifyPasswordAsync(passwordStore, user, password, cancellationToken);
+            if (result == PasswordVerificationResult.SuccessRehashNeeded) {
+                await UpdatePasswordHash(passwordStore, user, password, cancellationToken, validatePassword: false);
+                await UpdateAsync(user, cancellationToken);
+            }
+            return result != PasswordVerificationResult.Failed; 
         }
 
         /// <summary>
@@ -599,7 +604,7 @@ namespace Microsoft.AspNet.Identity
             {
                 return IdentityResult.Failed(ErrorDescriber.UserAlreadyHasPassword());
             }
-            var result = await UpdatePasswordInternal(passwordStore, user, password, cancellationToken);
+            var result = await UpdatePasswordHash(passwordStore, user, password, cancellationToken);
             if (!result.Succeeded)
             {
                 return result;
@@ -624,9 +629,9 @@ namespace Microsoft.AspNet.Identity
             {
                 throw new ArgumentNullException("user");
             }
-            if (await VerifyPasswordAsync(passwordStore, user, currentPassword, cancellationToken))
+            if (await VerifyPasswordAsync(passwordStore, user, currentPassword, cancellationToken) != PasswordVerificationResult.Failed)
             {
-                var result = await UpdatePasswordInternal(passwordStore, user, newPassword, cancellationToken);
+                var result = await UpdatePasswordHash(passwordStore, user, newPassword, cancellationToken);
                 if (!result.Succeeded)
                 {
                     return result;
@@ -651,21 +656,24 @@ namespace Microsoft.AspNet.Identity
             {
                 throw new ArgumentNullException("user");
             }
-            await passwordStore.SetPasswordHashAsync(user, null, cancellationToken);
-            await UpdateSecurityStampInternal(user, cancellationToken);
+            await UpdatePasswordHash(passwordStore, user, null, cancellationToken, validatePassword: false);
             return await UpdateAsync(user, cancellationToken);
         }
 
-        internal async Task<IdentityResult> UpdatePasswordInternal(IUserPasswordStore<TUser> passwordStore,
-            TUser user, string newPassword, CancellationToken cancellationToken)
+        internal async Task<IdentityResult> UpdatePasswordHash(IUserPasswordStore<TUser> passwordStore,
+            TUser user, string newPassword, CancellationToken cancellationToken, bool validatePassword = true)
         {
-            var validate = await ValidatePasswordInternal(user, newPassword, cancellationToken);
-            if (!validate.Succeeded)
+            if (validatePassword) 
             {
-                return validate;
+                var validate = await ValidatePasswordInternal(user, newPassword, cancellationToken);
+                if (!validate.Succeeded)
+                {
+                    return validate;
+                }
             }
+            var hash = newPassword != null ? PasswordHasher.HashPassword(user, newPassword) : null;
             await
-                passwordStore.SetPasswordHashAsync(user, PasswordHasher.HashPassword(user, newPassword), cancellationToken);
+                passwordStore.SetPasswordHashAsync(user, hash, cancellationToken);
             await UpdateSecurityStampInternal(user, cancellationToken);
             return IdentityResult.Success;
         }
@@ -678,11 +686,11 @@ namespace Microsoft.AspNet.Identity
         /// <param name="password"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        protected virtual async Task<bool> VerifyPasswordAsync(IUserPasswordStore<TUser> store, TUser user,
+        protected virtual async Task<PasswordVerificationResult> VerifyPasswordAsync(IUserPasswordStore<TUser> store, TUser user,
             string password, CancellationToken cancellationToken = default(CancellationToken))
         {
             var hash = await store.GetPasswordHashAsync(user, cancellationToken);
-            return PasswordHasher.VerifyHashedPassword(user, hash, password) != PasswordVerificationResult.Failed;
+            return PasswordHasher.VerifyHashedPassword(user, hash, password);
         }
 
         // IUserSecurityStampStore methods
@@ -768,7 +776,7 @@ namespace Microsoft.AspNet.Identity
                 return IdentityResult.Failed(ErrorDescriber.InvalidToken());
             }
             var passwordStore = GetPasswordStore();
-            var result = await UpdatePasswordInternal(passwordStore, user, newPassword, cancellationToken);
+            var result = await UpdatePasswordHash(passwordStore, user, newPassword, cancellationToken);
             if (!result.Succeeded)
             {
                 return result;
