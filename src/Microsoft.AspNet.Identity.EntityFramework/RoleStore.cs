@@ -59,7 +59,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             }
         }
 
-        public async virtual Task CreateAsync(TRole role, CancellationToken cancellationToken = default(CancellationToken))
+        public async virtual Task<IdentityResult> CreateAsync(TRole role, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -69,9 +69,10 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             }
             await Context.AddAsync(role, cancellationToken);
             await SaveChanges(cancellationToken);
+            return IdentityResult.Success;
         }
 
-        public async virtual Task UpdateAsync(TRole role, CancellationToken cancellationToken = default(CancellationToken))
+        public async virtual Task<IdentityResult> UpdateAsync(TRole role, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -81,9 +82,10 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             }
             Context.Update(role);
             await SaveChanges(cancellationToken);
+            return IdentityResult.Success;
         }
 
-        public async virtual Task DeleteAsync(TRole role, CancellationToken cancellationToken = default(CancellationToken))
+        public async virtual Task<IdentityResult> DeleteAsync(TRole role, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -93,6 +95,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             }
             Context.Remove(role);
             await SaveChanges(cancellationToken);
+            return IdentityResult.Success;
         }
 
         public Task<string> GetRoleIdAsync(TRole role, CancellationToken cancellationToken = default(CancellationToken))

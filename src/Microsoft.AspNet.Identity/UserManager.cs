@@ -347,8 +347,7 @@ namespace Microsoft.AspNet.Identity
                 await GetUserLockoutStore().SetLockoutEnabledAsync(user, true, cancellationToken);
             }
             await UpdateNormalizedUserNameAsync(user, cancellationToken);
-            await Store.CreateAsync(user, cancellationToken);
-            return IdentityResult.Success;
+            return await Store.CreateAsync(user, cancellationToken);
         }
 
         /// <summary>
@@ -371,8 +370,7 @@ namespace Microsoft.AspNet.Identity
                 return result;
             }
             await UpdateNormalizedUserNameAsync(user, cancellationToken);
-            await Store.UpdateAsync(user, cancellationToken);
-            return IdentityResult.Success;
+            return await Store.UpdateAsync(user, cancellationToken);
         }
 
         /// <summary>
@@ -389,8 +387,7 @@ namespace Microsoft.AspNet.Identity
             {
                 throw new ArgumentNullException("user");
             }
-            await Store.DeleteAsync(user, cancellationToken);
-            return IdentityResult.Success;
+            return await Store.DeleteAsync(user, cancellationToken);
         }
 
         /// <summary>
