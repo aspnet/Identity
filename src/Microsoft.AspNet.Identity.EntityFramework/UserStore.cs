@@ -129,7 +129,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             return Task.FromResult(0);
         }
 
-        public async virtual Task CreateAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public async virtual Task<IdentityResult> CreateAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -139,9 +139,10 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             }
             await Context.AddAsync(user, cancellationToken);
             await SaveChanges(cancellationToken);
+            return IdentityResult.Success;
         }
 
-        public async virtual Task UpdateAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public async virtual Task<IdentityResult> UpdateAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -151,9 +152,10 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             }
             Context.Update(user);
             await SaveChanges(cancellationToken);
+            return IdentityResult.Success;
         }
 
-        public async virtual Task DeleteAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public async virtual Task<IdentityResult> DeleteAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -163,6 +165,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             }
             Context.Remove(user);
             await SaveChanges(cancellationToken);
+            return IdentityResult.Success;
         }
 
         /// <summary>
