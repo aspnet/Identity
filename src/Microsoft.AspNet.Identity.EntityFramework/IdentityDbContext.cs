@@ -30,6 +30,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
                 {
                     b.Key(u => u.Id);
                     b.ForRelational().Table("AspNetUsers");
+                    b.Property(u => u.ConcurrencyStamp).ConcurrencyToken();
                 });
 
             builder.Entity<TRole>(b =>
