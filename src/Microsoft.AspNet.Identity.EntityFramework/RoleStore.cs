@@ -9,6 +9,7 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Data.Entity;
+using Microsoft.Data.Entity.Update;
 
 namespace Microsoft.AspNet.Identity.EntityFramework
 {
@@ -86,8 +87,17 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             {
                 throw new ArgumentNullException("role");
             }
+            Context.Attach(role);
+            role.ConcurrencyStamp = Guid.NewGuid().ToString();
             Context.Update(role);
-            await SaveChanges(cancellationToken);
+            try
+            {
+                await SaveChanges(cancellationToken);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return IdentityResult.Failed(ErrorDescriber.ConcurrencyFailure());
+            }
             return IdentityResult.Success;
         }
 
@@ -100,7 +110,14 @@ namespace Microsoft.AspNet.Identity.EntityFramework
                 throw new ArgumentNullException("role");
             }
             Context.Remove(role);
-            await SaveChanges(cancellationToken);
+            try
+            {
+                await SaveChanges(cancellationToken);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return IdentityResult.Failed(ErrorDescriber.ConcurrencyFailure());
+            }
             return IdentityResult.Success;
         }
 

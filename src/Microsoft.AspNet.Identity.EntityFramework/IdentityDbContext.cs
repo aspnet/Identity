@@ -37,6 +37,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
                 {
                     b.Key(r => r.Id);
                     b.ForRelational().Table("AspNetRoles");
+                    b.Property(r => r.ConcurrencyStamp).ConcurrencyToken();
                 });
 
             builder.Entity<IdentityUserClaim<TKey>>(b =>
