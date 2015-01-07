@@ -5,23 +5,23 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Data.Entity;
+using Microsoft.Data.Entity.Update;
 
 namespace Microsoft.AspNet.Identity.EntityFramework
 {
     public class UserStore : UserStore<IdentityUser>
     {
-        public UserStore(DbContext context) : base(context) { }
+        public UserStore(DbContext context, IdentityErrorDescriber describer = null) : base(context, describer) { }
     }
 
     public class UserStore<TUser> : UserStore<TUser, IdentityRole, DbContext>
         where TUser : IdentityUser, new()
     {
-        public UserStore(DbContext context) : base(context) { }
+        public UserStore(DbContext context, IdentityErrorDescriber describer = null) : base(context, describer) { }
     }
 
     public class UserStore<TUser, TRole, TContext> : UserStore<TUser, TRole, TContext, string>
@@ -29,7 +29,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         where TRole : IdentityRole, new()
         where TContext : DbContext
     {
-        public UserStore(TContext context) : base(context) { }
+        public UserStore(TContext context, IdentityErrorDescriber describer = null) : base(context, describer) { }
     }
 
     public class UserStore<TUser, TRole, TContext, TKey> :
@@ -49,18 +49,24 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         where TKey : IEquatable<TKey>
     {
 
-        public UserStore(TContext context)
+        public UserStore(TContext context, IdentityErrorDescriber describer = null)
         {
             if (context == null)
             {
                 throw new ArgumentNullException("context");
             }
             Context = context;
+            ErrorDescriber = describer ?? new IdentityErrorDescriber();
         }
 
         private bool _disposed;
 
         public TContext Context { get; private set; }
+
+        /// <summary>
+        ///     Used to generate public API error messages
+        /// </summary>
+        public IdentityErrorDescriber ErrorDescriber { get; set; }
 
         /// <summary>
         ///     If true will call SaveChanges after CreateAsync/UpdateAsync/DeleteAsync
@@ -150,8 +156,18 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             {
                 throw new ArgumentNullException("user");
             }
+
+            Context.Attach(user);
+            user.ConcurrencyStamp = Guid.NewGuid().ToString();
             Context.Update(user);
-            await SaveChanges(cancellationToken);
+            try
+            {
+                await SaveChanges(cancellationToken);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return IdentityResult.Failed(ErrorDescriber.ConcurrencyFailure());
+            }
             return IdentityResult.Success;
         }
 
@@ -163,8 +179,16 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             {
                 throw new ArgumentNullException("user");
             }
+
             Context.Remove(user);
-            await SaveChanges(cancellationToken);
+            try
+            {
+                await SaveChanges(cancellationToken);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return IdentityResult.Failed(ErrorDescriber.ConcurrencyFailure());
+            }
             return IdentityResult.Success;
         }
 
