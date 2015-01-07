@@ -15,14 +15,14 @@ namespace Microsoft.AspNet.Identity.EntityFramework
     public class RoleStore<TRole> : RoleStore<TRole, DbContext, string>
         where TRole : IdentityRole
     {
-        public RoleStore(DbContext context) : base(context) { }
+        public RoleStore(DbContext context, IdentityErrorDescriber describer = null) : base(context, describer) { }
     }
 
     public class RoleStore<TRole, TContext> : RoleStore<TRole, TContext, string>
         where TRole : IdentityRole
         where TContext : DbContext
     {
-        public RoleStore(TContext context) : base(context) { }
+        public RoleStore(TContext context, IdentityErrorDescriber describer = null) : base(context, describer) { }
     }
 
     public class RoleStore<TRole, TContext, TKey> :
@@ -32,19 +32,25 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         where TKey : IEquatable<TKey>
         where TContext : DbContext
     {
-        public RoleStore(TContext context)
+        public RoleStore(TContext context, IdentityErrorDescriber describer = null)
         {
             if (context == null)
             {
                 throw new ArgumentNullException("context");
             }
             Context = context;
+            ErrorDescriber = describer ?? new IdentityErrorDescriber();
         }
 
         private bool _disposed;
 
 
         public TContext Context { get; private set; }
+
+        /// <summary>
+        ///     Used to generate public API error messages
+        /// </summary>
+        public IdentityErrorDescriber ErrorDescriber { get; set; }
 
         /// <summary>
         ///     If true will call SaveChanges after CreateAsync/UpdateAsync/DeleteAsync

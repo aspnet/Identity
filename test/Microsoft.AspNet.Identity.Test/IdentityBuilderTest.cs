@@ -133,6 +133,11 @@ namespace Microsoft.AspNet.Identity.Test
                 throw new NotImplementedException();
             }
 
+            public Task<IdentityResult> DeleteAsync(IdentityUser user, string concurrencyStamp, CancellationToken cancellationToken = default(CancellationToken))
+            {
+                throw new NotImplementedException();
+            }
+
             public void Dispose()
             {
                 throw new NotImplementedException();
@@ -144,6 +149,11 @@ namespace Microsoft.AspNet.Identity.Test
             }
 
             public Task<IdentityUser> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken = default(CancellationToken))
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<string> GetConcurrencyStampAsync(IdentityUser user, CancellationToken cancellationToken = default(CancellationToken))
             {
                 throw new NotImplementedException();
             }
@@ -173,6 +183,11 @@ namespace Microsoft.AspNet.Identity.Test
                 throw new NotImplementedException();
             }
 
+            public Task SetConcurrencyStampAsync(IdentityUser user, string stamp, CancellationToken cancellationToken = default(CancellationToken))
+            {
+                throw new NotImplementedException();
+            }
+
             public Task SetNormalizedUserNameAsync(IdentityUser user, string normalizedName, CancellationToken cancellationToken = default(CancellationToken))
             {
                 throw new NotImplementedException();
@@ -194,6 +209,11 @@ namespace Microsoft.AspNet.Identity.Test
             }
 
             public Task<IdentityResult> UpdateAsync(IdentityUser user, CancellationToken cancellationToken = default(CancellationToken))
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<IdentityResult> UpdateAsync(IdentityUser user, string concurrencyStamp, CancellationToken cancellationToken = default(CancellationToken))
             {
                 throw new NotImplementedException();
             }

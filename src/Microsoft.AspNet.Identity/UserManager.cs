@@ -326,6 +326,12 @@ namespace Microsoft.AspNet.Identity
             return errors.Count > 0 ? IdentityResult.Failed(errors.ToArray()) : IdentityResult.Success;
         }
 
+        public virtual Task<string> GenerateConcurrencyStampAsync(TUser user, 
+            CancellationToken token = default(CancellationToken))
+        {
+            return Task.FromResult(Guid.NewGuid().ToString());
+        }
+
         /// <summary>
         ///     Create a user with no password
         /// </summary>
