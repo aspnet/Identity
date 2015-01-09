@@ -199,7 +199,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             return Roles.FirstOrDefaultAsync(r => r.NormalizedName == normalizedName, cancellationToken);
         }
 
-        public Task<string> GetNormalizedRoleNameAsync(TRole role, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<string> GetNormalizedRoleNameAsync(TRole role, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -210,7 +210,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             return Task.FromResult(role.NormalizedName);
         }
 
-        public Task SetNormalizedRoleNameAsync(TRole role, string normalizedName, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task SetNormalizedRoleNameAsync(TRole role, string normalizedName, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
