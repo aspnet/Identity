@@ -157,7 +157,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
                 throw new ArgumentNullException("user");
             }
 
-            //Context.Attach(user);
+            Context.Attach(user);
             user.ConcurrencyStamp = Guid.NewGuid().ToString();
             Context.Update(user);
             try

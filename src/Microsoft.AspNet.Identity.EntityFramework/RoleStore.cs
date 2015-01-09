@@ -86,7 +86,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             {
                 throw new ArgumentNullException("role");
             }
-            //Context.Attach(role);
+            Context.Attach(role);
             role.ConcurrencyStamp = Guid.NewGuid().ToString();
             Context.Update(role);
             try
