@@ -961,7 +961,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
                         && userclaims.ClaimType == claim.Type
                         select user;
 
-            return (IList<TUser>)await query.ToListAsync(cancellationToken);
+            return await query.ToListAsync(cancellationToken);
         }
 
         /// <summary>
@@ -988,7 +988,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
                             where userrole.RoleId.Equals(role.Id)
                             select user;
 
-                return (IList<TUser>) await query.ToListAsync(cancellationToken);
+                return await query.ToListAsync(cancellationToken);
             }
             return new List<TUser>();
         }
