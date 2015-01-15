@@ -321,8 +321,4 @@
     <value>{0} for role: {1}</value>
     <comment>Message prefix for Identity result for role operation</comment>
   </data>
-  <data name="IncorrectPassword" xml:space="preserve">
-    <value>Given password cannot be verified</value>
-    <comment>Error when password cannot be verified for user</comment>
-  </data>
 </root>

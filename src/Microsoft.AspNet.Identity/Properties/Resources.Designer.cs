@@ -826,22 +826,6 @@ namespace Microsoft.AspNet.Identity
             return string.Format(CultureInfo.CurrentCulture, GetString("LoggingResultMessageForRole"), p0, p1);
         }
 
-        /// <summary>
-        /// Given password cannot be verified
-        /// </summary>
-        internal static string IncorrectPassword
-        {
-            get { return GetString("IncorrectPassword"); }
-        }
-
-        /// <summary>
-        /// Given password cannot be verified
-        /// </summary>
-        internal static string FormatIncorrectPassword()
-        {
-            return GetString("IncorrectPassword");
-        }
-
         private static string GetString(string name, params string[] formatterNames)
         {
             var value = _resourceManager.GetString(name);

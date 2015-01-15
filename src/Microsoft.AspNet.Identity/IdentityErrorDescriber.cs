@@ -185,14 +185,5 @@ namespace Microsoft.AspNet.Identity
                 Description = Resources.PasswordRequiresUpper
             };
         }
-
-        public virtual IdentityError IncorrectPassword()
-        {
-            return new IdentityError
-            {
-                Code = nameof(IncorrectPassword),
-                Description = Resources.IncorrectPassword
-            };
-        }
     }
 }
