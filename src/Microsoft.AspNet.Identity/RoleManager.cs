@@ -408,7 +408,7 @@ namespace Microsoft.AspNet.Identity
         protected async Task<IdentityResult> LogResultAsync(IdentityResult result,
             TRole role, [System.Runtime.CompilerServices.CallerMemberName] string methodName = "")
         {
-            result.Log(Logger, Resources.FormatLoggingIdentityResultMessageForRole(methodName, await GetRoleIdAsync(role)));
+            result.Log(Logger, Resources.FormatLoggingResultMessageForRole(methodName, await GetRoleIdAsync(role)));
 
             return result;
         }

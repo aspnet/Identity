@@ -309,15 +309,15 @@
     <value>{0} : Success</value>
     <comment>Logging method execution success</comment>
   </data>
-  <data name="LoggingSigninStatus" xml:space="preserve">
-    <value>{0} for user: {1} : Result : {2}</value>
+  <data name="LoggingSigninResult" xml:space="preserve">
+    <value>{0} : Result : {1}</value>
     <comment>Logging statement for SignInManager</comment>
   </data>
-  <data name="LoggingIdentityResultMessage" xml:space="preserve">
+  <data name="LoggingResultMessage" xml:space="preserve">
     <value>{0} for user: {1}</value>
     <comment>Message prefix for Identity result</comment>
   </data>
-  <data name="LoggingIdentityResultMessageForRole" xml:space="preserve">
+  <data name="LoggingResultMessageForRole" xml:space="preserve">
     <value>{0} for role: {1}</value>
     <comment>Message prefix for Identity result for role operation</comment>
   </data>

@@ -779,51 +779,51 @@ namespace Microsoft.AspNet.Identity
         }
 
         /// <summary>
-        /// {0} for user: {1} : Result : {2}
+        /// {0} : Result : {1}
         /// </summary>
-        internal static string LoggingSigninStatus
+        internal static string LoggingSigninResult
         {
-            get { return GetString("LoggingSigninStatus"); }
+            get { return GetString("LoggingSigninResult"); }
         }
 
         /// <summary>
-        /// {0} for user: {1} : Result : {2}
+        /// {0} : Result : {1}
         /// </summary>
-        internal static string FormatLoggingSigninStatus(object p0, object p1, object p2)
+        internal static string FormatLoggingSigninResult(object p0, object p1)
         {
-            return string.Format(CultureInfo.CurrentCulture, GetString("LoggingSigninStatus"), p0, p1, p2);
-        }
-
-        /// <summary>
-        /// {0} for user: {1}
-        /// </summary>
-        internal static string LoggingIdentityResultMessage
-        {
-            get { return GetString("LoggingIdentityResultMessage"); }
+            return string.Format(CultureInfo.CurrentCulture, GetString("LoggingSigninResult"), p0, p1);
         }
 
         /// <summary>
         /// {0} for user: {1}
         /// </summary>
-        internal static string FormatLoggingIdentityResultMessage(object p0, object p1)
+        internal static string LoggingResultMessage
         {
-            return string.Format(CultureInfo.CurrentCulture, GetString("LoggingIdentityResultMessage"), p0, p1);
+            get { return GetString("LoggingResultMessage"); }
+        }
+
+        /// <summary>
+        /// {0} for user: {1}
+        /// </summary>
+        internal static string FormatLoggingResultMessage(object p0, object p1)
+        {
+            return string.Format(CultureInfo.CurrentCulture, GetString("LoggingResultMessage"), p0, p1);
         }
 
         /// <summary>
         /// {0} for role: {1}
         /// </summary>
-        internal static string LoggingIdentityResultMessageForRole
+        internal static string LoggingResultMessageForRole
         {
-            get { return GetString("LoggingIdentityResultMessageForRole"); }
+            get { return GetString("LoggingResultMessageForRole"); }
         }
 
         /// <summary>
         /// {0} for role: {1}
         /// </summary>
-        internal static string FormatLoggingIdentityResultMessageForRole(object p0, object p1)
+        internal static string FormatLoggingResultMessageForRole(object p0, object p1)
         {
-            return string.Format(CultureInfo.CurrentCulture, GetString("LoggingIdentityResultMessageForRole"), p0, p1);
+            return string.Format(CultureInfo.CurrentCulture, GetString("LoggingResultMessageForRole"), p0, p1);
         }
 
         /// <summary>

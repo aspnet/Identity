@@ -420,8 +420,8 @@ namespace Microsoft.AspNet.Identity
         /// <returns></returns>
         protected async virtual Task<bool> LogResultAsync(bool result, TUser user, [System.Runtime.CompilerServices.CallerMemberName] string methodName = "")
         {
-            Logger.WriteInformation(Resources.FormatLoggingSigninStatus(methodName,
-                await UserManager.GetUserIdAsync(user), result));
+            Logger.WriteInformation(Resources.FormatLoggingSigninResult(Resources.FormatLoggingResultMessage(methodName,
+                await UserManager.GetUserIdAsync(user)), result));
 
             return result;
         }
@@ -435,31 +435,7 @@ namespace Microsoft.AspNet.Identity
         /// <returns></returns>
         protected async virtual Task<SignInResult> LogResultAsync(SignInResult status, TUser user, [System.Runtime.CompilerServices.CallerMemberName] string methodName = "")
         {
-            if (status.IsLockedOut)
-            {
-                Logger.WriteInformation(Resources.FormatLoggingSigninStatus(methodName,
-                        await UserManager.GetUserIdAsync(user), "Lockedout"));
-            }
-            if (status.IsNotAllowed)
-            {
-                Logger.WriteInformation(Resources.FormatLoggingSigninStatus(methodName,
-                        await UserManager.GetUserIdAsync(user), "NotAllowed"));
-            }
-            if (status.RequiresTwoFactor)
-            {
-                Logger.WriteInformation(Resources.FormatLoggingSigninStatus(methodName,
-                        await UserManager.GetUserIdAsync(user), "RequiresTwoFactor"));
-            }
-            if (status.Succeeded)
-            {
-                Logger.WriteInformation(Resources.FormatLoggingSigninStatus(methodName,
-                        await UserManager.GetUserIdAsync(user), "Succeeded"));
-            }
-            else
-            {
-                Logger.WriteInformation(Resources.FormatLoggingSigninStatus(methodName,
-                        await UserManager.GetUserIdAsync(user), "Failed"));
-            }
+            status.Log(Logger, Resources.FormatLoggingResultMessage(methodName, await UserManager.GetUserIdAsync(user)));
 
             return status;
         }

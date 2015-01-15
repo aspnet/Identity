@@ -142,12 +142,14 @@ namespace Microsoft.AspNet.Identity.Test
             var user = new TUser() { UserName = "UpdatePassword" };
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user, "password"));
             Assert.True(await manager.CheckPasswordAsync(user, "password"));
-            IdentityResultAssert.VerifyUserManagerSuccessLog(manager.Logger, "CheckPasswordAsync", user.Id.ToString());
+            string expectedLog = string.Format("{0} for user: {1} : {2}", "CheckPasswordAsync", user.Id.ToString(), true.ToString());
+            IdentityResultAssert.VerifyLogMessage(manager.Logger, expectedLog);
 
             user.PasswordHash = manager.PasswordHasher.HashPassword(user, "New");
             IdentityResultAssert.IsSuccess(await manager.UpdateAsync(user));
             Assert.False(await manager.CheckPasswordAsync(user, "password"));
-            IdentityResultAssert.VerifyUserManagerFailureLog(manager.Logger, "CheckPasswordAsync", user.Id.ToString(), IdentityErrorDescriber.Default.IncorrectPassword());
+            expectedLog = string.Format("{0} for user: {1} : {2}", "CheckPasswordAsync", user.Id.ToString(), false.ToString());
+            IdentityResultAssert.VerifyLogMessage(manager.Logger, expectedLog);
             Assert.True(await manager.CheckPasswordAsync(user, "New"));
         }
 

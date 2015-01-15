@@ -73,6 +73,19 @@ namespace Microsoft.AspNet.Identity.Test
             }
         }
 
+        public static void VerifyLogMessage(ILogger logger, string expectedLog)
+        {
+            if (logger is TestFileLogger)
+            {
+                var fileLogger = logger as TestFileLogger;
+                Assert.True(File.ReadAllText(fileLogger.FileName).Contains(expectedLog));
+            }
+            else
+            {
+                Assert.True(true, "No logger registered");
+            }
+        }
+
         private static void VerifyFailureLog(ILogger logger, string className, string methodName, string userId, string userOrRole = "user", params IdentityError[] errors)
         {
             if (logger is TestFileLogger)

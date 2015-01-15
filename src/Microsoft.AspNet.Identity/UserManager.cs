@@ -42,15 +42,15 @@ namespace Microsoft.AspNet.Identity
         /// <param name="errors"></param>
         /// <param name="tokenProviders"></param>
         /// <param name="msgProviders"></param>
-	/// <param name="loggerFactory"></param>
-        public UserManager(IUserStore<TUser> store, 
+        /// <param name="loggerFactory"></param>
+        public UserManager(IUserStore<TUser> store,
             IOptions<IdentityOptions> optionsAccessor = null,
-            IPasswordHasher<TUser> passwordHasher = null, 
+            IPasswordHasher<TUser> passwordHasher = null,
             IEnumerable<IUserValidator<TUser>> userValidators = null,
-            IEnumerable<IPasswordValidator<TUser>> passwordValidators = null, 
+            IEnumerable<IPasswordValidator<TUser>> passwordValidators = null,
             ILookupNormalizer keyNormalizer = null,
             IdentityErrorDescriber errors = null,
-            IEnumerable<IUserTokenProvider<TUser>> tokenProviders = null, 
+            IEnumerable<IUserTokenProvider<TUser>> tokenProviders = null,
             IEnumerable<IIdentityMessageProvider> msgProviders = null,
             ILoggerFactory loggerFactory = null)
         {
@@ -342,7 +342,7 @@ namespace Microsoft.AspNet.Identity
             return errors.Count > 0 ? IdentityResult.Failed(errors.ToArray()) : IdentityResult.Success;
         }
 
-        public virtual Task<string> GenerateConcurrencyStampAsync(TUser user, 
+        public virtual Task<string> GenerateConcurrencyStampAsync(TUser user,
             CancellationToken token = default(CancellationToken))
         {
             return Task.FromResult(Guid.NewGuid().ToString());
@@ -591,20 +591,13 @@ namespace Microsoft.AspNet.Identity
                 return false;
             }
             var result = await VerifyPasswordAsync(passwordStore, user, password, cancellationToken);
-            if (result == PasswordVerificationResult.SuccessRehashNeeded) {
+            if (result == PasswordVerificationResult.SuccessRehashNeeded)
+            {
                 await UpdatePasswordHash(passwordStore, user, password, cancellationToken, validatePassword: false);
                 await UpdateUserAsync(user, cancellationToken);
             }
-            if (result != PasswordVerificationResult.Failed)
-            {
-                await LogResultAsync(IdentityResult.Success, user);
-            }
-            else
-            {
-                await LogResultAsync(IdentityResult.Failed(ErrorDescriber.IncorrectPassword()), user);
-            }
 
-            return result != PasswordVerificationResult.Failed;
+            return await LogResultAsync(result != PasswordVerificationResult.Failed, user);
         }
 
         /// <summary>
@@ -622,7 +615,7 @@ namespace Microsoft.AspNet.Identity
             {
                 throw new ArgumentNullException("user");
             }
-            return await passwordStore.HasPasswordAsync(user, cancellationToken);
+            return await LogResultAsync(await passwordStore.HasPasswordAsync(user, cancellationToken), user);
         }
 
         /// <summary>
@@ -705,7 +698,7 @@ namespace Microsoft.AspNet.Identity
         internal async Task<IdentityResult> UpdatePasswordHash(IUserPasswordStore<TUser> passwordStore,
             TUser user, string newPassword, CancellationToken cancellationToken, bool validatePassword = true)
         {
-            if (validatePassword) 
+            if (validatePassword)
             {
                 var validate = await ValidatePasswordInternal(user, newPassword, cancellationToken);
                 if (!validate.Succeeded)
@@ -2116,7 +2109,30 @@ namespace Microsoft.AspNet.Identity
         protected async Task<IdentityResult> LogResultAsync(IdentityResult result,
             TUser user, [System.Runtime.CompilerServices.CallerMemberName] string methodName = "")
         {
-            result.Log(Logger, Resources.FormatLoggingIdentityResultMessage(methodName, await GetUserIdAsync(user)));
+            result.Log(Logger, Resources.FormatLoggingResultMessage(methodName, await GetUserIdAsync(user)));
+
+            return result;
+        }
+
+        /// <summary>
+        ///     Logs result of operation being true/false
+        /// </summary>
+        /// <param name="result"></param>
+        /// <param name="user"></param>
+        /// <param name="methodName"></param>
+        /// <returns>result</returns>
+        protected async Task<bool> LogResultAsync(bool result,
+            TUser user, [System.Runtime.CompilerServices.CallerMemberName] string methodName = "")
+        {
+            var baseMessage = Resources.FormatLoggingResultMessage(methodName, await GetUserIdAsync(user));
+            if (result)
+            {
+                Logger.WriteInformation(string.Format("{0} : {1}", baseMessage, result.ToString()));
+            }
+            else
+            {
+                Logger.WriteWarning(string.Format("{0} : {1}", baseMessage, result.ToString()));
+            }
 
             return result;
         }
