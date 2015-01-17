@@ -5,17 +5,18 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.IO;
+using System.Linq;
 using Microsoft.Framework.Logging;
 
 namespace Microsoft.AspNet.Identity.Test
 {
     public class TestFileLoggerFactory : ILoggerFactory, IDisposable
     {
-        private static Dictionary<string, ILogger> _loggers;
+        private static IList<TestFileLogger> _loggers;
 
         static TestFileLoggerFactory()
         {
-            _loggers = new Dictionary<string, ILogger>();
+            _loggers = new List<TestFileLogger>();
         }
 
         public void AddProvider(ILoggerProvider provider)
@@ -25,31 +26,27 @@ namespace Microsoft.AspNet.Identity.Test
 
         public ILogger Create(string name)
         {
-            if (!_loggers.ContainsKey(name))
+            try
             {
-                try
-                {
-                    _loggers.Add(name, new TestFileLogger(name));
-                }
-                catch (ArgumentException ex)
-                {
-                    // Silently skip if there is already a logger with that key
-                }
+                var logger = new TestFileLogger(name);
+                _loggers.Add(logger);
+                return logger;
+            }
+            catch (ArgumentException ex)
+            {
+                // Silently skip if there is already a logger with that key
             }
 
-            return _loggers[name];
+            return _loggers.Where(x => x.FileName == name).First();
         }
 
         public void Dispose()
         {
-            Parallel.ForEach(_loggers.Values, l =>
+            Parallel.ForEach(_loggers, l =>
             {
-                if(l is TestFileLogger)
-                {
-                    var logger = l as TestFileLogger;
-                    File.Delete(logger.FileName);
-                }
+                var logger = l as TestFileLogger;
+                File.Delete(logger.FileName);
             });
         }
-    } 
+    }
 }
