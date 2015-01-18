@@ -4,27 +4,19 @@
 using System;
 using System.IO;
 using Microsoft.Framework.Logging;
+using System.Collections.Generic;
 
 namespace Microsoft.AspNet.Identity.Test
 {
-    public class TestFileLogger : ILogger
+    public class TestLogger : ILogger
     {
-        public string FileName { get; set; }
-
         public static object FileLock { get; private set; } = new object();
 
-        public TestFileLogger(string name)
+        public IList<string> LogMessages { get; private set; } = new List<string>();
+
+        public TestLogger(string name)
         {
-            var directory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "IdentityTests");
-            Directory.CreateDirectory(directory);
-            FileName = Path.Combine(directory, (name + DateTime.Now.Ticks + "log.txt"));
-            lock (FileLock)
-            {
-                if (!File.Exists(FileName))
-                {
-                    File.Create(FileName).Close();
-                } 
-            }
+            
         }
 
         public IDisposable BeginScope(object state)
@@ -41,7 +33,7 @@ namespace Microsoft.AspNet.Identity.Test
         {
             lock (FileLock)
             {
-                File.AppendAllLines(FileName, new string[] { state.ToString() });
+                LogMessages.Add(state.ToString());
             }
         }
     }

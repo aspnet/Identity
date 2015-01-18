@@ -60,14 +60,14 @@ namespace Microsoft.AspNet.Identity.Test
         }
         private static void VerifySuccessLog(ILogger logger, string className, string methodName, string id, string userOrRole = "user")
         {
-            if (logger is TestFileLogger)
+            if (logger is TestLogger)
             {
-                var fileLogger = logger as TestFileLogger;
+                var fileLogger = logger as TestLogger;
                 string expected = string.Format("{0} for {1}: {2} : Success", methodName, userOrRole, id);
 
-                lock (TestFileLogger.FileLock)
+                lock (TestLogger.FileLock)
                 {
-                    Assert.True(File.ReadAllText(fileLogger.FileName).Contains(expected)); 
+                    Assert.True(fileLogger.LogMessages.Contains(expected));
                 }
             }
             else
@@ -78,12 +78,12 @@ namespace Microsoft.AspNet.Identity.Test
 
         public static void VerifyLogMessage(ILogger logger, string expectedLog)
         {
-            if (logger is TestFileLogger)
+            if (logger is TestLogger)
             {
-                var fileLogger = logger as TestFileLogger;
-                lock (TestFileLogger.FileLock)
+                var fileLogger = logger as TestLogger;
+                lock (TestLogger.FileLock)
                 {
-                    Assert.True(File.ReadAllText(fileLogger.FileName).Contains(expectedLog));
+                    Assert.True(fileLogger.LogMessages.Contains(expectedLog));
                 }
             }
             else
@@ -94,15 +94,15 @@ namespace Microsoft.AspNet.Identity.Test
 
         private static void VerifyFailureLog(ILogger logger, string className, string methodName, string userId, string userOrRole = "user", params IdentityError[] errors)
         {
-            if (logger is TestFileLogger)
+            if (logger is TestLogger)
             {
-                var fileLogger = logger as TestFileLogger;
+                var fileLogger = logger as TestLogger;
                 errors = errors ?? new IdentityError[] { new IdentityError() };
                 string expected = string.Format("{0} for {1}: {2} : Failed : {3}", methodName, userOrRole, userId, string.Join(",", errors.Select(x => x.Code).ToList()));
 
-                lock (TestFileLogger.FileLock)
+                lock (TestLogger.FileLock)
                 {
-                    Assert.True(File.ReadAllText(fileLogger.FileName).Contains(expected));
+                    Assert.True(fileLogger.LogMessages.Contains(expected));
                 }
             }
             else

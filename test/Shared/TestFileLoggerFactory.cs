@@ -9,15 +9,8 @@ using Microsoft.Framework.Logging;
 
 namespace Microsoft.AspNet.Identity.Test
 {
-    public class TestFileLoggerFactory : ILoggerFactory, IDisposable
+    public class TestLoggerFactory : ILoggerFactory
     {
-        private static Dictionary<string, ILogger> _loggers;
-
-        static TestFileLoggerFactory()
-        {
-            _loggers = new Dictionary<string, ILogger>();
-        }
-
         public void AddProvider(ILoggerProvider provider)
         {
 
@@ -25,31 +18,7 @@ namespace Microsoft.AspNet.Identity.Test
 
         public ILogger Create(string name)
         {
-            if (!_loggers.ContainsKey(name))
-            {
-                try
-                {
-                    _loggers.Add(name, new TestFileLogger(name));
-                }
-                catch (ArgumentException ex)
-                {
-                    // Silently skip if there is already a logger with that key
-                }
-            }
-
-            return _loggers[name];
-        }
-
-        public void Dispose()
-        {
-            Parallel.ForEach(_loggers.Values, l =>
-            {
-                if(l is TestFileLogger)
-                {
-                    var logger = l as TestFileLogger;
-                    File.Delete(logger.FileName);
-                }
-            });
+            return new TestLogger(name);
         }
     } 
 }
