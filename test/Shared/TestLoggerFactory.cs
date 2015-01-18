@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.IO;
 using Microsoft.Framework.Logging;
 
 namespace Microsoft.AspNet.Identity.Test

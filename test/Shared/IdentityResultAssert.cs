@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System.IO;
 using System.Linq;
 using Microsoft.Framework.Logging;
 using Xunit;
@@ -65,7 +64,7 @@ namespace Microsoft.AspNet.Identity.Test
                 var fileLogger = logger as TestLogger;
                 string expected = string.Format("{0} for {1}: {2} : Success", methodName, userOrRole, id);
 
-                lock (TestLogger.FileLock)
+                lock (TestLogger.Lock)
                 {
                     Assert.True(fileLogger.LogMessages.Contains(expected));
                 }
@@ -81,7 +80,7 @@ namespace Microsoft.AspNet.Identity.Test
             if (logger is TestLogger)
             {
                 var fileLogger = logger as TestLogger;
-                lock (TestLogger.FileLock)
+                lock (TestLogger.Lock)
                 {
                     Assert.True(fileLogger.LogMessages.Contains(expectedLog));
                 }
@@ -100,7 +99,7 @@ namespace Microsoft.AspNet.Identity.Test
                 errors = errors ?? new IdentityError[] { new IdentityError() };
                 string expected = string.Format("{0} for {1}: {2} : Failed : {3}", methodName, userOrRole, userId, string.Join(",", errors.Select(x => x.Code).ToList()));
 
-                lock (TestLogger.FileLock)
+                lock (TestLogger.Lock)
                 {
                     Assert.True(fileLogger.LogMessages.Contains(expected));
                 }
