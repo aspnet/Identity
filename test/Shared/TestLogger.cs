@@ -9,13 +9,11 @@ namespace Microsoft.AspNet.Identity.Test
 {
     public class TestLogger : ILogger
     {
-        public static object Lock { get; private set; } = new object();
-
         public IList<string> LogMessages { get; private set; } = new List<string>();
 
         public TestLogger(string name)
         {
-            
+
         }
 
         public IDisposable BeginScope(object state)
@@ -30,10 +28,7 @@ namespace Microsoft.AspNet.Identity.Test
 
         public void Write(LogLevel logLevel, int eventId, object state, Exception exception, Func<object, Exception, string> formatter)
         {
-            lock (Lock)
-            {
-                LogMessages.Add(state.ToString());
-            }
+            LogMessages.Add(state.ToString());
         }
     }
 }

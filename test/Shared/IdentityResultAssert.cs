@@ -64,10 +64,7 @@ namespace Microsoft.AspNet.Identity.Test
                 var fileLogger = logger as TestLogger;
                 string expected = string.Format("{0} for {1}: {2} : Success", methodName, userOrRole, id);
 
-                lock (TestLogger.Lock)
-                {
-                    Assert.True(fileLogger.LogMessages.Contains(expected));
-                }
+                Assert.True(fileLogger.LogMessages.Contains(expected));
             }
             else
             {
@@ -80,10 +77,7 @@ namespace Microsoft.AspNet.Identity.Test
             if (logger is TestLogger)
             {
                 var fileLogger = logger as TestLogger;
-                lock (TestLogger.Lock)
-                {
-                    Assert.True(fileLogger.LogMessages.Contains(expectedLog));
-                }
+                Assert.True(fileLogger.LogMessages.Contains(expectedLog));
             }
             else
             {
@@ -99,10 +93,7 @@ namespace Microsoft.AspNet.Identity.Test
                 errors = errors ?? new IdentityError[] { new IdentityError() };
                 string expected = string.Format("{0} for {1}: {2} : Failed : {3}", methodName, userOrRole, userId, string.Join(",", errors.Select(x => x.Code).ToList()));
 
-                lock (TestLogger.Lock)
-                {
-                    Assert.True(fileLogger.LogMessages.Contains(expected));
-                }
+                Assert.True(fileLogger.LogMessages.Contains(expected));
             }
             else
             {
