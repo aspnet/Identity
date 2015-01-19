@@ -59,8 +59,8 @@ namespace Microsoft.AspNet.Identity.Test
         }
         private static void VerifySuccessLog(ILogger logger, string className, string methodName, string id, string userOrRole = "user")
         {
-            TestLogger testlogger;
-            if ((testlogger = logger as TestLogger) != null)
+            TestLogger testlogger = logger as TestLogger;
+            if (testlogger != null)
             {
                 string expected = string.Format("{0} for {1}: {2} : Success", methodName, userOrRole, id);
                 Assert.True(testlogger.LogMessages.Contains(expected));
@@ -73,8 +73,8 @@ namespace Microsoft.AspNet.Identity.Test
 
         public static void VerifyLogMessage(ILogger logger, string expectedLog)
         {
-            TestLogger testlogger;
-            if ((testlogger = logger as TestLogger) != null)
+            TestLogger testlogger = logger as TestLogger;
+            if (testlogger != null)
             {
                 Assert.True(testlogger.LogMessages.Contains(expectedLog));
             }
@@ -86,8 +86,8 @@ namespace Microsoft.AspNet.Identity.Test
 
         private static void VerifyFailureLog(ILogger logger, string className, string methodName, string userId, string userOrRole = "user", params IdentityError[] errors)
         {
-            TestLogger testlogger;
-            if ((testlogger = logger as TestLogger) != null)
+            TestLogger testlogger = logger as TestLogger;
+            if (testlogger != null)
             {
                 errors = errors ?? new IdentityError[] { new IdentityError() };
                 string expected = string.Format("{0} for {1}: {2} : Failed : {3}", methodName, userOrRole, userId, string.Join(",", errors.Select(x => x.Code).ToList()));
