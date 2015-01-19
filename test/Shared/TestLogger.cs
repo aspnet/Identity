@@ -11,11 +11,6 @@ namespace Microsoft.AspNet.Identity.Test
     {
         public IList<string> LogMessages { get; private set; } = new List<string>();
 
-        public TestLogger(string name)
-        {
-
-        }
-
         public IDisposable BeginScope(object state)
         {
             throw new NotImplementedException();
