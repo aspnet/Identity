@@ -199,7 +199,6 @@ namespace Microsoft.AspNet.Identity.Test
             manager.Setup(m => m.FindByNameAsync(user.UserName)).ReturnsAsync(user).Verifiable();
             manager.Setup(m => m.CheckPasswordAsync(user, "password")).ReturnsAsync(true).Verifiable();
             manager.Setup(m => m.ResetAccessFailedCountAsync(user)).ReturnsAsync(IdentityResult.Success).Verifiable();
-            manager.Setup(m => m.GetUserIdAsync(user)).ReturnsAsync(user.Id.ToString()).Verifiable();
 
             var context = new Mock<HttpContext>();
             var response = new Mock<HttpResponse>();

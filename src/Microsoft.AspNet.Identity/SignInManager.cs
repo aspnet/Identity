@@ -64,13 +64,13 @@ namespace Microsoft.AspNet.Identity
         {
             if (Options.SignIn.RequireConfirmedEmail && !(await UserManager.IsEmailConfirmedAsync(user)))
             {
-                return await LogResultAsync(false, user);
+                return await false.WithLoggingAsync(this, user);
             }
             if (Options.SignIn.RequireConfirmedPhoneNumber && !(await UserManager.IsPhoneNumberConfirmedAsync(user)))
             {
-                return await LogResultAsync(false, user);
+                return await false.WithLoggingAsync(this, user);
             }
-            return await LogResultAsync(true, user);
+            return await true.WithLoggingAsync(this, user);
         }
 
         public virtual async Task SignInAsync(TUser user, bool isPersistent, string authenticationMethod = null)
@@ -149,16 +149,17 @@ namespace Microsoft.AspNet.Identity
             var error = await PreSignInCheck(user);
             if (error != null)
             {
-                return await LogResultAsync(error, user);
+                return await error.WithLoggingAsync(this, user);
             }
             if (await IsLockedOut(user))
             {
-                return await LogResultAsync(SignInResult.LockedOut, user);
+                return await SignInResult.LockedOut.WithLoggingAsync(this, user);
             }
             if (await UserManager.CheckPasswordAsync(user, password))
             {
                 await ResetLockout(user);
-                return await LogResultAsync(await SignInOrTwoFactorAsync(user, isPersistent), user);
+                var result = await SignInOrTwoFactorAsync(user, isPersistent);
+                return await result.WithLoggingAsync(this, user);
             }
             if (UserManager.SupportsUserLockout && shouldLockout)
             {
@@ -167,10 +168,10 @@ namespace Microsoft.AspNet.Identity
                 if (await UserManager.IsLockedOutAsync(user))
                 {
 
-                    return await LogResultAsync(SignInResult.LockedOut, user);
+                    return await SignInResult.LockedOut.WithLoggingAsync(this, user);
                 }
             }
-            return await LogResultAsync(SignInResult.Failed, user);
+            return await SignInResult.Failed.WithLoggingAsync(this, user);
         }
 
         public virtual async Task<SignInResult> PasswordSignInAsync(string userName, string password,
@@ -214,7 +215,7 @@ namespace Microsoft.AspNet.Identity
             }
             var token = await UserManager.GenerateTwoFactorTokenAsync(user, provider);
             await UserManager.NotifyTwoFactorTokenAsync(user, provider, token);
-            return await LogResultAsync(true, user);
+            return await true.WithLoggingAsync(this, user);
         }
 
         public virtual async Task<bool> IsTwoFactorClientRememberedAsync(TUser user)
@@ -255,7 +256,7 @@ namespace Microsoft.AspNet.Identity
             var error = await PreSignInCheck(user);
             if (error != null)
             {
-                return await LogResultAsync(error, user);
+                return await error.WithLoggingAsync(this, user);
             }
             if (await UserManager.VerifyTwoFactorTokenAsync(user, provider, code))
             {
@@ -273,11 +274,11 @@ namespace Microsoft.AspNet.Identity
                 }
                 await UserManager.ResetAccessFailedCountAsync(user);
                 await SignInAsync(user, isPersistent);
-                return await LogResultAsync(SignInResult.Success, user);
+                return await SignInResult.Success.WithLoggingAsync(this, user);
             }
             // If the token is incorrect, record the failure which also may cause the user to be locked out
             await UserManager.AccessFailedAsync(user);
-            return await LogResultAsync(SignInResult.Failed, user);
+            return await SignInResult.Failed.WithLoggingAsync(this, user);
         }
 
         /// <summary>
@@ -306,9 +307,11 @@ namespace Microsoft.AspNet.Identity
             var error = await PreSignInCheck(user);
             if (error != null)
             {
-                return await LogResultAsync(error, user);
+                return await error.WithLoggingAsync(this, user);
             }
-            return await LogResultAsync(await SignInOrTwoFactorAsync(user, isPersistent, loginProvider), user);
+            var result = await SignInOrTwoFactorAsync(user, isPersistent, loginProvider);
+
+            return await result.WithLoggingAsync(this, user);
         }
 
         private const string LoginProviderKey = "LoginProvider";
@@ -395,35 +398,6 @@ namespace Microsoft.AspNet.Identity
                 };
             }
             return null;
-        }
-
-        /// <summary>
-        ///     Log boolean result for user and return result
-        /// </summary>
-        /// <param name="result"></param>
-        /// <param name="user"></param>
-        /// <param name="methodName"></param>
-        /// <returns></returns>
-        protected async virtual Task<bool> LogResultAsync(bool result, TUser user, [System.Runtime.CompilerServices.CallerMemberName] string methodName = "")
-        {
-            Logger.WriteInformation(Resources.FormatLoggingSigninResult(Resources.FormatLoggingResultMessage(methodName,
-                await UserManager.GetUserIdAsync(user)), result));
-
-            return result;
-        }
-
-        /// <summary>
-        ///     Log SignInStatus for user and return SignInStatus
-        /// </summary>
-        /// <param name="status"></param>
-        /// <param name="user"></param>
-        /// <param name="methodName"></param>
-        /// <returns></returns>
-        protected async virtual Task<SignInResult> LogResultAsync(SignInResult status, TUser user, [System.Runtime.CompilerServices.CallerMemberName] string methodName = "")
-        {
-            status.Log(Logger, Resources.FormatLoggingResultMessage(methodName, await UserManager.GetUserIdAsync(user)));
-
-            return status;
         }
 
         internal static ClaimsIdentity StoreTwoFactorInfo(string userId, string loginProvider)

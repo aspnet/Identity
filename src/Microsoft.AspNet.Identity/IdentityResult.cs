@@ -2,8 +2,6 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System.Collections.Generic;
-using System.Linq;
-using Microsoft.Framework.Logging;
 
 namespace Microsoft.AspNet.Identity
 {
@@ -48,24 +46,6 @@ namespace Microsoft.AspNet.Identity
                 result._errors.AddRange(errors);
             }
             return result;
-        }
-
-        /// <summary>
-        ///     Log Identity result
-        /// </summary>
-        /// <param name="logger"></param>
-        /// <param name="message"></param>
-        public virtual void Log(ILogger logger, string message)
-        {
-            // TODO: Take logging level as a parameter
-            if (Succeeded)
-            {
-                logger.WriteInformation(Resources.FormatLogIdentityResultSuccess(message));
-            }
-            else
-            {
-                logger.WriteWarning(Resources.FormatLogIdentityResultFailure(message, string.Join(",", Errors.Select(x => x.Code).ToList())));
-            }
         }
     }
 }
