@@ -23,7 +23,14 @@ namespace Microsoft.AspNet.Identity.Test
 
         public void Log(LogLevel logLevel, int eventId, object state, Exception exception, Func<object, Exception, string> formatter)
         {
-            LogMessages.Add(state.ToString());
+            if (formatter == null)
+            {
+                LogMessages.Add(state.ToString());
+            }
+            else
+            {
+                LogMessages.Add(formatter(state, exception));
+            }
         }
     }
 }

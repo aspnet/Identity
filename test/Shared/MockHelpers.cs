@@ -42,7 +42,16 @@ namespace Microsoft.AspNet.Identity.Test
             logger.Setup(x => x.Log(It.IsAny<LogLevel>(), It.IsAny<int>(), It.IsAny<object>(),
                 It.IsAny<Exception>(), It.IsAny<Func<object, Exception, string>>()))
                 .Callback((LogLevel logLevel, int eventId, object state, Exception exception, Func<object, Exception, string> formatter) =>
-                { logStore.Append(state.ToString()); });
+                {
+                    if (formatter == null)
+                    {
+                        logStore.Append(state.ToString());
+                    }
+                    else
+                    {
+                        logStore.Append(formatter(state, exception));
+                    }
+                });
             logger.Setup(x => x.IsEnabled(LogLevel.Information)).Returns(true);
             logger.Setup(x => x.IsEnabled(LogLevel.Warning)).Returns(true);
 
