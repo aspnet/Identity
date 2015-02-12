@@ -361,7 +361,7 @@ namespace IdentitySample.Controllers
             {
                 await MessageServices.SendEmailAsync(await UserManager.GetEmailAsync(user), "Security Code", message);
             }
-            else if (model.SelectedProvider == "SMS")
+            else if (model.SelectedProvider == "Phone")
             {
                 await MessageServices.SendSmsAsync(await UserManager.GetPhoneNumberAsync(user), message);
             }
