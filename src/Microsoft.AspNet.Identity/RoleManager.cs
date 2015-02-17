@@ -23,10 +23,14 @@ namespace Microsoft.AspNet.Identity
         private HttpContext _context;
 
         /// <summary>
-        /// Constructor
+        ///     Constructor
         /// </summary>
         /// <param name="store">The IRoleStore commits changes via the UpdateAsync/CreateAsync methods</param>
-        /// <param name="roleValidator"></param>
+        /// <param name="roleValidators">IEnumerable of role validators</param>
+        /// <param name="keyNormalizer">user property normalizers</param>
+        /// <param name="errors">IdentityErrorDescribers</param>
+        /// <param name="logger">Logger for RoleManager</param>
+        /// <param name="contextAccessor">HttpContext accessor object</param>
         public RoleManager(IRoleStore<TRole> store,
             IEnumerable<IRoleValidator<TRole>> roleValidators,
             ILookupNormalizer keyNormalizer,
@@ -169,13 +173,13 @@ namespace Microsoft.AspNet.Identity
                 return result;
             }
             await UpdateNormalizedRoleNameAsync(role);
-            return await Store.CreateAsync(role, CancellationToken).WithLoggingAsync(this,role);
+            return await LogResultAsync(await Store.CreateAsync(role, CancellationToken), role);
         }
 
         /// <summary>
         /// Update the user's normalized user name
         /// </summary>
-        /// <param name="user"></param>
+        /// <param name="role"></param>
         /// <returns></returns>
         public virtual async Task UpdateNormalizedRoleNameAsync(TRole role)
         {
@@ -197,7 +201,7 @@ namespace Microsoft.AspNet.Identity
                 throw new ArgumentNullException("role");
             }
 
-            return await UpdateRoleAsync(role).WithLoggingAsync(this,role);
+            return await LogResultAsync(await UpdateRoleAsync(role), role);
         }
 
         private async Task<IdentityResult> UpdateRoleAsync(TRole role)
@@ -223,7 +227,7 @@ namespace Microsoft.AspNet.Identity
             {
                 throw new ArgumentNullException("role");
             }
-            return await Store.DeleteAsync(role, CancellationToken).WithLoggingAsync(this,role);
+            return await LogResultAsync(await Store.DeleteAsync(role, CancellationToken), role);
         }
 
         /// <summary>
@@ -286,7 +290,7 @@ namespace Microsoft.AspNet.Identity
             ThrowIfDisposed();
             await Store.SetRoleNameAsync(role, name, CancellationToken);
             await UpdateNormalizedRoleNameAsync(role);
-            return await Task.FromResult(IdentityResult.Success).WithLoggingAsync(this, role);
+            return await LogResultAsync(IdentityResult.Success, role);
         }
 
         /// <summary>
@@ -346,7 +350,7 @@ namespace Microsoft.AspNet.Identity
                 throw new ArgumentNullException("role");
             }
             await claimStore.AddClaimAsync(role, claim, CancellationToken);
-            return await UpdateRoleAsync(role).WithLoggingAsync(this,role);
+            return await LogResultAsync(await UpdateRoleAsync(role), role);
         }
 
         /// <summary>
@@ -364,7 +368,7 @@ namespace Microsoft.AspNet.Identity
                 throw new ArgumentNullException("role");
             }
             await claimStore.RemoveClaimAsync(role, claim, CancellationToken);
-            return await UpdateRoleAsync(role).WithLoggingAsync(this,role);
+            return await LogResultAsync(await UpdateRoleAsync(role), role);
         }
 
         /// <summary>
@@ -381,6 +385,36 @@ namespace Microsoft.AspNet.Identity
                 throw new ArgumentNullException("role");
             }
             return await claimStore.GetClaimsAsync(role, CancellationToken);
+        }
+
+        /// <summary>
+        ///     Logs the current Identity Result and returns result object
+        /// </summary>
+        /// <param name="result"></param>
+        /// <param name="role"></param>
+        /// <param name="methodName"></param>
+        /// <returns></returns>
+        protected virtual async Task<IdentityResult> LogResultAsync(IdentityResult result,
+            TRole role, [System.Runtime.CompilerServices.CallerMemberName] string methodName = "")
+        {
+            if (result.Succeeded)
+            {
+                if (Logger.IsEnabled(LogLevel.Information))
+                {
+                    var baseMessage = Resources.FormatLoggingResultMessageForRole(methodName, await GetRoleIdAsync(role));
+                    Logger.WriteInformation(Resources.FormatLogIdentityResultSuccess(baseMessage));
+                }
+            }
+            else
+            {
+                if (Logger.IsEnabled(LogLevel.Warning))
+                {
+                    var baseMessage = Resources.FormatLoggingResultMessageForRole(methodName, await GetRoleIdAsync(role));
+                    Logger.WriteWarning(Resources.FormatLogIdentityResultFailure(baseMessage,
+                        string.Join(",", result.Errors.Select(x => x.Code).ToList())));
+                }
+            }
+            return result;
         }
 
         private void ThrowIfDisposed()

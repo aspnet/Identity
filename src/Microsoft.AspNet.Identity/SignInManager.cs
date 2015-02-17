@@ -64,13 +64,13 @@ namespace Microsoft.AspNet.Identity
         {
             if (Options.SignIn.RequireConfirmedEmail && !(await UserManager.IsEmailConfirmedAsync(user)))
             {
-                return await false.WithLoggingAsync(this, user);
+                return await LogResultAsync(false, user);
             }
             if (Options.SignIn.RequireConfirmedPhoneNumber && !(await UserManager.IsPhoneNumberConfirmedAsync(user)))
             {
-                return await false.WithLoggingAsync(this, user);
+                return await LogResultAsync(false, user);
             }
-            return await true.WithLoggingAsync(this, user);
+            return await LogResultAsync(true, user);
         }
 
         public virtual async Task SignInAsync(TUser user, bool isPersistent, string authenticationMethod = null)
@@ -149,17 +149,16 @@ namespace Microsoft.AspNet.Identity
             var error = await PreSignInCheck(user);
             if (error != null)
             {
-                return await error.WithLoggingAsync(this, user);
+                return await LogResultAsync(error, user);
             }
             if (await IsLockedOut(user))
             {
-                return await SignInResult.LockedOut.WithLoggingAsync(this, user);
+                return await LogResultAsync(SignInResult.LockedOut, user);
             }
             if (await UserManager.CheckPasswordAsync(user, password))
             {
                 await ResetLockout(user);
-                var result = await SignInOrTwoFactorAsync(user, isPersistent);
-                return await result.WithLoggingAsync(this, user);
+                return await LogResultAsync(await SignInOrTwoFactorAsync(user, isPersistent), user);
             }
             if (UserManager.SupportsUserLockout && shouldLockout)
             {
@@ -168,10 +167,10 @@ namespace Microsoft.AspNet.Identity
                 if (await UserManager.IsLockedOutAsync(user))
                 {
 
-                    return await SignInResult.LockedOut.WithLoggingAsync(this, user);
+                    return await LogResultAsync(SignInResult.LockedOut, user);
                 }
             }
-            return await SignInResult.Failed.WithLoggingAsync(this, user);
+            return await LogResultAsync(SignInResult.Failed, user);
         }
 
         public virtual async Task<SignInResult> PasswordSignInAsync(string userName, string password,
@@ -215,7 +214,7 @@ namespace Microsoft.AspNet.Identity
             }
             var token = await UserManager.GenerateTwoFactorTokenAsync(user, provider);
             await UserManager.NotifyTwoFactorTokenAsync(user, provider, token);
-            return await true.WithLoggingAsync(this, user);
+            return await LogResultAsync(true, user);
         }
 
         public virtual async Task<bool> IsTwoFactorClientRememberedAsync(TUser user)
@@ -256,7 +255,7 @@ namespace Microsoft.AspNet.Identity
             var error = await PreSignInCheck(user);
             if (error != null)
             {
-                return await error.WithLoggingAsync(this, user);
+                return await LogResultAsync(error, user);
             }
             if (await UserManager.VerifyTwoFactorTokenAsync(user, provider, code))
             {
@@ -274,11 +273,11 @@ namespace Microsoft.AspNet.Identity
                 }
                 await UserManager.ResetAccessFailedCountAsync(user);
                 await SignInAsync(user, isPersistent);
-                return await SignInResult.Success.WithLoggingAsync(this, user);
+                return await LogResultAsync(SignInResult.Success, user);
             }
             // If the token is incorrect, record the failure which also may cause the user to be locked out
             await UserManager.AccessFailedAsync(user);
-            return await SignInResult.Failed.WithLoggingAsync(this, user);
+            return await LogResultAsync(SignInResult.Failed, user);
         }
 
         /// <summary>
@@ -307,11 +306,9 @@ namespace Microsoft.AspNet.Identity
             var error = await PreSignInCheck(user);
             if (error != null)
             {
-                return await error.WithLoggingAsync(this, user);
+                return await LogResultAsync(error, user);
             }
-            var result = await SignInOrTwoFactorAsync(user, isPersistent, loginProvider);
-
-            return await result.WithLoggingAsync(this, user);
+            return await LogResultAsync(await SignInOrTwoFactorAsync(user, isPersistent, loginProvider), user);
         }
 
         private const string LoginProviderKey = "LoginProvider";
@@ -398,6 +395,63 @@ namespace Microsoft.AspNet.Identity
                 };
             }
             return null;
+        }
+
+        /// <summary>
+        ///     Log boolean result for user and return result
+        /// </summary>
+        /// <param name="result"></param>
+        /// <param name="user"></param>
+        /// <param name="methodName"></param>
+        /// <returns></returns>
+        protected async virtual Task<bool> LogResultAsync(bool result, TUser user, [System.Runtime.CompilerServices.CallerMemberName] string methodName = "")
+        {
+            Logger.WriteInformation(Resources.FormatLoggingSigninResult(Resources.FormatLoggingResultMessage(methodName,
+                await UserManager.GetUserIdAsync(user)), result));
+
+            return result;
+        }
+
+        /// <summary>
+        ///     Log SignInStatus for user and return SignInStatus
+        /// </summary>
+        /// <param name="result"></param>
+        /// <param name="user"></param>
+        /// <param name="methodName"></param>
+        /// <returns></returns>
+        protected virtual async Task<SignInResult> LogResultAsync(SignInResult result, TUser user,
+        [System.Runtime.CompilerServices.CallerMemberName] string methodName = "")
+        {
+            if (Logger.IsEnabled(LogLevel.Information))
+            {
+                var status = "";
+
+                if (result.IsLockedOut)
+                {
+                    status = "Lockedout";
+                }
+                else if (result.IsNotAllowed)
+                {
+                    status = "NotAllowed";
+                }
+                else if (result.RequiresTwoFactor)
+                {
+                    status = "RequiresTwoFactor";
+                }
+                else if (result.Succeeded)
+                {
+                    status = "Succeeded";
+                }
+                else
+                {
+                    status = "Failed";
+                }
+
+                var baseMessage = Resources.FormatLoggingResultMessage(methodName, await UserManager.GetUserIdAsync(user));
+                Logger.WriteInformation(Resources.FormatLoggingSigninResult(baseMessage, status));
+            }
+
+            return result;
         }
 
         internal static ClaimsIdentity StoreTwoFactorInfo(string userId, string loginProvider)
