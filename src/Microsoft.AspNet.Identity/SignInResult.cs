@@ -8,6 +8,12 @@ namespace Microsoft.AspNet.Identity
     /// </summary>
     public class SignInResult
     {
+        private static readonly SignInResult _success = new SignInResult { Succeeded = true };
+        private static readonly SignInResult _failed = new SignInResult();
+        private static readonly SignInResult _lockedOut = new SignInResult { IsLockedOut = true };
+        private static readonly SignInResult _notAllowed = new SignInResult { IsNotAllowed = true };
+        private static readonly SignInResult _twoFactorRequired = new SignInResult { RequiresTwoFactor = true };
+
         /// <summary>
         ///     True if the operation was successful
         /// </summary>
@@ -32,31 +38,31 @@ namespace Microsoft.AspNet.Identity
         ///     Static success result
         /// </summary>
         /// <returns></returns>
-        public static SignInResult Success => new SignInResult { Succeeded = true };
+        public static SignInResult Success => _success;
 
         /// <summary>
         ///     Static failure result
         /// </summary>
         /// <returns></returns>
-        public static SignInResult Failed => new SignInResult();
+        public static SignInResult Failed => _failed;
 
         /// <summary>
         ///     Static locked out result
         /// </summary>
         /// <returns></returns>
-        public static SignInResult LockedOut => new SignInResult { IsLockedOut = true };
+        public static SignInResult LockedOut => _lockedOut;
 
         /// <summary>
         ///     Static not allowed result
         /// </summary>
         /// <returns></returns>
-        public static SignInResult NotAllowed => new SignInResult { IsNotAllowed = true };
+        public static SignInResult NotAllowed => _notAllowed;
 
         /// <summary>
         ///     Static two factor required result
         /// </summary>
         /// <returns></returns>
-        public static SignInResult TwoFactorRequired => new SignInResult { RequiresTwoFactor = true };
+        public static SignInResult TwoFactorRequired => _twoFactorRequired;
 
         /// <summary>
         ///     Returns string implemenation of the result. Provides string value for the assigned property
@@ -64,30 +70,11 @@ namespace Microsoft.AspNet.Identity
         /// <returns></returns>
         public override string ToString()
         {
-            var status = "";
-
-            if (IsLockedOut)
-            {
-                status = "Lockedout";
-            }
-            else if (IsNotAllowed)
-            {
-                status = "NotAllowed";
-            }
-            else if (RequiresTwoFactor)
-            {
-                status = "RequiresTwoFactor";
-            }
-            else if (Succeeded)
-            {
-                status = "Succeeded";
-            }
-            else
-            {
-                status = "Failed";
-            }
-
-            return status;
+            return IsLockedOut
+                ? "Lockedout"
+                : IsNotAllowed
+                    ? "NotAllowed"
+                    : RequiresTwoFactor ? "RequiresTwoFactor" : Succeeded ? "Succeeded" : "Failed";
         }
     }
 }

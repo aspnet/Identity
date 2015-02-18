@@ -11,24 +11,24 @@ namespace Microsoft.AspNet.Identity
     /// </summary>
     public class IdentityResult
     {
-        private readonly List<IdentityError> _errors = new List<IdentityError>();
-
+        private static readonly IdentityResult _success = new IdentityResult { Succeeded = true };
+        private List<IdentityError> _errors = new List<IdentityError>();
         /// <summary>
-        ///     True if the operation was successful
+        /// True if the operation was successful
         /// </summary>
         public bool Succeeded { get; protected set; }
 
         /// <summary>
-        ///     List of errors
+        /// List of errors
         /// </summary>
         public IEnumerable<IdentityError> Errors => _errors;
 
         /// <summary>
-        ///     Static success result
+        /// Static success result
         /// </summary>
         /// <returns></returns>
-        public static IdentityResult Success => new IdentityResult { Succeeded = true };
-
+        public static IdentityResult Success => _success;
+        
         /// <summary>
         ///     Failed helper method
         /// </summary>
