@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Microsoft.AspNet.Identity
 {
@@ -10,9 +11,7 @@ namespace Microsoft.AspNet.Identity
     /// </summary>
     public class IdentityResult
     {
-        private static readonly IdentityResult _success = new IdentityResult { Succeeded = true };
-
-        private List<IdentityError> _errors = new List<IdentityError>();
+        private readonly List<IdentityError> _errors = new List<IdentityError>();
 
         /// <summary>
         ///     True if the operation was successful
@@ -22,16 +21,13 @@ namespace Microsoft.AspNet.Identity
         /// <summary>
         ///     List of errors
         /// </summary>
-        public IEnumerable<IdentityError> Errors { get { return _errors; } }
+        public IEnumerable<IdentityError> Errors => _errors;
 
         /// <summary>
         ///     Static success result
         /// </summary>
         /// <returns></returns>
-        public static IdentityResult Success
-        {
-            get { return _success; }
-        }
+        public static IdentityResult Success => new IdentityResult { Succeeded = true };
 
         /// <summary>
         ///     Failed helper method
@@ -46,6 +42,15 @@ namespace Microsoft.AspNet.Identity
                 result._errors.AddRange(errors);
             }
             return result;
+        }
+
+        /// <summary>
+        ///     Return string representation if IdentityResult
+        /// </summary>
+        /// <returns>"Succedded", if result is suceeded else "Failed:error codes"</returns>
+        public override string ToString()
+        {
+            return Succeeded ? "Succeeded" : string.Format("{0} : {1}", "Failed", string.Join(",", Errors.Select(x => x.Code).ToList()));
         }
     }
 }

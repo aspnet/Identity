@@ -20,7 +20,7 @@ namespace Microsoft.AspNet.Identity
     public class RoleManager<TRole> : IDisposable where TRole : class
     {
         private bool _disposed;
-        private HttpContext _context;
+        private readonly HttpContext _context;
 
         /// <summary>
         ///     Constructor
@@ -123,13 +123,7 @@ namespace Microsoft.AspNet.Identity
             }
         }
 
-        private CancellationToken CancellationToken
-        {
-            get
-            {
-                return _context?.RequestAborted ?? CancellationToken.None;
-            }
-        }
+        private CancellationToken CancellationToken => _context?.RequestAborted ?? CancellationToken.None;
 
         /// <summary>
         ///     Dispose this object
@@ -397,23 +391,15 @@ namespace Microsoft.AspNet.Identity
         protected virtual async Task<IdentityResult> LogResultAsync(IdentityResult result,
             TRole role, [System.Runtime.CompilerServices.CallerMemberName] string methodName = "")
         {
-            if (result.Succeeded)
+            var logLevel = result.Succeeded ? LogLevel.Information : LogLevel.Warning;
+
+            // Check if log level is enabled before creating the message.
+            if (Logger.IsEnabled(logLevel))
             {
-                if (Logger.IsEnabled(LogLevel.Information))
-                {
-                    var baseMessage = Resources.FormatLoggingResultMessageForRole(methodName, await GetRoleIdAsync(role));
-                    Logger.WriteInformation(Resources.FormatLogIdentityResultSuccess(baseMessage));
-                }
+                var baseMessage = Resources.FormatLoggingResultMessageForRole(methodName, await GetRoleIdAsync(role));
+                Logger.Write(logLevel, 0, Resources.FormatLoggingIdentityResult(baseMessage, result), null, null);
             }
-            else
-            {
-                if (Logger.IsEnabled(LogLevel.Warning))
-                {
-                    var baseMessage = Resources.FormatLoggingResultMessageForRole(methodName, await GetRoleIdAsync(role));
-                    Logger.WriteWarning(Resources.FormatLogIdentityResultFailure(baseMessage,
-                        string.Join(",", result.Errors.Select(x => x.Code).ToList())));
-                }
-            }
+
             return result;
         }
 

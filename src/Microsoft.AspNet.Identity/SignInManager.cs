@@ -31,7 +31,7 @@ namespace Microsoft.AspNet.Identity
             {
                 throw new ArgumentNullException(nameof(userManager));
             }
-            if (contextAccessor == null || contextAccessor.Value == null)
+            if (contextAccessor?.Value == null)
             {
                 throw new ArgumentNullException(nameof(contextAccessor));
             }
@@ -283,7 +283,6 @@ namespace Microsoft.AspNet.Identity
         /// <summary>
         /// Returns the user who has started the two factor authentication process
         /// </summary>
-        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         public virtual async Task<TUser> GetTwoFactorAuthenticationUserAsync()
         {
@@ -322,7 +321,7 @@ namespace Microsoft.AspNet.Identity
         public virtual async Task<ExternalLoginInfo> GetExternalLoginInfoAsync(string expectedXsrf = null)
         {
             var auth = await Context.AuthenticateAsync(IdentityOptions.ExternalCookieAuthenticationType);
-            if (auth == null || auth.Identity == null || auth.Properties.Dictionary == null || !auth.Properties.Dictionary.ContainsKey(LoginProviderKey))
+            if (auth?.Identity == null || auth.Properties.Dictionary == null || !auth.Properties.Dictionary.ContainsKey(LoginProviderKey))
             {
                 return null;
             }
@@ -386,7 +385,7 @@ namespace Microsoft.AspNet.Identity
         private async Task<TwoFactorAuthenticationInfo> RetrieveTwoFactorInfoAsync()
         {
             var result = await Context.AuthenticateAsync(IdentityOptions.TwoFactorUserIdCookieAuthenticationType);
-            if (result != null && result.Identity != null)
+            if (result?.Identity != null)
             {
                 return new TwoFactorAuthenticationInfo
                 {
@@ -406,9 +405,10 @@ namespace Microsoft.AspNet.Identity
         /// <returns></returns>
         protected async virtual Task<bool> LogResultAsync(bool result, TUser user, [System.Runtime.CompilerServices.CallerMemberName] string methodName = "")
         {
+            // Check if log level is enabled before creating the message.
             if (Logger.IsEnabled(LogLevel.Information))
             {
-                var baseMessage = Resources.FormatLoggingResultMessage(methodName, await UserManager.GetUserIdAsync(user));
+                var baseMessage = Resources.FormatLoggingResultMessageForUser(methodName, await UserManager.GetUserIdAsync(user));
                 Logger.WriteInformation(Resources.FormatLoggingSigninResult(baseMessage, result));
             }
 
@@ -427,31 +427,8 @@ namespace Microsoft.AspNet.Identity
         {
             if (Logger.IsEnabled(LogLevel.Information))
             {
-                var status = "";
-
-                if (result.IsLockedOut)
-                {
-                    status = "Lockedout";
-                }
-                else if (result.IsNotAllowed)
-                {
-                    status = "NotAllowed";
-                }
-                else if (result.RequiresTwoFactor)
-                {
-                    status = "RequiresTwoFactor";
-                }
-                else if (result.Succeeded)
-                {
-                    status = "Succeeded";
-                }
-                else
-                {
-                    status = "Failed";
-                }
-
-                var baseMessage = Resources.FormatLoggingResultMessage(methodName, await UserManager.GetUserIdAsync(user));
-                Logger.WriteInformation(Resources.FormatLoggingSigninResult(baseMessage, status));
+                var baseMessage = Resources.FormatLoggingResultMessageForUser(methodName, await UserManager.GetUserIdAsync(user));
+                Logger.WriteInformation(Resources.FormatLoggingSigninResult(baseMessage, result));
             }
 
             return result;

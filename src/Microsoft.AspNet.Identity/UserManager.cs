@@ -29,7 +29,7 @@ namespace Microsoft.AspNet.Identity
 
         private TimeSpan _defaultLockout = TimeSpan.Zero;
         private bool _disposed;
-        private HttpContext _context;
+        private readonly HttpContext _context;
 
         /// <summary>
         ///     Constructor
@@ -256,13 +256,7 @@ namespace Microsoft.AspNet.Identity
             }
         }
 
-        private CancellationToken CancellationToken
-        {
-            get
-            {
-                return _context?.RequestAborted ?? CancellationToken.None;
-            }
-        }
+        private CancellationToken CancellationToken => _context?.RequestAborted ?? CancellationToken.None;
 
         /// <summary>
         ///     Dispose the store context
@@ -1898,7 +1892,7 @@ namespace Microsoft.AspNet.Identity
         /// <summary>
         ///     Get all the users in a role
         /// </summary>
-        /// <param name="role"></param>
+        /// <param name="roleName"></param>
         /// <returns></returns>
         public virtual Task<IList<TUser>> GetUsersInRoleAsync(string roleName)
         {
@@ -1922,23 +1916,15 @@ namespace Microsoft.AspNet.Identity
         protected virtual async Task<IdentityResult> LogResultAsync(IdentityResult result,
             TUser user, [System.Runtime.CompilerServices.CallerMemberName] string methodName = "")
         {
-            if (result.Succeeded)
+            var logLevel = result.Succeeded ? LogLevel.Information : LogLevel.Warning;
+
+            // Check if log level is enabled before creating the message.
+            if (Logger.IsEnabled(logLevel))
             {
-                if (Logger.IsEnabled(LogLevel.Information))
-                {
-                    var baseMessage = Resources.FormatLoggingResultMessage(methodName, await GetUserIdAsync(user));
-                    Logger.WriteInformation(Resources.FormatLogIdentityResultSuccess(baseMessage));
-                }
+                var baseMessage = Resources.FormatLoggingResultMessageForUser(methodName, await GetUserIdAsync(user));
+                Logger.Write(logLevel, 0, Resources.FormatLoggingIdentityResult(baseMessage, result), null, null);
             }
-            else
-            {
-                if (Logger.IsEnabled(LogLevel.Warning))
-                {
-                    var baseMessage = Resources.FormatLoggingResultMessage(methodName, await GetUserIdAsync(user));
-                    Logger.WriteWarning(Resources.FormatLogIdentityResultFailure(baseMessage,
-                        string.Join(",", result.Errors.Select(x => x.Code).ToList())));
-                }
-            }
+
             return result;
         }
 
@@ -1954,18 +1940,11 @@ namespace Microsoft.AspNet.Identity
         {
             var logLevel = result ? LogLevel.Information : LogLevel.Warning;
 
+            // Check if log level is enabled before creating the message.
             if (Logger.IsEnabled(logLevel))
             {
-                var baseMessage = Resources.FormatLoggingResultMessage(methodName, await GetUserIdAsync(user));
-
-                if(logLevel == LogLevel.Warning)
-                {
-                    Logger.WriteWarning(string.Format("{0} : {1}", baseMessage, result));
-                }
-                else
-                {
-                    Logger.WriteInformation(string.Format("{0} : {1}", baseMessage, result));
-                }
+                var baseMessage = Resources.FormatLoggingResultMessageForUser(methodName, await GetUserIdAsync(user));
+                Logger.Write(logLevel, 0, string.Format("{0} : {1}", baseMessage, result), null, null);
             }
 
             return result;

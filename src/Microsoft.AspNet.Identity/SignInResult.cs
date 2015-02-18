@@ -8,12 +8,6 @@ namespace Microsoft.AspNet.Identity
     /// </summary>
     public class SignInResult
     {
-        private static readonly SignInResult _success = new SignInResult { Succeeded = true };
-        private static readonly SignInResult _failed = new SignInResult();
-        private static readonly SignInResult _lockedOut = new SignInResult { IsLockedOut = true };
-        private static readonly SignInResult _notAllowed = new SignInResult { IsNotAllowed = true };
-        private static readonly SignInResult _twoFactorRequired = new SignInResult { RequiresTwoFactor = true };
-
         /// <summary>
         ///     True if the operation was successful
         /// </summary>
@@ -38,45 +32,62 @@ namespace Microsoft.AspNet.Identity
         ///     Static success result
         /// </summary>
         /// <returns></returns>
-        public static SignInResult Success
-        {
-            get { return _success; }
-        }
+        public static SignInResult Success => new SignInResult { Succeeded = true };
 
         /// <summary>
         ///     Static failure result
         /// </summary>
         /// <returns></returns>
-        public static SignInResult Failed
-        {
-            get { return _failed; }
-        }
+        public static SignInResult Failed => new SignInResult();
 
         /// <summary>
         ///     Static locked out result
         /// </summary>
         /// <returns></returns>
-        public static SignInResult LockedOut
-        {
-            get { return _lockedOut; }
-        }
+        public static SignInResult LockedOut => new SignInResult { IsLockedOut = true };
 
         /// <summary>
         ///     Static not allowed result
         /// </summary>
         /// <returns></returns>
-        public static SignInResult NotAllowed
-        {
-            get { return _notAllowed; }
-        }
+        public static SignInResult NotAllowed => new SignInResult { IsNotAllowed = true };
 
         /// <summary>
         ///     Static two factor required result
         /// </summary>
         /// <returns></returns>
-        public static SignInResult TwoFactorRequired
+        public static SignInResult TwoFactorRequired => new SignInResult { RequiresTwoFactor = true };
+
+        /// <summary>
+        ///     Returns string implemenation of the result. Provides string value for the assigned property
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
         {
-            get { return _twoFactorRequired; }
+            var status = "";
+
+            if (IsLockedOut)
+            {
+                status = "Lockedout";
+            }
+            else if (IsNotAllowed)
+            {
+                status = "NotAllowed";
+            }
+            else if (RequiresTwoFactor)
+            {
+                status = "RequiresTwoFactor";
+            }
+            else if (Succeeded)
+            {
+                status = "Succeeded";
+            }
+            else
+            {
+                status = "Failed";
+            }
+
+            return status;
         }
     }
 }
