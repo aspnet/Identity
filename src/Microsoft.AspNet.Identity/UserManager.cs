@@ -43,7 +43,8 @@ namespace Microsoft.AspNet.Identity
         /// <param name="errors"></param>
         /// <param name="tokenProviders"></param>
         /// <param name="msgProviders"></param>
-        /// <param name="loggerFactory"></param>
+        /// <param name="logger"></param>
+        /// <param name="contextAccessor"></param>
         public UserManager(IUserStore<TUser> store,
             IOptions<IdentityOptions> optionsAccessor,
             IPasswordHasher<TUser> passwordHasher,
@@ -443,7 +444,7 @@ namespace Microsoft.AspNet.Identity
         /// <summary>
         /// Normalize a key (user name, email) for uniqueness comparisons
         /// </summary>
-        /// <param name="userName"></param>
+        /// <param name="key"></param>
         /// <returns></returns>
         public virtual string NormalizeKey(string key)
         {
@@ -608,7 +609,6 @@ namespace Microsoft.AspNet.Identity
         ///     Remove a user's password
         /// </summary>
         /// <param name="user"></param>
-
         /// <returns></returns>
         public virtual async Task<IdentityResult> RemovePasswordAsync(TUser user,
             CancellationToken cancellationToken = default(CancellationToken))
@@ -788,7 +788,8 @@ namespace Microsoft.AspNet.Identity
         ///     Remove a user login
         /// </summary>
         /// <param name="user"></param>
-        /// <param name="login"></param>
+        /// <param name="loginProvider"></param>
+        /// <param name="providerKey"></param>
         /// <returns></returns>
         public virtual async Task<IdentityResult> RemoveLoginAsync(TUser user, string loginProvider, string providerKey)
         {
@@ -1280,6 +1281,7 @@ namespace Microsoft.AspNet.Identity
         ///     Generate a change email token for the user using the UserTokenProvider
         /// </summary>
         /// <param name="user"></param>
+        /// <param name="newEmail"></param>
         /// <returns></returns>
         public virtual async Task<string> GenerateChangeEmailTokenAsync(TUser user, string newEmail)
         {
@@ -1294,7 +1296,7 @@ namespace Microsoft.AspNet.Identity
         /// </summary>
         /// <param name="user"></param>
         /// <param name="token"></param>
-        /// <param name="newPassword"></param>
+        /// <param name="newEmail"></param>
         /// <returns></returns>
         public virtual async Task<IdentityResult> ChangeEmailAsync(TUser user, string newEmail, string token)
         {
@@ -1453,6 +1455,7 @@ namespace Microsoft.AspNet.Identity
         ///     Verify a user token with the specified purpose
         /// </summary>
         /// <param name="user"></param>
+        /// <param name="tokenProvider"></param>
         /// <param name="purpose"></param>
         /// <param name="token"></param>
         /// <returns></returns>
@@ -1491,6 +1494,7 @@ namespace Microsoft.AspNet.Identity
         /// </summary>
         /// <param name="purpose"></param>
         /// <param name="user"></param>
+        /// <param name="tokenProvider"></param>
         /// <returns></returns>
         public virtual async Task<string> GenerateUserTokenAsync(TUser user, string tokenProvider, string purpose)
         {
@@ -1568,7 +1572,7 @@ namespace Microsoft.AspNet.Identity
         ///     Verify a user token with the specified provider
         /// </summary>
         /// <param name="user"></param>
-        /// <param name="twoFactorProvider"></param>
+        /// <param name="tokenProvider"></param>
         /// <param name="token"></param>
         /// <returns></returns>
         public virtual async Task<bool> VerifyTwoFactorTokenAsync(TUser user, string tokenProvider, string token)
@@ -1600,7 +1604,7 @@ namespace Microsoft.AspNet.Identity
         ///     Get a user token for a specific user factor provider
         /// </summary>
         /// <param name="user"></param>
-        /// <param name="twoFactorProvider"></param>
+        /// <param name="tokenProvider"></param>
         /// <returns></returns>
         public virtual async Task<string> GenerateTwoFactorTokenAsync(TUser user, string tokenProvider)
         {
