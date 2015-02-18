@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -388,8 +389,7 @@ namespace Microsoft.AspNet.Identity
         /// <param name="role"></param>
         /// <param name="methodName"></param>
         /// <returns></returns>
-        protected virtual async Task<IdentityResult> LogResultAsync(IdentityResult result,
-            TRole role, [System.Runtime.CompilerServices.CallerMemberName] string methodName = "")
+        protected virtual async Task<IdentityResult> LogResultAsync(IdentityResult result, TRole role, [CallerMemberName] string methodName = "")
         {
             var logLevel = result.Succeeded ? LogLevel.Information : LogLevel.Warning;
 

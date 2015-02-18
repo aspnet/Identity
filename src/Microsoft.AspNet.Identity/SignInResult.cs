@@ -65,16 +65,15 @@ namespace Microsoft.AspNet.Identity
         public static SignInResult TwoFactorRequired => _twoFactorRequired;
 
         /// <summary>
-        ///     Returns string implemenation of the result. Provides string value for the assigned property
+        ///     Returns string representation of the result. 
         /// </summary>
         /// <returns></returns>
         public override string ToString()
         {
-            return IsLockedOut
-                ? "Lockedout"
-                : IsNotAllowed
-                    ? "NotAllowed"
-                    : RequiresTwoFactor ? "RequiresTwoFactor" : Succeeded ? "Succeeded" : "Failed";
+            return IsLockedOut ? "Lockedout" : 
+		   	        IsNotAllowed ? "NotAllowed" : 
+			        RequiresTwoFactor ? "RequiresTwoFactor" : 
+			        Succeeded ? "Succeeded" : "Failed";
         }
     }
 }

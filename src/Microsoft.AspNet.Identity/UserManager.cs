@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using System.Text;
 using System.Threading;
@@ -1913,8 +1914,7 @@ namespace Microsoft.AspNet.Identity
         /// <param name="user"></param>
         /// <param name="methodName"></param>
         /// <returns></returns>
-        protected virtual async Task<IdentityResult> LogResultAsync(IdentityResult result,
-            TUser user, [System.Runtime.CompilerServices.CallerMemberName] string methodName = "")
+        protected virtual async Task<IdentityResult> LogResultAsync(IdentityResult result, TUser user, [CallerMemberName] string methodName = "")
         {
             var logLevel = result.Succeeded ? LogLevel.Information : LogLevel.Warning;
 
@@ -1935,8 +1935,7 @@ namespace Microsoft.AspNet.Identity
         /// <param name="user"></param>
         /// <param name="methodName"></param>
         /// <returns>result</returns>
-        protected virtual async Task<bool> LogResultAsync(bool result,
-            TUser user, [System.Runtime.CompilerServices.CallerMemberName] string methodName = "")
+        protected virtual async Task<bool> LogResultAsync(bool result, TUser user, [CallerMemberName] string methodName = "")
         {
             var logLevel = result ? LogLevel.Information : LogLevel.Warning;
 

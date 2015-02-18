@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
@@ -403,7 +404,7 @@ namespace Microsoft.AspNet.Identity
         /// <param name="user"></param>
         /// <param name="methodName"></param>
         /// <returns></returns>
-        protected async virtual Task<bool> LogResultAsync(bool result, TUser user, [System.Runtime.CompilerServices.CallerMemberName] string methodName = "")
+        protected async virtual Task<bool> LogResultAsync(bool result, TUser user, [CallerMemberName] string methodName = "")
         {
             // Check if log level is enabled before creating the message.
             if (Logger.IsEnabled(LogLevel.Information))
@@ -422,8 +423,7 @@ namespace Microsoft.AspNet.Identity
         /// <param name="user"></param>
         /// <param name="methodName"></param>
         /// <returns></returns>
-        protected virtual async Task<SignInResult> LogResultAsync(SignInResult result, TUser user,
-        [System.Runtime.CompilerServices.CallerMemberName] string methodName = "")
+        protected virtual async Task<SignInResult> LogResultAsync(SignInResult result, TUser user, [CallerMemberName] string methodName = "")
         {
             if (Logger.IsEnabled(LogLevel.Information))
             {
