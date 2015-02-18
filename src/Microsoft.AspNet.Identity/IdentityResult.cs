@@ -45,7 +45,7 @@ namespace Microsoft.AspNet.Identity
         }
 
         /// <summary>
-        ///     Return string representation if IdentityResult
+        ///     Return string representation of IdentityResult
         /// </summary>
         /// <returns>"Succedded", if result is suceeded else "Failed:error codes"</returns>
         public override string ToString()
