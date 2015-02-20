@@ -58,7 +58,7 @@ namespace Microsoft.AspNet.Identity.Test
 
         private class TestIdentity : IIdentity
         {
-            public string AuthenticationScheme
+            public string AuthenticationType
             {
                 get { throw new NotImplementedException(); }
             }

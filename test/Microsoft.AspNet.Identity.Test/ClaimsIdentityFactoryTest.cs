@@ -12,7 +12,7 @@ using Microsoft.Framework.OptionsModel;
 
 namespace Microsoft.AspNet.Identity.Test
 {
-    public class ClaimsIdentityFactoryTest
+    public class ClaimsPrincipalFactoryTest
     {
         [Fact]
         public async Task CreateIdentityNullChecks()
@@ -21,10 +21,10 @@ namespace Microsoft.AspNet.Identity.Test
             var roleManager = MockHelpers.MockRoleManager<TestRole>().Object;
             var options = new Mock<IOptions<IdentityOptions>>();
             Assert.Throws<ArgumentNullException>("optionsAccessor",
-                () => new ClaimsIdentityFactory<TestUser, TestRole>(userManager, roleManager, options.Object));
+                () => new UserClaimsPrincipalFactory<TestUser, TestRole>(userManager, roleManager, options.Object));
             var identityOptions = new IdentityOptions();
             options.Setup(a => a.Options).Returns(identityOptions);
-            var factory = new ClaimsIdentityFactory<TestUser, TestRole>(userManager, roleManager, options.Object);
+            var factory = new UserClaimsPrincipalFactory<TestUser, TestRole>(userManager, roleManager, options.Object);
             await Assert.ThrowsAsync<ArgumentNullException>("user",
                 async () => await factory.CreateAsync(null));
         }
@@ -74,15 +74,17 @@ namespace Microsoft.AspNet.Identity.Test
             var options = new Mock<IOptions<IdentityOptions>>();
             var identityOptions = new IdentityOptions();
             options.Setup(a => a.Options).Returns(identityOptions);
-            var factory = new ClaimsIdentityFactory<TestUser, TestRole>(userManager.Object, roleManager.Object, options.Object);
+            var factory = new UserClaimsPrincipalFactory<TestUser, TestRole>(userManager.Object, roleManager.Object, options.Object);
 
             // Act
-            var identity = await factory.CreateAsync(user);
+            var principal = await factory.CreateAsync(user);
+            var identity = principal.Identities.First();
 
             // Assert
             var manager = userManager.Object;
             Assert.NotNull(identity);
-            Assert.Equal(IdentityOptions.ApplicationCookieAuthenticationScheme, identity.AuthenticationScheme);
+            Assert.Equal(1, principal.Identities.Count());
+            Assert.Equal(IdentityOptions.ApplicationCookieAuthenticationScheme, identity.AuthenticationType);
             var claims = identity.Claims.ToList();
             Assert.NotNull(claims);
             Assert.True(
