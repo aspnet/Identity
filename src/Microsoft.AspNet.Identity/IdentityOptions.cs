@@ -31,9 +31,9 @@ namespace Microsoft.AspNet.Identity
 
         public string ChangeEmailTokenProvider { get; set; } = Resources.DefaultTokenProvider;
 
-        public static string ApplicationCookieAuthenticationType { get; set; } = typeof(IdentityOptions).Namespace + ".Application";
-        public static string ExternalCookieAuthenticationType { get; set; } = typeof(IdentityOptions).Namespace + ".External";
-        public static string TwoFactorUserIdCookieAuthenticationType { get; set; } = typeof(IdentityOptions).Namespace + ".TwoFactorUserId";
-        public static string TwoFactorRememberMeCookieAuthenticationType { get; set; } = typeof(IdentityOptions).Namespace + ".TwoFactorRemeberMe";
+        public static string ApplicationCookieAuthenticationScheme { get; set; } = typeof(IdentityOptions).Namespace + ".Application";
+        public static string ExternalCookieAuthenticationScheme { get; set; } = typeof(IdentityOptions).Namespace + ".External";
+        public static string TwoFactorUserIdCookieAuthenticationScheme { get; set; } = typeof(IdentityOptions).Namespace + ".TwoFactorUserId";
+        public static string TwoFactorRememberMeCookieAuthenticationScheme { get; set; } = typeof(IdentityOptions).Namespace + ".TwoFactorRemeberMe";
     }
 }

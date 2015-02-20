@@ -43,6 +43,22 @@ namespace System.Security.Principal
         }
 
         /// <summary>
+        /// Returns the User ID claim value if present otherwise returns null.
+        /// </summary>
+        /// <param name="principal">The <see cref="IPrincipal"/> instance this method extends.</param>
+        /// <returns>The User ID claim value, or null if the claim is not present.</returns>
+        /// <remarks>The name claim is identified by <see cref="ClaimTypes.NameIdentifier"/>.</remarks>
+        public static string GetUserId(this IPrincipal principal)
+        {
+            if (principal == null)
+            {
+                throw new ArgumentNullException(nameof(principal));
+            }
+            var ci = principal as ClaimsPrincipal;
+            return ci != null ? ci.FindFirstValue(ClaimTypes.NameIdentifier) : null;
+        }
+
+        /// <summary>
         /// Returns the value for the first claim of the specified type otherwise null the claim is not present.
         /// </summary>
         /// <param name="identity">The <see cref="IIdentity"/> instance this method extends.</param>
@@ -57,5 +73,22 @@ namespace System.Security.Principal
             var claim = identity.FindFirst(claimType);
             return claim != null ? claim.Value : null;
         }
+
+        /// <summary>
+        /// Returns the value for the first claim of the specified type otherwise null the claim is not present.
+        /// </summary>
+        /// <param name="identity">The <see cref="IIdentity"/> instance this method extends.</param>
+        /// <param name="claimType">The claim type whose first value should be returned.</param>
+        /// <returns>The value of the first instance of the specifed claim type, or null if the claim is not present.</returns>
+        public static string FindFirstValue(this ClaimsPrincipal principal, string claimType)
+        {
+            if (principal == null)
+            {
+                throw new ArgumentNullException(nameof(principal));
+            }
+            var claim = principal.FindFirst(claimType);
+            return claim != null ? claim.Value : null;
+        }
+
     }
 }

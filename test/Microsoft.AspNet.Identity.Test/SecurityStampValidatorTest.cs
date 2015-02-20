@@ -25,7 +25,7 @@ namespace Microsoft.AspNet.Identity.Test
         {
             var httpContext = new Mock<HttpContext>();
             httpContext.Setup(c => c.RequestServices).Returns(new ServiceCollection().BuildServiceProvider());
-            var id = new ClaimsIdentity(IdentityOptions.ApplicationCookieAuthenticationType);
+            var id = new ClaimsIdentity(IdentityOptions.ApplicationCookieAuthenticationScheme);
             var ticket = new AuthenticationTicket(id, new AuthenticationProperties { IssuedUtc = DateTimeOffset.UtcNow });
             var context = new CookieValidateIdentityContext(httpContext.Object, ticket, new CookieAuthenticationOptions());
             var ex = await Assert.ThrowsAsync<InvalidOperationException>(() => SecurityStampValidator.ValidateIdentityAsync(context));
@@ -39,7 +39,7 @@ namespace Microsoft.AspNet.Identity.Test
         {
             var user = new IdentityUser("test");
             var userManager = MockHelpers.MockUserManager<IdentityUser>();
-            var claimsManager = new Mock<IClaimsIdentityFactory<IdentityUser>>();
+            var claimsManager = new Mock<IClaimsPrincipalFactory<IdentityUser>>();
             var identityOptions = new IdentityOptions { SecurityStampValidationInterval = TimeSpan.Zero };
             var options = new Mock<IOptions<IdentityOptions>>();
             options.Setup(a => a.Options).Returns(identityOptions);
@@ -55,7 +55,7 @@ namespace Microsoft.AspNet.Identity.Test
             services.AddInstance(signInManager.Object);
             services.AddInstance<ISecurityStampValidator>(new SecurityStampValidator<IdentityUser>());
             httpContext.Setup(c => c.RequestServices).Returns(services.BuildServiceProvider());
-            var id = new ClaimsIdentity(IdentityOptions.ApplicationCookieAuthenticationType);
+            var id = new ClaimsIdentity(IdentityOptions.ApplicationCookieAuthenticationScheme);
             id.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id));
 
             var ticket = new AuthenticationTicket(id, new AuthenticationProperties { IssuedUtc = DateTimeOffset.UtcNow, IsPersistent = isPersistent });
@@ -74,7 +74,7 @@ namespace Microsoft.AspNet.Identity.Test
         {
             var user = new IdentityUser("test");
             var userManager = MockHelpers.MockUserManager<IdentityUser>();
-            var claimsManager = new Mock<IClaimsIdentityFactory<IdentityUser>>();
+            var claimsManager = new Mock<IClaimsPrincipalFactory<IdentityUser>>();
             var identityOptions = new IdentityOptions { SecurityStampValidationInterval = TimeSpan.Zero };
             var options = new Mock<IOptions<IdentityOptions>>();
             options.Setup(a => a.Options).Returns(identityOptions);
@@ -89,7 +89,7 @@ namespace Microsoft.AspNet.Identity.Test
             services.AddInstance(signInManager.Object);
             services.AddInstance<ISecurityStampValidator>(new SecurityStampValidator<IdentityUser>());
             httpContext.Setup(c => c.RequestServices).Returns(services.BuildServiceProvider());
-            var id = new ClaimsIdentity(IdentityOptions.ApplicationCookieAuthenticationType);
+            var id = new ClaimsIdentity(IdentityOptions.ApplicationCookieAuthenticationScheme);
             id.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id));
 
             var ticket = new AuthenticationTicket(id, new AuthenticationProperties { IssuedUtc = DateTimeOffset.UtcNow });
@@ -109,7 +109,7 @@ namespace Microsoft.AspNet.Identity.Test
             var user = new IdentityUser("test");
             var httpContext = new Mock<HttpContext>();
             var userManager = MockHelpers.MockUserManager<IdentityUser>();
-            var claimsManager = new Mock<IClaimsIdentityFactory<IdentityUser>>();
+            var claimsManager = new Mock<IClaimsPrincipalFactory<IdentityUser>>();
             var identityOptions = new IdentityOptions { SecurityStampValidationInterval = TimeSpan.Zero };
             var options = new Mock<IOptions<IdentityOptions>>();
             options.Setup(a => a.Options).Returns(identityOptions);
@@ -123,7 +123,7 @@ namespace Microsoft.AspNet.Identity.Test
             services.AddInstance(signInManager.Object);
             services.AddInstance<ISecurityStampValidator>(new SecurityStampValidator<IdentityUser>());
             httpContext.Setup(c => c.RequestServices).Returns(services.BuildServiceProvider());
-            var id = new ClaimsIdentity(IdentityOptions.ApplicationCookieAuthenticationType);
+            var id = new ClaimsIdentity(IdentityOptions.ApplicationCookieAuthenticationScheme);
             id.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id));
 
             var ticket = new AuthenticationTicket(id, new AuthenticationProperties());
@@ -143,7 +143,7 @@ namespace Microsoft.AspNet.Identity.Test
             var user = new IdentityUser("test");
             var httpContext = new Mock<HttpContext>();
             var userManager = MockHelpers.MockUserManager<IdentityUser>();
-            var claimsManager = new Mock<IClaimsIdentityFactory<IdentityUser>>();
+            var claimsManager = new Mock<IClaimsPrincipalFactory<IdentityUser>>();
             var identityOptions = new IdentityOptions { SecurityStampValidationInterval = TimeSpan.FromDays(1) };
             var options = new Mock<IOptions<IdentityOptions>>();
             options.Setup(a => a.Options).Returns(identityOptions);
@@ -158,7 +158,7 @@ namespace Microsoft.AspNet.Identity.Test
             services.AddInstance(signInManager.Object);
             services.AddInstance<ISecurityStampValidator>(new SecurityStampValidator<IdentityUser>());
             httpContext.Setup(c => c.RequestServices).Returns(services.BuildServiceProvider());
-            var id = new ClaimsIdentity(IdentityOptions.ApplicationCookieAuthenticationType);
+            var id = new ClaimsIdentity(IdentityOptions.ApplicationCookieAuthenticationScheme);
             id.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id));
 
             var ticket = new AuthenticationTicket(id, new AuthenticationProperties { IssuedUtc = DateTimeOffset.UtcNow });

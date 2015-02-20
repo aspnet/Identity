@@ -19,11 +19,11 @@ namespace Microsoft.AspNet.Identity
         ///     ClaimsIdentity
         /// </summary>
         /// <returns></returns>
-        public virtual async Task ValidateAsync(CookieValidateIdentityContext context, ClaimsIdentity identity)
+        public virtual async Task ValidateAsync(CookieValidatePrincipalContext context)
         {
             var manager = context.HttpContext.RequestServices.GetRequiredService<SignInManager<TUser>>();
-            var userId = identity.GetUserId();
-            var user = await manager.ValidateSecurityStampAsync(identity, userId);
+            var userId = context.Principal.GetUserId();
+            var user = await manager.ValidateSecurityStampAsync(context.Principal, userId);
             if (user != null)
             {
                 var isPersistent = false;
@@ -35,7 +35,7 @@ namespace Microsoft.AspNet.Identity
             }
             else
             {
-                context.RejectIdentity();
+                context.RejectPrincipal();
                 manager.SignOut();
             }
         }
@@ -47,7 +47,7 @@ namespace Microsoft.AspNet.Identity
     /// </summary>
     public static class SecurityStampValidator
     {
-        public static Task ValidateIdentityAsync(CookieValidateIdentityContext context)
+        public static Task ValidatePrincipalAsync(CookieValidatePrincipalContext context)
         {
             var currentUtc = DateTimeOffset.UtcNow;
             if (context.Options != null && context.Options.SystemClock != null)
@@ -72,7 +72,7 @@ namespace Microsoft.AspNet.Identity
             if (validate)
             {
                 var validator = context.HttpContext.RequestServices.GetRequiredService<ISecurityStampValidator>();
-                return validator.ValidateAsync(context, context.Identity);
+                return validator.ValidateAsync(context);
             }
             return Task.FromResult(0);
         }

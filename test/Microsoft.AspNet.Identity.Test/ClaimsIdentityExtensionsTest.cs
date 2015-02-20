@@ -10,7 +10,7 @@ namespace Microsoft.AspNet.Identity.Test
 {
     public class ClaimsIdentityExtensionsTest
     {
-        public const string ExternalAuthenticationType = "TestExternalAuth";
+        public const string ExternalAuthenticationScheme = "TestExternalAuth";
 
         [Fact]
         public void IdentityNullCheckTest()
@@ -50,15 +50,15 @@ namespace Microsoft.AspNet.Identity.Test
             return new ClaimsIdentity(
                 new[]
                 {
-                    new Claim(ClaimTypes.NameIdentifier, "NameIdentifier", null, ExternalAuthenticationType),
+                    new Claim(ClaimTypes.NameIdentifier, "NameIdentifier", null, ExternalAuthenticationScheme),
                     new Claim(ClaimTypes.Name, "Name")
                 },
-                ExternalAuthenticationType);
+                ExternalAuthenticationScheme);
         }
 
         private class TestIdentity : IIdentity
         {
-            public string AuthenticationType
+            public string AuthenticationScheme
             {
                 get { throw new NotImplementedException(); }
             }

@@ -82,7 +82,7 @@ namespace Microsoft.AspNet.Identity.Test
             // Assert
             var manager = userManager.Object;
             Assert.NotNull(identity);
-            Assert.Equal(IdentityOptions.ApplicationCookieAuthenticationType, identity.AuthenticationType);
+            Assert.Equal(IdentityOptions.ApplicationCookieAuthenticationScheme, identity.AuthenticationScheme);
             var claims = identity.Claims.ToList();
             Assert.NotNull(claims);
             Assert.True(

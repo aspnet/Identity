@@ -29,7 +29,7 @@ namespace IdentitySample.Models
         public IActionResult Login(string returnUrl = null)
         {
             ViewBag.ReturnUrl = returnUrl;
-            ViewBag.LoginProviders = SignInManager.GetExternalAuthenticationTypes().ToList();
+            ViewBag.LoginProviders = SignInManager.GetExternalAuthenticationSchemes().ToList();
             return View();
         }
 
@@ -164,7 +164,7 @@ namespace IdentitySample.Models
                 ViewBag.ReturnUrl = returnUrl;
                 ViewBag.LoginProvider = info.LoginProvider;
                 // REVIEW: handle case where email not in claims?
-                var email = info.ExternalIdentity.FindFirstValue(ClaimTypes.Email);
+                var email = info.ExternalPrincipal.FindFirstValue(ClaimTypes.Email);
                 return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = email });
             }
         }
