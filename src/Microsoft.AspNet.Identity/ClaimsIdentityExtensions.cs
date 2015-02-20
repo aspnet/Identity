@@ -1,7 +1,9 @@
 // Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System.Linq;
 using System.Security.Claims;
+using Microsoft.AspNet.Identity;
 
 namespace System.Security.Principal
 {
@@ -56,6 +58,22 @@ namespace System.Security.Principal
             }
             var ci = principal as ClaimsPrincipal;
             return ci != null ? ci.FindFirstValue(ClaimTypes.NameIdentifier) : null;
+        }
+
+        /// <summary>
+        /// Returns true if the principal has an identity with the application cookie identity
+        /// </summary>
+        /// <param name="principal">The <see cref="IPrincipal"/> instance this method extends.</param>
+        /// <returns>True if the user is logged in with identity.</returns>
+        public static bool IsLoggedIn(this IPrincipal principal)
+        {
+            if (principal == null)
+            {
+                throw new ArgumentNullException(nameof(principal));
+            }
+            var p = principal as ClaimsPrincipal;
+            return p?.Identities != null && 
+                p.Identities.Any(i => i.AuthenticationType == IdentityOptions.ApplicationCookieAuthenticationScheme);
         }
 
         /// <summary>

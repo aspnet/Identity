@@ -176,7 +176,7 @@ namespace IdentitySample.Models
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ExternalLoginConfirmation(ExternalLoginConfirmationViewModel model, string returnUrl = null)
         {
-            if (User.Identity.IsAuthenticated)
+            if (User.IsLoggedIn())
             {
                 return RedirectToAction("Index", "Manage");
             }
@@ -414,7 +414,7 @@ namespace IdentitySample.Models
 
         private async Task<ApplicationUser> GetCurrentUserAsync()
         {
-            return await UserManager.FindByIdAsync(Context.User.Identity.GetUserId());
+            return await UserManager.FindByIdAsync(Context.User.GetUserId());
         }
 
         private IActionResult RedirectToLocal(string returnUrl)
