@@ -176,7 +176,7 @@ namespace IdentitySample.Models
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ExternalLoginConfirmation(ExternalLoginConfirmationViewModel model, string returnUrl = null)
         {
-            if (User.IsLoggedIn())
+            if (User.IsSignedIn())
             {
                 return RedirectToAction("Index", "Manage");
             }

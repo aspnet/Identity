@@ -4,15 +4,14 @@
 using System;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Framework.OptionsModel;
 using Moq;
 using Xunit;
-using Microsoft.Framework.OptionsModel;
 
 namespace Microsoft.AspNet.Identity.Test
 {
-    public class ClaimsPrincipalFactoryTest
+    public class UserClaimsPrincipalFactoryTest
     {
         [Fact]
         public async Task CreateIdentityNullChecks()
@@ -84,7 +83,7 @@ namespace Microsoft.AspNet.Identity.Test
             var manager = userManager.Object;
             Assert.NotNull(identity);
             Assert.Equal(1, principal.Identities.Count());
-            Assert.Equal(IdentityOptions.ApplicationCookieAuthenticationScheme, identity.AuthenticationType);
+            Assert.Equal(IdentityOptions.ApplicationCookieAuthenticationType, identity.AuthenticationType);
             var claims = identity.Claims.ToList();
             Assert.NotNull(claims);
             Assert.True(

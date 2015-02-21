@@ -391,7 +391,7 @@ namespace Microsoft.AspNet.Identity.Test
                 response.Setup(r => r.SignIn(
                     IdentityOptions.TwoFactorRememberMeCookieAuthenticationScheme,
                     It.Is<ClaimsPrincipal>(i => i.FindFirstValue(ClaimTypes.Name) == user.Id
-                        && i.Identities.First().AuthenticationType == IdentityOptions.TwoFactorRememberMeCookieAuthenticationScheme),
+                        && i.Identities.First().AuthenticationType == IdentityOptions.TwoFactorRememberMeCookieAuthenticationType),
                     It.Is<AuthenticationProperties>(v => v.IsPersistent == true))).Verifiable();
             }
             context.Setup(c => c.Response).Returns(response.Object).Verifiable();
@@ -433,7 +433,7 @@ namespace Microsoft.AspNet.Identity.Test
             response.Setup(r => r.SignIn(
                 IdentityOptions.TwoFactorRememberMeCookieAuthenticationScheme,
                 It.Is<ClaimsPrincipal>(i => i.FindFirstValue(ClaimTypes.Name) == user.Id
-                    && i.Identities.First().AuthenticationType == IdentityOptions.TwoFactorRememberMeCookieAuthenticationScheme),
+                    && i.Identities.First().AuthenticationType == IdentityOptions.TwoFactorRememberMeCookieAuthenticationType),
                 It.Is<AuthenticationProperties>(v => v.IsPersistent == true))).Verifiable();
             contextAccessor.Setup(a => a.Value).Returns(context.Object).Verifiable();
             options.Setup(a => a.Options).Returns(identityOptions).Verifiable();
@@ -471,7 +471,7 @@ namespace Microsoft.AspNet.Identity.Test
             var response = new Mock<HttpResponse>();
             context.Setup(c => c.Response).Returns(response.Object).Verifiable();
             SetupSignIn(response);
-            var id = new ClaimsIdentity(IdentityOptions.TwoFactorRememberMeCookieAuthenticationScheme);
+            var id = new ClaimsIdentity(IdentityOptions.TwoFactorRememberMeCookieAuthenticationType);
             id.AddClaim(new Claim(ClaimTypes.Name, user.Id));
             var authResult = new AuthenticationResult(new ClaimsPrincipal(id), new AuthenticationProperties(), new AuthenticationDescription());
             context.Setup(c => c.AuthenticateAsync(IdentityOptions.TwoFactorRememberMeCookieAuthenticationScheme)).ReturnsAsync(authResult).Verifiable();
@@ -482,7 +482,7 @@ namespace Microsoft.AspNet.Identity.Test
             var options = new Mock<IOptions<IdentityOptions>>();
             options.Setup(a => a.Options).Returns(identityOptions);
             var claimsFactory = new Mock<UserClaimsPrincipalFactory<TestUser, TestRole>>(manager.Object, roleManager.Object, options.Object);
-            claimsFactory.Setup(m => m.CreateAsync(user)).ReturnsAsync(new ClaimsPrincipal(new ClaimsIdentity(IdentityOptions.ApplicationCookieAuthenticationScheme))).Verifiable();
+            claimsFactory.Setup(m => m.CreateAsync(user)).ReturnsAsync(new ClaimsPrincipal(new ClaimsIdentity(IdentityOptions.ApplicationCookieAuthenticationType))).Verifiable();
             var helper = new SignInManager<TestUser>(manager.Object, contextAccessor.Object, claimsFactory.Object, options.Object);
 
             // Act
@@ -500,14 +500,14 @@ namespace Microsoft.AspNet.Identity.Test
         [Theory]
         [InlineData("Microsoft.AspNet.Identity.Authentication.Application")]
         [InlineData("Foo")]
-        public void SignOutCallsContextResponseSignOut(string authenticationType)
+        public void SignOutCallsContextResponseSignOut(string authenticationScheme)
         {
             // Setup
             var manager = MockHelpers.MockUserManager<TestUser>();
             var context = new Mock<HttpContext>();
             var response = new Mock<HttpResponse>();
             context.Setup(c => c.Response).Returns(response.Object).Verifiable();
-            response.Setup(r => r.SignOut(authenticationType)).Verifiable();
+            response.Setup(r => r.SignOut(authenticationScheme)).Verifiable();
             response.Setup(r => r.SignOut(IdentityOptions.TwoFactorUserIdCookieAuthenticationScheme)).Verifiable();
             response.Setup(r => r.SignOut(IdentityOptions.ExternalCookieAuthenticationScheme)).Verifiable();
             var contextAccessor = new Mock<IHttpContextAccessor>();
@@ -516,7 +516,7 @@ namespace Microsoft.AspNet.Identity.Test
             var identityOptions = new IdentityOptions();
             var options = new Mock<IOptions<IdentityOptions>>();
             options.Setup(a => a.Options).Returns(identityOptions);
-            IdentityOptions.ApplicationCookieAuthenticationScheme = authenticationType;
+            IdentityOptions.ApplicationCookieAuthenticationScheme = authenticationScheme;
             var claimsFactory = new Mock<UserClaimsPrincipalFactory<TestUser, TestRole>>(manager.Object, roleManager.Object, options.Object);
             var logStore = new StringBuilder();
             var logger = MockHelpers.MockILogger<SignInManager<TestUser>>(logStore);

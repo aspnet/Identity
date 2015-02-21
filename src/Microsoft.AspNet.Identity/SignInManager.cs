@@ -193,7 +193,7 @@ namespace Microsoft.AspNet.Identity
             {
                 return null;
             }
-            var identity = new ClaimsIdentity(IdentityOptions.TwoFactorUserIdCookieAuthenticationScheme);
+            var identity = new ClaimsIdentity(IdentityOptions.TwoFactorUserIdCookieAuthenticationType);
             identity.AddClaim(new Claim(ClaimTypes.Name, info.UserId));
             if (info.LoginProvider != null)
             {
@@ -231,7 +231,7 @@ namespace Microsoft.AspNet.Identity
         public virtual async Task RememberTwoFactorClientAsync(TUser user)
         {
             var userId = await UserManager.GetUserIdAsync(user);
-            var rememberBrowserIdentity = new ClaimsIdentity(IdentityOptions.TwoFactorRememberMeCookieAuthenticationScheme);
+            var rememberBrowserIdentity = new ClaimsIdentity(IdentityOptions.TwoFactorRememberMeCookieAuthenticationType);
             rememberBrowserIdentity.AddClaim(new Claim(ClaimTypes.Name, userId));
             Context.Response.SignIn(IdentityOptions.TwoFactorRememberMeCookieAuthenticationScheme,
                 new ClaimsPrincipal(rememberBrowserIdentity),
@@ -433,7 +433,7 @@ namespace Microsoft.AspNet.Identity
 
         internal static ClaimsPrincipal StoreTwoFactorInfo(string userId, string loginProvider)
         {
-            var identity = new ClaimsIdentity(IdentityOptions.TwoFactorUserIdCookieAuthenticationScheme);
+            var identity = new ClaimsIdentity(IdentityOptions.TwoFactorUserIdCookieAuthenticationType);
             identity.AddClaim(new Claim(ClaimTypes.Name, userId));
             if (loginProvider != null)
             {

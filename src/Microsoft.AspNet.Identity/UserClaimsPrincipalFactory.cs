@@ -84,10 +84,11 @@ namespace Microsoft.AspNet.Identity
             }
             var userId = await UserManager.GetUserIdAsync(user);
             var userName = await UserManager.GetUserNameAsync(user);
-            var id = new ClaimsIdentity(IdentityOptions.ApplicationCookieAuthenticationScheme, Options.ClaimsIdentity.UserNameClaimType,
+            var id = new ClaimsIdentity(IdentityOptions.ApplicationCookieAuthenticationType, 
+                Options.ClaimsIdentity.UserNameClaimType,
                 Options.ClaimsIdentity.RoleClaimType);
             id.AddClaim(new Claim(Options.ClaimsIdentity.UserIdClaimType, userId));
-            id.AddClaim(new Claim(Options.ClaimsIdentity.UserNameClaimType, userName, ClaimValueTypes.String));
+            id.AddClaim(new Claim(Options.ClaimsIdentity.UserNameClaimType, userName));
             if (UserManager.SupportsUserSecurityStamp)
             {
                 id.AddClaim(new Claim(Options.ClaimsIdentity.SecurityStampClaimType, 
@@ -98,7 +99,7 @@ namespace Microsoft.AspNet.Identity
                 var roles = await UserManager.GetRolesAsync(user);
                 foreach (var roleName in roles)
                 {
-                    id.AddClaim(new Claim(Options.ClaimsIdentity.RoleClaimType, roleName, ClaimValueTypes.String));
+                    id.AddClaim(new Claim(Options.ClaimsIdentity.RoleClaimType, roleName));
                     if (RoleManager.SupportsRoleClaims)
                     {
                         var role = await RoleManager.FindByNameAsync(roleName);
