@@ -31,12 +31,17 @@ namespace Microsoft.AspNet.Identity.EntityFramework
                     b.Key(u => u.Id);
                     b.ForRelational().Table("AspNetUsers");
                     b.Property(u => u.ConcurrencyStamp).ConcurrencyToken();
+                    b.HasMany(x => x.Roles).WithOne().ForeignKey(x=>x.UserId);
+                    b.HasMany(x => x.Claims).WithOne().ForeignKey(x=>x.UserId);
+                    b.HasMany(x => x.Logins).WithOne().ForeignKey(x=>x.UserId);
                 });
 
             builder.Entity<TRole>(b =>
                 {
                     b.Key(r => r.Id);
                     b.ForRelational().Table("AspNetRoles");
+                    b.HasMany(x => x.Claims).WithOne().ForeignKey(x => x.RoleId);
+                    b.HasMany(x => x.Users).WithOne().ForeignKey(x => x.RoleId);
                     b.Property(r => r.ConcurrencyStamp).ConcurrencyToken();
                 });
 
@@ -44,7 +49,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
                 {
                     b.Key(uc => uc.Id);
                     b.Reference<TUser>().InverseCollection().ForeignKey(uc => uc.UserId);
-                    b.ForRelational().Table("AspNetUserClaims");
+		    b.ForRelational().Table("AspNetUserClaims");
                 });
 
             builder.Entity<IdentityRoleClaim<TKey>>(b =>
