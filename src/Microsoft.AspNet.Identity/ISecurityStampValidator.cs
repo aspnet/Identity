@@ -9,6 +9,6 @@ namespace Microsoft.AspNet.Identity
 {
     public interface ISecurityStampValidator
     {
-        Task ValidateAsync(CookieValidateIdentityContext context, ClaimsIdentity identity);
+        Task ValidateAsync(CookieValidatePrincipalContext context);
     }
 }

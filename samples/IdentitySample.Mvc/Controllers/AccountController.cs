@@ -29,7 +29,7 @@ namespace IdentitySample.Models
         public IActionResult Login(string returnUrl = null)
         {
             ViewBag.ReturnUrl = returnUrl;
-            ViewBag.LoginProviders = SignInManager.GetExternalAuthenticationTypes().ToList();
+            ViewBag.LoginProviders = SignInManager.GetExternalAuthenticationSchemes().ToList();
             return View();
         }
 
@@ -164,7 +164,7 @@ namespace IdentitySample.Models
                 ViewBag.ReturnUrl = returnUrl;
                 ViewBag.LoginProvider = info.LoginProvider;
                 // REVIEW: handle case where email not in claims?
-                var email = info.ExternalIdentity.FindFirstValue(ClaimTypes.Email);
+                var email = info.ExternalPrincipal.FindFirstValue(ClaimTypes.Email);
                 return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = email });
             }
         }
@@ -176,7 +176,7 @@ namespace IdentitySample.Models
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ExternalLoginConfirmation(ExternalLoginConfirmationViewModel model, string returnUrl = null)
         {
-            if (User.Identity.IsAuthenticated)
+            if (User.IsSignedIn())
             {
                 return RedirectToAction("Index", "Manage");
             }
@@ -414,7 +414,7 @@ namespace IdentitySample.Models
 
         private async Task<ApplicationUser> GetCurrentUserAsync()
         {
-            return await UserManager.FindByIdAsync(Context.User.Identity.GetUserId());
+            return await UserManager.FindByIdAsync(Context.User.GetUserId());
         }
 
         private IActionResult RedirectToLocal(string returnUrl)
