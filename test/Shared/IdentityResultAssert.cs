@@ -62,7 +62,7 @@ namespace Microsoft.AspNet.Identity.Test
             TestLogger testlogger = logger as TestLogger;
             if (testlogger != null)
             {
-                string expected = string.Format("{0} for {1}: {2} : Success", methodName, userOrRole, id);
+                string expected = string.Format("{0} for {1}: {2} : Succeeded", methodName, userOrRole, id);
                 Assert.True(testlogger.LogMessages.Contains(expected));
             }
             else

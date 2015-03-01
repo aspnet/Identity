@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using System.Text;
 using System.Threading;
@@ -29,7 +30,7 @@ namespace Microsoft.AspNet.Identity
 
         private TimeSpan _defaultLockout = TimeSpan.Zero;
         private bool _disposed;
-        private HttpContext _context;
+        private readonly HttpContext _context;
 
         /// <summary>
         ///     Constructor
@@ -43,7 +44,8 @@ namespace Microsoft.AspNet.Identity
         /// <param name="errors"></param>
         /// <param name="tokenProviders"></param>
         /// <param name="msgProviders"></param>
-        /// <param name="loggerFactory"></param>
+        /// <param name="logger"></param>
+        /// <param name="contextAccessor"></param>
         public UserManager(IUserStore<TUser> store,
             IOptions<IdentityOptions> optionsAccessor,
             IPasswordHasher<TUser> passwordHasher,
@@ -255,13 +257,7 @@ namespace Microsoft.AspNet.Identity
             }
         }
 
-        private CancellationToken CancellationToken
-        {
-            get
-            {
-                return _context?.RequestAborted ?? CancellationToken.None; 
-            }
-        }
+        private CancellationToken CancellationToken => _context?.RequestAborted ?? CancellationToken.None;
 
         /// <summary>
         ///     Dispose the store context
@@ -443,7 +439,7 @@ namespace Microsoft.AspNet.Identity
         /// <summary>
         /// Normalize a key (user name, email) for uniqueness comparisons
         /// </summary>
-        /// <param name="userName"></param>
+        /// <param name="key"></param>
         /// <returns></returns>
         public virtual string NormalizeKey(string key)
         {
@@ -608,7 +604,6 @@ namespace Microsoft.AspNet.Identity
         ///     Remove a user's password
         /// </summary>
         /// <param name="user"></param>
-
         /// <returns></returns>
         public virtual async Task<IdentityResult> RemovePasswordAsync(TUser user,
             CancellationToken cancellationToken = default(CancellationToken))
@@ -788,7 +783,8 @@ namespace Microsoft.AspNet.Identity
         ///     Remove a user login
         /// </summary>
         /// <param name="user"></param>
-        /// <param name="login"></param>
+        /// <param name="loginProvider"></param>
+        /// <param name="providerKey"></param>
         /// <returns></returns>
         public virtual async Task<IdentityResult> RemoveLoginAsync(TUser user, string loginProvider, string providerKey)
         {
@@ -1280,6 +1276,7 @@ namespace Microsoft.AspNet.Identity
         ///     Generate a change email token for the user using the UserTokenProvider
         /// </summary>
         /// <param name="user"></param>
+        /// <param name="newEmail"></param>
         /// <returns></returns>
         public virtual async Task<string> GenerateChangeEmailTokenAsync(TUser user, string newEmail)
         {
@@ -1294,7 +1291,7 @@ namespace Microsoft.AspNet.Identity
         /// </summary>
         /// <param name="user"></param>
         /// <param name="token"></param>
-        /// <param name="newPassword"></param>
+        /// <param name="newEmail"></param>
         /// <returns></returns>
         public virtual async Task<IdentityResult> ChangeEmailAsync(TUser user, string newEmail, string token)
         {
@@ -1453,6 +1450,7 @@ namespace Microsoft.AspNet.Identity
         ///     Verify a user token with the specified purpose
         /// </summary>
         /// <param name="user"></param>
+        /// <param name="tokenProvider"></param>
         /// <param name="purpose"></param>
         /// <param name="token"></param>
         /// <returns></returns>
@@ -1491,6 +1489,7 @@ namespace Microsoft.AspNet.Identity
         /// </summary>
         /// <param name="purpose"></param>
         /// <param name="user"></param>
+        /// <param name="tokenProvider"></param>
         /// <returns></returns>
         public virtual async Task<string> GenerateUserTokenAsync(TUser user, string tokenProvider, string purpose)
         {
@@ -1568,7 +1567,7 @@ namespace Microsoft.AspNet.Identity
         ///     Verify a user token with the specified provider
         /// </summary>
         /// <param name="user"></param>
-        /// <param name="twoFactorProvider"></param>
+        /// <param name="tokenProvider"></param>
         /// <param name="token"></param>
         /// <returns></returns>
         public virtual async Task<bool> VerifyTwoFactorTokenAsync(TUser user, string tokenProvider, string token)
@@ -1600,7 +1599,7 @@ namespace Microsoft.AspNet.Identity
         ///     Get a user token for a specific user factor provider
         /// </summary>
         /// <param name="user"></param>
-        /// <param name="twoFactorProvider"></param>
+        /// <param name="tokenProvider"></param>
         /// <returns></returns>
         public virtual async Task<string> GenerateTwoFactorTokenAsync(TUser user, string tokenProvider)
         {
@@ -1894,7 +1893,7 @@ namespace Microsoft.AspNet.Identity
         /// <summary>
         ///     Get all the users in a role
         /// </summary>
-        /// <param name="role"></param>
+        /// <param name="roleName"></param>
         /// <returns></returns>
         public virtual Task<IList<TUser>> GetUsersInRoleAsync(string roleName)
         {
@@ -1915,10 +1914,17 @@ namespace Microsoft.AspNet.Identity
         /// <param name="user"></param>
         /// <param name="methodName"></param>
         /// <returns></returns>
-        protected async Task<IdentityResult> LogResultAsync(IdentityResult result,
-            TUser user, [System.Runtime.CompilerServices.CallerMemberName] string methodName = "")
+        protected virtual async Task<IdentityResult> LogResultAsync(IdentityResult result, TUser user, [CallerMemberName] string methodName = "")
         {
-            result.Log(Logger, Resources.FormatLoggingResultMessage(methodName, await GetUserIdAsync(user)));
+            var logLevel = result.Succeeded ? LogLevel.Information : LogLevel.Warning;
+
+            // Check if log level is enabled before creating the message.
+            if (Logger.IsEnabled(logLevel))
+            {
+                var baseMessage = Resources.FormatLoggingResultMessageForUser(methodName, await GetUserIdAsync(user));
+                Logger.Write(logLevel, 0, Resources.FormatLoggingIdentityResult(baseMessage, result), null, null);
+            }
+
             return result;
         }
 
@@ -1929,17 +1935,15 @@ namespace Microsoft.AspNet.Identity
         /// <param name="user"></param>
         /// <param name="methodName"></param>
         /// <returns>result</returns>
-        protected async Task<bool> LogResultAsync(bool result,
-            TUser user, [System.Runtime.CompilerServices.CallerMemberName] string methodName = "")
+        protected virtual async Task<bool> LogResultAsync(bool result, TUser user, [CallerMemberName] string methodName = "")
         {
-            var baseMessage = Resources.FormatLoggingResultMessage(methodName, await GetUserIdAsync(user));
-            if (result)
+            var logLevel = result ? LogLevel.Information : LogLevel.Warning;
+
+            // Check if log level is enabled before creating the message.
+            if (Logger.IsEnabled(logLevel))
             {
-                Logger.WriteInformation(string.Format("{0} : {1}", baseMessage, result.ToString()));
-            }
-            else
-            {
-                Logger.WriteWarning(string.Format("{0} : {1}", baseMessage, result.ToString()));
+                var baseMessage = Resources.FormatLoggingResultMessageForUser(methodName, await GetUserIdAsync(user));
+                Logger.Write(logLevel, 0, string.Format("{0} : {1}", baseMessage, result), null, null);
             }
 
             return result;

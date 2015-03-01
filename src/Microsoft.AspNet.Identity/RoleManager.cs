@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,13 +21,17 @@ namespace Microsoft.AspNet.Identity
     public class RoleManager<TRole> : IDisposable where TRole : class
     {
         private bool _disposed;
-        private HttpContext _context;
+        private readonly HttpContext _context;
 
         /// <summary>
-        /// Constructor
+        ///     Constructor
         /// </summary>
         /// <param name="store">The IRoleStore commits changes via the UpdateAsync/CreateAsync methods</param>
-        /// <param name="roleValidator"></param>
+        /// <param name="roleValidators">IEnumerable of role validators</param>
+        /// <param name="keyNormalizer">user property normalizers</param>
+        /// <param name="errors">IdentityErrorDescribers</param>
+        /// <param name="logger">Logger for RoleManager</param>
+        /// <param name="contextAccessor">HttpContext accessor object</param>
         public RoleManager(IRoleStore<TRole> store,
             IEnumerable<IRoleValidator<TRole>> roleValidators,
             ILookupNormalizer keyNormalizer,
@@ -119,13 +124,7 @@ namespace Microsoft.AspNet.Identity
             }
         }
 
-        private CancellationToken CancellationToken
-        {
-            get
-            {
-                return _context?.RequestAborted ?? CancellationToken.None;
-            }
-        }
+        private CancellationToken CancellationToken => _context?.RequestAborted ?? CancellationToken.None;
 
         /// <summary>
         ///     Dispose this object
@@ -175,7 +174,7 @@ namespace Microsoft.AspNet.Identity
         /// <summary>
         /// Update the user's normalized user name
         /// </summary>
-        /// <param name="user"></param>
+        /// <param name="role"></param>
         /// <returns></returns>
         public virtual async Task UpdateNormalizedRoleNameAsync(TRole role)
         {
@@ -387,13 +386,19 @@ namespace Microsoft.AspNet.Identity
         ///     Logs the current Identity Result and returns result object
         /// </summary>
         /// <param name="result"></param>
-        /// <param name="user"></param>
+        /// <param name="role"></param>
         /// <param name="methodName"></param>
         /// <returns></returns>
-        protected async Task<IdentityResult> LogResultAsync(IdentityResult result,
-            TRole role, [System.Runtime.CompilerServices.CallerMemberName] string methodName = "")
+        protected virtual async Task<IdentityResult> LogResultAsync(IdentityResult result, TRole role, [CallerMemberName] string methodName = "")
         {
-            result.Log(Logger, Resources.FormatLoggingResultMessageForRole(methodName, await GetRoleIdAsync(role)));
+            var logLevel = result.Succeeded ? LogLevel.Information : LogLevel.Warning;
+
+            // Check if log level is enabled before creating the message.
+            if (Logger.IsEnabled(logLevel))
+            {
+                var baseMessage = Resources.FormatLoggingResultMessageForRole(methodName, await GetRoleIdAsync(role));
+                Logger.Write(logLevel, 0, Resources.FormatLoggingIdentityResult(baseMessage, result), null, null);
+            }
 
             return result;
         }

@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using Microsoft.Framework.Logging;
-
 namespace Microsoft.AspNet.Identity
 {
     /// <summary>
@@ -40,74 +38,42 @@ namespace Microsoft.AspNet.Identity
         ///     Static success result
         /// </summary>
         /// <returns></returns>
-        public static SignInResult Success
-        {
-            get { return _success; }
-        }
+        public static SignInResult Success => _success;
 
         /// <summary>
         ///     Static failure result
         /// </summary>
         /// <returns></returns>
-        public static SignInResult Failed
-        {
-            get { return _failed; }
-        }
+        public static SignInResult Failed => _failed;
 
         /// <summary>
         ///     Static locked out result
         /// </summary>
         /// <returns></returns>
-        public static SignInResult LockedOut
-        {
-            get { return _lockedOut; }
-        }
+        public static SignInResult LockedOut => _lockedOut;
 
         /// <summary>
         ///     Static not allowed result
         /// </summary>
         /// <returns></returns>
-        public static SignInResult NotAllowed
-        {
-            get { return _notAllowed; }
-        }
+        public static SignInResult NotAllowed => _notAllowed;
 
         /// <summary>
         ///     Static two factor required result
         /// </summary>
         /// <returns></returns>
-        public static SignInResult TwoFactorRequired
-        {
-            get { return _twoFactorRequired; }
-        }
+        public static SignInResult TwoFactorRequired => _twoFactorRequired;
 
         /// <summary>
-        ///     Log result based on properties
+        ///     Returns string representation of the result. 
         /// </summary>
-        /// <param name="logger"></param>
-        /// <param name="message"></param>
-        public virtual void Log(ILogger logger, string message)
+        /// <returns></returns>
+        public override string ToString()
         {
-            if (IsLockedOut)
-            {
-                logger.WriteInformation(Resources.FormatLoggingSigninResult(message, "Lockedout"));
-            }
-            else if (IsNotAllowed)
-            {
-                logger.WriteInformation(Resources.FormatLoggingSigninResult(message, "NotAllowed"));
-            }
-            else if (RequiresTwoFactor)
-            {
-                logger.WriteInformation(Resources.FormatLoggingSigninResult(message, "RequiresTwoFactor"));
-            }
-            else if (Succeeded)
-            {
-                logger.WriteInformation(Resources.FormatLoggingSigninResult(message, "Succeeded"));
-            }
-            else
-            {
-                logger.WriteInformation(Resources.FormatLoggingSigninResult(message, "Failed"));
-            }
+            return IsLockedOut ? "Lockedout" : 
+		   	        IsNotAllowed ? "NotAllowed" : 
+			        RequiresTwoFactor ? "RequiresTwoFactor" : 
+			        Succeeded ? "Succeeded" : "Failed";
         }
     }
 }

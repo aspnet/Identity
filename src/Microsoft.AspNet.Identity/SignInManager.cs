@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
@@ -31,7 +32,7 @@ namespace Microsoft.AspNet.Identity
             {
                 throw new ArgumentNullException(nameof(userManager));
             }
-            if (contextAccessor == null || contextAccessor.Value == null)
+            if (contextAccessor?.Value == null)
             {
                 throw new ArgumentNullException(nameof(contextAccessor));
             }
@@ -283,7 +284,6 @@ namespace Microsoft.AspNet.Identity
         /// <summary>
         /// Returns the user who has started the two factor authentication process
         /// </summary>
-        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         public virtual async Task<TUser> GetTwoFactorAuthenticationUserAsync()
         {
@@ -322,7 +322,7 @@ namespace Microsoft.AspNet.Identity
         public virtual async Task<ExternalLoginInfo> GetExternalLoginInfoAsync(string expectedXsrf = null)
         {
             var auth = await Context.AuthenticateAsync(IdentityOptions.ExternalCookieAuthenticationType);
-            if (auth == null || auth.Identity == null || auth.Properties.Dictionary == null || !auth.Properties.Dictionary.ContainsKey(LoginProviderKey))
+            if (auth?.Identity == null || auth.Properties.Dictionary == null || !auth.Properties.Dictionary.ContainsKey(LoginProviderKey))
             {
                 return null;
             }
@@ -386,7 +386,7 @@ namespace Microsoft.AspNet.Identity
         private async Task<TwoFactorAuthenticationInfo> RetrieveTwoFactorInfoAsync()
         {
             var result = await Context.AuthenticateAsync(IdentityOptions.TwoFactorUserIdCookieAuthenticationType);
-            if (result != null && result.Identity != null)
+            if (result?.Identity != null)
             {
                 return new TwoFactorAuthenticationInfo
                 {
@@ -404,10 +404,14 @@ namespace Microsoft.AspNet.Identity
         /// <param name="user"></param>
         /// <param name="methodName"></param>
         /// <returns></returns>
-        protected async virtual Task<bool> LogResultAsync(bool result, TUser user, [System.Runtime.CompilerServices.CallerMemberName] string methodName = "")
+        protected async virtual Task<bool> LogResultAsync(bool result, TUser user, [CallerMemberName] string methodName = "")
         {
-            Logger.WriteInformation(Resources.FormatLoggingSigninResult(Resources.FormatLoggingResultMessage(methodName,
-                await UserManager.GetUserIdAsync(user)), result));
+            // Check if log level is enabled before creating the message.
+            if (Logger.IsEnabled(LogLevel.Information))
+            {
+                var baseMessage = Resources.FormatLoggingResultMessageForUser(methodName, await UserManager.GetUserIdAsync(user));
+                Logger.WriteInformation(Resources.FormatLoggingSigninResult(baseMessage, result));
+            }
 
             return result;
         }
@@ -415,15 +419,19 @@ namespace Microsoft.AspNet.Identity
         /// <summary>
         ///     Log SignInStatus for user and return SignInStatus
         /// </summary>
-        /// <param name="status"></param>
+        /// <param name="result"></param>
         /// <param name="user"></param>
         /// <param name="methodName"></param>
         /// <returns></returns>
-        protected async virtual Task<SignInResult> LogResultAsync(SignInResult status, TUser user, [System.Runtime.CompilerServices.CallerMemberName] string methodName = "")
+        protected virtual async Task<SignInResult> LogResultAsync(SignInResult result, TUser user, [CallerMemberName] string methodName = "")
         {
-            status.Log(Logger, Resources.FormatLoggingResultMessage(methodName, await UserManager.GetUserIdAsync(user)));
+            if (Logger.IsEnabled(LogLevel.Information))
+            {
+                var baseMessage = Resources.FormatLoggingResultMessageForUser(methodName, await UserManager.GetUserIdAsync(user));
+                Logger.WriteInformation(Resources.FormatLoggingSigninResult(baseMessage, result));
+            }
 
-            return status;
+            return result;
         }
 
         internal static ClaimsIdentity StoreTwoFactorInfo(string userId, string loginProvider)

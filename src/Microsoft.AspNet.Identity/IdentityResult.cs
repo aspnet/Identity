@@ -3,7 +3,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Framework.Logging;
 
 namespace Microsoft.AspNet.Identity
 {
@@ -13,28 +12,23 @@ namespace Microsoft.AspNet.Identity
     public class IdentityResult
     {
         private static readonly IdentityResult _success = new IdentityResult { Succeeded = true };
-
         private List<IdentityError> _errors = new List<IdentityError>();
-
         /// <summary>
-        ///     True if the operation was successful
+        /// True if the operation was successful
         /// </summary>
         public bool Succeeded { get; protected set; }
 
         /// <summary>
-        ///     List of errors
+        /// List of errors
         /// </summary>
-        public IEnumerable<IdentityError> Errors { get { return _errors; } }
+        public IEnumerable<IdentityError> Errors => _errors;
 
         /// <summary>
-        ///     Static success result
+        /// Static success result
         /// </summary>
         /// <returns></returns>
-        public static IdentityResult Success
-        {
-            get { return _success; }
-        }
-
+        public static IdentityResult Success => _success;
+        
         /// <summary>
         ///     Failed helper method
         /// </summary>
@@ -51,21 +45,12 @@ namespace Microsoft.AspNet.Identity
         }
 
         /// <summary>
-        ///     Log Identity result
+        ///     Return string representation of IdentityResult
         /// </summary>
-        /// <param name="logger"></param>
-        /// <param name="message"></param>
-        public virtual void Log(ILogger logger, string message)
+        /// <returns>"Succedded", if result is suceeded else "Failed:error codes"</returns>
+        public override string ToString()
         {
-            // TODO: Take logging level as a parameter
-            if (Succeeded)
-            {
-                logger.WriteInformation(Resources.FormatLogIdentityResultSuccess(message));
-            }
-            else
-            {
-                logger.WriteWarning(Resources.FormatLogIdentityResultFailure(message, string.Join(",", Errors.Select(x => x.Code).ToList())));
-            }
+            return Succeeded ? "Succeeded" : string.Format("{0} : {1}", "Failed", string.Join(",", Errors.Select(x => x.Code).ToList()));
         }
     }
 }
