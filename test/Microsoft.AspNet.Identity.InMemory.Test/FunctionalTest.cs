@@ -41,26 +41,34 @@ namespace Microsoft.AspNet.Identity.InMemory
 
             Transaction transaction1 = await SendAsync(server, "http://example.com/createMe");
             transaction1.Response.StatusCode.ShouldBe(HttpStatusCode.OK);
+            Assert.Null(transaction1.SetCookie);
 
-            Transaction transaction2 = await SendAsync(server, "http://example.com/pwdLogin/"+TestPassword, transaction1.CookieNameValue);
+            Transaction transaction2 = await SendAsync(server, "http://example.com/pwdLogin/false");
             transaction2.Response.StatusCode.ShouldBe(HttpStatusCode.OK);
+            Assert.NotNull(transaction2.SetCookie);
+            transaction2.SetCookie.ShouldNotContain("; expires=");
 
             Transaction transaction3 = await SendAsync(server, "http://example.com/me", transaction2.CookieNameValue);
             FindClaimValue(transaction3, ClaimTypes.Name).ShouldBe("hao");
+            Assert.Null(transaction3.SetCookie);
 
             clock.Add(TimeSpan.FromMinutes(7));
 
             Transaction transaction4 = await SendAsync(server, "http://example.com/me", transaction2.CookieNameValue);
             FindClaimValue(transaction4, ClaimTypes.Name).ShouldBe("hao");
+            Assert.Null(transaction4.SetCookie);
 
             clock.Add(TimeSpan.FromMinutes(7));
 
             Transaction transaction5 = await SendAsync(server, "http://example.com/me", transaction2.CookieNameValue);
             FindClaimValue(transaction5, ClaimTypes.Name).ShouldBe(null);
+            Assert.Null(transaction5.SetCookie);
         }
 
-        [Fact]
-        public async Task CanCreateMeLoginAndSecurityStampExtendsExpiration()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task CanCreateMeLoginAndSecurityStampExtendsExpiration(bool rememberMe)
         {
             var clock = new TestClock();
             TestServer server = CreateServer(appCookieOptions =>
@@ -70,23 +78,60 @@ namespace Microsoft.AspNet.Identity.InMemory
 
             Transaction transaction1 = await SendAsync(server, "http://example.com/createMe");
             transaction1.Response.StatusCode.ShouldBe(HttpStatusCode.OK);
+            Assert.Null(transaction1.SetCookie);
 
-            Transaction transaction2 = await SendAsync(server, "http://example.com/pwdLogin/" + TestPassword, transaction1.CookieNameValue);
+            Transaction transaction2 = await SendAsync(server, "http://example.com/pwdLogin/" + rememberMe);
             transaction2.Response.StatusCode.ShouldBe(HttpStatusCode.OK);
+            Assert.NotNull(transaction2.SetCookie);
+            if (rememberMe)
+            {
+                transaction2.SetCookie.ShouldContain("; expires=");
+            }
+            else
+            {
+                transaction2.SetCookie.ShouldNotContain("; expires=");
+            }
 
             Transaction transaction3 = await SendAsync(server, "http://example.com/me", transaction2.CookieNameValue);
             FindClaimValue(transaction3, ClaimTypes.Name).ShouldBe("hao");
+            Assert.Null(transaction3.SetCookie);
+
+            // Make sure we don't get a new cookie yet
+            clock.Add(TimeSpan.FromMinutes(10));
+            Transaction transaction4 = await SendAsync(server, "http://example.com/me", transaction2.CookieNameValue);
+            FindClaimValue(transaction4, ClaimTypes.Name).ShouldBe("hao");
+            Assert.Null(transaction4.SetCookie);
 
             // Go past SecurityStampValidation interval and ensure we get a new cookie
-            clock.Add(TimeSpan.FromMinutes(31));
+            clock.Add(TimeSpan.FromMinutes(21));
 
-            Transaction transaction4 = await SendAsync(server, "http://example.com/me", transaction2.CookieNameValue);
-            Assert.NotNull(transaction4.SetCookie);
-            FindClaimValue(transaction4, ClaimTypes.Name).ShouldBe("hao");
+            Transaction transaction5 = await SendAsync(server, "http://example.com/me", transaction2.CookieNameValue);
+            Assert.NotNull(transaction5.SetCookie);
+            FindClaimValue(transaction5, ClaimTypes.Name).ShouldBe("hao");
 
             // Make sure new cookie is valid
-            Transaction transaction5 = await SendAsync(server, "http://example.com/me", transaction4.CookieNameValue);
-            FindClaimValue(transaction4, ClaimTypes.Name).ShouldBe("hao");
+            Transaction transaction6 = await SendAsync(server, "http://example.com/me", transaction5.CookieNameValue);
+            FindClaimValue(transaction6, ClaimTypes.Name).ShouldBe("hao");
+        }
+
+        [Fact]
+        public async Task TwoFactorRememberCookieVerification()
+        {
+            TestServer server = CreateServer(appCookieOptions => { });
+
+            Transaction transaction1 = await SendAsync(server, "http://example.com/createMe");
+            transaction1.Response.StatusCode.ShouldBe(HttpStatusCode.OK);
+            Assert.Null(transaction1.SetCookie);
+
+            Transaction transaction2 = await SendAsync(server, "http://example.com/twofactorRememeber");
+            transaction2.Response.StatusCode.ShouldBe(HttpStatusCode.OK);
+
+            string setCookie = transaction2.SetCookie;
+            setCookie.ShouldContain(IdentityOptions.TwoFactorRememberMeCookieAuthenticationScheme+"=");
+            setCookie.ShouldContain("; expires=");
+
+            Transaction transaction3 = await SendAsync(server, "http://example.com/isTwoFactorRememebered", transaction2.CookieNameValue);
+            transaction3.Response.StatusCode.ShouldBe(HttpStatusCode.OK);
         }
 
         private static string FindClaimValue(Transaction transaction, string claimType)
@@ -142,17 +187,26 @@ namespace Microsoft.AspNet.Identity.InMemory
                     {
                         res.StatusCode = 401;
                     }
-                    else if (req.Path == new PathString("/unauthorized"))
-                    {
-                        // Simulate Authorization failure 
-                        var result = await context.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-                        res.Challenge(CookieAuthenticationDefaults.AuthenticationScheme);
-                    }
                     else if (req.Path.StartsWithSegments(new PathString("/pwdLogin"), out remainder))
                     {
-                        var password = remainder.Value.Substring(1);
-                        var result = await signInManager.PasswordSignInAsync("hao", password, false, false);
+                        var isPersistent = bool.Parse(remainder.Value.Substring(1));
+                        var result = await signInManager.PasswordSignInAsync("hao", TestPassword, isPersistent, false);
                         res.StatusCode = result.Succeeded ? 200 : 500;
+                    }
+                    else if (req.Path == new PathString("/twofactorRememeber"))
+                    {
+                        var user = await userManager.FindByNameAsync("hao");
+                        await signInManager.RememberTwoFactorClientAsync(user);
+                        res.StatusCode = 200;
+                    }
+                    else if (req.Path == new PathString("/isTwoFactorRememebered"))
+                    {
+                        var user = await userManager.FindByNameAsync("hao");
+                        var result = await signInManager.IsTwoFactorClientRememberedAsync(user);
+                        res.StatusCode = result ? 200 : 500;
+                    }
+                    else if (req.Path == new PathString("/twofactorSignIn"))
+                    {
                     }
                     else if (req.Path == new PathString("/me"))
                     {
