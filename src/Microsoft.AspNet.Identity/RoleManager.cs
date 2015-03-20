@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Hosting;
 using Microsoft.AspNet.Http;
+using Microsoft.AspNet.Identity.Logging;
 using Microsoft.Framework.Logging;
 
 namespace Microsoft.AspNet.Identity
@@ -168,7 +169,7 @@ namespace Microsoft.AspNet.Identity
             }
             await UpdateNormalizedRoleNameAsync(role);
             result = await Store.CreateAsync(role, CancellationToken);
-            using (await BeginLogScopeAsync(role))
+            using (await BeginLoggingScopeAsync(role))
             {
                 return Logger.Log(result);
             }
@@ -199,7 +200,7 @@ namespace Microsoft.AspNet.Identity
                 throw new ArgumentNullException("role");
             }
 
-            using (await BeginLogScopeAsync(role))
+            using (await BeginLoggingScopeAsync(role))
             {
                 return Logger.Log(await UpdateRoleAsync(role));
             }
@@ -229,7 +230,7 @@ namespace Microsoft.AspNet.Identity
                 throw new ArgumentNullException("role");
             }
 
-            using (await BeginLogScopeAsync(role))
+            using (await BeginLoggingScopeAsync(role))
             {
                 return Logger.Log(await Store.DeleteAsync(role, CancellationToken));
             }
@@ -294,7 +295,7 @@ namespace Microsoft.AspNet.Identity
         {
             ThrowIfDisposed();
 
-            using (await BeginLogScopeAsync(role))
+            using (await BeginLoggingScopeAsync(role))
             {
                 await Store.SetRoleNameAsync(role, name, CancellationToken);
                 await UpdateNormalizedRoleNameAsync(role);
@@ -359,7 +360,7 @@ namespace Microsoft.AspNet.Identity
                 throw new ArgumentNullException("role");
             }
 
-            using (await BeginLogScopeAsync(role))
+            using (await BeginLoggingScopeAsync(role))
             {
                 await claimStore.AddClaimAsync(role, claim, CancellationToken);
                 return Logger.Log(await UpdateRoleAsync(role));
@@ -381,7 +382,7 @@ namespace Microsoft.AspNet.Identity
                 throw new ArgumentNullException("role");
             }
 
-            using (await BeginLogScopeAsync(role))
+            using (await BeginLoggingScopeAsync(role))
             {
                 await claimStore.RemoveClaimAsync(role, claim, CancellationToken);
                 return Logger.Log(await UpdateRoleAsync(role));
@@ -404,7 +405,7 @@ namespace Microsoft.AspNet.Identity
             return await claimStore.GetClaimsAsync(role, CancellationToken);
         }
 
-        protected virtual async Task<IDisposable> BeginLogScopeAsync(TRole role, [CallerMemberName] string methodName = null)
+        protected virtual async Task<IDisposable> BeginLoggingScopeAsync(TRole role, [CallerMemberName] string methodName = null)
         {
             var state = Resources.FormatLoggingResultMessageForRole(methodName, await GetRoleIdAsync(role));
             return Logger.BeginScope(state);

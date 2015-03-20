@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Hosting;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Http.Authentication;
+using Microsoft.AspNet.Identity.Logging;
 using Microsoft.Framework.Logging;
 using Microsoft.Framework.OptionsModel;
 
@@ -151,7 +152,7 @@ namespace Microsoft.AspNet.Identity
                 throw new ArgumentNullException(nameof(user));
             }
 
-            using (await BeginLogScopeAsync(user))
+            using (await BeginLoggingScopeAsync(user))
             {
                 var error = await PreSignInCheck(user);
                 if (error != null)
@@ -245,7 +246,7 @@ namespace Microsoft.AspNet.Identity
                 return SignInResult.Failed;
             }
 
-            using (await BeginLogScopeAsync(user))
+            using (await BeginLoggingScopeAsync(user))
             {
                 var error = await PreSignInCheck(user);
                 if (error != null)
@@ -299,7 +300,7 @@ namespace Microsoft.AspNet.Identity
                 return SignInResult.Failed;
             }
 
-            using (await BeginLogScopeAsync(user))
+            using (await BeginLoggingScopeAsync(user))
             {
                 var error = await PreSignInCheck(user);
                 if (error != null)
@@ -396,7 +397,7 @@ namespace Microsoft.AspNet.Identity
             return null;
         }
 
-        protected virtual async Task<IDisposable> BeginLogScopeAsync(TUser user, [CallerMemberName] string methodName = null)
+        protected virtual async Task<IDisposable> BeginLoggingScopeAsync(TUser user, [CallerMemberName] string methodName = null)
         {
             var state = Resources.FormatLoggingResultMessageForUser(methodName, await UserManager.GetUserIdAsync(user));
             return Logger.BeginScope(state);

@@ -3,9 +3,9 @@
 
 using System;
 using System.Runtime.CompilerServices;
-using Microsoft.AspNet.Identity;
+using Microsoft.Framework.Logging;
 
-namespace Microsoft.Framework.Logging
+namespace Microsoft.AspNet.Identity.Logging
 {
     public static class IdentityLoggerExtensions
     {
