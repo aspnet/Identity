@@ -51,13 +51,15 @@ namespace Microsoft.AspNet.Identity
         /// <returns>"Succedded", if result is suceeded else "Failed:error codes"</returns>
         public override string ToString()
         {
-            return Succeeded ? "Succeeded" : string.Format("{0} : {1}", "Failed", string.Join(",", Errors.Select(x => x.Code).ToList()));
+            return Succeeded ? 
+                   "Succeeded" : 
+                   string.Format("{0} : {1}", "Failed", string.Join(",", Errors.Select(x => x.Code).ToList()));
         }
 
         /// <summary>
-        ///     Get the level to to log this result at
+        ///     Get the level to log this result
         /// </summary>
-        /// <returns></returns>
+        /// <returns>LogLevel to log</returns>
         public virtual LogLevel GetLogLevel()
         {
             return Succeeded ? LogLevel.Verbose : LogLevel.Warning;

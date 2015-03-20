@@ -3,44 +3,34 @@
 
 using System;
 using System.Runtime.CompilerServices;
-using Microsoft.Framework.Logging;
+using Microsoft.AspNet.Identity;
 
-namespace Microsoft.AspNet.Identity
+namespace Microsoft.Framework.Logging
 {
-    public class IdentityLogger
+    public static class IdentityLoggerExtensions
     {
-        public IdentityLogger(ILogger logger)
-        {
-            Logger = logger;
-        }
-
-        protected internal virtual ILogger Logger { get; set; }
-
-        public virtual TResult Log<TResult>(TResult result, Func<TResult, LogLevel> getLevel,
+        private static TResult Log<TResult>(this ILogger logger, TResult result, Func<TResult, LogLevel> getLevel,
             Func<string> messageAccessor)
         {
             var logLevel = getLevel(result);
 
             // Check if log level is enabled before creating the message.
-            if (Logger.IsEnabled(logLevel))
+            if (logger.IsEnabled(logLevel))
             {
-                Logger.Log(logLevel, 0, messageAccessor(), null, (msg, exp) => (string)msg);
+                logger.Log(logLevel, 0, messageAccessor(), null, (msg, exp) => (string)msg);
             }
 
             return result;
         }
 
-        public virtual SignInResult Log(SignInResult result, [CallerMemberName]string methodName = null)
-           => Log(result, r => r.GetLogLevel(), () => Resources.FormatLoggingSigninResult(methodName, result));
+        public static SignInResult Log(this ILogger logger, SignInResult result, [CallerMemberName]string methodName = null)
+           => logger.Log(result, r => r.GetLogLevel(), () => Resources.FormatLoggingResult(methodName, result));
 
-        public virtual IdentityResult Log(IdentityResult result, [CallerMemberName]string methodName = null)
-            => Log(result, r => r.GetLogLevel(), () => Resources.FormatLoggingIdentityResult(methodName, result));
+        public static IdentityResult Log(this ILogger logger, IdentityResult result, [CallerMemberName]string methodName = null)
+            => logger.Log(result, r => r.GetLogLevel(), () => Resources.FormatLoggingResult(methodName, result));
 
-        public virtual bool Log(bool result, [CallerMemberName]string methodName = null)
-            => Log<bool>(result, (b) => b ? LogLevel.Verbose : LogLevel.Warning,
-                               () => Resources.FormatLoggingIdentityResult(methodName, result));
-
-        public virtual IDisposable BeginScope(string state) => Logger.BeginScope(state);
-
+        public static bool Log(this ILogger logger, bool result, [CallerMemberName]string methodName = null)
+            => logger.Log(result, b => b ? LogLevel.Verbose : LogLevel.Warning,
+                               () => Resources.FormatLoggingResult(methodName, result));
     }
 }

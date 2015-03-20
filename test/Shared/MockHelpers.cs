@@ -51,8 +51,14 @@ namespace Microsoft.AspNet.Identity.Test
                     {
                         logStore.Append(formatter(state, exception));
                     }
+                    logStore.Append(" ");
                 });
-            logger.Setup(x => x.IsEnabled(LogLevel.Information)).Returns(true);
+            logger.Setup(x => x.BeginScope(It.IsAny<object>())).Callback((object state) =>
+                {
+                    logStore.Append(state.ToString());
+                    logStore.Append(" ");
+                });
+            logger.Setup(x => x.IsEnabled(LogLevel.Verbose)).Returns(true);
             logger.Setup(x => x.IsEnabled(LogLevel.Warning)).Returns(true);
 
             return logger;
@@ -84,8 +90,8 @@ namespace Microsoft.AspNet.Identity.Test
             store = store ?? new Mock<IRoleStore<TRole>>().Object;
             var roles = new List<IRoleValidator<TRole>>();
             roles.Add(new RoleValidator<TRole>());
-            return new RoleManager<TRole>(store, roles, 
-                new UpperInvariantLookupNormalizer(), 
+            return new RoleManager<TRole>(store, roles,
+                new UpperInvariantLookupNormalizer(),
                 new IdentityErrorDescriber(),
                 null,
                 null);

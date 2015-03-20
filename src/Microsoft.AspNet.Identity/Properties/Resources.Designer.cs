@@ -653,33 +653,17 @@ namespace Microsoft.AspNet.Identity
         /// <summary>
         /// {0} : {1}
         /// </summary>
-        internal static string LoggingIdentityResult
+        internal static string LoggingResult
         {
-            get { return GetString("LoggingIdentityResult"); }
+            get { return GetString("LoggingResult"); }
         }
 
         /// <summary>
         /// {0} : {1}
         /// </summary>
-        internal static string FormatLoggingIdentityResult(object p0, object p1)
+        internal static string FormatLoggingResult(object p0, object p1)
         {
-            return string.Format(CultureInfo.CurrentCulture, GetString("LoggingIdentityResult"), p0, p1);
-        }
-
-        /// <summary>
-        /// {0} : Result : {1}
-        /// </summary>
-        internal static string LoggingSigninResult
-        {
-            get { return GetString("LoggingSigninResult"); }
-        }
-
-        /// <summary>
-        /// {0} : Result : {1}
-        /// </summary>
-        internal static string FormatLoggingSigninResult(object p0, object p1)
-        {
-            return string.Format(CultureInfo.CurrentCulture, GetString("LoggingSigninResult"), p0, p1);
+            return string.Format(CultureInfo.CurrentCulture, GetString("LoggingResult"), p0, p1);
         }
 
         /// <summary>

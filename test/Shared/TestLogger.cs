@@ -13,7 +13,8 @@ namespace Microsoft.AspNet.Identity.Test
 
         public IDisposable BeginScope(object state)
         {
-            throw new NotImplementedException();
+            LogMessages.Add(state?.ToString());
+            return null;
         }
 
         public bool IsEnabled(LogLevel logLevel)
