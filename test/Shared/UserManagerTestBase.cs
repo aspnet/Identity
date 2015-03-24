@@ -596,7 +596,7 @@ namespace Microsoft.AspNet.Identity.Test
             var mgr = CreateManager();
             if (mgr.SupportsQueryableUsers)
             {
-                var users = GenerateUsers("CanFindUsersViaUserQuerable", 3);
+                var users = GenerateUsers("CanFindUsersViaUserQuerable", 4);
                 foreach (var u in users)
                 {
                     IdentityResultAssert.IsSuccess(await mgr.CreateAsync(u));
@@ -1105,8 +1105,7 @@ namespace Microsoft.AspNet.Identity.Test
                     IdentityResultAssert.IsSuccess(await manager.CreateAsync(r));
                 }
                 Assert.Equal(roles.Count, manager.Roles.Count(RoleNameStartsWithPredicate("CanQuerableRolesTest")));
-                var r1 = manager.Roles.FirstOrDefault(RoleNameStartsWithPredicate("CanQuerableRolesTest1"));
-                Assert.Equal(roles[1], r1);
+                Assert.Null(manager.Roles.FirstOrDefault(RoleNameEqualsPredicate("bogus")));
             }
         }
 
