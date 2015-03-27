@@ -494,8 +494,16 @@ namespace Microsoft.AspNet.Identity
 
             using (await BeginLoggingScopeAsync(user))
             {
+                var oldUserName = await GetUserNameAsync(user);
                 await UpdateUserName(user, userName);
-                return Logger.Log(await UpdateUserAsync(user));
+                var result = await ValidateUserInternal(user);
+                if (result.Succeeded)
+                {
+                    return Logger.Log(await UpdateUserAsync(user));
+                }
+
+                await UpdateUserName(user, oldUserName);
+                return Logger.Log(result);
             }
         }
 
@@ -540,7 +548,7 @@ namespace Microsoft.AspNet.Identity
                     Logger.Log(await UpdateUserAsync(user));
                 }
 
-                return Logger.Log(result != PasswordVerificationResult.Failed); 
+                return Logger.Log(result != PasswordVerificationResult.Failed);
             }
         }
 
@@ -1259,10 +1267,18 @@ namespace Microsoft.AspNet.Identity
 
             using (await BeginLoggingScopeAsync(user))
             {
+                var oldEmail = await GetEmailAsync(user);
                 await store.SetEmailAsync(user, email, CancellationToken);
-                await store.SetEmailConfirmedAsync(user, false, CancellationToken);
-                await UpdateSecurityStampInternal(user);
-                return Logger.Log(await UpdateUserAsync(user));
+                var result = await ValidateUserInternal(user);
+
+                if (result.Succeeded)
+                {
+                    await store.SetEmailConfirmedAsync(user, false, CancellationToken);
+                    await UpdateSecurityStampInternal(user);
+                    return Logger.Log(await UpdateUserAsync(user));
+                }
+                await store.SetEmailAsync(user, oldEmail, CancellationToken);
+                return Logger.Log(result);
             }
         }
 
@@ -1945,7 +1961,7 @@ namespace Microsoft.AspNet.Identity
                     return Logger.Log(IdentityResult.Success);
                 }
                 await store.ResetAccessFailedCountAsync(user, CancellationToken);
-                return Logger.Log(await UpdateUserAsync(user)); 
+                return Logger.Log(await UpdateUserAsync(user));
             }
         }
 
@@ -1998,7 +2014,7 @@ namespace Microsoft.AspNet.Identity
             var state = Resources.FormatLoggingResultMessageForUser(methodName, await GetUserIdAsync(user));
             return Logger.BeginScope(state);
         }
-            
+
 
         private void ThrowIfDisposed()
         {
