@@ -26,7 +26,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            // Temporary change. 
+            // TODO: Temporary change. 
             // Can be reverted once https://github.com/aspnet/EntityFramework/issues/1960 is closed
             builder.ForSqlServer().UseIdentity();
 
