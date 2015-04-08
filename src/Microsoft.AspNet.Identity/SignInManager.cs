@@ -4,14 +4,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Security.Claims;
-using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Hosting;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Http.Authentication;
-using Microsoft.AspNet.Identity.Logging;
 using Microsoft.Framework.Logging;
 using Microsoft.Framework.OptionsModel;
 
@@ -56,7 +53,7 @@ namespace Microsoft.AspNet.Identity
         internal HttpContext Context { get; private set; }
         internal IUserClaimsPrincipalFactory<TUser> ClaimsFactory { get; private set; }
         internal IdentityOptions Options { get; private set; }
-       
+
 
         // Should this be a func?
         public virtual async Task<ClaimsPrincipal> CreateUserPrincipalAsync(TUser user) => await ClaimsFactory.CreateAsync(user);
@@ -65,14 +62,22 @@ namespace Microsoft.AspNet.Identity
         {
             if (Options.SignIn.RequireConfirmedEmail && !(await UserManager.IsEmailConfirmedAsync(user)))
             {
-                return Logger.Log(false);
+                if (Logger.IsEnabled(LogLevel.Warning))
+                {
+                    Logger.LogWarning("Cannot signin user {userId} since email not confirmed", await UserManager.GetUserIdAsync(user));
+                }
+                return false;
             }
             if (Options.SignIn.RequireConfirmedPhoneNumber && !(await UserManager.IsPhoneNumberConfirmedAsync(user)))
             {
-                return Logger.Log(false);
+                if (Logger.IsEnabled(LogLevel.Warning))
+                {
+                    Logger.LogWarning("Cannot signin user {userId} since phonenumber not confirmed", await UserManager.GetUserIdAsync(user));
+                }
+                return false;
             }
 
-            return Logger.Log(true);
+            return true;
         }
 
         public virtual async Task SignInAsync(TUser user, bool isPersistent, string authenticationMethod = null)
@@ -104,10 +109,18 @@ namespace Microsoft.AspNet.Identity
         {
             if (!await CanSignInAsync(user))
             {
+                if (Logger.IsEnabled(LogLevel.Warning))
+                {
+                    Logger.LogWarning("User {userId} is not allowed to signin", await UserManager.GetUserIdAsync(user));
+                }
                 return SignInResult.NotAllowed;
             }
             if (await IsLockedOut(user))
             {
+                if (Logger.IsEnabled(LogLevel.Warning))
+                {
+                    Logger.LogWarning("User {userId} is locked out", await UserManager.GetUserIdAsync(user));
+                }
                 return SignInResult.LockedOut;
             }
             return null;
@@ -152,34 +165,43 @@ namespace Microsoft.AspNet.Identity
                 throw new ArgumentNullException(nameof(user));
             }
 
-            using (await BeginLoggingScopeAsync(user))
+            var error = await PreSignInCheck(user);
+            if (error != null)
             {
-                var error = await PreSignInCheck(user);
-                if (error != null)
-                {
-                    return Logger.Log(error);
-                }
-                if (await IsLockedOut(user))
-                {
-                    return Logger.Log(SignInResult.LockedOut);
-                }
-                if (await UserManager.CheckPasswordAsync(user, password))
-                {
-                    await ResetLockout(user);
-                    return Logger.Log(await SignInOrTwoFactorAsync(user, isPersistent));
-                }
-                if (UserManager.SupportsUserLockout && shouldLockout)
-                {
-                    // If lockout is requested, increment access failed count which might lock out the user
-                    await UserManager.AccessFailedAsync(user);
-                    if (await UserManager.IsLockedOutAsync(user))
-                    {
-
-                        return Logger.Log(SignInResult.LockedOut);
-                    }
-                }
-                return Logger.Log(SignInResult.Failed);
+                return error;
             }
+            if (await IsLockedOut(user))
+            {
+                if (Logger.IsEnabled(LogLevel.Warning))
+                {
+                    Logger.LogWarning("User {userId} is locked out", await UserManager.GetUserIdAsync(user));
+                }
+                return SignInResult.LockedOut;
+            }
+            if (await UserManager.CheckPasswordAsync(user, password))
+            {
+                await ResetLockout(user);
+                return await SignInOrTwoFactorAsync(user, isPersistent);
+            }
+            if (UserManager.SupportsUserLockout && shouldLockout)
+            {
+                // If lockout is requested, increment access failed count which might lock out the user
+                await UserManager.AccessFailedAsync(user);
+                if (await UserManager.IsLockedOutAsync(user))
+                {
+                    if (Logger.IsEnabled(LogLevel.Warning))
+                    {
+                        Logger.LogWarning("User {userId} is locked out", await UserManager.GetUserIdAsync(user));
+                    }
+                    return SignInResult.LockedOut;
+                }
+            }
+
+            if (Logger.IsEnabled(LogLevel.Warning))
+            {
+                Logger.LogWarning("Sign in failed for user {userId} ", await UserManager.GetUserIdAsync(user));
+            }
+            return SignInResult.Failed;
         }
 
         public virtual async Task<SignInResult> PasswordSignInAsync(string userName, string password,
@@ -243,38 +265,40 @@ namespace Microsoft.AspNet.Identity
             var user = await UserManager.FindByIdAsync(twoFactorInfo.UserId);
             if (user == null)
             {
+                Logger.LogWarning("Invalid two factor cookie for user {userId}", twoFactorInfo.UserId);
                 return SignInResult.Failed;
             }
 
-            using (await BeginLoggingScopeAsync(user))
+            var error = await PreSignInCheck(user);
+            if (error != null)
             {
-                var error = await PreSignInCheck(user);
-                if (error != null)
-                {
-                    return Logger.Log(error);
-                }
-                if (await UserManager.VerifyTwoFactorTokenAsync(user, provider, code))
-                {
-                    // When token is verified correctly, clear the access failed count used for lockout
-                    await ResetLockout(user);
-                    // Cleanup external cookie
-                    if (twoFactorInfo.LoginProvider != null)
-                    {
-                        Context.Response.SignOut(IdentityOptions.ExternalCookieAuthenticationScheme);
-                    }
-                    await SignInAsync(user, isPersistent, twoFactorInfo.LoginProvider);
-                    if (rememberClient)
-                    {
-                        await RememberTwoFactorClientAsync(user);
-                    }
-                    await UserManager.ResetAccessFailedCountAsync(user);
-                    await SignInAsync(user, isPersistent);
-                    return Logger.Log(SignInResult.Success);
-                }
-                // If the token is incorrect, record the failure which also may cause the user to be locked out
-                await UserManager.AccessFailedAsync(user);
-                return Logger.Log(SignInResult.Failed);
+                return error;
             }
+            if (await UserManager.VerifyTwoFactorTokenAsync(user, provider, code))
+            {
+                // When token is verified correctly, clear the access failed count used for lockout
+                await ResetLockout(user);
+                // Cleanup external cookie
+                if (twoFactorInfo.LoginProvider != null)
+                {
+                    Context.Response.SignOut(IdentityOptions.ExternalCookieAuthenticationScheme);
+                }
+                await SignInAsync(user, isPersistent, twoFactorInfo.LoginProvider);
+                if (rememberClient)
+                {
+                    await RememberTwoFactorClientAsync(user);
+                }
+                await UserManager.ResetAccessFailedCountAsync(user);
+                await SignInAsync(user, isPersistent);
+
+                Logger.LogVerbose("Two factor signin successful for user {userId}", twoFactorInfo.UserId);
+                return SignInResult.Success;
+            }
+            // If the token is incorrect, record the failure which also may cause the user to be locked out
+            await UserManager.AccessFailedAsync(user);
+
+            Logger.LogWarning("Two factor signin failed due to invalid code for user {userId}", twoFactorInfo.UserId);
+            return SignInResult.Failed;
         }
 
         /// <summary>
@@ -300,15 +324,12 @@ namespace Microsoft.AspNet.Identity
                 return SignInResult.Failed;
             }
 
-            using (await BeginLoggingScopeAsync(user))
+            var error = await PreSignInCheck(user);
+            if (error != null)
             {
-                var error = await PreSignInCheck(user);
-                if (error != null)
-                {
-                    return Logger.Log(error);
-                }
-                return Logger.Log(await SignInOrTwoFactorAsync(user, isPersistent, loginProvider));
+                return error;
             }
+            return await SignInOrTwoFactorAsync(user, isPersistent, loginProvider);
         }
 
         private const string LoginProviderKey = "LoginProvider";
@@ -371,6 +392,7 @@ namespace Microsoft.AspNet.Identity
                     // Store the userId for use after two factor check
                     var userId = await UserManager.GetUserIdAsync(user);
                     Context.Response.SignIn(IdentityOptions.TwoFactorUserIdCookieAuthenticationScheme, StoreTwoFactorInfo(userId, loginProvider));
+                    Logger.LogInformation("User {userId} needs to complete two factor authentication for signin", userId);
                     return SignInResult.TwoFactorRequired;
                 }
             }
@@ -380,6 +402,10 @@ namespace Microsoft.AspNet.Identity
                 Context.Response.SignOut(IdentityOptions.ExternalCookieAuthenticationScheme);
             }
             await SignInAsync(user, isPersistent, loginProvider);
+            if (Logger.IsEnabled(LogLevel.Information))
+            {
+                Logger.LogVerbose("User {userId} signin successful", await UserManager.GetUserIdAsync(user));
+            }
             return SignInResult.Success;
         }
 
@@ -397,13 +423,6 @@ namespace Microsoft.AspNet.Identity
             return null;
         }
 
-        protected virtual async Task<IDisposable> BeginLoggingScopeAsync(TUser user, [CallerMemberName] string methodName = null)
-        {
-            var state = Resources.FormatLoggingResultMessageForUser(methodName, await UserManager.GetUserIdAsync(user));
-            return Logger.BeginScope(state);
-        }
-            
-
         internal static ClaimsPrincipal StoreTwoFactorInfo(string userId, string loginProvider)
         {
             var identity = new ClaimsIdentity(IdentityOptions.TwoFactorUserIdCookieAuthenticationType);
@@ -414,6 +433,7 @@ namespace Microsoft.AspNet.Identity
             }
             return new ClaimsPrincipal(identity);
         }
+
         internal class TwoFactorAuthenticationInfo
         {
             public string UserId { get; set; }
