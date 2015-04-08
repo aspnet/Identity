@@ -1,6 +1,6 @@
-﻿@using System.Security.Principal
+﻿@using System.Security.Claims
 
-@if (User.IsSignedIn())
+@if (User.Identity.IsAuthenticated)
 {
     using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
     {
