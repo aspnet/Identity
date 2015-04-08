@@ -139,7 +139,7 @@ namespace Microsoft.AspNet.Identity
         /// Validates that the claims identity has a security stamp matching the users
         /// Returns the user if it matches, null otherwise
         /// </summary>
-        /// <param name="identity"></param>
+        /// <param name="principal"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
         public virtual async Task<TUser> ValidateSecurityStampAsync(ClaimsPrincipal principal, string userId)
@@ -402,7 +402,7 @@ namespace Microsoft.AspNet.Identity
                 Context.Response.SignOut(IdentityOptions.ExternalCookieAuthenticationScheme);
             }
             await SignInAsync(user, isPersistent, loginProvider);
-            if (Logger.IsEnabled(LogLevel.Information))
+            if (Logger.IsEnabled(LogLevel.Verbose))
             {
                 Logger.LogVerbose("User {userId} signin successful", await UserManager.GetUserIdAsync(user));
             }
