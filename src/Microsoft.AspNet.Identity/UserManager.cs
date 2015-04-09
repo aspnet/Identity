@@ -1994,7 +1994,6 @@ namespace Microsoft.AspNet.Identity
             return Logger.BeginScope(state);
         }
 
-
         private void ThrowIfDisposed()
         {
             if (_disposed)
