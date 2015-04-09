@@ -136,7 +136,7 @@ namespace Microsoft.AspNet.Identity.Test
             var newUsername = "New" + Guid.NewGuid().ToString();
             var user = CreateTestUser(username, useNamePrefixAsUserName: true);
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
-            Assert.Null(await manager.FindByNameAsync("New"));
+            Assert.Null(await manager.FindByNameAsync(newUsername));
             IdentityResultAssert.IsSuccess(await manager.SetUserNameAsync(user, newUsername));
             Assert.NotNull(await manager.FindByNameAsync(newUsername));
             Assert.Null(await manager.FindByNameAsync(username));
@@ -145,7 +145,20 @@ namespace Microsoft.AspNet.Identity.Test
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(newUser));
             IdentityResultAssert.IsFailure(await manager.SetUserNameAsync(newUser, ""), IdentityErrorDescriber.Default.InvalidUserName(""));
             IdentityResultAssert.IsFailure(await manager.SetUserNameAsync(newUser, newUsername), IdentityErrorDescriber.Default.DuplicateUserName(newUsername));
-            Assert.NotNull(await manager.FindByNameAsync(username));
+        }
+
+        [Fact]
+        public async Task SetUserNameUpdatesSecurityStamp()
+        {
+            var manager = CreateManager();
+            var username = "UpdateAsync" + Guid.NewGuid().ToString();
+            var newUsername = "New" + Guid.NewGuid().ToString();
+            var user = CreateTestUser(username, useNamePrefixAsUserName: true);
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
+            var stamp = await manager.GetSecurityStampAsync(user);
+            Assert.Null(await manager.FindByNameAsync(newUsername));
+            IdentityResultAssert.IsSuccess(await manager.SetUserNameAsync(user, newUsername));
+            Assert.NotEqual(stamp, await manager.GetSecurityStampAsync(user));
         }
 
         [Fact]
@@ -165,7 +178,6 @@ namespace Microsoft.AspNet.Identity.Test
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(newUser));
             IdentityResultAssert.IsFailure(await manager.SetEmailAsync(newUser, newEmail), IdentityErrorDescriber.Default.DuplicateEmail(newEmail));
             IdentityResultAssert.IsFailure(await manager.SetEmailAsync(newUser, ""), IdentityErrorDescriber.Default.InvalidEmail(""));
-            Assert.NotNull(await manager.FindByEmailAsync(email));
         }
 
         [Fact]

@@ -494,23 +494,10 @@ namespace Microsoft.AspNet.Identity
 
             using (await BeginLoggingScopeAsync(user))
             {
-                var oldUserName = await GetUserNameAsync(user);
-                await UpdateUserName(user, userName);
-                var result = await ValidateUserInternal(user);
-                if (result.Succeeded)
-                {
-                    return Logger.Log(await UpdateUserAsync(user));
-                }
-
-                await UpdateUserName(user, oldUserName);
-                return Logger.Log(result);
+                await Store.SetUserNameAsync(user, userName, CancellationToken);
+                await UpdateSecurityStampInternal(user);
+                return Logger.Log(await UpdateUserAsync(user));
             }
-        }
-
-        private async Task UpdateUserName(TUser user, string userName)
-        {
-            await Store.SetUserNameAsync(user, userName, CancellationToken);
-            await UpdateNormalizedUserNameAsync(user);
         }
 
         /// <summary>
@@ -1267,18 +1254,10 @@ namespace Microsoft.AspNet.Identity
 
             using (await BeginLoggingScopeAsync(user))
             {
-                var oldEmail = await GetEmailAsync(user);
                 await store.SetEmailAsync(user, email, CancellationToken);
-                var result = await ValidateUserInternal(user);
-
-                if (result.Succeeded)
-                {
-                    await store.SetEmailConfirmedAsync(user, false, CancellationToken);
-                    await UpdateSecurityStampInternal(user);
-                    return Logger.Log(await UpdateUserAsync(user));
-                }
-                await store.SetEmailAsync(user, oldEmail, CancellationToken);
-                return Logger.Log(result);
+                await store.SetEmailConfirmedAsync(user, false, CancellationToken);
+                await UpdateSecurityStampInternal(user);
+                return Logger.Log(await UpdateUserAsync(user));
             }
         }
 
