@@ -48,7 +48,7 @@ namespace Microsoft.AspNet.Identity
             ClaimsFactory = claimsFactory;
             Options = optionsAccessor?.Options ?? new IdentityOptions();
 
-            Logger = logger?.CreateLogger<SignInManager<TUser>>() ?? new Logger<SignInManager<TUser>>(new LoggerFactory());
+            Logger = logger?.CreateLogger<SignInManager<TUser>>();
         }
 
         protected internal virtual ILogger Logger { get; set; }
@@ -400,7 +400,7 @@ namespace Microsoft.AspNet.Identity
         protected virtual async Task<IDisposable> BeginLoggingScopeAsync(TUser user, [CallerMemberName] string methodName = null)
         {
             var state = Resources.FormatLoggingResultMessageForUser(methodName, await UserManager.GetUserIdAsync(user));
-            return Logger.BeginScope(state);
+            return Logger?.BeginScope(state);
         }
             
 

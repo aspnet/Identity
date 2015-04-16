@@ -45,8 +45,6 @@ namespace Microsoft.Framework.DependencyInjection
             // Services used by identity
             services.AddOptions();
             services.AddDataProtection();
-            services.AddLogging();
-            services.TryAdd(ServiceDescriptor.Singleton<IHttpContextAccessor, HttpContextAccessor>());
 
             // Identity services
             services.TryAdd(ServiceDescriptor.Transient<IUserValidator<TUser>, UserValidator<TUser>>());
