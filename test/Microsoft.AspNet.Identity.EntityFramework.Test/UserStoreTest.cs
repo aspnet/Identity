@@ -44,71 +44,70 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         }
 
         //https://github.com/aspnet/Identity/issues/411
-        //[Fact]
-        //public async Task EnsureStartupUsageWorks()
-        //{
-        //    EnsureDatabase();
+        [Fact]
+        public async Task EnsureStartupUsageWorks()
+        {
+            EnsureDatabase();
 
-        //    var server = TestServer.Create(
-        //        app =>
-        //        {
-        //            app.UseIdentity<ApplicationUser, IdentityRole>();
-        //            app.Run(async context =>
-        //            {
-        //                var userStore = context.RequestServices.GetRequiredService<IUserStore<ApplicationUser>>();
-        //                var userManager = context.RequestServices.GetRequiredService<UserManager<ApplicationUser>>();
+            var server = TestServer.Create(
+                app =>
+                {
+                    app.UseIdentity();
+                    app.Run(async context =>
+                    {
+                        var userStore = context.RequestServices.GetRequiredService<IUserStore<ApplicationUser>>();
+                        var userManager = context.RequestServices.GetRequiredService<UserManager<ApplicationUser>>();
 
-        //                Assert.NotNull(userStore);
-        //                Assert.NotNull(userManager);
+                        Assert.NotNull(userStore);
+                        Assert.NotNull(userManager);
 
-        //                const string userName = "admin";
-        //                const string password = "1qaz@WSX";
-        //                var user = new ApplicationUser { UserName = userName };
-        //                IdentityResultAssert.IsSuccess(await userManager.CreateAsync(user, password));
-        //                IdentityResultAssert.IsSuccess(await userManager.DeleteAsync(user));
-        //            });
-        //        },
-        //        services =>
-        //        {
-        //            DbUtil.ConfigureDbServices<ApplicationDbContext>(ConnectionString, services);
-        //            services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
-        //        });
-        //}
+                        const string userName = "admin";
+                        const string password = "1qaz@WSX";
+                        var user = new ApplicationUser { UserName = userName };
+                        IdentityResultAssert.IsSuccess(await userManager.CreateAsync(user, password));
+                        IdentityResultAssert.IsSuccess(await userManager.DeleteAsync(user));
+                    });
+                },
+                services =>
+                {
+                    DbUtil.ConfigureDbServices<ApplicationDbContext>(ConnectionString, services);
+                    services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
+                });
+        }
 
-        //[Fact]
-        //public async Task EnsureStartupOptionsChangeWorks()
-        //{
-        //    EnsureDatabase();
-        //    var builder = new ApplicationBuilder(CallContextServiceLocator.Locator.ServiceProvider);
+        [Fact]
+        public async Task EnsureStartupOptionsChangeWorks()
+        {
+            EnsureDatabase();
+            var host = new WebHostBuilder(CallContextServiceLocator.Locator.ServiceProvider)
+                .UseServices(services =>
+                {
+                    services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+                    services.AddEntityFramework()
+                            .AddSqlServer()
+                            .AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(ConnectionString));
+                    services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+                    {
+                        options.Password.RequiredLength = 1;
+                        options.Password.RequireLowercase = false;
+                        options.Password.RequireNonLetterOrDigit = false;
+                        options.Password.RequireUppercase = false;
+                        options.Password.RequireDigit = false;
+                    }).AddEntityFrameworkStores<ApplicationDbContext>();
+                }.Build());
 
-        //    builder.UseServices(services =>
-        //    {
-        //        services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-        //        services.AddEntityFramework()
-        //                .AddSqlServer()
-        //                .AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(ConnectionString));
-        //        services.AddIdentity<ApplicationUser, IdentityRole>(options =>
-        //        {
-        //            options.Password.RequiredLength = 1;
-        //            options.Password.RequireLowercase = false;
-        //            options.Password.RequireNonLetterOrDigit = false;
-        //            options.Password.RequireUppercase = false;
-        //            options.Password.RequireDigit = false;
-        //        }).AddEntityFrameworkStores<ApplicationDbContext>();
-        //    });
+            var userStore = host.ApplicationServices.GetRequiredService<IUserStore<ApplicationUser>>();
+            var userManager = host.ApplicationServices.GetRequiredService<UserManager<ApplicationUser>>();
 
-        //    var userStore = builder.ApplicationServices.GetRequiredService<IUserStore<ApplicationUser>>();
-        //    var userManager = builder.ApplicationServices.GetRequiredService<UserManager<ApplicationUser>>();
+            Assert.NotNull(userStore);
+            Assert.NotNull(userManager);
 
-        //    Assert.NotNull(userStore);
-        //    Assert.NotNull(userManager);
-
-        //    const string userName = "admin";
-        //    const string password = "a";
-        //    var user = new ApplicationUser { UserName = userName };
-        //    IdentityResultAssert.IsSuccess(await userManager.CreateAsync(user, password));
-        //    IdentityResultAssert.IsSuccess(await userManager.DeleteAsync(user));
-        //}
+            const string userName = "admin";
+            const string password = "a";
+            var user = new ApplicationUser { UserName = userName };
+            IdentityResultAssert.IsSuccess(await userManager.CreateAsync(user, password));
+            IdentityResultAssert.IsSuccess(await userManager.DeleteAsync(user));
+        }
 
         [Fact]
         public void CanCreateUserUsingEF()
