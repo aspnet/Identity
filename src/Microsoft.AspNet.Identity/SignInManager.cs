@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security.Claims;
-using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Hosting;
 using Microsoft.AspNet.Http;
@@ -26,8 +25,8 @@ namespace Microsoft.AspNet.Identity
         public SignInManager(UserManager<TUser> userManager,
             IHttpContextAccessor contextAccessor,
             IUserClaimsPrincipalFactory<TUser> claimsFactory,
-            IOptions<IdentityOptions> optionsAccessor = null,
-            ILoggerFactory logger = null)
+            IOptions<IdentityOptions> optionsAccessor,
+            ILoggerFactory logger)
         {
             if (userManager == null)
             {
