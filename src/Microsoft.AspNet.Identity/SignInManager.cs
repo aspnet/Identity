@@ -51,10 +51,10 @@ namespace Microsoft.AspNet.Identity
         }
 
         protected internal virtual ILogger Logger { get; set; }
-        internal UserManager<TUser> UserManager { get; private set; }
-        internal HttpContext Context { get; private set; }
-        internal IUserClaimsPrincipalFactory<TUser> ClaimsFactory { get; private set; }
-        internal IdentityOptions Options { get; private set; }
+        internal UserManager<TUser> UserManager { get; set; }
+        internal HttpContext Context { get; set; }
+        internal IUserClaimsPrincipalFactory<TUser> ClaimsFactory { get; set; }
+        internal IdentityOptions Options { get; set; }
        
 
         // Should this be a func?
@@ -72,6 +72,22 @@ namespace Microsoft.AspNet.Identity
             }
 
             return Logger.Log(true);
+        }
+
+        /// <summary>
+        /// Called to regenerate the ApplicationCookie for the user, preserving the existing
+        /// AuthenticationProperties like rememberMe
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        public virtual async Task ResignInAsync(TUser user)
+        {
+            // Todo: remember the AuthenticationMethod somehow
+            var authResult = await Context.AuthenticateAsync(IdentityOptions.ApplicationCookieAuthenticationScheme);
+            var properties = authResult?.Properties;
+            var isPersistent = properties != null && properties.IsPersistent;
+            var authenticationMethod = authResult?.Principal?.FindFirstValue(ClaimTypes.AuthenticationMethod);
+            await SignInAsync(user, isPersistent, authenticationMethod);
         }
 
         public virtual async Task SignInAsync(TUser user, bool isPersistent, string authenticationMethod = null)
@@ -402,7 +418,6 @@ namespace Microsoft.AspNet.Identity
             return Logger?.BeginScope(state);
         }
             
-
         internal static ClaimsPrincipal StoreTwoFactorInfo(string userId, string loginProvider)
         {
             var identity = new ClaimsIdentity(IdentityOptions.TwoFactorUserIdCookieAuthenticationType);
