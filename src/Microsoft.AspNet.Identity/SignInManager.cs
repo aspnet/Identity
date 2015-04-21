@@ -82,7 +82,6 @@ namespace Microsoft.AspNet.Identity
         /// <returns></returns>
         public virtual async Task ResignInAsync(TUser user)
         {
-            // Todo: remember the AuthenticationMethod somehow
             var authResult = await Context.AuthenticateAsync(IdentityOptions.ApplicationCookieAuthenticationScheme);
             var properties = authResult?.Properties;
             var isPersistent = properties != null && properties.IsPersistent;
