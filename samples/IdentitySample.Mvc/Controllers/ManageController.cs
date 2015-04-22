@@ -72,7 +72,7 @@ namespace IdentitySample.Controllers
                 var result = await UserManager.RemoveLoginAsync(user, loginProvider, providerKey);
                 if (result.Succeeded)
                 {
-                    await SignInManager.ResignInAsync(user);
+                    await SignInManager.ReSignInAsync(user);
                     message = ManageMessageId.RemoveLoginSuccess;
                 }
             }

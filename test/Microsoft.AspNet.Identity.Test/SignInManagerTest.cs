@@ -368,7 +368,7 @@ namespace Microsoft.AspNet.Identity.Test
                 new Mock<IUserClaimsPrincipalFactory<TestUser>>().Object,
                 null, null)
             { CallBase = true };
-            signInManager.Setup(s => s.SignInAsync(user, isPersistent, externalLogin ? loginProvider : null)).Returns(Task.FromResult(0)).Verifiable();
+            signInManager.Setup(s => s.SignInAsync(user, properties, externalLogin ? loginProvider : null)).Returns(Task.FromResult(0)).Verifiable();
             signInManager.Object.Context = context.Object;
 
             // Act
