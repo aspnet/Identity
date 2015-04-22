@@ -77,16 +77,20 @@ namespace Microsoft.AspNet.Identity
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public virtual async Task ResignInAsync(TUser user)
+        public virtual async Task ReSignInAsync(TUser user)
         {
             var authResult = await Context.AuthenticateAsync(IdentityOptions.ApplicationCookieAuthenticationScheme);
-            var properties = authResult?.Properties;
-            var isPersistent = properties != null && properties.IsPersistent;
+            var properties = authResult?.Properties ?? new AuthenticationProperties();
             var authenticationMethod = authResult?.Principal?.FindFirstValue(ClaimTypes.AuthenticationMethod);
-            await SignInAsync(user, isPersistent, authenticationMethod);
+            await SignInAsync(user, properties, authenticationMethod);
         }
 
-        public virtual async Task SignInAsync(TUser user, bool isPersistent, string authenticationMethod = null)
+        public virtual Task SignInAsync(TUser user, bool isPersistent, string authenticationMethod = null)
+        {
+            return SignInAsync(user, new AuthenticationProperties { IsPersistent = isPersistent }, authenticationMethod);
+        }
+
+        public virtual async Task SignInAsync(TUser user, AuthenticationProperties authenticationProperties, string authenticationMethod = null)
         {
             var userPrincipal = await CreateUserPrincipalAsync(user);
             // Review: should we guard against CreateUserPrincipal returning null?
@@ -96,7 +100,7 @@ namespace Microsoft.AspNet.Identity
             }
             Context.Response.SignIn(IdentityOptions.ApplicationCookieAuthenticationScheme,
                 userPrincipal,
-                new AuthenticationProperties() { IsPersistent = isPersistent });
+                authenticationProperties ?? new AuthenticationProperties());
         }
 
         public virtual void SignOut()
@@ -273,13 +277,12 @@ namespace Microsoft.AspNet.Identity
                     {
                         Context.Response.SignOut(IdentityOptions.ExternalCookieAuthenticationScheme);
                     }
-                    await SignInAsync(user, isPersistent, twoFactorInfo.LoginProvider);
                     if (rememberClient)
                     {
                         await RememberTwoFactorClientAsync(user);
                     }
                     await UserManager.ResetAccessFailedCountAsync(user);
-                    await SignInAsync(user, isPersistent);
+                    await SignInAsync(user, isPersistent, twoFactorInfo.LoginProvider);
                     return Logger.Log(SignInResult.Success);
                 }
                 // If the token is incorrect, record the failure which also may cause the user to be locked out

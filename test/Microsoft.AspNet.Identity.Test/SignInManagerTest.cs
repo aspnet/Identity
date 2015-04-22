@@ -372,7 +372,7 @@ namespace Microsoft.AspNet.Identity.Test
             signInManager.Object.Context = context.Object;
 
             // Act
-            await signInManager.Object.ResignInAsync(user);
+            await signInManager.Object.ReSignInAsync(user);
 
             // Assert
             context.Verify();
