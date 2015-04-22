@@ -32,7 +32,6 @@ namespace Microsoft.AspNet.Identity
             {
                 throw new ArgumentNullException(nameof(userManager));
             }
-
             if (contextAccessor == null || contextAccessor.HttpContext == null)
             {
                 throw new ArgumentNullException(nameof(contextAccessor));
@@ -46,7 +45,6 @@ namespace Microsoft.AspNet.Identity
             Context = contextAccessor.HttpContext;
             ClaimsFactory = claimsFactory;
             Options = optionsAccessor?.Options ?? new IdentityOptions();
-
             Logger = logger?.CreateLogger<SignInManager<TUser>>();
         }
 
@@ -56,7 +54,6 @@ namespace Microsoft.AspNet.Identity
         internal IUserClaimsPrincipalFactory<TUser> ClaimsFactory { get; set; }
         internal IdentityOptions Options { get; set; }
        
-
         // Should this be a func?
         public virtual async Task<ClaimsPrincipal> CreateUserPrincipalAsync(TUser user) => await ClaimsFactory.CreateAsync(user);
 
