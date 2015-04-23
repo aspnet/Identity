@@ -77,7 +77,7 @@ namespace Microsoft.AspNet.Identity
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public virtual async Task ReSignInAsync(TUser user)
+        public virtual async Task RefreshSignInAsync(TUser user)
         {
             var authResult = await Context.AuthenticateAsync(IdentityOptions.ApplicationCookieAuthenticationScheme);
             var properties = authResult?.Properties ?? new AuthenticationProperties();
