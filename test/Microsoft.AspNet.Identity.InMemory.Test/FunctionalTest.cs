@@ -31,12 +31,12 @@ namespace Microsoft.AspNet.Identity.InMemory
         public async Task CanCreateMeLoginAndCookieStopsWorkingAfterExpiration()
         {
             var clock = new TestClock();
-            var server = CreateServer(appCookieOptions =>
+            var server = CreateServer(services => services.ConfigureIdentityApplicationCookie(appCookieOptions =>
             {
                 appCookieOptions.SystemClock = clock;
                 appCookieOptions.ExpireTimeSpan = TimeSpan.FromMinutes(10);
                 appCookieOptions.SlidingExpiration = false;
-            });
+            }));
 
             var transaction1 = await SendAsync(server, "http://example.com/createMe");
             transaction1.Response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -70,10 +70,10 @@ namespace Microsoft.AspNet.Identity.InMemory
         public async Task CanCreateMeLoginAndSecurityStampExtendsExpiration(bool rememberMe)
         {
             var clock = new TestClock();
-            var server = CreateServer(appCookieOptions =>
+            var server = CreateServer(services => services.ConfigureIdentityApplicationCookie(appCookieOptions =>
             {
                 appCookieOptions.SystemClock = clock;
-            });
+            }));
 
             var transaction1 = await SendAsync(server, "http://example.com/createMe");
             transaction1.Response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -116,7 +116,7 @@ namespace Microsoft.AspNet.Identity.InMemory
         [Fact]
         public async Task TwoFactorRememberCookieVerification()
         {
-            var server = CreateServer(appCookieOptions => { });
+            var server = CreateServer();
 
             var transaction1 = await SendAsync(server, "http://example.com/createMe");
             transaction1.Response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -135,7 +135,7 @@ namespace Microsoft.AspNet.Identity.InMemory
 
         private static string FindClaimValue(Transaction transaction, string claimType)
         {
-            XElement claim = transaction.ResponseElement.Elements("claim").SingleOrDefault(elt => elt.Attribute("type").Value == claimType);
+            var claim = transaction.ResponseElement.Elements("claim").SingleOrDefault(elt => elt.Attribute("type").Value == claimType);
             if (claim == null)
             {
                 return null;
@@ -154,7 +154,7 @@ namespace Microsoft.AspNet.Identity.InMemory
             return me;
         }
 
-        private static TestServer CreateServer(Action<CookieAuthenticationOptions> configureAppCookie, Func<HttpContext, Task> testpath = null, Uri baseAddress = null)
+        private static TestServer CreateServer(Action<IServiceCollection> configureServices = null, Func<HttpContext, Task> testpath = null, Uri baseAddress = null)
         {
             var server = TestServer.Create(app =>
             {
@@ -224,7 +224,10 @@ namespace Microsoft.AspNet.Identity.InMemory
                 services.AddIdentity<TestUser, TestRole>();
                 services.AddSingleton<IUserStore<TestUser>, InMemoryUserStore<TestUser>>();
                 services.AddSingleton<IRoleStore<TestRole>, InMemoryRoleStore<TestRole>>();
-                services.ConfigureIdentityApplicationCookie(configureAppCookie);
+                if (configureServices != null)
+                {
+                    configureServices(services);
+                }
             });
             server.BaseAddress = baseAddress;
             return server;
