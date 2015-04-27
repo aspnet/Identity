@@ -28,6 +28,22 @@ namespace Microsoft.AspNet.Identity.InMemory
         const string TestPassword = "1qaz!QAZ";
 
         [Fact]
+        public async Task CanChangePasswordOptions()
+        {
+            var clock = new TestClock();
+            var server = CreateServer(services => services.ConfigureIdentity(options =>
+            {
+                options.Password.RequireUppercase = false;
+                options.Password.RequireNonLetterOrDigit = false;
+                options.Password.RequireDigit = false;
+            }));
+
+            var transaction1 = await SendAsync(server, "http://example.com/createSimple");
+            transaction1.Response.StatusCode.ShouldBe(HttpStatusCode.OK);
+            Assert.Null(transaction1.SetCookie);
+        }
+
+        [Fact]
         public async Task CanCreateMeLoginAndCookieStopsWorkingAfterExpiration()
         {
             var clock = new TestClock();
@@ -173,6 +189,11 @@ namespace Microsoft.AspNet.Identity.InMemory
                     else if (req.Path == new PathString("/createMe"))
                     {
                         var result = await userManager.CreateAsync(new TestUser("hao"), TestPassword);
+                        res.StatusCode = result.Succeeded ? 200 : 500;
+                    }
+                    else if (req.Path == new PathString("/createSimple"))
+                    {
+                        var result = await userManager.CreateAsync(new TestUser("simple"), "aaaaaa");
                         res.StatusCode = result.Succeeded ? 200 : 500;
                     }
                     else if (req.Path == new PathString("/protected"))
