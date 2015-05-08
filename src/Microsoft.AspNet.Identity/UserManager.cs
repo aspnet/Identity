@@ -1507,6 +1507,7 @@ namespace Microsoft.AspNet.Identity
         // Two factor APIS
         internal async Task<byte[]> CreateSecurityTokenAsync(TUser user)
         {
+            return Encoding.Unicode.GetBytes(await GetSecurityStampAsync(user));
         }
 
         /// <summary>
