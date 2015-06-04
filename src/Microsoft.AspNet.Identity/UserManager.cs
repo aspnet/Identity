@@ -1078,7 +1078,9 @@ namespace Microsoft.AspNet.Identity
             using (await BeginLoggingScopeAsync(user))
             {
                 var userRoles = await userRoleStore.GetRolesAsync(user, CancellationToken);
-                if (userRoles.Contains(role))
+                bool hasRolesAssigned = (!ReferenceEquals(userRoles, null) && userRoles.Count > 0);
+                
+                if (hasRolesAssigned && userRoles.Contains(role))
                 {
                     return Logger.Log(IdentityResult.Failed(ErrorDescriber.UserAlreadyInRole(role)));
                 }
@@ -1109,9 +1111,11 @@ namespace Microsoft.AspNet.Identity
             using (await BeginLoggingScopeAsync(user))
             {
                 var userRoles = await userRoleStore.GetRolesAsync(user, CancellationToken);
+                bool hasRolesAssigned = (!ReferenceEquals(userRoles, null) && userRoles.Count > 0);
+                
                 foreach (var role in roles)
                 {
-                    if (userRoles.Contains(role))
+                    if (hasRolesAssigned && userRoles.Contains(role))
                     {
                         return Logger.Log(IdentityResult.Failed(ErrorDescriber.UserAlreadyInRole(role)));
                     }
