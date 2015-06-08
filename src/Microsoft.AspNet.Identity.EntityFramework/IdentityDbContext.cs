@@ -33,9 +33,14 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             builder.Entity<TUser>(b =>
                 {
                     b.Key(u => u.Id);
+                    b.Index("NormalizedUserName", "NormalizedEmail");
                     b.Table("AspNetUsers");
                     b.Property(u => u.ConcurrencyStamp).ConcurrencyToken();
 
+                    b.Property(u => u.UserName).MaxLength(256);
+                    b.Property(u => u.NormalizedUserName).MaxLength(256);
+                    b.Property(u => u.Email).MaxLength(256);
+                    b.Property(u => u.NormalizedEmail).MaxLength(256);
                     b.Collection(u => u.Claims).InverseReference().ForeignKey(uc => uc.UserId);
                     b.Collection(u => u.Logins).InverseReference().ForeignKey(ul => ul.UserId);
                     b.Collection(u => u.Roles).InverseReference().ForeignKey(ur => ur.UserId);
@@ -44,8 +49,12 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             builder.Entity<TRole>(b =>
                 {
                     b.Key(r => r.Id);
+                    b.Index("NormalizedName");
                     b.Table("AspNetRoles");
                     b.Property(r => r.ConcurrencyStamp).ConcurrencyToken();
+
+                    b.Property(u => u.Name).MaxLength(256);
+                    b.Property(u => u.NormalizedName).MaxLength(256);
 
                     b.Collection(r => r.Users).InverseReference().ForeignKey(ur => ur.RoleId);
                     b.Collection(r => r.Claims).InverseReference().ForeignKey(rc => rc.RoleId);
