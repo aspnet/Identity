@@ -33,7 +33,8 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             builder.Entity<TUser>(b =>
                 {
                     b.Key(u => u.Id);
-                    b.Index("NormalizedUserName", "NormalizedEmail");
+                    b.Index("NormalizedUserName");
+                    b.Index("NormalizedEmail");
                     b.Table("AspNetUsers");
                     b.Property(u => u.ConcurrencyStamp).ConcurrencyToken();
 
