@@ -33,8 +33,8 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             builder.Entity<TUser>(b =>
                 {
                     b.Key(u => u.Id);
-                    b.Index("NormalizedUserName");
-                    b.Index("NormalizedEmail");
+                    b.Index(u => u.NormalizedUserName).Name("UserNameIndex");
+                    b.Index(u => u.NormalizedEmail).Name("EmailIndex");
                     b.Table("AspNetUsers");
                     b.Property(u => u.ConcurrencyStamp).ConcurrencyToken();
 
@@ -50,7 +50,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             builder.Entity<TRole>(b =>
                 {
                     b.Key(r => r.Id);
-                    b.Index("NormalizedName");
+                    b.Index(r => r.NormalizedName).Name("RoleNameIndex");
                     b.Table("AspNetRoles");
                     b.Property(r => r.ConcurrencyStamp).ConcurrencyToken();
 
