@@ -3,6 +3,7 @@
 
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNet.Identity.Store;
 
 namespace Microsoft.AspNet.Identity.Test
 {

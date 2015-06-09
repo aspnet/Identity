@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Hosting;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Identity.Logging;
+using Microsoft.AspNet.Identity.Store;
 using Microsoft.Framework.Logging;
 
 namespace Microsoft.AspNet.Identity

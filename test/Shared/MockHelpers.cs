@@ -3,14 +3,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Text;
 using Microsoft.Framework.Logging;
 using Moq;
 using Microsoft.Framework.OptionsModel;
 using System.Linq;
-using Microsoft.AspNet.Hosting;
+using Microsoft.AspNet.Identity.Store;
 
 namespace Microsoft.AspNet.Identity.Test
 {

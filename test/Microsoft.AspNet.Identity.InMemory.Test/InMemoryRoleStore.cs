@@ -7,6 +7,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNet.Identity.Store;
 using Microsoft.AspNet.Identity.Test;
 
 namespace Microsoft.AspNet.Identity.InMemory

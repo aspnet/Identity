@@ -6,7 +6,7 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.AspNet.Identity
+namespace Microsoft.AspNet.Identity.Store
 {
     /// <summary>
     /// Provides an abstraction for a store of role specific claims.
