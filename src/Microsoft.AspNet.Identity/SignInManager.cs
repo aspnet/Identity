@@ -317,7 +317,7 @@ namespace Microsoft.AspNet.Identity
             var error = await PreSignInCheck(user);
             if (error != null)
             {
-                return Logger.Log(error);
+                return error;
             }
             if (await UserManager.VerifyTwoFactorTokenAsync(user, provider, code))
             {
