@@ -3,6 +3,7 @@
 
 using System;
 using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.AspNet.Identity.Store;
 using Microsoft.Framework.Configuration;
 using Microsoft.Framework.DependencyInjection;
 

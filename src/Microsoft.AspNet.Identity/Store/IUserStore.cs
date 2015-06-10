@@ -5,7 +5,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.AspNet.Identity
+namespace Microsoft.AspNet.Identity.Store
 {
     /// <summary>
     /// Provides an abstraction for a store which manages user accounts.

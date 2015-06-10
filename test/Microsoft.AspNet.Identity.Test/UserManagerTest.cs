@@ -8,6 +8,7 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Hosting;
+using Microsoft.AspNet.Identity.Store;
 using Microsoft.Framework.DependencyInjection;
 using Moq;
 using Xunit;
@@ -20,10 +21,10 @@ namespace Microsoft.AspNet.Identity.Test
         public void EnsureDefaultServicesDefaultsWithStoreWorks()
         {
             var services = new ServiceCollection()
-                    .AddTransient<IUserStore<TestUser>, NoopUserStore>();
+                    .AddTransient<IUserStore<TestUser>, NoopUserStore>()
+                    .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
+                    .AddLogging();
             services.AddIdentity<TestUser, TestRole>();
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddLogging();
             var manager = services.BuildServiceProvider().GetRequiredService<UserManager<TestUser>>();
             Assert.NotNull(manager.PasswordHasher);
             Assert.NotNull(manager.Store);
