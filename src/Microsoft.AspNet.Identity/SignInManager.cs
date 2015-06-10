@@ -205,14 +205,15 @@ namespace Microsoft.AspNet.Identity
             }
             if (await IsLockedOut(user))
             {
-                Logger.LogWarning("User {userId} is currently locked out.", await UserManager.GetUserIdAsync(user));
-                return SignInResult.LockedOut;
+                return await LockedOut(user);
             }
             if (await UserManager.CheckPasswordAsync(user, password))
             {
                 await ResetLockout(user);
                 return await SignInOrTwoFactorAsync(user, isPersistent);
             }
+            Logger.LogWarning("User {userId} failed to provide the correct password.", await UserManager.GetUserIdAsync(user));
+
             if (UserManager.SupportsUserLockout && shouldLockout)
             {
                 // If lockout is requested, increment access failed count which might lock out the user
@@ -222,7 +223,6 @@ namespace Microsoft.AspNet.Identity
                     return await LockedOut(user);
                 }
             }
-            // REVIEW: do we want to log normal password failures which would show up here?
             return SignInResult.Failed;
         }
 
