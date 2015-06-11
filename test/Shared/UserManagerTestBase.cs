@@ -36,6 +36,7 @@ namespace Microsoft.AspNet.Identity.Test
             AddRoleStore(services, context);
             services.AddLogging();
             services.AddInstance<ILogger<UserManager<TUser>>>(new TestLogger<UserManager<TUser>>());
+            services.AddInstance<ILogger<RoleManager<TRole>>>(new TestLogger<RoleManager<TRole>>());
             services.ConfigureIdentity(options =>
             {
                 options.Password.RequireDigit = false;
@@ -228,10 +229,12 @@ namespace Microsoft.AspNet.Identity.Test
         {
             var manager = CreateManager();
             manager.UserValidators.Clear();
+            var user = CreateTestUser();
             manager.UserValidators.Add(new AlwaysBadValidator());
             manager.UserValidators.Add(new AlwaysBadValidator());
-            var result = await manager.CreateAsync(CreateTestUser());
+            var result = await manager.CreateAsync(user);
             IdentityResultAssert.IsFailure(result, AlwaysBadValidator.ErrorMessage);
+            IdentityResultAssert.VerifyLogMessage(manager.Logger, $"User {await manager.GetUserIdAsync(user)} validation failed: {AlwaysBadValidator.ErrorMessage.Code};{AlwaysBadValidator.ErrorMessage.Code}.");
             Assert.Equal(2, result.Errors.Count());
         }
 
@@ -1026,7 +1029,7 @@ namespace Microsoft.AspNet.Identity.Test
             var role = CreateTestRole("blocked");
             var result = await manager.CreateAsync(role);
             IdentityResultAssert.IsFailure(result, AlwaysBadValidator.ErrorMessage);
-            IdentityResultAssert.VerifyLogMessage(manager.Logger, $"Role {await manager.GetRoleIdAsync(role)} validation failed: {AlwaysBadValidator.ErrorMessage.Code}.");
+            IdentityResultAssert.VerifyLogMessage(manager.Logger, $"Role {await manager.GetRoleIdAsync(role)} validation failed: {AlwaysBadValidator.ErrorMessage.Code};{AlwaysBadValidator.ErrorMessage.Code}.");
             Assert.Equal(2, result.Errors.Count());
         }
 

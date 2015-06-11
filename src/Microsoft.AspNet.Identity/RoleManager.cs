@@ -430,7 +430,7 @@ namespace Microsoft.AspNet.Identity
             }
             if (errors.Count > 0)
             {
-                Logger.LogWarning($"Role {await GetRoleIdAsync(role)} validation failed: {string.Join(";", errors)}.");
+                Logger.LogWarning("Role {roleId} validation failed: {errors}.", await GetRoleIdAsync(role), string.Join(";", errors.Select(e => e.Code)));
                 return IdentityResult.Failed(errors.ToArray());
             }
             return IdentityResult.Success;
