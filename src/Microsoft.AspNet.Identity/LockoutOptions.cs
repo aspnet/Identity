@@ -11,15 +11,15 @@ namespace Microsoft.AspNet.Identity
     public class LockoutOptions
     {
         /// <summary>
-        /// Gets or sets a flag indicating whether users are locked out upon creation.
+        /// Gets or sets a flag indicating whether users can be locked out after creation.
         /// </summary>
         /// <value>
-        /// True if a newly created user is locked out, otherwise false.
+        /// True if a newly created user can be locked out, otherwise false.
         /// </value>
         /// <remarks>
-        /// Defaults to false.
+        /// Defaults to true.
         /// </remarks>
-        public bool EnabledByDefault { get; set; } = false;
+        public bool AllowedForNewUsers { get; set; } = true;
 
         /// <summary>
         /// Gets or sets the number of failed access attempts allowed before a user is locked out,
