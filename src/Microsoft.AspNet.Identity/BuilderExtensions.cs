@@ -19,14 +19,24 @@ namespace Microsoft.AspNet.Builder
         /// <returns>The <see cref="IApplicationBuilder"/> instance this method extends.</returns>
         public static IApplicationBuilder UseIdentity(this IApplicationBuilder app)
         {
+            return app.UseIdentity(new IdentityCookieOptions());
+        }
+
+        /// <summary>
+        /// Enables ASP.NET identity for the current application.
+        /// </summary>
+        /// <param name="app">The <see cref="IApplicationBuilder"/> instance this method extends.</param>
+        /// <returns>The <see cref="IApplicationBuilder"/> instance this method extends.</returns>
+        public static IApplicationBuilder UseIdentity(this IApplicationBuilder app, IdentityCookieOptions options)
+        {
             if (app == null)
             {
                 throw new ArgumentNullException(nameof(app));
             }
-            app.UseCookieAuthentication(null, IdentityOptions.ExternalCookieAuthenticationScheme);
-            app.UseCookieAuthentication(null, IdentityOptions.TwoFactorRememberMeCookieAuthenticationScheme);
-            app.UseCookieAuthentication(null, IdentityOptions.TwoFactorUserIdCookieAuthenticationScheme);
-            app.UseCookieAuthentication(null, IdentityOptions.ApplicationCookieAuthenticationScheme);
+            app.UseCookieAuthentication(options.ExternalCookieOptions);
+            app.UseCookieAuthentication(options.TwoFactorRememberMeCookieOptions);
+            app.UseCookieAuthentication(options.TwoFactorUserIdCookieOptions);
+            app.UseCookieAuthentication(options.ApplicationCookieOptions);
             return app;
         }
     }

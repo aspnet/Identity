@@ -51,7 +51,7 @@ namespace Microsoft.AspNet.Identity.Test
 
         private static ClaimsPrincipal CreateAppIdentity(string authType = null)
         {
-            authType = authType ?? IdentityOptions.ApplicationCookieAuthenticationType;
+            authType = authType ?? IdentityCookieOptions.TwoFactorRememberMeCookieAuthenticationScheme;
             return new ClaimsPrincipal(new ClaimsIdentity(
                 new[]
                 {

@@ -6,7 +6,7 @@ using System;
 namespace Microsoft.AspNet.Identity
 {
     /// <summary>
-    /// Represents all the options you can used to configure the identity system.
+    /// Represents all the options you can use to configure the identity system.
     /// </summary>
     public class IdentityOptions
     {
@@ -83,52 +83,27 @@ namespace Microsoft.AspNet.Identity
         public string ChangeEmailTokenProvider { get; set; } = Resources.DefaultTokenProvider;
 
         /// <summary>
-        /// Gets or sets the scheme used to identify application authentication cookies.
+        /// Gets or sets the scheme used to identify application authentication cookies, must match the scheme in IdentityCookieOptions.
         /// </summary>
         /// <value>The scheme used to identify application authentication cookies.</value>
-        public static string ApplicationCookieAuthenticationScheme { get; set; } = typeof(IdentityOptions).Namespace + ".Application";
+        public string ApplicationCookieAuthenticationScheme { get; set; } = IdentityCookieOptions.ApplicationCookieAuthenticationScheme;
 
         /// <summary>
-        /// Gets or sets the scheme used to identify external authentication cookies.
+        /// Gets or sets the scheme used to identify external authentication cookies, must match the scheme in IdentityCookieOptions.
         /// </summary>
         /// <value>The scheme used to identify external authentication cookies.</value>
-        public static string ExternalCookieAuthenticationScheme { get; set; } = typeof(IdentityOptions).Namespace + ".External";
+        public string ExternalCookieAuthenticationScheme { get; set; } = IdentityCookieOptions.ExternalCookieAuthenticationScheme;
 
         /// <summary>
-        /// Gets or sets the scheme used to identify Two Factor authentication cookies for round tripping user identities.
+        /// Gets or sets the scheme used to identify Two Factor authentication cookies for round tripping user identities, must match the scheme in IdentityCookieOptions.
         /// </summary>
         /// <value>The scheme used to identify user identity 2fa authentication cookies.</value>
-        public static string TwoFactorUserIdCookieAuthenticationScheme { get; set; } = typeof(IdentityOptions).Namespace + ".TwoFactorUserId";
-        
+        public string TwoFactorUserIdCookieAuthenticationScheme { get; set; } = IdentityCookieOptions.TwoFactorUserIdCookieAuthenticationScheme;
+
         /// <summary>
-        /// Gets or sets the scheme used to identify Two Factor authentication cookies for saving the Remember Me state.
+        /// Gets or sets the scheme used to identify Two Factor authentication cookies for saving the Remember Me state,, must match the scheme in IdentityCookieOptions
         /// </summary>
         /// <value>The scheme used to identify remember me application authentication cookies.</value>        
-        public static string TwoFactorRememberMeCookieAuthenticationScheme { get; set; } = typeof(IdentityOptions).Namespace + ".TwoFactorRememberMe";
-
-
-        /// <summary>
-        /// Gets or sets the authentication type used when constructing an <see cref="ClaimsIdentity"/> from an application cookie.
-        /// </summary>
-        /// <value>The authentication type used when constructing an <see cref="ClaimsIdentity"/> from an application cookie.</value>
-        public static string ApplicationCookieAuthenticationType { get; set; } = typeof(IdentityOptions).Namespace + ".Application.AuthType";
-
-        /// <summary>
-        /// Gets or sets the authentication type used when constructing an <see cref="ClaimsIdentity"/> from an external identity cookie.
-        /// </summary>
-        /// <value>The authentication type used when constructing an <see cref="ClaimsIdentity"/> from an external identity cookie.</value>
-        public static string ExternalCookieAuthenticationType { get; set; } = typeof(IdentityOptions).Namespace + ".External.AuthType";
-
-        /// <summary>
-        /// Gets or sets the authentication type used when constructing an <see cref="ClaimsIdentity"/> from an two factor authentication cookie.
-        /// </summary>
-        /// <value>The authentication type used when constructing an <see cref="ClaimsIdentity"/> from an two factor authentication cookie.</value>
-        public static string TwoFactorUserIdCookieAuthenticationType { get; set; } = typeof(IdentityOptions).Namespace + ".TwoFactorUserId.AuthType";
-
-        /// <summary>
-        /// Gets or sets the authentication type used when constructing an <see cref="ClaimsIdentity"/> from an two factor remember me authentication cookie.
-        /// </summary>
-        /// <value>The authentication type used when constructing an <see cref="ClaimsIdentity"/> from an two factor remember me authentication cookie.</value>
-        public static string TwoFactorRememberMeCookieAuthenticationType { get; set; } = typeof(IdentityOptions).Namespace + ".TwoFactorRemeberMe.AuthType";
+        public string TwoFactorRememberMeCookieAuthenticationScheme { get; set; } = IdentityCookieOptions.TwoFactorRememberMeCookieAuthenticationScheme;
     }
 }

@@ -47,21 +47,6 @@ namespace IdentitySamples
                     .AddEntityFrameworkStores<ApplicationDbContext>()
                     .AddDefaultTokenProviders();
 
-            services.ConfigureFacebookAuthentication(options =>
-            {
-                options.AppId = "901611409868059";
-                options.AppSecret = "4aa3c530297b1dcebc8860334b39668b";
-            });
-            services.ConfigureGoogleAuthentication(options =>
-            {
-                options.ClientId = "514485782433-fr3ml6sq0imvhi8a7qir0nb46oumtgn9.apps.googleusercontent.com";
-                options.ClientSecret = "V2nDD9SkFbvLTqAUBWBBxYAL";
-            });
-            services.ConfigureTwitterAuthentication(options =>
-            {
-                options.ConsumerKey = "BSdJJ0CrDuvEhpkchnukXZBUv";
-                options.ConsumerSecret = "xKUNuKhsRdHD03eLn67xhPAyE1wFFEndFo1X2UJaK2m1jdAxf4";
-            });
             services.AddMvc();
         }
 
@@ -82,9 +67,21 @@ namespace IdentitySamples
             app.UseErrorPage()
                .UseStaticFiles()
                .UseIdentity()
-               .UseFacebookAuthentication()
-               .UseGoogleAuthentication()
-               .UseTwitterAuthentication()
+               .UseFacebookAuthentication(options =>
+               {
+                   options.AppId = "901611409868059";
+                   options.AppSecret = "4aa3c530297b1dcebc8860334b39668b";
+               })
+               .UseGoogleAuthentication(options =>
+               {
+                   options.ClientId = "514485782433-fr3ml6sq0imvhi8a7qir0nb46oumtgn9.apps.googleusercontent.com";
+                   options.ClientSecret = "V2nDD9SkFbvLTqAUBWBBxYAL";
+               })
+               .UseTwitterAuthentication(options =>
+               {
+                   options.ConsumerKey = "BSdJJ0CrDuvEhpkchnukXZBUv";
+                   options.ConsumerSecret = "xKUNuKhsRdHD03eLn67xhPAyE1wFFEndFo1X2UJaK2m1jdAxf4";
+               })
                .UseMvc(routes =>
                 {
                     routes.MapRoute(
