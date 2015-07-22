@@ -39,17 +39,6 @@ namespace Microsoft.Framework.DependencyInjection
         }
 
         /// <summary>
-        /// Configures a set of <see cref="CookieAuthenticationOptions"/> for the application
-        /// </summary>
-        /// <param name="services">The services available in the application.</param>
-        /// <param name="setupAction">An action to configure the <see cref="CookieAuthenticationOptions"/>.</param>
-        /// <returns>The <see cref="IServiceCollection"/> instance this method extends.</returns>
-        public static IServiceCollection ConfigureIdentityApplicationCookie(this IServiceCollection services, Action<CookieAuthenticationOptions> setupAction)
-        {
-            return services.ConfigureCookieAuthentication(setupAction, IdentityOptions.ApplicationCookieAuthenticationScheme);
-        }
-
-        /// <summary>
         /// Adds the default identity system configuration for the specified User and Role types.
         /// </summary>
         /// <typeparam name="TUser">The type representing a User in the system.</typeparam>
@@ -103,38 +92,8 @@ namespace Microsoft.Framework.DependencyInjection
             }
             services.Configure<SharedAuthenticationOptions>(options =>
             {
-                options.SignInScheme = IdentityOptions.ExternalCookieAuthenticationScheme;
+                options.SignInScheme = IdentityCookieOptions.ExternalCookieAuthenticationScheme;
             });
-
-            // Configure all of the cookie middlewares
-            services.ConfigureIdentityApplicationCookie(options =>
-            {
-                options.AuthenticationScheme = IdentityOptions.ApplicationCookieAuthenticationScheme;
-                options.AutomaticAuthentication = true;
-                options.LoginPath = new PathString("/Account/Login");
-                options.Notifications = new CookieAuthenticationNotifications
-                {
-                    OnValidatePrincipal = SecurityStampValidator.ValidatePrincipalAsync
-                };
-            });
-
-            services.ConfigureCookieAuthentication(options =>
-            {
-                options.AuthenticationScheme = IdentityOptions.ExternalCookieAuthenticationScheme;
-                options.CookieName = IdentityOptions.ExternalCookieAuthenticationScheme;
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
-            }, IdentityOptions.ExternalCookieAuthenticationScheme);
-            services.ConfigureCookieAuthentication(options =>
-            {
-                options.AuthenticationScheme = IdentityOptions.TwoFactorRememberMeCookieAuthenticationScheme;
-                options.CookieName = IdentityOptions.TwoFactorRememberMeCookieAuthenticationScheme;
-            }, IdentityOptions.TwoFactorRememberMeCookieAuthenticationScheme);
-            services.ConfigureCookieAuthentication(options =>
-            {
-                options.AuthenticationScheme = IdentityOptions.TwoFactorUserIdCookieAuthenticationScheme;
-                options.CookieName = IdentityOptions.TwoFactorUserIdCookieAuthenticationScheme;
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
-            }, IdentityOptions.TwoFactorUserIdCookieAuthenticationScheme);
 
             return new IdentityBuilder(typeof(TUser), typeof(TRole), services);
         }
