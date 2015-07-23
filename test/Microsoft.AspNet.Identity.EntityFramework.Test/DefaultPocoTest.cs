@@ -198,6 +198,50 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             Assert.Equal(10, role.Claims.Count());
         }
 
+        [Fact]
+        public async Task CanRemoveRoleClaimsTest()
+        {
+            // Arrange
+            CreateContext(true);
+            var builder = CreateBuilder();
+
+            var roleManager = builder.ApplicationServices.GetRequiredService<RoleManager<IdentityRole>>();
+            var dbContext = builder.ApplicationServices.GetRequiredService<IdentityDbContext>();
+
+            var role1 = new IdentityRole("FooRole");
+            var role2 = new IdentityRole("BarRole");
+
+            IdentityResultAssert.IsSuccess(await roleManager.CreateAsync(role1));
+            IdentityResultAssert.IsSuccess(await roleManager.CreateAsync(role2));
+
+            for (var i = 0; i < 3; ++i)
+            {
+                IdentityResultAssert.IsSuccess(await roleManager.AddClaimAsync(role1, new Claim("foo" + i, "bar" + i)));
+                IdentityResultAssert.IsSuccess(await roleManager.AddClaimAsync(role2, new Claim("foo" + i, "bar" + i)));
+            }
+
+            IdentityResultAssert.IsSuccess(await roleManager.RemoveClaimAsync(role1, new Claim("foo0", "bar0")));
+            IdentityResultAssert.IsSuccess(await roleManager.RemoveClaimAsync(role2, new Claim("foo2", "bar2")));
+            IdentityResultAssert.IsSuccess(await roleManager.RemoveClaimAsync(role1, new Claim("foo1", "bar1")));
+            IdentityResultAssert.IsSuccess(await roleManager.RemoveClaimAsync(role2, new Claim("foo1", "bar1")));
+            role1 = dbContext.Roles.Include(x => x.Claims).FirstOrDefault(x => x.Name == "FooRole");
+            role2 = dbContext.Roles.Include(x => x.Claims).FirstOrDefault(x => x.Name == "BarRole");
+
+            // Assert
+            Assert.NotNull(role1);
+            Assert.NotNull(role1.Claims);
+
+            Assert.Equal(1, role1.Claims.Count());
+            Assert.Equal(0, role1.Claims.Where(c => c.ClaimType == "foo0" && c.ClaimValue == "bar0").Count());
+            Assert.Equal(0, role1.Claims.Where(c => c.ClaimType == "foo1" && c.ClaimValue == "bar1").Count());
+            Assert.Equal(1, role1.Claims.Where(c => c.ClaimType == "foo2" && c.ClaimValue == "bar2").Count());
+
+            Assert.Equal(1, role2.Claims.Count());
+            Assert.Equal(1, role2.Claims.Where(c => c.ClaimType == "foo0" && c.ClaimValue == "bar0").Count());
+            Assert.Equal(0, role2.Claims.Where(c => c.ClaimType == "foo1" && c.ClaimValue == "bar1").Count());
+            Assert.Equal(0, role2.Claims.Where(c => c.ClaimType == "foo2" && c.ClaimValue == "bar2").Count());
+        }
+        
         [TestPriority(10000)]
         [Fact]
         public void DropDatabaseDone()
