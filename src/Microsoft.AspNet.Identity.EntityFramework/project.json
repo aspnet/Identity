@@ -1,39 +1,39 @@
 {
-  "version": "3.0.0-*",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/aspnet/identity"
-  },
-  "dependencies": {
-    "Microsoft.AspNet.Identity": "3.0.0-*",
-    "EntityFramework.SqlServer": "7.0.0-*"
-  },
-  "frameworks": {
-    "dnx451": {
-      "frameworkAssemblies": {
-        "System.Threading.Tasks": ""
-      }
+    "version": "3.0.0-beta6",
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/aspnet/identity"
     },
-    "dnxcore50": {
-      "dependencies": {
-        "System.Collections": "4.0.10-beta-*",
-        "System.ComponentModel": "4.0.0-beta-*",
-        "System.ComponentModel.TypeConverter": "4.0.0-beta-*",
-        "System.Diagnostics.Debug": "4.0.10-beta-*",
-        "System.Diagnostics.Tools": "4.0.0-beta-*",
-        "System.Globalization": "4.0.10-beta-*",
-        "System.Linq": "4.0.0-beta-*",
-        "System.Linq.Expressions": "4.0.10-beta-*",
-        "System.Linq.Queryable": "4.0.0-beta-*",
-        "System.Reflection": "4.0.10-beta-*",
-        "System.Resources.ResourceManager": "4.0.0-beta-*",
-        "System.Runtime": "4.0.20-beta-*",
-        "System.Runtime.Extensions": "4.0.10-beta-*",
-        "System.Security.Claims": "4.0.0-beta-*",
-        "System.Security.Principal": "4.0.0-beta-*",
-        "System.Text.Encoding": "4.0.10-beta-*",
-        "System.Threading.Tasks": "4.0.10-beta-*"
-      }
+    "dependencies": {
+        "Microsoft.AspNet.Identity": "3.0.0-beta6",
+        "EntityFramework.SqlServer": "7.0.0-beta6"
+    },
+    "frameworks": {
+        "dnx451": {
+            "frameworkAssemblies": {
+                "System.Threading.Tasks": ""
+            }
+        },
+        "dnxcore50": {
+            "dependencies": {
+                "System.Collections": "4.0.10-beta-23109",
+                "System.ComponentModel": "4.0.0-beta-23109",
+                "System.ComponentModel.TypeConverter": "4.0.0-beta-23109",
+                "System.Diagnostics.Debug": "4.0.10-beta-23109",
+                "System.Diagnostics.Tools": "4.0.0-beta-23109",
+                "System.Globalization": "4.0.10-beta-23109",
+                "System.Linq": "4.0.0-beta-23109",
+                "System.Linq.Expressions": "4.0.10-beta-23109",
+                "System.Linq.Queryable": "4.0.0-beta-23109",
+                "System.Reflection": "4.0.10-beta-23109",
+                "System.Resources.ResourceManager": "4.0.0-beta-23109",
+                "System.Runtime": "4.0.20-beta-23109",
+                "System.Runtime.Extensions": "4.0.10-beta-23109",
+                "System.Security.Claims": "4.0.0-beta-23109",
+                "System.Security.Principal": "4.0.0-beta-23109",
+                "System.Text.Encoding": "4.0.10-beta-23109",
+                "System.Threading.Tasks": "4.0.10-beta-23109"
+            }
+        }
     }
-  }
 }
