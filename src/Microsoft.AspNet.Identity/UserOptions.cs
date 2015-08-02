@@ -29,7 +29,7 @@ namespace Microsoft.AspNet.Identity
         /// validation via regular expressions will timeout and fail after the value set in the <see cref="UserNameValidationRegexTimeout"/>
         /// property.
         /// </remarks>
-        public string UserNameValidationRegex { get; set; } = "^[a-zA-Z0-9@_\\.]+$";
+        public string UserNameValidationRegex { get; set; } = "^[a-zA-Z0-9@_\\.-]+$";
 
         /// <summary>
         /// Gets or sets the timeout value used after which user name validation via the <see cref="UserNameValidationRegex"/> will fail if it has
