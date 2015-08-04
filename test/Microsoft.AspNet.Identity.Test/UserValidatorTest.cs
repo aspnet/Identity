@@ -40,6 +40,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Theory]
+        [InlineData("test_email@foo-bar.com", true)]
         [InlineData("test_email@foo.com", true)]
         [InlineData("hao", true)]
         [InlineData("test123", true)]
@@ -67,6 +68,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Theory]
+        [InlineData("test_email@foo-bar.com", true)]
         [InlineData("test_email@foo.com", true)]
         [InlineData("hao", true)]
         [InlineData("test123", true)]
