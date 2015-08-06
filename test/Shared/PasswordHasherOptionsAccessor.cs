@@ -4,7 +4,7 @@
 using System;
 using Microsoft.Framework.OptionsModel;
 
-namespace Microsoft.AspNet.Identity.Test
+namespace Microsoft.AspNet.Identity.Tests
 {
     internal class PasswordHasherOptionsAccessor : IOptions<PasswordHasherOptions>
     {

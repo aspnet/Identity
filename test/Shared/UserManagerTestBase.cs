@@ -13,7 +13,7 @@ using Microsoft.Framework.Logging;
 using Xunit;
 using System.Linq.Expressions;
 
-namespace Microsoft.AspNet.Identity.Test
+namespace Microsoft.AspNet.Identity.Tests
 {
     // Common functionality tests that all verifies user manager functionality regardless of store implementation
     public abstract class UserManagerTestBase<TUser, TRole> : UserManagerTestBase<TUser, TRole, string>

@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.AspNet.Identity.Test
+namespace Microsoft.AspNet.Identity.Tests
 {
     public class TestRoleClaim : TestRoleClaim<string> { }
 

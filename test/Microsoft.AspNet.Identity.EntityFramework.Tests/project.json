@@ -1,0 +1,26 @@
+{
+  "dependencies": {
+    "EntityFramework.InMemory": "7.0.0-*",
+    "EntityFramework.SqlServer": "7.0.0-*",
+    "Microsoft.AspNet.Hosting": "1.0.0-*",
+    "Microsoft.AspNet.Http": "1.0.0-*",
+    "Microsoft.AspNet.Identity": "3.0.0-*",
+    "Microsoft.AspNet.Identity.EntityFramework": "3.0.0-*",
+    "Microsoft.AspNet.DataProtection": "1.0.0-*",
+    "Microsoft.AspNet.TestHost": "1.0.0-*",
+    "Microsoft.AspNet.Testing": "1.0.0-*",
+    "Microsoft.Framework.OptionsModel" : "1.0.0-*",
+    "xunit.runner.aspnet": "2.0.0-aspnet-*"
+  },
+  "compile": "..\\Shared\\*.cs",
+  "frameworks": {
+    "dnx451": {
+      "dependencies": {
+        "Moq" : "4.2.1312.1622"
+      }
+    }
+  },
+  "commands": {
+    "test": "xunit.runner.aspnet"
+  }
+}
