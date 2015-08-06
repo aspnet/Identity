@@ -9,7 +9,7 @@ using Microsoft.AspNet.Builder.Internal;
 using Microsoft.AspNet.Hosting;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Http.Authentication;
-using Microsoft.AspNet.Identity.Test;
+using Microsoft.AspNet.Identity.Tests;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Dnx.Runtime.Infrastructure;
 using Moq;

@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Framework.Logging;
 
-namespace Microsoft.AspNet.Identity.Test
+namespace Microsoft.AspNet.Identity.Tests
 {
     public interface ITestLogger
     {

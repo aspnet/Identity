@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Microsoft.AspNet.Identity.EntityFramework.Tests
 {
-    [TestCaseOrderer("Microsoft.AspNet.Identity.Test.PriorityOrderer", "Microsoft.AspNet.Identity.EntityFramework.Tests")]
+    [TestCaseOrderer("Microsoft.AspNet.Identity.Tests.PriorityOrderer", "Microsoft.AspNet.Identity.EntityFramework.Tests")]
     public static class DbUtil
     {
         public static IServiceCollection ConfigureDbServices(string connectionString, IServiceCollection services = null)

@@ -4,7 +4,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.AspNet.Identity.Test
+namespace Microsoft.AspNet.Identity.Tests
 {
     public class NoopRoleStore : IRoleStore<TestRole>
     {

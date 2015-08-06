@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Framework.DependencyInjection;
 using Xunit;
 
-namespace Microsoft.AspNet.Identity.Test
+namespace Microsoft.AspNet.Identity.Tests
 {
     public class IdentityBuilderTest
     {

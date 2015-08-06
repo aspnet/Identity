@@ -15,7 +15,7 @@ using Microsoft.Framework.OptionsModel;
 using Moq;
 using Xunit;
 
-namespace Microsoft.AspNet.Identity.Test
+namespace Microsoft.AspNet.Identity.Tests
 {
     public class SignManagerInTest
     {

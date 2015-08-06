@@ -3,7 +3,7 @@
 
 using System;
 using System.Linq.Expressions;
-using Microsoft.AspNet.Identity.Test;
+using Microsoft.AspNet.Identity.Tests;
 using Microsoft.Framework.DependencyInjection;
 
 namespace Microsoft.AspNet.Identity.InMemory.Tests

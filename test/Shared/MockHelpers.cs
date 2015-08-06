@@ -12,7 +12,7 @@ using Microsoft.Framework.OptionsModel;
 using System.Linq;
 using Microsoft.AspNet.Hosting;
 
-namespace Microsoft.AspNet.Identity.Test
+namespace Microsoft.AspNet.Identity.Tests
 {
     public static class MockHelpers
     {

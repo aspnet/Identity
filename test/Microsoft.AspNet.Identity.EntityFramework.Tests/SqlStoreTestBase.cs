@@ -7,7 +7,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNet.Identity.Test;
+using Microsoft.AspNet.Identity.Tests;
 using Microsoft.Data.Entity;
 using Microsoft.Data.Entity.Storage;
 using Microsoft.Framework.DependencyInjection;

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using Moq;
 using Xunit;
 
-namespace Microsoft.AspNet.Identity.Test
+namespace Microsoft.AspNet.Identity.Tests
 {
     public class RoleManagerTest
     {

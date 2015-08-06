@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using Xunit;
 
-namespace Microsoft.AspNet.Identity.Test
+namespace Microsoft.AspNet.Identity.Tests
 {
     public class IdentityResultTest
     {

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Builder.Internal;
-using Microsoft.AspNet.Identity.Test;
+using Microsoft.AspNet.Identity.Tests;
 using Microsoft.Data.Entity;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Dnx.Runtime.Infrastructure;
@@ -14,7 +14,7 @@ using Xunit;
 
 namespace Microsoft.AspNet.Identity.EntityFramework.Tests
 {
-    [TestCaseOrderer("Microsoft.AspNet.Identity.Test.PriorityOrderer", "Microsoft.AspNet.Identity.EntityFramework.Tests")]
+    [TestCaseOrderer("Microsoft.AspNet.Identity.Tests.PriorityOrderer", "Microsoft.AspNet.Identity.EntityFramework.Tests")]
     public class DefaultPocoTest
     {
         private readonly string ConnectionString = @"Server=(localdb)\mssqllocaldb;Database=DefaultSchemaTest" + DateTime.Now.Month + "-" + DateTime.Now.Day + "-" + DateTime.Now.Year + ";Trusted_Connection=True;MultipleActiveResultSets=true";

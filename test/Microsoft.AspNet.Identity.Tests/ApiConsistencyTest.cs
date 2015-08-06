@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using Xunit;
 
-namespace Microsoft.AspNet.Identity.Test
+namespace Microsoft.AspNet.Identity.Tests
 {
     public class ApiConsistencyTest : ApiConsistencyTestBase
     {

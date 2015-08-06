@@ -12,7 +12,7 @@ using Microsoft.Framework.DependencyInjection;
 using Moq;
 using Xunit;
 
-namespace Microsoft.AspNet.Identity.Test
+namespace Microsoft.AspNet.Identity.Tests
 {
     public class UserManagerTest
     {

@@ -4,8 +4,8 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("Microsoft.AspNet.Identity.Test")]
-[assembly: InternalsVisibleTo("Microsoft.AspNet.Identity.EntityFramework.Test")]
+[assembly: InternalsVisibleTo("Microsoft.AspNet.Identity.Tests")]
+[assembly: InternalsVisibleTo("Microsoft.AspNet.Identity.EntityFramework.Tests")]
 [assembly: InternalsVisibleTo("Microsoft.AspNet.Identity.EntityFramework.InMemory.Tests")]
 [assembly: InternalsVisibleTo("Microsoft.AspNet.Identity.InMemory.Tests")]
 [assembly: AssemblyMetadata("Serviceable", "True")]

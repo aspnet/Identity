@@ -19,7 +19,7 @@ using Microsoft.AspNet.TestHost;
 using Microsoft.Framework.DependencyInjection;
 using Shouldly;
 using Xunit;
-using Microsoft.AspNet.Identity.Test;
+using Microsoft.AspNet.Identity.Tests;
 
 namespace Microsoft.AspNet.Identity.InMemory
 {

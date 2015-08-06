@@ -3,7 +3,7 @@
 
 using System;
 using System.Threading.Tasks;
-using Microsoft.AspNet.Identity.Test;
+using Microsoft.AspNet.Identity.Tests;
 using Microsoft.Framework.DependencyInjection;
 using Xunit;
 

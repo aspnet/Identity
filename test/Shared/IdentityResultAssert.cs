@@ -6,7 +6,7 @@ using System.Linq;
 using Microsoft.Framework.Logging;
 using Xunit;
 
-namespace Microsoft.AspNet.Identity.Test
+namespace Microsoft.AspNet.Identity.Tests
 {
     public static class IdentityResultAssert
     {
