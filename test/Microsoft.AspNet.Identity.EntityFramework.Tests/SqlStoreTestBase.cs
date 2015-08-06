@@ -13,7 +13,7 @@ using Microsoft.Data.Entity.Storage;
 using Microsoft.Framework.DependencyInjection;
 using Xunit;
 
-namespace Microsoft.AspNet.Identity.EntityFramework.Test
+namespace Microsoft.AspNet.Identity.EntityFramework.Tests
 {
     public abstract class SqlStoreTestBase<TUser, TRole, TKey> : UserManagerTestBase<TUser, TRole, TKey>
         where TUser : IdentityUser<TKey>, new()

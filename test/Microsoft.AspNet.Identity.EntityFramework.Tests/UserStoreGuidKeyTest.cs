@@ -5,7 +5,7 @@ using System;
 using Microsoft.Framework.DependencyInjection;
 using Xunit;
 
-namespace Microsoft.AspNet.Identity.EntityFramework.Test
+namespace Microsoft.AspNet.Identity.EntityFramework.Tests
 {
     public class GuidUser : IdentityUser<Guid>
     {
@@ -25,7 +25,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         }
     }
 
-    [TestCaseOrderer("Microsoft.AspNet.Identity.Test.PriorityOrderer", "Microsoft.AspNet.Identity.EntityFramework.Test")]
+    [TestCaseOrderer("Microsoft.AspNet.Identity.Test.PriorityOrderer", "Microsoft.AspNet.Identity.EntityFramework.Tests")]
     public class UserStoreGuidTest : SqlStoreTestBase<GuidUser, GuidRole, Guid>
     {
         private readonly string _connectionString = @"Server=(localdb)\mssqllocaldb;Database=SqlUserStoreGuidTest" + DateTime.Now.Month + "-" + DateTime.Now.Day + "-" + DateTime.Now.Year + ";Trusted_Connection=True;";

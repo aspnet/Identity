@@ -12,9 +12,9 @@ using Microsoft.Framework.DependencyInjection;
 using Microsoft.Dnx.Runtime.Infrastructure;
 using Xunit;
 
-namespace Microsoft.AspNet.Identity.EntityFramework.Test
+namespace Microsoft.AspNet.Identity.EntityFramework.Tests
 {
-    [TestCaseOrderer("Microsoft.AspNet.Identity.Test.PriorityOrderer", "Microsoft.AspNet.Identity.EntityFramework.Test")]
+    [TestCaseOrderer("Microsoft.AspNet.Identity.Test.PriorityOrderer", "Microsoft.AspNet.Identity.EntityFramework.Tests")]
     public class DefaultPocoTest
     {
         private readonly string ConnectionString = @"Server=(localdb)\mssqllocaldb;Database=DefaultSchemaTest" + DateTime.Now.Month + "-" + DateTime.Now.Day + "-" + DateTime.Now.Year + ";Trusted_Connection=True;MultipleActiveResultSets=true";

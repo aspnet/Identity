@@ -4,7 +4,7 @@
 using System;
 using Xunit;
 
-namespace Microsoft.AspNet.Identity.EntityFramework.Test
+namespace Microsoft.AspNet.Identity.EntityFramework.Tests
 {
     public class IntUser : IdentityUser<int>
     {
@@ -22,7 +22,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         }
     }
 
-    [TestCaseOrderer("Microsoft.AspNet.Identity.Test.PriorityOrderer", "Microsoft.AspNet.Identity.EntityFramework.Test")]
+    [TestCaseOrderer("Microsoft.AspNet.Identity.Test.PriorityOrderer", "Microsoft.AspNet.Identity.EntityFramework.Tests")]
     public class UserStoreIntTest : SqlStoreTestBase<IntUser, IntRole, int>
     {
         private readonly string _connectionString = @"Server=(localdb)\mssqllocaldb;Database=SqlUserStoreIntTest" + DateTime.Now.Month + "-" + DateTime.Now.Day + "-" + DateTime.Now.Year + ";Trusted_Connection=True;";

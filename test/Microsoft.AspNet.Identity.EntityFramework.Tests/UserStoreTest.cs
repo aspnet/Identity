@@ -9,9 +9,9 @@ using Microsoft.AspNet.Identity.Test;
 using Microsoft.Framework.DependencyInjection;
 using Xunit;
 
-namespace Microsoft.AspNet.Identity.EntityFramework.Test
+namespace Microsoft.AspNet.Identity.EntityFramework.Tests
 {
-    [TestCaseOrderer("Microsoft.AspNet.Identity.Test.PriorityOrderer", "Microsoft.AspNet.Identity.EntityFramework.Test")]
+    [TestCaseOrderer("Microsoft.AspNet.Identity.Test.PriorityOrderer", "Microsoft.AspNet.Identity.EntityFramework.Tests")]
     public class UserStoreTest : UserManagerTestBase<IdentityUser, IdentityRole>
     {
         public class ApplicationDbContext : IdentityDbContext<ApplicationUser> { }
