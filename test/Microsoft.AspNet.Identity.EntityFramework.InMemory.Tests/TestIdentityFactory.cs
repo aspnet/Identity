@@ -5,7 +5,7 @@ using Microsoft.AspNet.Hosting;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.Logging;
 
-namespace Microsoft.AspNet.Identity.EntityFramework.InMemory.Test
+namespace Microsoft.AspNet.Identity.EntityFramework.InMemory.Tests
 {
     public static class TestIdentityFactory
     {

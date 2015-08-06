@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 using Microsoft.AspNet.Identity.Test;
 using Microsoft.Framework.DependencyInjection;
 
-namespace Microsoft.AspNet.Identity.EntityFramework.InMemory.Test
+namespace Microsoft.AspNet.Identity.EntityFramework.InMemory.Tests
 {
     public class InMemoryEFUserStoreTest : UserManagerTestBase<IdentityUser, IdentityRole, string>
     {

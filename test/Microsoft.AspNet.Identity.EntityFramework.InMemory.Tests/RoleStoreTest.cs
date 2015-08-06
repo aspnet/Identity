@@ -7,7 +7,7 @@ using Microsoft.AspNet.Identity.Test;
 using Microsoft.Framework.DependencyInjection;
 using Xunit;
 
-namespace Microsoft.AspNet.Identity.EntityFramework.InMemory.Test
+namespace Microsoft.AspNet.Identity.EntityFramework.InMemory.Tests
 {
     public class RoleStoreTest
     {

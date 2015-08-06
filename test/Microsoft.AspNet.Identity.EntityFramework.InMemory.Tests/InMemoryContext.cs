@@ -4,7 +4,7 @@
 using System;
 using Microsoft.Data.Entity;
 
-namespace Microsoft.AspNet.Identity.EntityFramework.InMemory.Test
+namespace Microsoft.AspNet.Identity.EntityFramework.InMemory.Tests
 {
     public class InMemoryContext :
         InMemoryContext<IdentityUser, IdentityRole, string>
