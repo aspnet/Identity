@@ -15,7 +15,7 @@ using Microsoft.Dnx.Runtime.Infrastructure;
 using Moq;
 using Xunit;
 
-namespace Microsoft.AspNet.Identity.InMemory.Test
+namespace Microsoft.AspNet.Identity.InMemory.Tests
 {
     public class HttpSignInTest
     {

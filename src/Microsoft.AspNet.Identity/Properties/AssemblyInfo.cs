@@ -7,5 +7,5 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("Microsoft.AspNet.Identity.Test")]
 [assembly: InternalsVisibleTo("Microsoft.AspNet.Identity.EntityFramework.Test")]
 [assembly: InternalsVisibleTo("Microsoft.AspNet.Identity.EntityFramework.InMemory.Tests")]
-[assembly: InternalsVisibleTo("Microsoft.AspNet.Identity.InMemory.Test")]
+[assembly: InternalsVisibleTo("Microsoft.AspNet.Identity.InMemory.Tests")]
 [assembly: AssemblyMetadata("Serviceable", "True")]
