@@ -69,7 +69,7 @@ namespace Microsoft.AspNet.Identity.Test
             services.ConfigureIdentity(config.GetSection("identity"));
             var accessor = services.BuildServiceProvider().GetRequiredService<IOptions<IdentityOptions>>();
             Assert.NotNull(accessor);
-            var options = accessor.Options;
+            var options = accessor.Value;
             Assert.Equal(roleClaimType, options.ClaimsIdentity.RoleClaimType);
             Assert.Equal(useridClaimType, options.ClaimsIdentity.UserIdClaimType);
             Assert.Equal(usernameClaimType, options.ClaimsIdentity.UserNameClaimType);
@@ -100,7 +100,7 @@ namespace Microsoft.AspNet.Identity.Test
             services.AddIdentity<TestUser, TestRole>(o => { o.User.RequireUniqueEmail = false; o.Lockout.MaxFailedAccessAttempts++; });
             var accessor = services.BuildServiceProvider().GetRequiredService<IOptions<IdentityOptions>>();
             Assert.NotNull(accessor);
-            var options = accessor.Options;
+            var options = accessor.Value;
             Assert.False(options.User.RequireUniqueEmail);
             Assert.Equal(1001, options.Lockout.MaxFailedAccessAttempts);
         }
@@ -124,7 +124,7 @@ namespace Microsoft.AspNet.Identity.Test
             Assert.IsType(typeof(PasswordsNegativeLengthSetup), setup);
             var optionsGetter = serviceProvider.GetRequiredService<IOptions<IdentityOptions>>();
             Assert.NotNull(optionsGetter);
-            var myOptions = optionsGetter.Options;
+            var myOptions = optionsGetter.Value;
             Assert.True(myOptions.Password.RequireLowercase);
             Assert.True(myOptions.Password.RequireDigit);
             Assert.True(myOptions.Password.RequireNonLetterOrDigit);
@@ -144,7 +144,7 @@ namespace Microsoft.AspNet.Identity.Test
             var optionsGetter = serviceProvider.GetRequiredService<IOptions<IdentityOptions>>();
             Assert.NotNull(optionsGetter);
 
-            var myOptions = optionsGetter.Options;
+            var myOptions = optionsGetter.Value;
             Assert.True(myOptions.User.RequireUniqueEmail);
         }
     }

@@ -60,7 +60,7 @@ namespace Microsoft.AspNet.Identity
                 throw new ArgumentNullException(nameof(store));
             }
             Store = store;
-            Options = optionsAccessor?.Options ?? new IdentityOptions();
+            Options = optionsAccessor?.Value ?? new IdentityOptions();
             _context = contextAccessor?.HttpContext;
             PasswordHasher = passwordHasher;
             KeyNormalizer = keyNormalizer;
