@@ -121,7 +121,7 @@ namespace Microsoft.AspNet.Identity.Test
             var roleManager = MockHelpers.MockRoleManager<TestRole>();
             var identityOptions = new IdentityOptions();
             var options = new Mock<IOptions<IdentityOptions>>();
-            options.Setup(a => a.Options).Returns(identityOptions);
+            options.Setup(a => a.Value).Returns(identityOptions);
             var claimsFactory = new UserClaimsPrincipalFactory<TestUser, TestRole>(manager.Object, roleManager.Object, options.Object);
             var logStore = new StringBuilder();
             var logger = MockHelpers.MockILogger<SignInManager<TestUser>>(logStore);
@@ -154,7 +154,7 @@ namespace Microsoft.AspNet.Identity.Test
             var roleManager = MockHelpers.MockRoleManager<TestRole>();
             identityOptions = identityOptions ?? new IdentityOptions();
             var options = new Mock<IOptions<IdentityOptions>>();
-            options.Setup(a => a.Options).Returns(identityOptions);
+            options.Setup(a => a.Value).Returns(identityOptions);
             var claimsFactory = new UserClaimsPrincipalFactory<TestUser, TestRole>(manager, roleManager.Object, options.Object);
             var sm = new SignInManager<TestUser>(manager, contextAccessor.Object, claimsFactory, options.Object, null);
             sm.Logger = MockHelpers.MockILogger<SignInManager<TestUser>>(logStore ?? new StringBuilder()).Object;

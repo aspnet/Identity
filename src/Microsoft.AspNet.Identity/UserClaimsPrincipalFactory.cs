@@ -38,13 +38,13 @@ namespace Microsoft.AspNet.Identity
             {
                 throw new ArgumentNullException(nameof(roleManager));
             }
-            if (optionsAccessor == null || optionsAccessor.Options == null)
+            if (optionsAccessor == null || optionsAccessor.Value == null)
             {
                 throw new ArgumentNullException(nameof(optionsAccessor));
             }
             UserManager = userManager;
             RoleManager = roleManager;
-            Options = optionsAccessor.Options;
+            Options = optionsAccessor.Value;
         }
 
         /// <summary>

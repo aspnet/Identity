@@ -54,7 +54,7 @@ namespace Microsoft.AspNet.Identity
             UserManager = userManager;
             Context = contextAccessor.HttpContext;
             ClaimsFactory = claimsFactory;
-            Options = optionsAccessor?.Options ?? new IdentityOptions();
+            Options = optionsAccessor?.Value ?? new IdentityOptions();
             Logger = logger;
         }
 

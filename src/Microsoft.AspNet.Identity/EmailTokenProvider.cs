@@ -30,13 +30,9 @@ namespace Microsoft.AspNet.Identity
         /// </summary>
         /// <param name="options">The configured <see cref="DataProtectionTokenProviderOptions"/>.</param>
         /// <param name="name">The unique name for this instance of <see cref="EmailTokenProvider{TUser}"/>.</param>
-        public EmailTokenProvider(IOptions<EmailTokenProviderOptions> options, string name = "")
+        public EmailTokenProvider(IOptions<EmailTokenProviderOptions> options)
         {
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
-            Options = options.GetNamedOptions(name);
+            Options = options.Value;
         }
 
         /// <summary>
