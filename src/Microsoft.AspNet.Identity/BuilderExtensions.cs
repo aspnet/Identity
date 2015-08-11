@@ -4,6 +4,8 @@
 using System;
 
 using Microsoft.AspNet.Identity;
+using Microsoft.Framework.DependencyInjection;
+using Microsoft.Framework.OptionsModel;
 
 namespace Microsoft.AspNet.Builder
 {
@@ -19,24 +21,15 @@ namespace Microsoft.AspNet.Builder
         /// <returns>The <see cref="IApplicationBuilder"/> instance this method extends.</returns>
         public static IApplicationBuilder UseIdentity(this IApplicationBuilder app)
         {
-            return app.UseIdentity(new IdentityCookieOptions());
-        }
-
-        /// <summary>
-        /// Enables ASP.NET identity for the current application.
-        /// </summary>
-        /// <param name="app">The <see cref="IApplicationBuilder"/> instance this method extends.</param>
-        /// <returns>The <see cref="IApplicationBuilder"/> instance this method extends.</returns>
-        public static IApplicationBuilder UseIdentity(this IApplicationBuilder app, IdentityCookieOptions options)
-        {
             if (app == null)
             {
                 throw new ArgumentNullException(nameof(app));
             }
-            app.UseCookieAuthentication(options.ExternalCookieOptions);
-            app.UseCookieAuthentication(options.TwoFactorRememberMeCookieOptions);
-            app.UseCookieAuthentication(options.TwoFactorUserIdCookieOptions);
-            app.UseCookieAuthentication(options.ApplicationCookieOptions);
+            var options = app.ApplicationServices.GetRequiredService<IOptions<IdentityOptions>>().Value;
+            app.UseCookieAuthentication(options.Cookies.ExternalCookieOptions);
+            app.UseCookieAuthentication(options.Cookies.TwoFactorRememberMeCookieOptions);
+            app.UseCookieAuthentication(options.Cookies.TwoFactorUserIdCookieOptions);
+            app.UseCookieAuthentication(options.Cookies.ApplicationCookieOptions);
             return app;
         }
     }

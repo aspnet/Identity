@@ -31,7 +31,7 @@ namespace Microsoft.AspNet.Identity.InMemory
         public async Task CanChangePasswordOptions()
         {
             var clock = new TestClock();
-            var server = CreateServer(new IdentityCookieOptions(), services => services.ConfigureIdentity(options =>
+            var server = CreateServer(services => services.ConfigureIdentity(options =>
             {
                 options.Password.RequireUppercase = false;
                 options.Password.RequireNonLetterOrDigit = false;
@@ -47,11 +47,12 @@ namespace Microsoft.AspNet.Identity.InMemory
         public async Task CanCreateMeLoginAndCookieStopsWorkingAfterExpiration()
         {
             var clock = new TestClock();
-            var options = new IdentityCookieOptions();
-            options.ApplicationCookieOptions.SystemClock = clock;
-            options.ApplicationCookieOptions.ExpireTimeSpan = TimeSpan.FromMinutes(10);
-            options.ApplicationCookieOptions.SlidingExpiration = false;
-            var server = CreateServer(options);
+            var server = CreateServer(services => services.ConfigureIdentity(options =>
+            {
+                options.Cookies.ApplicationCookieOptions.SystemClock = clock;
+                options.Cookies.ApplicationCookieOptions.ExpireTimeSpan = TimeSpan.FromMinutes(10);
+                options.Cookies.ApplicationCookieOptions.SlidingExpiration = false;
+            }));
 
             var transaction1 = await SendAsync(server, "http://example.com/createMe");
             transaction1.Response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -85,9 +86,10 @@ namespace Microsoft.AspNet.Identity.InMemory
         public async Task CanCreateMeLoginAndSecurityStampExtendsExpiration(bool rememberMe)
         {
             var clock = new TestClock();
-            var options = new IdentityCookieOptions();
-            options.ApplicationCookieOptions.SystemClock = clock;
-            var server = CreateServer(options);
+            var server = CreateServer(services => services.ConfigureIdentity(options =>
+            {
+                options.Cookies.ApplicationCookieOptions.SystemClock = clock;
+            }));
 
             var transaction1 = await SendAsync(server, "http://example.com/createMe");
             transaction1.Response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -140,7 +142,7 @@ namespace Microsoft.AspNet.Identity.InMemory
             transaction2.Response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
             string setCookie = transaction2.SetCookie;
-            setCookie.ShouldContain(IdentityCookieOptions.TwoFactorRememberMeCookieAuthenticationScheme + "=");
+            setCookie.ShouldContain(new IdentityCookieOptions().TwoFactorRememberMeCookieAuthenticationScheme + "=");
             setCookie.ShouldContain("; expires=");
 
             var transaction3 = await SendAsync(server, "http://example.com/isTwoFactorRememebered", transaction2.CookieNameValue);
@@ -168,12 +170,11 @@ namespace Microsoft.AspNet.Identity.InMemory
             return me;
         }
 
-        private static TestServer CreateServer(IdentityCookieOptions cookieOptions = null, Action<IServiceCollection> configureServices = null, Func<HttpContext, Task> testpath = null, Uri baseAddress = null)
+        private static TestServer CreateServer(Action<IServiceCollection> configureServices = null, Func<HttpContext, Task> testpath = null, Uri baseAddress = null)
         {
-            cookieOptions = cookieOptions ?? new IdentityCookieOptions();
             var server = TestServer.Create(app =>
             {
-                app.UseIdentity(cookieOptions);
+                app.UseIdentity();
                 app.Use(async (context, next) =>
                 {
                     var req = context.Request;
