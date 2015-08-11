@@ -268,11 +268,11 @@ namespace Microsoft.AspNet.Identity.Test
                 manager.Setup(m => m.ResetAccessFailedCountAsync(user)).ReturnsAsync(IdentityResult.Success).Verifiable();
             }
             var context = new Mock<HttpContext>();
+            var helper = SetupSignInManager(manager.Object, context.Object);
             var auth = new Mock<AuthenticationManager>();
-            auth.Setup(a => a.SignInAsync(IdentityCookieOptions.TwoFactorUserIdCookieAuthenticationScheme,
+            auth.Setup(a => a.SignInAsync(helper.Options.Cookies.TwoFactorUserIdCookieAuthenticationScheme,
                 It.Is<ClaimsPrincipal>(id => id.FindFirstValue(ClaimTypes.Name) == user.Id))).Returns(Task.FromResult(0)).Verifiable();
             context.Setup(c => c.Authentication).Returns(auth.Object).Verifiable();
-            var helper = SetupSignInManager(manager.Object, context.Object);
 
             // Act
             var result = await helper.PasswordSignInAsync(user.UserName, "password", false, false);
@@ -340,7 +340,7 @@ namespace Microsoft.AspNet.Identity.Test
             }
             // REVIEW: auth changes we lost the ability to mock is persistent
             //var properties = new AuthenticationProperties { IsPersistent = isPersistent };
-            auth.Setup(a => a.AuthenticateAsync(It.Is<AuthenticateContext>(c => c.AuthenticationScheme == IdentityCookieOptions.ApplicationCookieAuthenticationScheme)))
+            auth.Setup(a => a.AuthenticateAsync(It.Is<AuthenticateContext>(c => c.AuthenticationScheme == IdentityCookieOptions.ApplicationCookieAuthenticationType)))
                 
                 .Returns(Task.FromResult(0)).Verifiable();
             var manager = SetupUserManager(user);
@@ -403,13 +403,13 @@ namespace Microsoft.AspNet.Identity.Test
             if (externalLogin)
             {
                 auth.Setup(a => a.SignInAsync(
-                    IdentityCookieOptions.ApplicationCookieAuthenticationScheme,
+                    helper.Options.Cookies.ApplicationCookieAuthenticationScheme,
                     It.Is<ClaimsPrincipal>(i => i.FindFirstValue(ClaimTypes.AuthenticationMethod) == loginProvider
                         && i.FindFirstValue(ClaimTypes.NameIdentifier) == user.Id),
                     It.IsAny<AuthenticationProperties>())).Returns(Task.FromResult(0)).Verifiable();
                 // REVIEW: restore ability to test is persistent
                 //It.Is<AuthenticationProperties>(v => v.IsPersistent == isPersistent))).Verifiable();
-                auth.Setup(a => a.SignOutAsync(IdentityCookieOptions.ExternalCookieAuthenticationScheme)).Returns(Task.FromResult(0)).Verifiable();
+                auth.Setup(a => a.SignOutAsync(helper.Options.Cookies.ExternalCookieAuthenticationScheme)).Returns(Task.FromResult(0)).Verifiable();
             }
             else
             {
@@ -418,13 +418,13 @@ namespace Microsoft.AspNet.Identity.Test
             if (rememberClient)
             {
                 auth.Setup(a => a.SignInAsync(
-                    IdentityCookieOptions.TwoFactorRememberMeCookieAuthenticationScheme,
+                    helper.Options.Cookies.TwoFactorRememberMeCookieAuthenticationScheme,
                     It.Is<ClaimsPrincipal>(i => i.FindFirstValue(ClaimTypes.Name) == user.Id
-                        && i.Identities.First().AuthenticationType == IdentityCookieOptions.TwoFactorRememberMeCookieAuthenticationType),
+                        && i.Identities.First().AuthenticationType == helper.Options.Cookies.TwoFactorRememberMeCookieAuthenticationScheme),
                     It.IsAny<AuthenticationProperties>())).Returns(Task.FromResult(0)).Verifiable();
                 //It.Is<AuthenticationProperties>(v => v.IsPersistent == true))).Returns(Task.FromResult(0)).Verifiable();
             }
-            auth.Setup(a => a.AuthenticateAsync(IdentityCookieOptions.TwoFactorUserIdCookieAuthenticationScheme)).ReturnsAsync(id).Verifiable();
+            auth.Setup(a => a.AuthenticateAsync(helper.Options.Cookies.TwoFactorUserIdCookieAuthenticationScheme)).ReturnsAsync(id).Verifiable();
             context.Setup(c => c.Authentication).Returns(auth.Object).Verifiable();
 
             // Act
@@ -447,9 +447,9 @@ namespace Microsoft.AspNet.Identity.Test
             var auth = new Mock<AuthenticationManager>();
             context.Setup(c => c.Authentication).Returns(auth.Object).Verifiable();
             auth.Setup(a => a.SignInAsync(
-                IdentityCookieOptions.TwoFactorRememberMeCookieAuthenticationScheme,
+                manager.Object.Options.Cookies.TwoFactorRememberMeCookieAuthenticationScheme,
                 It.Is<ClaimsPrincipal>(i => i.FindFirstValue(ClaimTypes.Name) == user.Id
-                    && i.Identities.First().AuthenticationType == IdentityCookieOptions.TwoFactorRememberMeCookieAuthenticationType),
+                    && i.Identities.First().AuthenticationType == manager.Object.Options.Cookies.TwoFactorRememberMeCookieAuthenticationScheme),
                 It.Is<AuthenticationProperties>(v => v.IsPersistent == true))).Returns(Task.FromResult(0)).Verifiable();
 
             var helper = SetupSignInManager(manager.Object, context.Object);
@@ -483,9 +483,9 @@ namespace Microsoft.AspNet.Identity.Test
             var auth = new Mock<AuthenticationManager>();
             context.Setup(c => c.Authentication).Returns(auth.Object).Verifiable();
             SetupSignIn(auth);
-            var id = new ClaimsIdentity(IdentityCookieOptions.TwoFactorRememberMeCookieAuthenticationType);
+            var id = new ClaimsIdentity(manager.Object.Options.Cookies.TwoFactorRememberMeCookieAuthenticationScheme);
             id.AddClaim(new Claim(ClaimTypes.Name, user.Id));
-            auth.Setup(a => a.AuthenticateAsync(IdentityCookieOptions.TwoFactorRememberMeCookieAuthenticationScheme)).ReturnsAsync(new ClaimsPrincipal(id)).Verifiable();
+            auth.Setup(a => a.AuthenticateAsync(manager.Object.Options.Cookies.TwoFactorRememberMeCookieAuthenticationScheme)).ReturnsAsync(new ClaimsPrincipal(id)).Verifiable();
             var helper = SetupSignInManager(manager.Object, context.Object);
 
             // Act
@@ -509,9 +509,9 @@ namespace Microsoft.AspNet.Identity.Test
             var auth = new Mock<AuthenticationManager>();
             context.Setup(c => c.Authentication).Returns(auth.Object).Verifiable();
             auth.Setup(a => a.SignOutAsync(authenticationScheme)).Returns(Task.FromResult(0)).Verifiable();
-            auth.Setup(a => a.SignOutAsync(IdentityCookieOptions.TwoFactorUserIdCookieAuthenticationScheme)).Returns(Task.FromResult(0)).Verifiable();
-            auth.Setup(a => a.SignOutAsync(IdentityCookieOptions.ExternalCookieAuthenticationScheme)).Returns(Task.FromResult(0)).Verifiable();
-            IdentityCookieOptions.ApplicationCookieAuthenticationScheme = authenticationScheme;
+            auth.Setup(a => a.SignOutAsync(manager.Object.Options.Cookies.TwoFactorUserIdCookieAuthenticationScheme)).Returns(Task.FromResult(0)).Verifiable();
+            auth.Setup(a => a.SignOutAsync(manager.Object.Options.Cookies.ExternalCookieAuthenticationScheme)).Returns(Task.FromResult(0)).Verifiable();
+            IdentityCookieOptions.ApplicationCookieAuthenticationType = authenticationScheme;
             var helper = SetupSignInManager(manager.Object, context.Object);
 
             // Act
@@ -631,7 +631,7 @@ namespace Microsoft.AspNet.Identity.Test
 
         private static void SetupSignIn(Mock<AuthenticationManager> auth, string userId = null, bool? isPersistent = null, string loginProvider = null)
         {
-            auth.Setup(a => a.SignInAsync(IdentityCookieOptions.ApplicationCookieAuthenticationScheme,
+            auth.Setup(a => a.SignInAsync(IdentityCookieOptions.ApplicationCookieAuthenticationType,
                 It.Is<ClaimsPrincipal>(id =>
                     (userId == null || id.FindFirstValue(ClaimTypes.NameIdentifier) == userId) &&
                     (loginProvider == null || id.FindFirstValue(ClaimTypes.AuthenticationMethod) == loginProvider)),

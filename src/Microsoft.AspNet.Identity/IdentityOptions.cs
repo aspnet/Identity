@@ -51,6 +51,14 @@ namespace Microsoft.AspNet.Identity
         public SignInOptions SignIn { get; set; } = new SignInOptions();
 
         /// <summary>
+        /// Gets or sets the <see cref="IdentityCookieOptions"/> for the identity system.
+        /// </summary>
+        /// <value>
+        /// The <see cref="IdentityCookieOptions"/> for the identity system.
+        /// </value>
+        public IdentityCookieOptions Cookies { get; set; } = new IdentityCookieOptions();
+
+        /// <summary>
         /// Gets or sets the <see cref="TimeSpan"/> after which security stamps are re-validated.
         /// </summary>
         /// <value>
@@ -81,29 +89,5 @@ namespace Microsoft.AspNet.Identity
         /// The <see cref="ChangeEmailTokenProvider"/> used to generate tokens used in email change confirmation emails.
         /// </value>
         public string ChangeEmailTokenProvider { get; set; } = Resources.DefaultTokenProvider;
-
-        /// <summary>
-        /// Gets or sets the scheme used to identify application authentication cookies, must match the scheme in IdentityCookieOptions.
-        /// </summary>
-        /// <value>The scheme used to identify application authentication cookies.</value>
-        public string ApplicationCookieAuthenticationScheme { get; set; } = IdentityCookieOptions.ApplicationCookieAuthenticationScheme;
-
-        /// <summary>
-        /// Gets or sets the scheme used to identify external authentication cookies, must match the scheme in IdentityCookieOptions.
-        /// </summary>
-        /// <value>The scheme used to identify external authentication cookies.</value>
-        public string ExternalCookieAuthenticationScheme { get; set; } = IdentityCookieOptions.ExternalCookieAuthenticationScheme;
-
-        /// <summary>
-        /// Gets or sets the scheme used to identify Two Factor authentication cookies for round tripping user identities, must match the scheme in IdentityCookieOptions.
-        /// </summary>
-        /// <value>The scheme used to identify user identity 2fa authentication cookies.</value>
-        public string TwoFactorUserIdCookieAuthenticationScheme { get; set; } = IdentityCookieOptions.TwoFactorUserIdCookieAuthenticationScheme;
-
-        /// <summary>
-        /// Gets or sets the scheme used to identify Two Factor authentication cookies for saving the Remember Me state,, must match the scheme in IdentityCookieOptions
-        /// </summary>
-        /// <value>The scheme used to identify remember me application authentication cookies.</value>        
-        public string TwoFactorRememberMeCookieAuthenticationScheme { get; set; } = IdentityCookieOptions.TwoFactorRememberMeCookieAuthenticationScheme;
     }
 }

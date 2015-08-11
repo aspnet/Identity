@@ -92,7 +92,8 @@ namespace Microsoft.Framework.DependencyInjection
             }
             services.Configure<SharedAuthenticationOptions>(options =>
             {
-                options.SignInScheme = IdentityCookieOptions.ExternalCookieAuthenticationScheme;
+                // This is the Default value for ExternalCookieAuthenticationScheme
+                options.SignInScheme = new IdentityCookieOptions().ExternalCookieAuthenticationScheme;
             });
 
             return new IdentityBuilder(typeof(TUser), typeof(TRole), services);

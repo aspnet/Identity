@@ -109,7 +109,7 @@ namespace Microsoft.AspNet.Identity
         /// <returns>The task object representing the asynchronous operation.</returns>
         public virtual async Task RefreshSignInAsync(TUser user)
         {
-            var auth = new AuthenticateContext(IdentityCookieOptions.ApplicationCookieAuthenticationScheme);
+            var auth = new AuthenticateContext(Options.Cookies.ApplicationCookieAuthenticationScheme);
             await Context.Authentication.AuthenticateAsync(auth);
             var authenticationMethod = auth.Principal?.FindFirstValue(ClaimTypes.AuthenticationMethod);
             await SignInAsync(user, new AuthenticationProperties(auth.Properties), authenticationMethod);
@@ -142,7 +142,7 @@ namespace Microsoft.AspNet.Identity
             {
                 userPrincipal.Identities.First().AddClaim(new Claim(ClaimTypes.AuthenticationMethod, authenticationMethod));
             }
-            await Context.Authentication.SignInAsync(Options.ApplicationCookieAuthenticationScheme,
+            await Context.Authentication.SignInAsync(Options.Cookies.ApplicationCookieAuthenticationScheme,
                 userPrincipal,
                 authenticationProperties ?? new AuthenticationProperties());
         }
@@ -152,9 +152,9 @@ namespace Microsoft.AspNet.Identity
         /// </summary>
         public virtual async Task SignOutAsync()
         {
-            await Context.Authentication.SignOutAsync(Options.ApplicationCookieAuthenticationScheme);
-            await Context.Authentication.SignOutAsync(Options.ExternalCookieAuthenticationScheme);
-            await Context.Authentication.SignOutAsync(Options.TwoFactorUserIdCookieAuthenticationScheme);
+            await Context.Authentication.SignOutAsync(Options.Cookies.ApplicationCookieAuthenticationScheme);
+            await Context.Authentication.SignOutAsync(Options.Cookies.ExternalCookieAuthenticationScheme);
+            await Context.Authentication.SignOutAsync(Options.Cookies.TwoFactorUserIdCookieAuthenticationScheme);
         }
 
         /// <summary>
@@ -260,7 +260,7 @@ namespace Microsoft.AspNet.Identity
         public virtual async Task<bool> IsTwoFactorClientRememberedAsync(TUser user)
         {
             var userId = await UserManager.GetUserIdAsync(user);
-            var result = await Context.Authentication.AuthenticateAsync(IdentityCookieOptions.TwoFactorRememberMeCookieAuthenticationScheme);
+            var result = await Context.Authentication.AuthenticateAsync(Options.Cookies.TwoFactorRememberMeCookieAuthenticationScheme);
             return (result != null && result.FindFirstValue(ClaimTypes.Name) == userId);
         }
 
@@ -273,9 +273,9 @@ namespace Microsoft.AspNet.Identity
         public virtual async Task RememberTwoFactorClientAsync(TUser user)
         {
             var userId = await UserManager.GetUserIdAsync(user);
-            var rememberBrowserIdentity = new ClaimsIdentity(IdentityCookieOptions.TwoFactorRememberMeCookieAuthenticationType);
+            var rememberBrowserIdentity = new ClaimsIdentity(Options.Cookies.TwoFactorRememberMeCookieAuthenticationScheme);
             rememberBrowserIdentity.AddClaim(new Claim(ClaimTypes.Name, userId));
-            await Context.Authentication.SignInAsync(IdentityCookieOptions.TwoFactorRememberMeCookieAuthenticationScheme,
+            await Context.Authentication.SignInAsync(Options.Cookies.TwoFactorRememberMeCookieAuthenticationScheme,
                 new ClaimsPrincipal(rememberBrowserIdentity),
                 new AuthenticationProperties { IsPersistent = true });
         }
@@ -286,7 +286,7 @@ namespace Microsoft.AspNet.Identity
         /// <returns>The task object representing the asynchronous operation.</returns>
         public virtual Task ForgetTwoFactorClientAsync()
         {
-            return Context.Authentication.SignOutAsync(IdentityCookieOptions.TwoFactorRememberMeCookieAuthenticationScheme);
+            return Context.Authentication.SignOutAsync(Options.Cookies.TwoFactorRememberMeCookieAuthenticationScheme);
         }
 
         /// <summary>
@@ -325,7 +325,7 @@ namespace Microsoft.AspNet.Identity
                 // Cleanup external cookie
                 if (twoFactorInfo.LoginProvider != null)
                 {
-                    await Context.Authentication.SignOutAsync(Options.ExternalCookieAuthenticationScheme);
+                    await Context.Authentication.SignOutAsync(Options.Cookies.ExternalCookieAuthenticationScheme);
                 }
                 if (rememberClient)
                 {
@@ -397,7 +397,7 @@ namespace Microsoft.AspNet.Identity
         /// for the sign-in attempt.</returns>
         public virtual async Task<ExternalLoginInfo> GetExternalLoginInfoAsync(string expectedXsrf = null)
         {
-            var auth = new AuthenticateContext(Options.ExternalCookieAuthenticationScheme);
+            var auth = new AuthenticateContext(Options.Cookies.ExternalCookieAuthenticationScheme);
             await Context.Authentication.AuthenticateAsync(auth);
             if (auth.Principal == null || auth.Properties == null || !auth.Properties.ContainsKey(LoginProviderKey))
             {
@@ -453,7 +453,7 @@ namespace Microsoft.AspNet.Identity
         /// <returns>A <see cref="ClaimsPrincipal"/> containing the user 2fa information.</returns>
         internal ClaimsPrincipal StoreTwoFactorInfo(string userId, string loginProvider)
         {
-            var identity = new ClaimsIdentity(Options.TwoFactorUserIdCookieAuthenticationScheme);
+            var identity = new ClaimsIdentity(Options.Cookies.TwoFactorUserIdCookieAuthenticationScheme);
             identity.AddClaim(new Claim(ClaimTypes.Name, userId));
             if (loginProvider != null)
             {
@@ -468,7 +468,7 @@ namespace Microsoft.AspNet.Identity
             {
                 return null;
             }
-            var identity = new ClaimsIdentity(Options.TwoFactorUserIdCookieAuthenticationScheme);
+            var identity = new ClaimsIdentity(Options.Cookies.TwoFactorUserIdCookieAuthenticationScheme);
             identity.AddClaim(new Claim(ClaimTypes.Name, info.UserId));
             if (info.LoginProvider != null)
             {
@@ -488,14 +488,14 @@ namespace Microsoft.AspNet.Identity
                 {
                     // Store the userId for use after two factor check
                     var userId = await UserManager.GetUserIdAsync(user);
-                    await Context.Authentication.SignInAsync(Options.TwoFactorUserIdCookieAuthenticationScheme, StoreTwoFactorInfo(userId, loginProvider));
+                    await Context.Authentication.SignInAsync(Options.Cookies.TwoFactorUserIdCookieAuthenticationScheme, StoreTwoFactorInfo(userId, loginProvider));
                     return SignInResult.TwoFactorRequired;
                 }
             }
             // Cleanup external cookie
             if (loginProvider != null)
             {
-                await Context.Authentication.SignOutAsync(Options.ExternalCookieAuthenticationScheme);
+                await Context.Authentication.SignOutAsync(Options.Cookies.ExternalCookieAuthenticationScheme);
             }
             await SignInAsync(user, isPersistent, loginProvider);
             return SignInResult.Success;
@@ -503,7 +503,7 @@ namespace Microsoft.AspNet.Identity
 
         private async Task<TwoFactorAuthenticationInfo> RetrieveTwoFactorInfoAsync()
         {
-            var result = await Context.Authentication.AuthenticateAsync(Options.TwoFactorUserIdCookieAuthenticationScheme);
+            var result = await Context.Authentication.AuthenticateAsync(Options.Cookies.TwoFactorUserIdCookieAuthenticationScheme);
             if (result != null)
             {
                 return new TwoFactorAuthenticationInfo
