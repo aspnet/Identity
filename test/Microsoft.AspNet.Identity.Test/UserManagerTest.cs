@@ -415,7 +415,7 @@ namespace Microsoft.AspNet.Identity.Test
         {
             // Setup
             var store = new Mock<IUserPasswordStore<TestUser>>();
-            var hasher = new Mock<IPasswordHasher<TestUser>>();
+            var hasher = new Mock<IPasswordHasher>();
             var user = new TestUser { UserName = "Foo" };
             var pwd = "password";
             var hashed = "hashed";
@@ -630,9 +630,9 @@ namespace Microsoft.AspNet.Identity.Test
             // TODO: Can switch to Mock eventually
             var manager = MockHelpers.TestUserManager(new EmptyStore());
             manager.PasswordValidators.Clear();
-            manager.PasswordValidators.Add(new BadPasswordValidator<TestUser>());
+            manager.PasswordValidators.Add(new BadPasswordValidator());
             IdentityResultAssert.IsFailure(await manager.CreateAsync(new TestUser(), "password"),
-                BadPasswordValidator<TestUser>.ErrorMessage);
+                BadPasswordValidator.ErrorMessage);
         }
 
         [Fact]
@@ -819,11 +819,11 @@ namespace Microsoft.AspNet.Identity.Test
             await Assert.ThrowsAsync<ObjectDisposedException>(() => manager.ConfirmEmailAsync(null, null));
         }
 
-        private class BadPasswordValidator<TUser> : IPasswordValidator<TUser> where TUser : class
+        private class BadPasswordValidator : IPasswordValidator
         {
             public static readonly IdentityError ErrorMessage = new IdentityError { Description = "I'm Bad." };
 
-            public Task<IdentityResult> ValidateAsync(UserManager<TUser> manager, TUser user, string password)
+            Task<IdentityResult> IPasswordValidator.ValidateAsync<TUser>(UserManager<TUser> manager, TUser user, string password)
             {
                 return Task.FromResult(IdentityResult.Failed(ErrorMessage));
             }
