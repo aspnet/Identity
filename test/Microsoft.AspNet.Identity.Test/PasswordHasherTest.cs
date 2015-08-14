@@ -69,7 +69,7 @@ namespace Microsoft.AspNet.Identity.Test
         public void HashPassword_Version2()
         {
             // Arrange
-            var hasher = new PasswordHasher(compatMode: PasswordHasherCompatibilityMode.IdentityV2);
+            var hasher = new TestPasswordHasher(compatMode: PasswordHasherCompatibilityMode.IdentityV2);
 
             // Act
             string retVal = hasher.HashPassword<object>(null, "my password");

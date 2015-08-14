@@ -163,7 +163,7 @@ namespace Microsoft.AspNet.Identity.Test
         {
             var manager = CreateManager();
             manager.Options.User.RequireUniqueEmail = true;
-            manager.UserValidators.Add(new UserValidator<TUser>());
+            manager.UserValidators.Add(new UserValidator());
             var random = new Random();
             var email = "foo" + random.Next() + "@example.com";
             var newEmail = "bar" + random.Next() + "@example.com";

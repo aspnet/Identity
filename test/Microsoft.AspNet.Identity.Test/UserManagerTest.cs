@@ -1090,26 +1090,21 @@ namespace Microsoft.AspNet.Identity.Test
             }
         }
 
-        private class NoOpTokenProvider : IUserTokenProvider<TestUser>
+        private class NoOpTokenProvider : IUserTokenProvider
         {
             public string Name { get; } = "Noop";
 
-            public Task<string> GenerateAsync(string purpose, UserManager<TestUser> manager, TestUser user)
+            public Task<string> GenerateAsync<TUser>(string purpose, UserManager<TUser> manager, TUser user) where TUser : class
             {
                 return Task.FromResult("Test");
             }
 
-            public Task<bool> ValidateAsync(string purpose, string token, UserManager<TestUser> manager, TestUser user)
+            public Task<bool> ValidateAsync<TUser>(string purpose, string token, UserManager<TUser> manager, TUser user) where TUser : class
             {
                 return Task.FromResult(true);
             }
 
-            public Task NotifyAsync(string token, UserManager<TestUser> manager, TestUser user)
-            {
-                return Task.FromResult(0);
-            }
-
-            public Task<bool> CanGenerateTwoFactorTokenAsync(UserManager<TestUser> manager, TestUser user)
+            public Task<bool> CanGenerateTwoFactorTokenAsync<TUser>(UserManager<TUser> manager, TUser user) where TUser : class
             {
                 return Task.FromResult(true);
             }

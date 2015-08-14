@@ -22,7 +22,7 @@ namespace Microsoft.AspNet.Identity.Test
         {
             var store = new Mock<IUserStore<TUser>>();
             var mgr = new Mock<UserManager<TUser>>(store.Object, null, null, null, null, null, null, null, null, null);
-            mgr.Object.UserValidators.Add(new UserValidator<TUser>());
+            mgr.Object.UserValidators.Add(new UserValidator());
             mgr.Object.PasswordValidators.Add(new PasswordValidator());
             return mgr;
         }
@@ -30,8 +30,8 @@ namespace Microsoft.AspNet.Identity.Test
         public static Mock<RoleManager<TRole>> MockRoleManager<TRole>(IRoleStore<TRole> store = null) where TRole : class
         {
             store = store ?? new Mock<IRoleStore<TRole>>().Object;
-            var roles = new List<IRoleValidator<TRole>>();
-            roles.Add(new RoleValidator<TRole>());
+            var roles = new List<IRoleValidator>();
+            roles.Add(new RoleValidator());
             return new Mock<RoleManager<TRole>>(store, roles, null, null, null, null);
         }
 
