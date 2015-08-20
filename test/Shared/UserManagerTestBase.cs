@@ -13,6 +13,7 @@ using Xunit;
 using System.Linq.Expressions;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Http.Internal;
+using Microsoft.AspNet.Testing.xunit;
 
 namespace Microsoft.AspNet.Identity.Test
 {
@@ -98,6 +99,7 @@ namespace Microsoft.AspNet.Identity.Test
         protected abstract Expression<Func<TRole, bool>> RoleNameStartsWithPredicate(string roleName);
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task CanDeleteUser()
         {
             var manager = CreateManager();
@@ -109,6 +111,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task CanUpdateUserName()
         {
             var manager = CreateManager();
@@ -124,6 +127,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task CheckSetUserNameValidatesUser()
         {
             var manager = CreateManager();
@@ -148,6 +152,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task SetUserNameUpdatesSecurityStamp()
         {
             var manager = CreateManager();
@@ -162,6 +167,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task CheckSetEmailValidatesUser()
         {
             var manager = CreateManager();
@@ -181,6 +187,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task CanUpdatePasswordUsingHasher()
         {
             var manager = CreateManager();
@@ -197,6 +204,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task CanFindById()
         {
             var manager = CreateManager();
@@ -206,6 +214,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task UserValidatorCanBlockCreate()
         {
             var manager = CreateManager();
@@ -217,6 +226,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task UserValidatorCanBlockUpdate()
         {
             var manager = CreateManager();
@@ -229,6 +239,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task CanChainUserValidators()
         {
             var manager = CreateManager();
@@ -245,6 +256,7 @@ namespace Microsoft.AspNet.Identity.Test
         [Theory]
         [InlineData("")]
         [InlineData(null)]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task UserValidatorBlocksShortEmailsWhenRequiresUniqueEmail(string email)
         {
             var manager = CreateManager();
@@ -257,6 +269,7 @@ namespace Microsoft.AspNet.Identity.Test
         [Theory]
         [InlineData("@@afd")]
         [InlineData("bogus")]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task UserValidatorBlocksInvalidEmailsWhenRequiresUniqueEmail(string email)
         {
             var manager = CreateManager();
@@ -267,6 +280,7 @@ namespace Microsoft.AspNet.Identity.Test
 #endif
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task PasswordValidatorCanBlockAddPassword()
         {
             var manager = CreateManager();
@@ -280,6 +294,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task CanChainPasswordValidators()
         {
             var manager = CreateManager();
@@ -294,6 +309,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task PasswordValidatorCanBlockChangePassword()
         {
             var manager = CreateManager();
@@ -307,6 +323,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task PasswordValidatorCanBlockCreateUser()
         {
             var manager = CreateManager();
@@ -318,6 +335,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task CanCreateUserNoPassword()
         {
             var manager = CreateManager();
@@ -333,6 +351,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task CanCreateUserAddLogin()
         {
             var manager = CreateManager();
@@ -351,6 +370,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task CanCreateUserLoginAndAddPassword()
         {
             var manager = CreateManager();
@@ -370,6 +390,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task AddPasswordFailsIfAlreadyHave()
         {
             var manager = CreateManager();
@@ -382,6 +403,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task CanCreateUserAddRemoveLogin()
         {
             var manager = CreateManager();
@@ -409,6 +431,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task CanRemovePassword()
         {
             var manager = CreateManager();
@@ -425,6 +448,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task CanChangePassword()
         {
             var manager = CreateManager();
@@ -441,6 +465,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task CanAddRemoveUserClaim()
         {
             var manager = CreateManager();
@@ -466,6 +491,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task RemoveClaimOnlyAffectsUser()
         {
             var manager = CreateManager();
@@ -495,6 +521,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task CanReplaceUserClaim()
         {
             var manager = CreateManager();
@@ -514,6 +541,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task ReplaceUserClaimOnlyAffectsUser()
         {
             var manager = CreateManager();
@@ -543,6 +571,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task ChangePasswordFallsIfPasswordWrong()
         {
             var manager = CreateManager();
@@ -554,6 +583,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task AddDupeUserNameFails()
         {
             var manager = CreateManager();
@@ -565,6 +595,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task AddDupeEmailAllowedByDefault()
         {
             var manager = CreateManager();
@@ -576,6 +607,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task AddDupeEmailFailsWhenUniqueEmailRequired()
         {
             var manager = CreateManager();
@@ -587,6 +619,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task UpdateSecurityStampActuallyChanges()
         {
             var manager = CreateManager();
@@ -600,6 +633,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task AddDupeLoginFails()
         {
             var manager = CreateManager();
@@ -614,6 +648,7 @@ namespace Microsoft.AspNet.Identity.Test
 
         // Email tests
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task CanFindByEmail()
         {
             var email = "foouser@test.com";
@@ -625,6 +660,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task CanFindUsersViaUserQuerable()
         {
             var mgr = CreateManager();
@@ -641,6 +677,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task ConfirmEmailFalseByDefaultTest()
         {
             var manager = CreateManager();
@@ -678,6 +715,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task CanResetPasswordWithStaticTokenProvider()
         {
             var manager = CreateManager();
@@ -699,6 +737,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task PasswordValidatorCanBlockResetPasswordWithStaticTokenProvider()
         {
             var manager = CreateManager();
@@ -721,6 +760,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task ResetPasswordWithStaticTokenProviderFailsWithWrongToken()
         {
             var manager = CreateManager();
@@ -739,6 +779,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task CanGenerateAndVerifyUserTokenWithStaticTokenProvider()
         {
             var manager = CreateManager();
@@ -763,6 +804,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task CanConfirmEmailWithStaticToken()
         {
             var manager = CreateManager();
@@ -781,6 +823,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task ConfirmEmailWithStaticTokenFailsWithWrongToken()
         {
             var manager = CreateManager();
@@ -795,6 +838,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task ConfirmTokenFailsAfterPasswordChange()
         {
             var manager = CreateManager();
@@ -812,6 +856,7 @@ namespace Microsoft.AspNet.Identity.Test
         // Lockout tests
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task SingleFailureLockout()
         {
             var mgr = CreateManager();
@@ -830,6 +875,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task TwoFailureLockout()
         {
             var mgr = CreateManager();
@@ -851,6 +897,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task ResetAccessCountPreventsLockout()
         {
             var mgr = CreateManager();
@@ -875,6 +922,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task CanEnableLockoutManuallyAndLockout()
         {
             var mgr = CreateManager();
@@ -899,6 +947,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task UserNotLockedOutWithNullDateTimeAndIsSetToNullDate()
         {
             var mgr = CreateManager();
@@ -911,6 +960,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task LockoutFailsIfNotEnabled()
         {
             var mgr = CreateManager();
@@ -925,6 +975,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task LockoutEndToUtcNowMinus1SecInUserShouldNotBeLockedOut()
         {
             var mgr = CreateManager();
@@ -935,6 +986,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task LockoutEndToUtcNowSubOneSecondWithManagerShouldNotBeLockedOut()
         {
             var mgr = CreateManager();
@@ -946,6 +998,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task LockoutEndToUtcNowPlus5ShouldBeLockedOut()
         {
             var mgr = CreateManager();
@@ -957,6 +1010,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task UserLockedOutWithDateTimeLocalKindNowPlus30()
         {
             var mgr = CreateManager();
@@ -972,6 +1026,7 @@ namespace Microsoft.AspNet.Identity.Test
 
         // Role Tests
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task CanCreateRoleTest()
         {
             var manager = CreateRoleManager();
@@ -1004,6 +1059,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task BadValidatorBlocksCreateRole()
         {
             var manager = CreateRoleManager();
@@ -1016,6 +1072,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task CanChainRoleValidators()
         {
             var manager = CreateRoleManager();
@@ -1030,6 +1087,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task BadValidatorBlocksRoleUpdate()
         {
             var manager = CreateRoleManager();
@@ -1043,6 +1101,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task CanDeleteRole()
         {
             var manager = CreateRoleManager();
@@ -1056,6 +1115,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task CanAddRemoveRoleClaim()
         {
             var manager = CreateRoleManager();
@@ -1091,6 +1151,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task CanRoleFindById()
         {
             var manager = CreateRoleManager();
@@ -1101,6 +1162,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task CanRoleFindByName()
         {
             var manager = CreateRoleManager();
@@ -1113,6 +1175,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task CanUpdateRoleName()
         {
             var manager = CreateRoleManager();
@@ -1128,6 +1191,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task CanQueryableRoles()
         {
             var manager = CreateRoleManager();
@@ -1145,6 +1209,7 @@ namespace Microsoft.AspNet.Identity.Test
 
         // Enable when delete on cascade is supported in EF
         // [Fact]
+        //[FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task DeleteRoleNonEmptySucceedsTest()
         {
             // Need fail if not empty?
@@ -1172,6 +1237,7 @@ namespace Microsoft.AspNet.Identity.Test
 
         // TODO: cascading deletes?  navigation properties not working
         ////[Fact]
+        //[FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         ////public async Task DeleteUserRemovesFromRoleTest()
         ////{
         ////    // Need fail if not empty?
@@ -1188,6 +1254,7 @@ namespace Microsoft.AspNet.Identity.Test
         ////}
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task CreateRoleFailsIfExists()
         {
             var manager = CreateRoleManager();
@@ -1201,6 +1268,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task CanAddUsersToRole()
         {
             var context = CreateTestContext();
@@ -1222,6 +1290,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task CanGetRolesForUser()
         {
             var context = CreateTestContext();
@@ -1256,6 +1325,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task RemoveUserFromRoleWithMultipleRoles()
         {
             var context = CreateTestContext();
@@ -1275,6 +1345,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task CanRemoveUsersFromRole()
         {
             var context = CreateTestContext();
@@ -1300,6 +1371,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task RemoveUserNotInRoleFails()
         {
             var context = CreateTestContext();
@@ -1316,6 +1388,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task AddUserToRoleFailsIfAlreadyInRole()
         {
             var context = CreateTestContext();
@@ -1333,6 +1406,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task CanFindRoleByNameWithManager()
         {
             var roleMgr = CreateRoleManager();
@@ -1343,6 +1417,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task CanFindRoleWithManager()
         {
             var roleMgr = CreateRoleManager();
@@ -1353,6 +1428,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task SetPhoneNumberTest()
         {
             var manager = CreateManager();
@@ -1366,6 +1442,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task CanChangePhoneNumber()
         {
             var manager = CreateManager();
@@ -1381,6 +1458,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task ChangePhoneNumberFailsWithWrongToken()
         {
             var manager = CreateManager();
@@ -1397,6 +1475,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task ChangePhoneNumberFailsWithWrongPhoneNumber()
         {
             var manager = CreateManager();
@@ -1413,6 +1492,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task CanVerifyPhoneNumber()
         {
             var manager = CreateManager();
@@ -1433,6 +1513,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task CanChangeEmail()
         {
             var manager = CreateManager();
@@ -1472,6 +1553,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task ChangeEmailFailsWithWrongToken()
         {
             var manager = CreateManager();
@@ -1491,6 +1573,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task ChangeEmailFailsWithEmail()
         {
             var manager = CreateManager();
@@ -1511,6 +1594,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task EmailFactorFailsAfterSecurityStampChangeTest()
         {
             var manager = CreateManager();
@@ -1532,6 +1616,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task EnableTwoFactorChangesSecurityStamp()
         {
             var manager = CreateManager();
@@ -1545,6 +1630,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task GenerateTwoFactorWithUnknownFactorProviderWillThrow()
         {
             var manager = CreateManager();
@@ -1559,6 +1645,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task GetValidTwoFactorTestEmptyWithNoProviders()
         {
             var manager = CreateManager();
@@ -1570,6 +1657,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task CanGetValidTwoFactor()
         {
             var manager = CreateManager();
@@ -1601,6 +1689,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task PhoneFactorFailsAfterSecurityStampChangeTest()
         {
             var manager = CreateManager();
@@ -1617,6 +1706,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task VerifyTokenFromWrongTokenProviderFails()
         {
             var manager = CreateManager();
@@ -1629,6 +1719,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task VerifyWithWrongSmsTokenFails()
         {
             var manager = CreateManager();
@@ -1639,6 +1730,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task NullableDateTimeOperationTest()
         {
             var userMgr = CreateManager();
@@ -1657,6 +1749,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task CanGetUsersWithClaims()
         {
             var manager = CreateManager();
@@ -1678,6 +1771,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task CanGetUsersInRole()
         {
             var context = CreateTestContext();

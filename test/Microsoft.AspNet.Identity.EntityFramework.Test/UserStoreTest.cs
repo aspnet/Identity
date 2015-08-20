@@ -6,6 +6,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity.Test;
+using Microsoft.AspNet.Testing.xunit;
 using Microsoft.Framework.DependencyInjection;
 using Xunit;
 
@@ -20,6 +21,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
 
         [TestPriority(-1000)]
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public void DropDatabaseStart()
         {
             DropDb();
@@ -27,6 +29,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
 
         [TestPriority(10000)]
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public void DropDatabaseDone()
         {
             DropDb();
@@ -39,6 +42,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public void CanCreateUserUsingEF()
         {
             using (var db = CreateContext())
@@ -189,6 +193,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task CanCreateUsingManager()
         {
             var manager = CreateManager();
@@ -199,6 +204,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task TwoUsersSamePasswordDifferentHash()
         {
             var manager = CreateManager();
@@ -211,6 +217,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task AddUserToUnknownRoleFails()
         {
             var manager = CreateManager();
@@ -221,6 +228,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task ConcurrentUpdatesWillFail()
         {
             var user = CreateTestUser();
@@ -247,6 +255,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task ConcurrentUpdatesWillFailWithDetachedUser()
         {
             var user = CreateTestUser();
@@ -271,6 +280,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task DeleteAModifiedUserWillFail()
         {
             var user = CreateTestUser();
@@ -296,6 +306,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task ConcurrentRoleUpdatesWillFail()
         {
             var role = new IdentityRole(Guid.NewGuid().ToString());
@@ -322,6 +333,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task ConcurrentRoleUpdatesWillFailWithDetachedRole()
         {
             var role = new IdentityRole(Guid.NewGuid().ToString());
@@ -347,6 +359,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         }
 
         [Fact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task DeleteAModifiedRoleWillFail()
         {
             var role = new IdentityRole(Guid.NewGuid().ToString());
