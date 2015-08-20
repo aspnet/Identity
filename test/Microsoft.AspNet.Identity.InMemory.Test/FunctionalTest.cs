@@ -47,11 +47,11 @@ namespace Microsoft.AspNet.Identity.InMemory
         public async Task CanCreateMeLoginAndCookieStopsWorkingAfterExpiration()
         {
             var clock = new TestClock();
-            var server = CreateServer(services => services.ConfigureIdentityApplicationCookie(appCookieOptions =>
+            var server = CreateServer(services => services.ConfigureIdentity(options =>
             {
-                appCookieOptions.SystemClock = clock;
-                appCookieOptions.ExpireTimeSpan = TimeSpan.FromMinutes(10);
-                appCookieOptions.SlidingExpiration = false;
+                options.Cookies.ApplicationCookieOptions.SystemClock = clock;
+                options.Cookies.ApplicationCookieOptions.ExpireTimeSpan = TimeSpan.FromMinutes(10);
+                options.Cookies.ApplicationCookieOptions.SlidingExpiration = false;
             }));
 
             var transaction1 = await SendAsync(server, "http://example.com/createMe");
@@ -86,9 +86,9 @@ namespace Microsoft.AspNet.Identity.InMemory
         public async Task CanCreateMeLoginAndSecurityStampExtendsExpiration(bool rememberMe)
         {
             var clock = new TestClock();
-            var server = CreateServer(services => services.ConfigureIdentityApplicationCookie(appCookieOptions =>
+            var server = CreateServer(services => services.ConfigureIdentity(options =>
             {
-                appCookieOptions.SystemClock = clock;
+                options.Cookies.ApplicationCookieOptions.SystemClock = clock;
             }));
 
             var transaction1 = await SendAsync(server, "http://example.com/createMe");
@@ -142,7 +142,7 @@ namespace Microsoft.AspNet.Identity.InMemory
             transaction2.Response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
             string setCookie = transaction2.SetCookie;
-            setCookie.ShouldContain(IdentityOptions.TwoFactorRememberMeCookieAuthenticationScheme + "=");
+            setCookie.ShouldContain(new IdentityCookieOptions().TwoFactorRememberMeCookieAuthenticationScheme + "=");
             setCookie.ShouldContain("; expires=");
 
             var transaction3 = await SendAsync(server, "http://example.com/isTwoFactorRememebered", transaction2.CookieNameValue);

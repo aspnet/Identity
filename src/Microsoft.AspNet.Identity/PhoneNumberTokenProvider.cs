@@ -32,11 +32,11 @@ namespace Microsoft.AspNet.Identity
         /// <param name="options">The options to use for the created instance of a <see cref="PhoneNumberTokenProvider{TUser}"/>.</param>
         public PhoneNumberTokenProvider(IOptions<PhoneNumberTokenProviderOptions> options)
         {
-            if (options == null || options.Options == null)
+            if (options == null || options.Value == null)
             {
                 throw new ArgumentNullException(nameof(options));
             }
-            Options = options.Options;
+            Options = options.Value;
         }
 
         /// <summary>

@@ -70,7 +70,7 @@ namespace Microsoft.AspNet.Identity.Test
             var options = new Mock<IOptions<IdentityOptions>>();
             var idOptions = new IdentityOptions();
             idOptions.Lockout.AllowedForNewUsers = false;
-            options.Setup(o => o.Options).Returns(idOptions);
+            options.Setup(o => o.Value).Returns(idOptions);
             var userValidators = new List<IUserValidator<TUser>>();
             var validator = new Mock<IUserValidator<TUser>>();
             userValidators.Add(validator.Object);

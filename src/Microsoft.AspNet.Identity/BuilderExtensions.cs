@@ -4,6 +4,8 @@
 using System;
 
 using Microsoft.AspNet.Identity;
+using Microsoft.Framework.DependencyInjection;
+using Microsoft.Framework.OptionsModel;
 
 namespace Microsoft.AspNet.Builder
 {
@@ -23,10 +25,11 @@ namespace Microsoft.AspNet.Builder
             {
                 throw new ArgumentNullException(nameof(app));
             }
-            app.UseCookieAuthentication(null, IdentityOptions.ExternalCookieAuthenticationScheme);
-            app.UseCookieAuthentication(null, IdentityOptions.TwoFactorRememberMeCookieAuthenticationScheme);
-            app.UseCookieAuthentication(null, IdentityOptions.TwoFactorUserIdCookieAuthenticationScheme);
-            app.UseCookieAuthentication(null, IdentityOptions.ApplicationCookieAuthenticationScheme);
+            var options = app.ApplicationServices.GetRequiredService<IOptions<IdentityOptions>>().Value;
+            app.UseCookieAuthentication(options.Cookies.ExternalCookieOptions);
+            app.UseCookieAuthentication(options.Cookies.TwoFactorRememberMeCookieOptions);
+            app.UseCookieAuthentication(options.Cookies.TwoFactorUserIdCookieOptions);
+            app.UseCookieAuthentication(options.Cookies.ApplicationCookieOptions);
             return app;
         }
     }
