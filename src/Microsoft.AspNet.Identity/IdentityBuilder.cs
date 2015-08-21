@@ -159,7 +159,9 @@ namespace Microsoft.AspNet.Identity
         /// <returns>The <see cref="IdentityBuilder"/>.</returns>
         public virtual IdentityBuilder AddUserManager<TUserManager>() where TUserManager : class
         {
-            return AddScoped(typeof(UserManager<>).MakeGenericType(UserType), typeof(TUserManager));
+            var userManagerType = typeof(UserManager<>).MakeGenericType(UserType);
+            Services.AddScoped(typeof(TUserManager), services => services.GetRequiredService(userManagerType));
+            return AddScoped(userManagerType, typeof(TUserManager));
         }
 
         /// <summary>
@@ -169,7 +171,9 @@ namespace Microsoft.AspNet.Identity
         /// <returns>The <see cref="IdentityBuilder"/>.</returns>
         public virtual IdentityBuilder AddRoleManager<TRoleManager>() where TRoleManager : class
         {
-            return AddScoped(typeof(RoleManager<>).MakeGenericType(RoleType), typeof(TRoleManager));
+            var managerType = typeof(RoleManager<>).MakeGenericType(RoleType);
+            Services.AddScoped(typeof(TRoleManager), services => services.GetRequiredService(managerType));
+            return AddScoped(managerType, typeof(TRoleManager));
         }
     }
 }
