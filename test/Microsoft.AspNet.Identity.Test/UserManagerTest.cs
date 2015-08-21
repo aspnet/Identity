@@ -48,6 +48,17 @@ namespace Microsoft.AspNet.Identity.Test
                 provider.GetRequiredService<CustomRoleManager>());
         }
 
+        [Fact]
+        public void AddManagerWithWrongTypesThrows()
+        {
+            var services = new ServiceCollection();
+            var builder = services.AddIdentity<TestUser, TestRole>();
+            Assert.Throws<InvalidOperationException>(() => builder.AddUserManager<UserManager<TestUser>>());
+            Assert.Throws<InvalidOperationException>(() => builder.AddRoleManager<RoleManager<TestRole>>());
+            Assert.Throws<InvalidOperationException>(() => builder.AddUserManager<object>());
+            Assert.Throws<InvalidOperationException>(() => builder.AddRoleManager<object>());
+        }
+
         public class CustomUserManager : UserManager<TestUser>
         {
             public CustomUserManager() : base(new Mock<IUserStore<TestUser>>().Object, null, null, null, null, null, null, null, null, null)

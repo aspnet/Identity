@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Reflection;
 using Microsoft.Framework.DependencyInjection;
 
 namespace Microsoft.AspNet.Identity
@@ -160,8 +161,14 @@ namespace Microsoft.AspNet.Identity
         public virtual IdentityBuilder AddUserManager<TUserManager>() where TUserManager : class
         {
             var userManagerType = typeof(UserManager<>).MakeGenericType(UserType);
-            Services.AddScoped(typeof(TUserManager), services => services.GetRequiredService(userManagerType));
-            return AddScoped(userManagerType, typeof(TUserManager));
+            var customType = typeof(TUserManager);
+            if (userManagerType == customType ||
+                !userManagerType.GetTypeInfo().IsAssignableFrom(customType.GetTypeInfo()))
+            {
+                throw new InvalidOperationException(Resources.FormatInvalidManagerType(customType.Name, "UserManager", UserType.Name));
+            }
+            Services.AddScoped(customType, services => services.GetRequiredService(userManagerType));
+            return AddScoped(userManagerType, customType);
         }
 
         /// <summary>
@@ -172,6 +179,12 @@ namespace Microsoft.AspNet.Identity
         public virtual IdentityBuilder AddRoleManager<TRoleManager>() where TRoleManager : class
         {
             var managerType = typeof(RoleManager<>).MakeGenericType(RoleType);
+            var customType = typeof(TRoleManager);
+            if (managerType == customType ||
+                !managerType.GetTypeInfo().IsAssignableFrom(customType.GetTypeInfo()))
+            {
+                throw new InvalidOperationException(Resources.FormatInvalidManagerType(customType.Name, "RoleManager", RoleType.Name));
+            }
             Services.AddScoped(typeof(TRoleManager), services => services.GetRequiredService(managerType));
             return AddScoped(managerType, typeof(TRoleManager));
         }
