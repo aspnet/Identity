@@ -3,14 +3,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Text;
 using Microsoft.Framework.Logging;
 using Moq;
 using Microsoft.Framework.OptionsModel;
-using System.Linq;
-using Microsoft.AspNet.Hosting;
 
 namespace Microsoft.AspNet.Identity.Test
 {
@@ -78,7 +75,7 @@ namespace Microsoft.AspNet.Identity.Test
             pwdValidators.Add(new PasswordValidator<TUser>());
             var userManager = new UserManager<TUser>(store, options.Object, new PasswordHasher<TUser>(),
                 userValidators, pwdValidators, new UpperInvariantLookupNormalizer(),
-                new IdentityErrorDescriber(), Enumerable.Empty<IUserTokenProvider<TUser>>(),
+                new IdentityErrorDescriber(), null,
                 new Mock<ILogger<UserManager<TUser>>>().Object,
                 null);
             validator.Setup(v => v.ValidateAsync(userManager, It.IsAny<TUser>()))

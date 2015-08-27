@@ -37,7 +37,7 @@ namespace Microsoft.AspNet.Identity.InMemory
         public async Task CanChangePasswordOptions()
         {
             var clock = new TestClock();
-            var server = CreateServer(services => services.ConfigureIdentity(options =>
+            var server = CreateServer(services => services.Configure<IdentityOptions>(options =>
             {
                 options.Password.RequireUppercase = false;
                 options.Password.RequireNonLetterOrDigit = false;
@@ -53,7 +53,7 @@ namespace Microsoft.AspNet.Identity.InMemory
         public async Task CanCreateMeLoginAndCookieStopsWorkingAfterExpiration()
         {
             var clock = new TestClock();
-            var server = CreateServer(services => services.ConfigureIdentity(options =>
+            var server = CreateServer(services => services.Configure<IdentityOptions>(options =>
             {
                 options.Cookies.ApplicationCookieOptions.SystemClock = clock;
                 options.Cookies.ApplicationCookieOptions.ExpireTimeSpan = TimeSpan.FromMinutes(10);
@@ -92,7 +92,7 @@ namespace Microsoft.AspNet.Identity.InMemory
         public async Task CanCreateMeLoginAndSecurityStampExtendsExpiration(bool rememberMe)
         {
             var clock = new TestClock();
-            var server = CreateServer(services => services.ConfigureIdentity(options =>
+            var server = CreateServer(services => services.Configure<IdentityOptions>(options =>
             {
                 options.Cookies.ApplicationCookieOptions.SystemClock = clock;
             }));
