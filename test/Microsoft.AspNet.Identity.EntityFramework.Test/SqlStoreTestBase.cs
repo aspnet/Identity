@@ -111,7 +111,8 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
             CreateContext();
         }
 
-        [Fact]
+        [ConditionalTheory]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public void EnsureDefaultSchema()
         {
             VerifyDefaultSchema(CreateContext());

@@ -1532,6 +1532,7 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [ConditionalTheory]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task CanChangeEmailWithDifferentTokenProvider()
         {
             var manager = CreateManager(context: null, services: null, 
