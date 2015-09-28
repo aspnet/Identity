@@ -205,7 +205,6 @@ namespace Microsoft.AspNet.Identity
         /// true if the backing user store supports user emails, otherwise false.
         /// </value>
         public virtual bool SupportsUserEmail 
-
         {
             get
             {
@@ -1063,10 +1062,9 @@ namespace Microsoft.AspNet.Identity
                 throw new ArgumentNullException("roles");
             }
 
-            var userRoles = await userRoleStore.GetRolesAsync(user, CancellationToken);
             foreach (var role in roles)
             {
-                if (userRoles.Contains(role))
+                if (await userRoleStore.IsInRoleAsync(user, role, CancellationToken))
                 {
                     return await UserAlreadyInRoleError(user, role);
                 }
