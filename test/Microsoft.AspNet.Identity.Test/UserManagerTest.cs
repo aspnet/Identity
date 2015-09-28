@@ -281,7 +281,15 @@ namespace Microsoft.AspNet.Identity.Test
                 .Returns(Task.FromResult(0))
                 .Verifiable();
             store.Setup(s => s.UpdateAsync(user, CancellationToken.None)).ReturnsAsync(IdentityResult.Success).Verifiable();
-            store.Setup(s => s.GetRolesAsync(user, CancellationToken.None)).ReturnsAsync(new List<string>()).Verifiable();
+            store.Setup(s => s.IsInRoleAsync(user, "A", CancellationToken.None))
+                .Returns(Task.FromResult(false))
+                .Verifiable();
+            store.Setup(s => s.IsInRoleAsync(user, "B", CancellationToken.None))
+                .Returns(Task.FromResult(false))
+                .Verifiable();
+            store.Setup(s => s.IsInRoleAsync(user, "C", CancellationToken.None))
+                .Returns(Task.FromResult(false))
+                .Verifiable();
             var userManager = MockHelpers.TestUserManager<TestUser>(store.Object);
 
             // Act
@@ -302,7 +310,9 @@ namespace Microsoft.AspNet.Identity.Test
             store.Setup(s => s.AddToRoleAsync(user, "A", CancellationToken.None))
                 .Returns(Task.FromResult(0))
                 .Verifiable();
-            store.Setup(s => s.GetRolesAsync(user, CancellationToken.None)).ReturnsAsync(new List<string> { "B" }).Verifiable();
+            store.Setup(s => s.IsInRoleAsync(user, "A", CancellationToken.None))
+                .Returns(Task.FromResult(true))
+                .Verifiable();
             var userManager = MockHelpers.TestUserManager<TestUser>(store.Object);
 
             // Act
