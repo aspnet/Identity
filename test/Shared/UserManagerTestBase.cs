@@ -1407,6 +1407,23 @@ namespace Microsoft.AspNet.Identity.Test
 
         [ConditionalTheory]
         [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
+        public async Task AddUserToRolesFailsWithDuplicates()
+        {
+            var context = CreateTestContext();
+            var userMgr = CreateManager(context);
+            var roleMgr = CreateRoleManager(context);
+            var roleName = "addUserDupeTest" + Guid.NewGuid().ToString();
+            var role = CreateTestRole(roleName, useRoleNamePrefixAsRoleName: true);
+            var user = CreateTestUser();
+            IdentityResultAssert.IsSuccess(await userMgr.CreateAsync(user));
+            IdentityResultAssert.IsSuccess(await roleMgr.CreateAsync(role));
+            Assert.False(await userMgr.IsInRoleAsync(user, roleName));
+            IdentityResultAssert.IsFailure(await userMgr.AddToRolesAsync(user, new[] { roleName, roleName }), _errorDescriber.UserAlreadyInRole(roleName));
+            IdentityResultAssert.VerifyLogMessage(userMgr.Logger, $"User {await userMgr.GetUserIdAsync(user)} is already in role {roleName}.");
+        }
+
+        [ConditionalTheory]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task CanFindRoleByNameWithManager()
         {
             var roleMgr = CreateRoleManager();

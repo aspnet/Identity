@@ -1031,8 +1031,7 @@ namespace Microsoft.AspNet.Identity
                 throw new ArgumentNullException("user");
             }
 
-            var userRoles = await userRoleStore.GetRolesAsync(user, CancellationToken);
-            if (userRoles.Contains(role))
+            if (await userRoleStore.IsInRoleAsync(user, role, CancellationToken))
             {
                 return await UserAlreadyInRoleError(user, role);
             }
