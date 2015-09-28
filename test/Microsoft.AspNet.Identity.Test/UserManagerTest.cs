@@ -310,10 +310,10 @@ namespace Microsoft.AspNet.Identity.Test
             store.Setup(s => s.AddToRoleAsync(user, "A", CancellationToken.None))
                 .Returns(Task.FromResult(0))
                 .Verifiable();
-            store.Setup(s => s.IsInRoleAsync(user, "A", CancellationToken.None))
+            store.Setup(s => s.IsInRoleAsync(user, "B", CancellationToken.None))
                 .Returns(Task.FromResult(true))
                 .Verifiable();
-            var userManager = MockHelpers.TestUserManager<TestUser>(store.Object);
+            var userManager = MockHelpers.TestUserManager(store.Object);
 
             // Act
             var result = await userManager.AddToRolesAsync(user, roles);
