@@ -1061,7 +1061,7 @@ namespace Microsoft.AspNet.Identity
                 throw new ArgumentNullException("roles");
             }
 
-            foreach (var role in roles)
+            foreach (var role in roles.Distinct())
             {
                 if (await userRoleStore.IsInRoleAsync(user, role, CancellationToken))
                 {

@@ -1407,7 +1407,7 @@ namespace Microsoft.AspNet.Identity.Test
 
         [ConditionalTheory]
         [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
-        public async Task AddUserToRolesFailsWithDuplicates()
+        public async Task AddUserToRolesIgnoresDuplicates()
         {
             var context = CreateTestContext();
             var userMgr = CreateManager(context);
@@ -1418,8 +1418,8 @@ namespace Microsoft.AspNet.Identity.Test
             IdentityResultAssert.IsSuccess(await userMgr.CreateAsync(user));
             IdentityResultAssert.IsSuccess(await roleMgr.CreateAsync(role));
             Assert.False(await userMgr.IsInRoleAsync(user, roleName));
-            IdentityResultAssert.IsFailure(await userMgr.AddToRolesAsync(user, new[] { roleName, roleName }), _errorDescriber.UserAlreadyInRole(roleName));
-            IdentityResultAssert.VerifyLogMessage(userMgr.Logger, $"User {await userMgr.GetUserIdAsync(user)} is already in role {roleName}.");
+            IdentityResultAssert.IsSuccess(await userMgr.AddToRolesAsync(user, new[] { roleName, roleName }));
+            Assert.True(await userMgr.IsInRoleAsync(user, roleName));
         }
 
         [ConditionalTheory]

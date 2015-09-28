@@ -270,7 +270,7 @@ namespace Microsoft.AspNet.Identity.Test
             // Setup
             var store = new Mock<IUserRoleStore<TestUser>>();
             var user = new TestUser { UserName = "Foo" };
-            var roles = new string[] { "A", "B", "C" };
+            var roles = new string[] { "A", "B", "C", "C" };
             store.Setup(s => s.AddToRoleAsync(user, "A", CancellationToken.None))
                 .Returns(Task.FromResult(0))
                 .Verifiable();
@@ -280,6 +280,7 @@ namespace Microsoft.AspNet.Identity.Test
             store.Setup(s => s.AddToRoleAsync(user, "C", CancellationToken.None))
                 .Returns(Task.FromResult(0))
                 .Verifiable();
+
             store.Setup(s => s.UpdateAsync(user, CancellationToken.None)).ReturnsAsync(IdentityResult.Success).Verifiable();
             store.Setup(s => s.IsInRoleAsync(user, "A", CancellationToken.None))
                 .Returns(Task.FromResult(false))
@@ -298,6 +299,7 @@ namespace Microsoft.AspNet.Identity.Test
             // Assert
             Assert.True(result.Succeeded);
             store.VerifyAll();
+            store.Verify(s => s.AddToRoleAsync(user, "C", CancellationToken.None), Times.Once());
         }
 
         [Fact]
