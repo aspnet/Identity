@@ -294,4 +294,6 @@ intersphinx_mapping = {'https://docs.python.org/': None}
 
 # Autoapi ocnfiguration
 autoapi_type = 'dotnet'
-autoapi_dir = '../src'
+autoapi_dirs = [
+    '../src'
+]
