@@ -1,0 +1,3 @@
+sphinxcontrib-dotnetdomain
+sphinx-autoapi
+x
