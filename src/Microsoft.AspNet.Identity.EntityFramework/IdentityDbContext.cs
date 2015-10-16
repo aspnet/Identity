@@ -59,9 +59,9 @@ namespace Microsoft.AspNet.Identity.EntityFramework
                 b.Property(u => u.NormalizedUserName).HasMaxLength(256);
                 b.Property(u => u.Email).HasMaxLength(256);
                 b.Property(u => u.NormalizedEmail).HasMaxLength(256);
-                b.HasMany(u => u.Claims).WithOne().HasForeignKey(uc => uc.UserId).OnDelete(DeleteBehavior.Cascade);
-                b.HasMany(u => u.Logins).WithOne().HasForeignKey(ul => ul.UserId).OnDelete(DeleteBehavior.Cascade);
-                b.HasMany(u => u.Roles).WithOne().HasForeignKey(ur => ur.UserId).OnDelete(DeleteBehavior.Cascade);
+                b.HasMany(u => u.Claims).WithOne().HasForeignKey(uc => uc.UserId).IsRequired();
+                b.HasMany(u => u.Logins).WithOne().HasForeignKey(ul => ul.UserId).IsRequired();
+                b.HasMany(u => u.Roles).WithOne().HasForeignKey(ur => ur.UserId).IsRequired();
             });
 
             builder.Entity<TRole>(b =>
@@ -74,8 +74,8 @@ namespace Microsoft.AspNet.Identity.EntityFramework
                 b.Property(u => u.Name).HasMaxLength(256);
                 b.Property(u => u.NormalizedName).HasMaxLength(256);
 
-                b.HasMany(r => r.Users).WithOne().HasForeignKey(ur => ur.RoleId).OnDelete(DeleteBehavior.Cascade);
-                b.HasMany(r => r.Claims).WithOne().HasForeignKey(rc => rc.RoleId).OnDelete(DeleteBehavior.Cascade);
+                b.HasMany(r => r.Users).WithOne().HasForeignKey(ur => ur.RoleId).IsRequired();
+                b.HasMany(r => r.Claims).WithOne().HasForeignKey(rc => rc.RoleId).IsRequired();
             });
 
             builder.Entity<IdentityUserClaim<TKey>>(b =>
