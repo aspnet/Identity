@@ -19,7 +19,14 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
     }
 
-    public class IdentityUser<TKey> where TKey : IEquatable<TKey>
+    public class IdentityUser<TKey>  : IdentityUser<TKey, IdentityUserClaim<TKey>, IdentityUserRole<TKey>, IdentityUserLogin<TKey>>
+
+        where TKey : IEquatable<TKey>
+    {
+
+    }
+
+    public class IdentityUser<TKey, TClaim, TRole, TLogin> where TKey : IEquatable<TKey>
     {
         public IdentityUser() { }
 
@@ -92,17 +99,17 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         /// <summary>
         ///     Navigation property for users in the role
         /// </summary>
-        public virtual ICollection<IdentityUserRole<TKey>> Roles { get; } = new List<IdentityUserRole<TKey>>();
+        public virtual ICollection<TRole> Roles { get; } = new List<TRole>();
 
         /// <summary>
         ///     Navigation property for users claims
         /// </summary>
-        public virtual ICollection<IdentityUserClaim<TKey>> Claims { get; } = new List<IdentityUserClaim<TKey>>();
+        public virtual ICollection<TClaim> Claims { get; } = new List<TClaim>();
 
         /// <summary>
         ///     Navigation property for users logins
         /// </summary>
-        public virtual ICollection<IdentityUserLogin<TKey>> Logins { get; } = new List<IdentityUserLogin<TKey>>();
+        public virtual ICollection<TLogin> Logins { get; } = new List<TLogin>();
 
         /// <summary>
         /// Returns a friendly name

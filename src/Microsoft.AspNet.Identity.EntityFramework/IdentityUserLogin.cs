@@ -30,5 +30,15 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         ///     User Id for the user who owns this login
         /// </summary>
         public virtual TKey UserId { get; set; }
+
+        public virtual UserLoginInfo ToUserLogin()
+        {
+            return new UserLoginInfo(this.LoginProvider, this.ProviderKey, this.ProviderDisplayName);
+        }
+
+        public static implicit operator UserLoginInfo(IdentityUserLogin<TKey> item)
+        {
+            return item.ToUserLogin();
+        }
     }
 }
