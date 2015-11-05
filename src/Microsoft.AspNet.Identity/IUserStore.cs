@@ -80,7 +80,7 @@ namespace Microsoft.AspNet.Identity
         Task<IdentityResult> DeleteAsync(TUser user, CancellationToken cancellationToken);
 
         /// <summary>
-        /// Finds and returns a user, if any, who has the specified <paramref name="userId"/>.
+        /// Finds and returns a user, if any, who has the specified <paramref name="userId"/>, as an asynchronous operation.
         /// </summary>
         /// <param name="userId">The user ID to search for.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
@@ -90,7 +90,7 @@ namespace Microsoft.AspNet.Identity
         Task<TUser> FindByIdAsync(string userId, CancellationToken cancellationToken);
 
         /// <summary>
-        /// Finds and returns a user, if any, who has the specified normalized user name.
+        /// Finds and returns a user, if any, who has the specified normalized user name, as an asynchronous operation.
         /// </summary>
         /// <param name="normalizedUserName">The normalized user name to search for.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>

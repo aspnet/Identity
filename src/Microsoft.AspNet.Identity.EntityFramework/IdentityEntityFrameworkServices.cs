@@ -11,7 +11,7 @@ namespace Microsoft.AspNet.Identity
     /// <summary>
     /// Default services
     /// </summary>
-    public class IdentityEntityFrameworkServices
+    internal class IdentityEntityFrameworkServices
     {
         public static IServiceCollection GetDefaultServices(Type userType, Type roleType, Type contextType, Type keyType = null)
         {

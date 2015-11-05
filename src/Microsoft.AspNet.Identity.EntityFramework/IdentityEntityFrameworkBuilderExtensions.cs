@@ -10,6 +10,12 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class IdentityEntityFrameworkBuilderExtensions
     {
+        /// <summary>
+        /// Adds an Entity Framework implementation of identity information stores.
+        /// </summary>
+        /// <typeparam name="TContext">The Entity Framework database context to use.</typeparam>
+        /// <param name="builder">The <see cref="IdentityBuilder"/> instance this method extends.</param>
+        /// <returns>The <see cref="IdentityBuilder"/> instance this method extends.</returns>
         public static IdentityBuilder AddEntityFrameworkStores<TContext>(this IdentityBuilder builder)
             where TContext : DbContext
         {
@@ -17,6 +23,13 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder;
         }
 
+        /// <summary>
+        /// Adds an Entity Framework implementation of identity information stores.
+        /// </summary>
+        /// <typeparam name="TContext">The Entity Framework database context to use.</typeparam>
+        /// <typeparam name="TKey">The type of the primary key used for the users and roles.</typeparam>
+        /// <param name="builder">The <see cref="IdentityBuilder"/> instance this method extends.</param>
+        /// <returns>The <see cref="IdentityBuilder"/> instance this method extends.</returns>
         public static IdentityBuilder AddEntityFrameworkStores<TContext, TKey>(this IdentityBuilder builder)
             where TContext : DbContext
             where TKey : IEquatable<TKey>
