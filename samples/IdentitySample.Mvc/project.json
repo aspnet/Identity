@@ -7,6 +7,7 @@
     "dependencies": {
         "Microsoft.AspNet.Mvc": "6.0.0-*",
         "Microsoft.AspNet.Server.WebListener": "1.0.0-*",
+        "Microsoft.AspNet.DataProtection.Extensions": "1.0.0-*",
         "Microsoft.AspNet.Diagnostics": "1.0.0-*",
         "Microsoft.AspNet.Identity": "3.0.0-*",
         "Microsoft.AspNet.Identity.EntityFramework": "3.0.0-*",
