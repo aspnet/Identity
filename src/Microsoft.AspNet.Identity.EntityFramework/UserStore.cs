@@ -74,7 +74,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         /// Creates a new instance of <see cref="UserStore"/>.
         /// </summary>
         /// <param name="context">The context used to access the store.</param>
-        /// <param name="describer">The <see cref="IdentityErrorDescriber"/> to place store errors into.</param>
+        /// <param name="describer">The <see cref="IdentityErrorDescriber"/> used to describe store errors.</param>
         public UserStore(TContext context, IdentityErrorDescriber describer = null)
         {
             if (context == null)
@@ -114,7 +114,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        /// Gets the user identifier for the specified <paramref name="user"/>, as an asynchronous operation.
+        /// Gets the user identifier for the specified <paramref name="user"/>.
         /// </summary>
         /// <param name="user">The user whose identifier should be retrieved.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
@@ -131,7 +131,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        /// Gets the user name for the specified <paramref name="user"/>, as an asynchronous operation.
+        /// Gets the user name for the specified <paramref name="user"/>.
         /// </summary>
         /// <param name="user">The user whose name should be retrieved.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
@@ -148,7 +148,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        /// Sets the given <paramref name="userName" /> for the specified <paramref name="user"/>, as an asynchronous operation.
+        /// Sets the given <paramref name="userName" /> for the specified <paramref name="user"/>.
         /// </summary>
         /// <param name="user">The user whose name should be set.</param>
         /// <param name="userName">The user name to set.</param>
@@ -167,7 +167,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        /// Gets the normalized user name for the specified <paramref name="user"/>, as an asynchronous operation.
+        /// Gets the normalized user name for the specified <paramref name="user"/>.
         /// </summary>
         /// <param name="user">The user whose normalized name should be retrieved.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
@@ -184,7 +184,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        /// Sets the given normalized name for the specified <paramref name="user"/>, as an asynchronous operation.
+        /// Sets the given normalized name for the specified <paramref name="user"/>.
         /// </summary>
         /// <param name="user">The user whose name should be set.</param>
         /// <param name="normalizedName">The normalized name to set.</param>
@@ -203,7 +203,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        /// Creates the specified <paramref name="user"/> in the user store, as an asynchronous operation.
+        /// Creates the specified <paramref name="user"/> in the user store.
         /// </summary>
         /// <param name="user">The user to create.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
@@ -222,7 +222,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        /// Updates the specified <paramref name="user"/> in the user store, as an asynchronous operation.
+        /// Updates the specified <paramref name="user"/> in the user store.
         /// </summary>
         /// <param name="user">The user to update.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
@@ -251,7 +251,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        /// Deletes the specified <paramref name="user"/> from the user store, as an asynchronous operation.
+        /// Deletes the specified <paramref name="user"/> from the user store.
         /// </summary>
         /// <param name="user">The user to delete.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
@@ -278,7 +278,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        /// Finds and returns a user, if any, who has the specified <paramref name="userId"/>, as an asynchronous operation.
+        /// Finds and returns a user, if any, who has the specified <paramref name="userId"/>.
         /// </summary>
         /// <param name="userId">The user ID to search for.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
@@ -322,7 +322,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        /// Finds and returns a user, if any, who has the specified normalized user name, as an asynchronous operation.
+        /// Finds and returns a user, if any, who has the specified normalized user name.
         /// </summary>
         /// <param name="normalizedUserName">The normalized user name to search for.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
@@ -345,7 +345,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        /// Sets the password hash for a user, as an asynchronous operation.
+        /// Sets the password hash for a user.
         /// </summary>
         /// <param name="user">The user to set the password hash for.</param>
         /// <param name="passwordHash">The password hash to set.</param>
@@ -364,7 +364,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        /// Gets the password hash for a user, as an asynchronous operation.
+        /// Gets the password hash for a user.
         /// </summary>
         /// <param name="user">The user to retrieve the password hash for.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
@@ -381,7 +381,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        /// Returns a flag indicating if the specified user has a password, as an asynchronous operation.
+        /// Returns a flag indicating if the specified user has a password.
         /// </summary>
         /// <param name="user">The user to retrieve the password hash for.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
@@ -394,7 +394,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        /// Adds the given <paramref name="roleName"/> to the specified <paramref name="user"/>, as an asynchronous operation.
+        /// Adds the given <paramref name="roleName"/> to the specified <paramref name="user"/>.
         /// </summary>
         /// <param name="user">The user to add the role to.</param>
         /// <param name="roleName">The role to add.</param>
@@ -422,7 +422,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        /// Removes the given <paramref name="roleName"/> from the specified <paramref name="user"/>, as an asynchronous operation.
+        /// Removes the given <paramref name="roleName"/> from the specified <paramref name="user"/>.
         /// </summary>
         /// <param name="user">The user to remove the role from.</param>
         /// <param name="roleName">The role to remove.</param>
@@ -474,7 +474,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        /// Returns a flag indicating if the specified user is a member of the give <paramref name="roleName"/>, as an asynchronous operation.
+        /// Returns a flag indicating if the specified user is a member of the give <paramref name="roleName"/>.
         /// </summary>
         /// <param name="user">The user whose role membership should be checked.</param>
         /// <param name="roleName">The role to check membership of</param>
@@ -542,7 +542,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        /// Adds the <paramref name="claim"/> given to the specified <paramref name="user"/>, as an asynchronous operation.
+        /// Adds the <paramref name="claim"/> given to the specified <paramref name="user"/>.
         /// </summary>
         /// <param name="uuser">The user to add the claim to.</param>
         /// <param name="claim">The claim to add to the user.</param>
@@ -567,7 +567,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        /// Replaces the <paramref name="claim"/> on the specified <paramref name="user"/>, with the <paramref name="newClaim"/>, as an asynchronous operation.
+        /// Replaces the <paramref name="claim"/> on the specified <paramref name="user"/>, with the <paramref name="newClaim"/>.
         /// </summary>
         /// <param name="user">The role to replace the claim on.</param>
         /// <param name="claim">The claim replace.</param>
@@ -599,7 +599,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        /// Removes the <paramref name="claims"/> given from the specified <paramref name="user"/>, as an asynchronous operation.
+        /// Removes the <paramref name="claims"/> given from the specified <paramref name="user"/>.
         /// </summary>
         /// <param name="user">The user to remove the claims from.</param>
         /// <param name="claims">The claim to remove.</param>
@@ -627,7 +627,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        /// Adds the <paramref name=login"/> given to the specified <paramref name="user"/>, as an asynchronous operation.
+        /// Adds the <paramref name=login"/> given to the specified <paramref name="user"/>.
         /// </summary>
         /// <param name="user">The user to add the login to.</param>
         /// <param name="login">The login to add to the user.</param>
@@ -659,7 +659,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        /// Removes the <paramref name=login"/> given from the specified <paramref name="user"/>, as an asynchronous operation.
+        /// Removes the <paramref name=login"/> given from the specified <paramref name="user"/>.
         /// </summary>
         /// <param name="user">The user to remove the login from.</param>
         /// <param name="login">The login to remove from the user.</param>
@@ -683,7 +683,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        /// Retrieves the associated logins for the specified <param ref="user"/>, as an asynchronous operation.
+        /// Retrieves the associated logins for the specified <param ref="user"/>.
         /// </summary>
         /// <param name="user">The user whose associated logins to retrieve.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
@@ -704,7 +704,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        /// Retrieves the user associated with the specified login provider and login provider key, as an asynchronous operation..
+        /// Retrieves the user associated with the specified login provider and login provider key..
         /// </summary>
         /// <param name="loginProvider">The login provider who provided the <paramref name="providerKey"/>.</param>
         /// <param name="providerKey">The key provided by the <paramref name="loginProvider"/> to identify a user.</param>
@@ -728,7 +728,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
 
         /// <summary>
         /// Gets a flag indicating whether the email address for the specified <paramref name="user"/> has been verified, true if the email address is verified otherwise
-        /// false, as an asynchronous operation.
+        /// false.
         /// </summary>
         /// <param name="user">The user whose email confirmation status should be returned.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
@@ -748,7 +748,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        /// Sets the flag indicating whether the specified <paramref name="user"/>'s email address has been confirmed or not, as an asynchronous operation.
+        /// Sets the flag indicating whether the specified <paramref name="user"/>'s email address has been confirmed or not.
         /// </summary>
         /// <param name="user">The user whose email confirmation status should be set.</param>
         /// <param name="confirmed">A flag indicating if the email address has been confirmed, true if the address is confirmed otherwise false.</param>
@@ -767,7 +767,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        /// Sets the <paramref name="email"/> address for a <paramref name="user"/>, as an asynchronous operation.
+        /// Sets the <paramref name="email"/> address for a <paramref name="user"/>.
         /// </summary>
         /// <param name="user">The user whose email should be set.</param>
         /// <param name="email">The email to set.</param>
@@ -786,7 +786,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        /// Gets the email address for the specified <paramref name="user"/>, as an asynchronous operation.
+        /// Gets the email address for the specified <paramref name="user"/>.
         /// </summary>
         /// <param name="user">The user whose email should be returned.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
@@ -803,7 +803,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        /// Returns the normalized email for the specified <paramref name="user"/>, as an asynchronous operation.
+        /// Returns the normalized email for the specified <paramref name="user"/>.
         /// </summary>
         /// <param name="user">The user whose email address to retrieve.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
@@ -822,7 +822,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        /// Sets the normalized email for the specified <paramref name="user"/>, as an asynchronous operation.
+        /// Sets the normalized email for the specified <paramref name="user"/>.
         /// </summary>
         /// <param name="user">The user whose email address to set.</param>
         /// <param name="normalizedEmail">The normalized email to set for the specified <paramref name="user"/>.</param>
@@ -841,7 +841,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        /// Gets the user, if any, associated with the specified, normalized email address, as an asynchronous operation.
+        /// Gets the user, if any, associated with the specified, normalized email address.
         /// </summary>
         /// <param name="normalizedEmail">The normalized email address to return the user for.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
@@ -856,7 +856,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        /// Gets the last <see cref="DateTimeOffset"/> a user's last lockout expired, if any, as an asynchronous operation.
+        /// Gets the last <see cref="DateTimeOffset"/> a user's last lockout expired, if any.
         /// Any time in the past should be indicates a user is not locked out.
         /// </summary>
         /// <param name="user">The user whose lockout date should be retrieved.</param>
@@ -877,7 +877,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        /// Locks out a user until the specified end date has passed, as an asynchronous operation. Setting a end date in the past immediately unlocks a user.
+        /// Locks out a user until the specified end date has passed. Setting a end date in the past immediately unlocks a user.
         /// </summary>
         /// <param name="user">The user whose lockout date should be set.</param>
         /// <param name="lockoutEnd">The <see cref="DateTimeOffset"/> after which the <paramref name="user"/>'s lockout should end.</param>
@@ -896,7 +896,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        /// Records that a failed access has occurred, incrementing the failed access count, as an asynchronous operation.
+        /// Records that a failed access has occurred, incrementing the failed access count.
         /// </summary>
         /// <param name="user">The user whose cancellation count should be incremented.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
@@ -914,7 +914,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        /// Resets a user's failed access count, as an asynchronous operation.
+        /// Resets a user's failed access count.
         /// </summary>
         /// <param name="user">The user whose failed access count should be reset.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
@@ -933,7 +933,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        /// Retrieves the current failed access count for the specified <paramref name="user"/>, as an asynchronous operation..
+        /// Retrieves the current failed access count for the specified <paramref name="user"/>..
         /// </summary>
         /// <param name="user">The user whose failed access count should be retrieved.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
@@ -950,7 +950,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        /// Retrieves a flag indicating whether user lockout can enabled for the specified user, as an asynchronous operation.
+        /// Retrieves a flag indicating whether user lockout can enabled for the specified user.
         /// </summary>
         /// <param name="user">The user whose ability to be locked out should be returned.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
@@ -969,7 +969,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        /// Set the flag indicating if the specified <paramref name="user"/> can be locked out, as an asynchronous operation..
+        /// Set the flag indicating if the specified <paramref name="user"/> can be locked out..
         /// </summary>
         /// <param name="user">The user whose ability to be locked out should be set.</param>
         /// <param name="enabled">A flag indicating if lock out can be enabled for the specified <paramref name="user"/>.</param>
@@ -988,7 +988,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        /// Sets the telephone number for the specified <paramref name="user"/>, as an asynchronous operation.
+        /// Sets the telephone number for the specified <paramref name="user"/>.
         /// </summary>
         /// <param name="user">The user whose telephone number should be set.</param>
         /// <param name="phoneNumber">The telephone number to set.</param>
@@ -1007,7 +1007,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        /// Gets the telephone number, if any, for the specified <paramref name="user"/>, as an asynchronous operation.
+        /// Gets the telephone number, if any, for the specified <paramref name="user"/>.
         /// </summary>
         /// <param name="user">The user whose telephone number should be retrieved.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
@@ -1024,7 +1024,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        /// Gets a flag indicating whether the specified <paramref name="user"/>'s telephone number has been confirmed, as an asynchronous operation.
+        /// Gets a flag indicating whether the specified <paramref name="user"/>'s telephone number has been confirmed.
         /// </summary>
         /// <param name="user">The user to return a flag for, indicating whether their telephone number is confirmed.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
@@ -1044,7 +1044,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        /// Sets a flag indicating if the specified <paramref name="user"/>'s phone number has been confirmed, as an asynchronous operation..
+        /// Sets a flag indicating if the specified <paramref name="user"/>'s phone number has been confirmed..
         /// </summary>
         /// <param name="user">The user whose telephone number confirmation status should be set.</param>
         /// <param name="confirmed">A flag indicating whether the user's telephone number has been confirmed.</param>
@@ -1063,7 +1063,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        /// Sets the provided security <paramref name="stamp"/> for the specified <paramref name="user"/>, as an asynchronous operation.
+        /// Sets the provided security <paramref name="stamp"/> for the specified <paramref name="user"/>.
         /// </summary>
         /// <param name="user">The user whose security stamp should be set.</param>
         /// <param name="stamp">The security stamp to set.</param>
@@ -1082,7 +1082,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        /// Get the security stamp for the specified <paramref name="user" />, as an asynchronous operation.
+        /// Get the security stamp for the specified <paramref name="user" />.
         /// </summary>
         /// <param name="user">The user whose security stamp should be set.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>

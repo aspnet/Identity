@@ -12,7 +12,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
     public class IdentityRole : IdentityRole<string>
     {
         /// <summary>
-        /// Initializes a new instance of <see cref="IdentityRole{TKey}"/>.
+        /// Initializes a new instance of <see cref="IdentityRole"/>.
         /// </summary>
         /// <remarks>
         /// The Id property is initialized to from a new GUID string value.
@@ -23,7 +23,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        /// Initializes a new instance of <see cref="IdentityRole{TKey}"/>.
+        /// Initializes a new instance of <see cref="IdentityRole"/>.
         /// </summary>
         /// <param name="roleName">The role name.</param>
         /// <remarks>

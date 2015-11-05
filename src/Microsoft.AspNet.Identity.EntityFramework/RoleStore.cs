@@ -340,7 +340,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        /// Adds the <paramref name="claim"/> given to the specified <paramref name="role"/>, as an asynchronous operation.
+        /// Adds the <paramref name="claim"/> given to the specified <paramref name="role"/>.
         /// </summary>
         /// <param name="role">The role to add the claim to.</param>
         /// <param name="claim">The claim to add to the role.</param>
@@ -364,7 +364,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        /// Removes the <paramref name="claim"/> given from the specified <paramref name="role"/>, as an asynchronous operation.
+        /// Removes the <paramref name="claim"/> given from the specified <paramref name="role"/>.
         /// </summary>
         /// <param name="role">The role to remove the claim from.</param>
         /// <param name="claim">The claim to remove from the role.</param>
