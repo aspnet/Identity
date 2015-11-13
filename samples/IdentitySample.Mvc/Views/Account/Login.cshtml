@@ -74,7 +74,7 @@
                         <div id="socialLoginList">
                             <p>
                                 @{
-                                    var loginProviders = Context.Authentication.GetAuthenticationSchemes().Where(d => !string.IsNullOrEmpty(d.DisplayName) && d.DisplayName != "NTLM" && && d.DisplayName != "Negotiate" );
+                                    var loginProviders = Context.Authentication.GetAuthenticationSchemes().Where(d => !string.IsNullOrEmpty(d.DisplayName) && d.DisplayName != "NTLM" && d.DisplayName != "Negotiate" );
                                     foreach (AuthenticationDescription p in loginProviders) {
                                         <button type="submit" class="btn btn-default" id="@p.AuthenticationScheme" name="provider" value="@p.AuthenticationScheme" title="Log in using your @p.DisplayName account">@p.AuthenticationScheme</button>
                                     }

@@ -2,6 +2,7 @@ using System.IO;
 using IdentitySample.Models;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.DataProtection;
+using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Data.Entity;
 using Microsoft.Extensions.Configuration;
@@ -33,8 +34,6 @@ namespace IdentitySamples
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.ConfigureDataProtection(options => options.SetApplicationName("Interop"));
-
             services.AddEntityFramework()
                     .AddSqlServer()
                     .AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration["Data:IdentityConnection:ConnectionString"]));
@@ -44,10 +43,10 @@ namespace IdentitySamples
                 options.DefaultAdminPassword = Configuration["DefaultAdminPassword"];
             });
 
-            var dp = new DataProtectionProvider(new DirectoryInfo("C:\\Github\\Identity\\artifacts"));
             services.AddIdentity<ApplicationUser, IdentityRole>(
                 options => {
-                    options.Cookies.ApplicationCookie.DataProtectionProvider = dp;
+                    options.Cookies.ApplicationCookie.AuthenticationScheme = IdentityCookieOptions.ApplicationCookieAuthenticationType = "ApplicationCookie";
+                    options.Cookies.ApplicationCookie.DataProtectionProvider = new DataProtectionProvider(new DirectoryInfo("C:\\Github\\Identity\\artifacts"));
                     options.Cookies.ApplicationCookie.CookieName = "Interop";
                 })
                     .AddEntityFrameworkStores<ApplicationDbContext>()
