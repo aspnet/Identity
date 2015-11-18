@@ -76,7 +76,7 @@ namespace Microsoft.AspNet.Identity
         /// Gets or sets the scheme used to identify Two Factor authentication cookies for saving the Remember Me state.
         /// </summary>
         /// <value>The scheme used to identify remember me application authentication cookies.</value>        
-        public string TwoFactorRememberMeCookieAuthenticationScheme { get; set; } = typeof(IdentityCookieOptions).Namespace + ".TwoFactorRemeberMe";
+        public string TwoFactorRememberMeCookieAuthenticationScheme { get; set; } = typeof(IdentityCookieOptions).Namespace + ".TwoFactorRememberMe";
 
         /// <summary>
         /// Gets or sets the authentication type used when constructing an <see cref="ClaimsIdentity"/> from an application cookie.
