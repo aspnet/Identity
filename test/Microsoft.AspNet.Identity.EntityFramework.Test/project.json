@@ -4,17 +4,17 @@
     "keyFile": "../../tools/Key.snk"
   },
   "dependencies": {
-    "EntityFramework.InMemory": "7.0.0-*",
-    "EntityFramework.MicrosoftSqlServer": "7.0.0-*",
-    "Microsoft.AspNet.Hosting": "1.0.0-*",
-    "Microsoft.AspNet.Http": "1.0.0-*",
-    "Microsoft.AspNet.Identity": "3.0.0-*",
-    "Microsoft.AspNet.Identity.EntityFramework": "3.0.0-*",
-    "Microsoft.AspNet.DataProtection": "1.0.0-*",
-    "Microsoft.AspNet.TestHost": "1.0.0-*",
-    "Microsoft.AspNet.Testing": "1.0.0-*",
-    "Microsoft.Extensions.OptionsModel": "1.0.0-*",
-    "xunit.runner.aspnet": "2.0.0-aspnet-*"
+    "EntityFramework.InMemory": "7.0.0-rc1-final",
+    "EntityFramework.MicrosoftSqlServer": "7.0.0-rc1-final",
+    "Microsoft.AspNet.Hosting": "1.0.0-rc1-final",
+    "Microsoft.AspNet.Http": "1.0.0-rc1-final",
+    "Microsoft.AspNet.Identity": "3.0.0-rc1-final",
+    "Microsoft.AspNet.Identity.EntityFramework": "3.0.0-rc1-final",
+    "Microsoft.AspNet.DataProtection": "1.0.0-rc1-final",
+    "Microsoft.AspNet.TestHost": "1.0.0-rc1-final",
+    "Microsoft.AspNet.Testing": "1.0.0-rc1-final",
+    "Microsoft.Extensions.OptionsModel": "1.0.0-rc1-final",
+    "xunit.runner.aspnet": "2.0.0-aspnet-rc1-final"
   },
   "compile": "..\\Shared\\*.cs",
   "frameworks": {
