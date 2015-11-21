@@ -10,21 +10,34 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Data.Entity;
-using Microsoft.Data.Entity.Update;
 
 namespace Microsoft.AspNet.Identity.EntityFramework
 {
+    /// <summary>
+    /// Creates a new instance of a persistence store for users, using the default implementation
+    /// of <see cref="IdentityUser{TKey}"/> with a string as a primary key.
+    /// </summary>
     public class UserStore : UserStore<IdentityUser<string>>
     {
         public UserStore(DbContext context, IdentityErrorDescriber describer = null) : base(context, describer) { }
     }
 
+    /// <summary>
+    /// Creates a new instance of a persistence store for the specified user type.
+    /// </summary>
+    /// <typeparam name="TUser">The type representing a user.</typeparam>
     public class UserStore<TUser> : UserStore<TUser, IdentityRole, DbContext>
         where TUser : IdentityUser<string>, new()
     {
         public UserStore(DbContext context, IdentityErrorDescriber describer = null) : base(context, describer) { }
     }
 
+    /// <summary>
+    /// Represents a new instance of a persistence store for the specified user and role types.
+    /// </summary>
+    /// <typeparam name="TUser">The type representing a user.</typeparam>
+    /// <typeparam name="TRole">The type representing a role.</typeparam>
+    /// <typeparam name="TContext">The type of the data context class used to access the store.</typeparam>
     public class UserStore<TUser, TRole, TContext> : UserStore<TUser, TRole, TContext, string>
         where TUser : IdentityUser<string>, new()
         where TRole : IdentityRole<string>, new()
@@ -33,6 +46,13 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         public UserStore(TContext context, IdentityErrorDescriber describer = null) : base(context, describer) { }
     }
 
+    /// <summary>
+    /// Represents a new instance of a persistence store for the specified user and role types.
+    /// </summary>
+    /// <typeparam name="TUser">The type representing a user.</typeparam>
+    /// <typeparam name="TRole">The type representing a role.</typeparam>
+    /// <typeparam name="TContext">The type of the data context class used to access the store.</typeparam>
+    /// <typeparam name="TKey">The type of the primary key for a role.</typeparam>
     public class UserStore<TUser, TRole, TContext, TKey> : UserStore<TUser, TRole, TContext, TKey, IdentityUserClaim<TKey>, IdentityUserRole<TKey>, IdentityUserLogin<TKey>>
         where TUser : IdentityUser<TKey>
         where TRole : IdentityRole<TKey>
@@ -82,6 +102,16 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
     }
 
+    /// <summary>
+    /// Represents a new instance of a persistence store for the specified user and role types.
+    /// </summary>
+    /// <typeparam name="TUser">The type representing a user.</typeparam>
+    /// <typeparam name="TRole">The type representing a role.</typeparam>
+    /// <typeparam name="TContext">The type of the data context class used to access the store.</typeparam>
+    /// <typeparam name="TKey">The type of the primary key for a role.</typeparam>
+    /// <typeparam name="TUserClaim">The type representing a claim.</typeparam>
+    /// <typeparam name="TUserRole">The type representing a user role.</typeparam>
+    /// <typeparam name="TUserLogin">The type representing a user external login.</typeparam>
     public abstract class UserStore<TUser, TRole, TContext, TKey, TUserClaim, TUserRole, TUserLogin> :
         IUserLoginStore<TUser>,
         IUserRoleStore<TUser>,
@@ -102,6 +132,11 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         where TUserLogin : IdentityUserLogin<TKey>
     {
 
+        /// <summary>
+        /// Creates a new instance of <see cref="UserStore"/>.
+        /// </summary>
+        /// <param name="context">The context used to access the store.</param>
+        /// <param name="describer">The <see cref="IdentityErrorDescriber"/> used to describe store errors.</param>
         public UserStore(TContext context, IdentityErrorDescriber describer = null)
         {
             if (context == null)
@@ -114,23 +149,38 @@ namespace Microsoft.AspNet.Identity.EntityFramework
 
         private bool _disposed;
 
+        /// <summary>
+        /// Gets the database context for this store.
+        /// </summary>
         public TContext Context { get; private set; }
 
         /// <summary>
-        ///     Used to generate public API error messages
+        /// Gets or sets the <see cref="IdentityErrorDescriber"/> for any error that occurred with the current operation.
         /// </summary>
         public IdentityErrorDescriber ErrorDescriber { get; set; }
 
         /// <summary>
-        ///     If true will call SaveChanges after CreateAsync/UpdateAsync/DeleteAsync
+        /// Gets or sets a flag indicating if changes should be persisted after CreateAsync, UpdateAsync and DeleteAsync are called.
         /// </summary>
+        /// <value>
+        /// True if changes should be automatically persisted, otherwise false.
+        /// </value>
         public bool AutoSaveChanges { get; set; } = true;
 
+        /// <summary>Saves the current store.</summary>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
         protected Task SaveChanges(CancellationToken cancellationToken)
         {
             return AutoSaveChanges ? Context.SaveChangesAsync(cancellationToken) : Task.FromResult(0);
         }
 
+        /// <summary>
+        /// Gets the user identifier for the specified <paramref name="user"/>.
+        /// </summary>
+        /// <param name="user">The user whose identifier should be retrieved.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the identifier for the specified <paramref name="user"/>.</returns>
         public virtual Task<string> GetUserIdAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -142,6 +192,12 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             return Task.FromResult(ConvertIdToString(user.Id));
         }
 
+        /// <summary>
+        /// Gets the user name for the specified <paramref name="user"/>.
+        /// </summary>
+        /// <param name="user">The user whose name should be retrieved.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the name for the specified <paramref name="user"/>.</returns>
         public virtual Task<string> GetUserNameAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -153,6 +209,13 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             return Task.FromResult(user.UserName);
         }
 
+        /// <summary>
+        /// Sets the given <paramref name="userName" /> for the specified <paramref name="user"/>.
+        /// </summary>
+        /// <param name="user">The user whose name should be set.</param>
+        /// <param name="userName">The user name to set.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
         public virtual Task SetUserNameAsync(TUser user, string userName, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -165,6 +228,12 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             return Task.FromResult(0);
         }
 
+        /// <summary>
+        /// Gets the normalized user name for the specified <paramref name="user"/>.
+        /// </summary>
+        /// <param name="user">The user whose normalized name should be retrieved.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the normalized user name for the specified <paramref name="user"/>.</returns>
         public virtual Task<string> GetNormalizedUserNameAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -176,6 +245,13 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             return Task.FromResult(user.NormalizedUserName);
         }
 
+        /// <summary>
+        /// Sets the given normalized name for the specified <paramref name="user"/>.
+        /// </summary>
+        /// <param name="user">The user whose name should be set.</param>
+        /// <param name="normalizedName">The normalized name to set.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
         public virtual Task SetNormalizedUserNameAsync(TUser user, string normalizedName, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -188,6 +264,12 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             return Task.FromResult(0);
         }
 
+        /// <summary>
+        /// Creates the specified <paramref name="user"/> in the user store.
+        /// </summary>
+        /// <param name="user">The user to create.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="IdentityResult"/> of the creation operation.</returns>
         public async virtual Task<IdentityResult> CreateAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -201,6 +283,12 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             return IdentityResult.Success;
         }
 
+        /// <summary>
+        /// Updates the specified <paramref name="user"/> in the user store.
+        /// </summary>
+        /// <param name="user">The user to update.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="IdentityResult"/> of the update operation.</returns>
         public async virtual Task<IdentityResult> UpdateAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -224,6 +312,12 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             return IdentityResult.Success;
         }
 
+        /// <summary>
+        /// Deletes the specified <paramref name="user"/> from the user store.
+        /// </summary>
+        /// <param name="user">The user to delete.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="IdentityResult"/> of the update operation.</returns>
         public async virtual Task<IdentityResult> DeleteAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -246,11 +340,13 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        ///     Find a user by id
+        /// Finds and returns a user, if any, who has the specified <paramref name="userId"/>.
         /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <param name="userId">The user ID to search for.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>
+        /// The <see cref="Task"/> that represents the asynchronous operation, containing the user matching the specified <paramref name="userID"/> if it exists.
+        /// </returns>
         public virtual Task<TUser> FindByIdAsync(string userId, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -259,6 +355,11 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             return Users.FirstOrDefaultAsync(u => u.Id.Equals(id), cancellationToken);
         }
 
+        /// <summary>
+        /// Converts the provided <paramref name="id"/> to a strongly typed key object.
+        /// </summary>
+        /// <param name="id">The id to convert.</param>
+        /// <returns>An instance of <typeparamref name="TKey"/> representing the provided <paramref name="id"/>.</returns>
         public virtual TKey ConvertIdFromString(string id)
         {
             if (id == null)
@@ -268,6 +369,11 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             return (TKey)TypeDescriptor.GetConverter(typeof(TKey)).ConvertFromInvariantString(id);
         }
 
+        /// <summary>
+        /// Converts the provided <paramref name="id"/> to its string representation.
+        /// </summary>
+        /// <param name="id">The id to convert.</param>
+        /// <returns>An <see cref="string"/> representation of the provided <paramref name="id"/>.</returns>
         public virtual string ConvertIdToString(TKey id)
         {
             if (id.Equals(default(TKey)))
@@ -278,11 +384,13 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        ///     Find a user by normalized name
+        /// Finds and returns a user, if any, who has the specified normalized user name.
         /// </summary>
-        /// <param name="userName"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <param name="normalizedUserName">The normalized user name to search for.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>
+        /// The <see cref="Task"/> that represents the asynchronous operation, containing the user matching the specified <paramref name="userID"/> if it exists.
+        /// </returns>
         public virtual Task<TUser> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -290,18 +398,21 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             return Users.FirstOrDefaultAsync(u => u.NormalizedUserName == normalizedUserName, cancellationToken);
         }
 
+        /// <summary>
+        /// A navigation property for the users the store contains.
+        /// </summary>
         public virtual IQueryable<TUser> Users
         {
             get { return Context.Set<TUser>(); }
         }
 
         /// <summary>
-        ///     Set the password hash for a user
+        /// Sets the password hash for a user.
         /// </summary>
-        /// <param name="user"></param>
-        /// <param name="passwordHash"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <param name="user">The user to set the password hash for.</param>
+        /// <param name="passwordHash">The password hash to set.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
         public virtual Task SetPasswordHashAsync(TUser user, string passwordHash, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -315,11 +426,11 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        ///     Get the password hash for a user
+        /// Gets the password hash for a user.
         /// </summary>
-        /// <param name="user"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <param name="user">The user to retrieve the password hash for.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>A <see cref="Task{TResult}"/> that contains the password hash for the user.</returns>
         public virtual Task<string> GetPasswordHashAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -332,11 +443,12 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        ///     Returns true if the user has a password set
+        /// Returns a flag indicating if the specified user has a password.
         /// </summary>
-        /// <param name="user"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <param name="user">The user to retrieve the password hash for.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>A <see cref="Task{TResult}"/> containing a flag indicating if the specified user has a password. If the 
+        /// user has a password the returned value with be true, otherwise it will be false.</returns>
         public virtual Task<bool> HasPasswordAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -347,12 +459,12 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         protected abstract bool OnMatchUserRole(TUser user, TUserRole r, TRole roleEntity);
 
         /// <summary>
-        ///     Add a user to a role
+        /// Adds the given <paramref name="roleName"/> to the specified <paramref name="user"/>.
         /// </summary>
-        /// <param name="user"></param>
-        /// <param name="roleName"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <param name="user">The user to add the role to.</param>
+        /// <param name="roleName">The role to add.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
         public async virtual Task AddToRoleAsync(TUser user, string roleName, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -361,7 +473,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             {
                 throw new ArgumentNullException(nameof(user));
             }
-            if (String.IsNullOrWhiteSpace(roleName))
+            if (string.IsNullOrWhiteSpace(roleName))
             {
                 throw new ArgumentException(Resources.ValueCannotBeNullOrEmpty, nameof(roleName));
             }
@@ -375,12 +487,12 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        ///     Remove a user from a role
+        /// Removes the given <paramref name="roleName"/> from the specified <paramref name="user"/>.
         /// </summary>
-        /// <param name="user"></param>
-        /// <param name="roleName"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <param name="user">The user to remove the role from.</param>
+        /// <param name="roleName">The role to remove.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
         public async virtual Task RemoveFromRoleAsync(TUser user, string roleName, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -389,7 +501,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             {
                 throw new ArgumentNullException(nameof(user));
             }
-            if (String.IsNullOrWhiteSpace(roleName))
+            if (string.IsNullOrWhiteSpace(roleName))
             {
                 throw new ArgumentException(Resources.ValueCannotBeNullOrEmpty, nameof(roleName));
             }
@@ -406,11 +518,11 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        ///     Get the names of the roles a user is a member of
+        /// Retrieves the roles the specified <paramref name="user"/> is a member of.
         /// </summary>
-        /// <param name="user"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <param name="user">The user whose roles should be retrieved.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>A <see cref="Task{TResult}"/> that contains the roles the user is a member of.</returns>
         public virtual async Task<IList<string>> GetRolesAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -428,12 +540,13 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        ///     Returns true if the user is in the named role
+        /// Returns a flag indicating if the specified user is a member of the give <paramref name="roleName"/>.
         /// </summary>
-        /// <param name="user"></param>
-        /// <param name="roleName"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <param name="user">The user whose role membership should be checked.</param>
+        /// <param name="roleName">The role to check membership of</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>A <see cref="Task{TResult}"/> containing a flag indicating if the specified user is a member of the given group. If the 
+        /// user is a member of the group the returned value with be true, otherwise it will be false.</returns>
         public virtual async Task<bool> IsInRoleAsync(TUser user, string roleName, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -466,7 +579,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        ///     Dispose the store
+        /// Dispose the store
         /// </summary>
         public void Dispose()
         {
@@ -478,6 +591,12 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         protected DbSet<TUserRole> UserRoles { get { return Context.Set<TUserRole>(); } }
         protected DbSet<TUserLogin> UserLogins { get { return Context.Set<TUserLogin>(); } }
 
+        /// <summary>
+        /// Get the claims associated with the specified <paramref name="user"/> as an asynchronous operation.
+        /// </summary>
+        /// <param name="user">The user whose claims should be retrieved.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>A <see cref="Task{TResult}"/> that contains the claims granted to a user.</returns>
         public async virtual Task<IList<Claim>> GetClaimsAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             ThrowIfDisposed();
@@ -492,6 +611,13 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         protected abstract TUserClaim OnCreateUserClaim(TUser user, Claim claim);
         protected abstract bool OnMatchUserClaim(TUser user, TUserClaim userClaim, Claim claim);
 
+        /// <summary>
+        /// Adds the <paramref name="claim"/> given to the specified <paramref name="user"/>.
+        /// </summary>
+        /// <param name="uuser">The user to add the claim to.</param>
+        /// <param name="claim">The claim to add to the user.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
         public virtual Task AddClaimsAsync(TUser user, IEnumerable<Claim> claims, CancellationToken cancellationToken = default(CancellationToken))
         {
             ThrowIfDisposed();
@@ -511,6 +637,14 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             return Task.FromResult(false);
         }
 
+        /// <summary>
+        /// Replaces the <paramref name="claim"/> on the specified <paramref name="user"/>, with the <paramref name="newClaim"/>.
+        /// </summary>
+        /// <param name="user">The role to replace the claim on.</param>
+        /// <param name="claim">The claim replace.</param>
+        /// <param name="newClaim">The new claim replacing the <paramref name="claim"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
         public async virtual Task ReplaceClaimAsync(TUser user, Claim claim, Claim newClaim, CancellationToken cancellationToken = default(CancellationToken))
         {
             ThrowIfDisposed();
@@ -535,6 +669,13 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             }
         }
 
+        /// <summary>
+        /// Removes the <paramref name="claims"/> given from the specified <paramref name="user"/>.
+        /// </summary>
+        /// <param name="user">The user to remove the claims from.</param>
+        /// <param name="claims">The claim to remove.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
         public async virtual Task RemoveClaimsAsync(TUser user, IEnumerable<Claim> claims, CancellationToken cancellationToken = default(CancellationToken))
         {
             ThrowIfDisposed();
@@ -559,6 +700,13 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         protected abstract TUserLogin OnCreateUserLogin(TUser user, UserLoginInfo login);
         protected abstract bool OnMatchUserLogin(TUser user, TUserLogin userLogin, UserLoginInfo login);
 
+        /// <summary>
+        /// Adds the <paramref name=login"/> given to the specified <paramref name="user"/>.
+        /// </summary>
+        /// <param name="user">The user to add the login to.</param>
+        /// <param name="login">The login to add to the user.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
         public virtual Task AddLoginAsync(TUser user, UserLoginInfo login,
             CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -585,6 +733,13 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             return Task.FromResult(false);
         }
 
+        /// <summary>
+        /// Removes the <paramref name=login"/> given from the specified <paramref name="user"/>.
+        /// </summary>
+        /// <param name="user">The user to remove the login from.</param>
+        /// <param name="login">The login to remove from the user.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
         public virtual async Task RemoveLoginAsync(TUser user, string loginProvider, string providerKey,
             CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -602,6 +757,14 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             }
         }
 
+        /// <summary>
+        /// Retrieves the associated logins for the specified <param ref="user"/>.
+        /// </summary>
+        /// <param name="user">The user whose associated logins to retrieve.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>
+        /// The <see cref="Task"/> for the asynchronous operation, containing a list of <see cref="UserLoginInfo"/> for the specified <paramref name="user"/>, if any.
+        /// </returns>
         public async virtual Task<IList<UserLoginInfo>> GetLoginsAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -614,6 +777,15 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             return await UserLogins.Where(l => l.UserId.Equals(userId)).Cast<UserLoginInfo>().ToListAsync(cancellationToken);
         }
 
+        /// <summary>
+        /// Retrieves the user associated with the specified login provider and login provider key..
+        /// </summary>
+        /// <param name="loginProvider">The login provider who provided the <paramref name="providerKey"/>.</param>
+        /// <param name="providerKey">The key provided by the <paramref name="loginProvider"/> to identify a user.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>
+        /// The <see cref="Task"/> for the asynchronous operation, containing the user, if any which matched the specified login provider and key.
+        /// </returns>
         public async virtual Task<TUser> FindByLoginAsync(string loginProvider, string providerKey,
             CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -629,11 +801,15 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        ///     Returns whether the user email is confirmed
+        /// Gets a flag indicating whether the email address for the specified <paramref name="user"/> has been verified, true if the email address is verified otherwise
+        /// false.
         /// </summary>
-        /// <param name="user"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <param name="user">The user whose email confirmation status should be returned.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>
+        /// The task object containing the results of the asynchronous operation, a flag indicating whether the email address for the specified <paramref name="user"/>
+        /// has been confirmed or not.
+        /// </returns>
         public virtual Task<bool> GetEmailConfirmedAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -646,12 +822,12 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        ///     Set IsConfirmed on the user
+        /// Sets the flag indicating whether the specified <paramref name="user"/>'s email address has been confirmed or not.
         /// </summary>
-        /// <param name="user"></param>
-        /// <param name="confirmed"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <param name="user">The user whose email confirmation status should be set.</param>
+        /// <param name="confirmed">A flag indicating if the email address has been confirmed, true if the address is confirmed otherwise false.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>The task object representing the asynchronous operation.</returns>
         public virtual Task SetEmailConfirmedAsync(TUser user, bool confirmed, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -665,12 +841,12 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        ///     Set the user email
+        /// Sets the <paramref name="email"/> address for a <paramref name="user"/>.
         /// </summary>
-        /// <param name="user"></param>
-        /// <param name="email"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <param name="user">The user whose email should be set.</param>
+        /// <param name="email">The email to set.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>The task object representing the asynchronous operation.</returns>
         public virtual Task SetEmailAsync(TUser user, string email, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -684,11 +860,11 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        ///     Get the user's email
+        /// Gets the email address for the specified <paramref name="user"/>.
         /// </summary>
-        /// <param name="user"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <param name="user">The user whose email should be returned.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>The task object containing the results of the asynchronous operation, the email address for the specified <paramref name="user"/>.</returns>
         public virtual Task<string> GetEmailAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -700,6 +876,14 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             return Task.FromResult(user.Email);
         }
 
+        /// <summary>
+        /// Returns the normalized email for the specified <paramref name="user"/>.
+        /// </summary>
+        /// <param name="user">The user whose email address to retrieve.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>
+        /// The task object containing the results of the asynchronous lookup operation, the normalized email address if any associated with the specified user.
+        /// </returns>
         public virtual Task<string> GetNormalizedEmailAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -711,6 +895,13 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             return Task.FromResult(user.NormalizedEmail);
         }
 
+        /// <summary>
+        /// Sets the normalized email for the specified <paramref name="user"/>.
+        /// </summary>
+        /// <param name="user">The user whose email address to set.</param>
+        /// <param name="normalizedEmail">The normalized email to set for the specified <paramref name="user"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>The task object representing the asynchronous operation.</returns>
         public virtual Task SetNormalizedEmailAsync(TUser user, string normalizedEmail, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -724,11 +915,13 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        ///     Find an user by email
+        /// Gets the user, if any, associated with the specified, normalized email address.
         /// </summary>
-        /// <param name="email"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <param name="normalizedEmail">The normalized email address to return the user for.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>
+        /// The task object containing the results of the asynchronous lookup operation, the user if any associated with the specified normalized email address.
+        /// </returns>
         public virtual Task<TUser> FindByEmailAsync(string normalizedEmail, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -737,12 +930,15 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        ///     Returns the DateTimeOffset that represents the end of a user's lockout, any time in the past should be considered
-        ///     not locked out.
+        /// Gets the last <see cref="DateTimeOffset"/> a user's last lockout expired, if any.
+        /// Any time in the past should be indicates a user is not locked out.
         /// </summary>
-        /// <param name="user"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <param name="user">The user whose lockout date should be retrieved.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>
+        /// A <see cref="Task{TResult}"/> that represents the result of the asynchronous query, a <see cref="DateTimeOffset"/> containing the last time
+        /// a user's lockout expired, if any.
+        /// </returns>
         public virtual Task<DateTimeOffset?> GetLockoutEndDateAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -755,12 +951,12 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        ///     Locks a user out until the specified end date (set to a past date, to unlock a user)
+        /// Locks out a user until the specified end date has passed. Setting a end date in the past immediately unlocks a user.
         /// </summary>
-        /// <param name="user"></param>
-        /// <param name="lockoutEnd"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <param name="user">The user whose lockout date should be set.</param>
+        /// <param name="lockoutEnd">The <see cref="DateTimeOffset"/> after which the <paramref name="user"/>'s lockout should end.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
         public virtual Task SetLockoutEndDateAsync(TUser user, DateTimeOffset? lockoutEnd, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -774,11 +970,11 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        ///     Used to record when an attempt to access the user has failed
+        /// Records that a failed access has occurred, incrementing the failed access count.
         /// </summary>
-        /// <param name="user"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <param name="user">The user whose cancellation count should be incremented.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the incremented failed access count.</returns>
         public virtual Task<int> IncrementAccessFailedCountAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -792,11 +988,12 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        ///     Used to reset the account access count, typically after the account is successfully accessed
+        /// Resets a user's failed access count.
         /// </summary>
-        /// <param name="user"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <param name="user">The user whose failed access count should be reset.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
+        /// <remarks>This is typically called after the account is successfully accessed.</remarks>
         public virtual Task ResetAccessFailedCountAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -810,12 +1007,11 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        ///     Returns the current number of failed access attempts.  This number usually will be reset whenever the password is
-        ///     verified or the account is locked out.
+        /// Retrieves the current failed access count for the specified <paramref name="user"/>..
         /// </summary>
-        /// <param name="user"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <param name="user">The user whose failed access count should be retrieved.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the failed access count.</returns>
         public virtual Task<int> GetAccessFailedCountAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -828,11 +1024,13 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        ///     Returns whether the user can be locked out.
+        /// Retrieves a flag indicating whether user lockout can enabled for the specified user.
         /// </summary>
-        /// <param name="user"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <param name="user">The user whose ability to be locked out should be returned.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>
+        /// The <see cref="Task"/> that represents the asynchronous operation, true if a user can be locked out, otherwise false.
+        /// </returns>
         public virtual Task<bool> GetLockoutEnabledAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -845,12 +1043,12 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        ///     Sets whether the user can be locked out.
+        /// Set the flag indicating if the specified <paramref name="user"/> can be locked out..
         /// </summary>
-        /// <param name="user"></param>
-        /// <param name="enabled"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <param name="user">The user whose ability to be locked out should be set.</param>
+        /// <param name="enabled">A flag indicating if lock out can be enabled for the specified <paramref name="user"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
         public virtual Task SetLockoutEnabledAsync(TUser user, bool enabled, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -864,12 +1062,12 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        ///     Set the user's phone number
+        /// Sets the telephone number for the specified <paramref name="user"/>.
         /// </summary>
-        /// <param name="user"></param>
-        /// <param name="phoneNumber"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <param name="user">The user whose telephone number should be set.</param>
+        /// <param name="phoneNumber">The telephone number to set.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
         public virtual Task SetPhoneNumberAsync(TUser user, string phoneNumber, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -883,11 +1081,11 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        ///     Get a user's phone number
+        /// Gets the telephone number, if any, for the specified <paramref name="user"/>.
         /// </summary>
-        /// <param name="user"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <param name="user">The user whose telephone number should be retrieved.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the user's telephone number, if any.</returns>
         public virtual Task<string> GetPhoneNumberAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -900,11 +1098,14 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        ///     Returns whether the user phoneNumber is confirmed
+        /// Gets a flag indicating whether the specified <paramref name="user"/>'s telephone number has been confirmed.
         /// </summary>
-        /// <param name="user"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <param name="user">The user to return a flag for, indicating whether their telephone number is confirmed.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>
+        /// The <see cref="Task"/> that represents the asynchronous operation, returning true if the specified <paramref name="user"/> has a confirmed
+        /// telephone number otherwise false.
+        /// </returns>
         public virtual Task<bool> GetPhoneNumberConfirmedAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -917,12 +1118,12 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        ///     Set PhoneNumberConfirmed on the user
+        /// Sets a flag indicating if the specified <paramref name="user"/>'s phone number has been confirmed..
         /// </summary>
-        /// <param name="user"></param>
-        /// <param name="confirmed"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <param name="user">The user whose telephone number confirmation status should be set.</param>
+        /// <param name="confirmed">A flag indicating whether the user's telephone number has been confirmed.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
         public virtual Task SetPhoneNumberConfirmedAsync(TUser user, bool confirmed, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -936,12 +1137,12 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        ///     Set the security stamp for the user
+        /// Sets the provided security <paramref name="stamp"/> for the specified <paramref name="user"/>.
         /// </summary>
-        /// <param name="user"></param>
-        /// <param name="stamp"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <param name="user">The user whose security stamp should be set.</param>
+        /// <param name="stamp">The security stamp to set.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
         public virtual Task SetSecurityStampAsync(TUser user, string stamp, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -955,11 +1156,11 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        ///     Get the security stamp for a user
+        /// Get the security stamp for the specified <paramref name="user" />.
         /// </summary>
-        /// <param name="user"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <param name="user">The user whose security stamp should be set.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the security stamp for the specified <paramref name="user"/>.</returns>
         public virtual Task<string> GetSecurityStampAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -972,12 +1173,13 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        ///     Set whether two factor authentication is enabled for the user
+        /// Sets a flag indicating whether the specified <paramref name="user "/>has two factor authentication enabled or not,
+        /// as an asynchronous operation.
         /// </summary>
-        /// <param name="user"></param>
-        /// <param name="enabled"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <param name="user">The user whose two factor authentication enabled status should be set.</param>
+        /// <param name="enabled">A flag indicating whether the specified <paramref name="user"/> has two factor authentication enabled.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
         public virtual Task SetTwoFactorEnabledAsync(TUser user, bool enabled, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -991,11 +1193,15 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        ///     Gets whether two factor authentication is enabled for the user
+        /// Returns a flag indicating whether the specified <paramref name="user "/>has two factor authentication enabled or not,
+        /// as an asynchronous operation.
         /// </summary>
-        /// <param name="user"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <param name="user">The user whose two factor authentication enabled status should be set.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>
+        /// The <see cref="Task"/> that represents the asynchronous operation, containing a flag indicating whether the specified 
+        /// <paramref name="user "/>has two factor authentication enabled or not.
+        /// </returns>
         public virtual Task<bool> GetTwoFactorEnabledAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -1008,11 +1214,13 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        ///     Get all users with given claim
+        /// Retrieves all users with the specified claim.
         /// </summary>
-        /// <param name="claim"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <param name="claim">The claim whose users should be retrieved.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>
+        /// The <see cref="Task"/> contains a list of users, if any, that contain the specified claim. 
+        /// </returns>
         public async virtual Task<IList<TUser>> GetUsersForClaimAsync(Claim claim, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -1032,11 +1240,13 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
-        ///     Get all users in given role
+        /// Retrieves all users in the specified role.
         /// </summary>
-        /// <param name="roleName"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <param name="roleName">The role whose users should be retrieved.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>
+        /// The <see cref="Task"/> contains a list of users, if any, that are in the specified role. 
+        /// </returns>
         public async virtual Task<IList<TUser>> GetUsersInRoleAsync(string roleName, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
