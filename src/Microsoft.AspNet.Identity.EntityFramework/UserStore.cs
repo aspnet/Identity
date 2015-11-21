@@ -10,7 +10,6 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Data.Entity;
-using System.Linq.Expressions;
 
 namespace Microsoft.AspNet.Identity.EntityFramework
 {
