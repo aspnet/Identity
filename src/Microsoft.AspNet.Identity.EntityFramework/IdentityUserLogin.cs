@@ -35,10 +35,5 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         {
             return new UserLoginInfo(this.LoginProvider, this.ProviderKey, this.ProviderDisplayName);
         }
-
-        public static implicit operator UserLoginInfo(IdentityUserLogin<TKey> item)
-        {
-            return item.ToUserLogin();
-        }
     }
 }

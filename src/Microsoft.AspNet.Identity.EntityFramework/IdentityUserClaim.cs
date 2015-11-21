@@ -31,7 +31,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         /// </summary>
         public virtual string ClaimValue { get; set; }
 
-        protected virtual System.Security.Claims.Claim ToClaim()
+        public virtual System.Security.Claims.Claim ToClaim()
         {
             return new System.Security.Claims.Claim(this.ClaimType, this.ClaimValue);
         }
@@ -40,11 +40,6 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         {
             this.ClaimType = other.Type;
             this.ClaimValue = other.Value;
-        }
-
-        public static implicit operator System.Security.Claims.Claim( IdentityUserClaim<TKey> item)
-        {
-            return item.ToClaim();
         }
     }
 }
