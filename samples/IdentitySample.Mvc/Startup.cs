@@ -45,6 +45,7 @@ namespace IdentitySamples
 
             services.AddIdentity<ApplicationUser, IdentityRole>(
                 options => {
+                    options.Cookies.ApplicationCookieAuthenticationScheme = "ApplicationCookie";
                     options.Cookies.ApplicationCookie.AuthenticationScheme = IdentityCookieOptions.ApplicationCookieAuthenticationType = "ApplicationCookie";
                     options.Cookies.ApplicationCookie.DataProtectionProvider = new DataProtectionProvider(new DirectoryInfo("C:\\Github\\Identity\\artifacts"));
                     options.Cookies.ApplicationCookie.CookieName = "Interop";
