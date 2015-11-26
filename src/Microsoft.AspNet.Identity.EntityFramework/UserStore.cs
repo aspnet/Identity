@@ -134,7 +134,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         IQueryableUserStore<TUser>,
         IUserTwoFactorStore<TUser>
         where TUser : IdentityUser<TKey, TUserClaim, TUserRole, TUserLogin>
-        where TRole : IdentityRole<TKey>
+        where TRole : IdentityRole<TKey, TUserRole, IdentityRoleClaim<TKey>>
         where TContext : DbContext
         where TKey : IEquatable<TKey>
         where TUserClaim : IdentityUserClaim<TKey>

@@ -40,12 +40,42 @@ namespace Microsoft.AspNet.Identity.EntityFramework
     /// <typeparam name="TRole">The type of the class representing a role.</typeparam>
     /// <typeparam name="TContext">The type of the data context class used to access the store.</typeparam>
     /// <typeparam name="TKey">The type of the primary key for a role.</typeparam>
-    public class RoleStore<TRole, TContext, TKey> :
+    public class RoleStore<TRole, TContext, TKey> : RoleStore<TRole, TContext, TKey, IdentityUserRole<TKey>, IdentityRoleClaim<TKey>>,
         IQueryableRoleStore<TRole>,
         IRoleClaimStore<TRole>
         where TRole : IdentityRole<TKey>
         where TKey : IEquatable<TKey>
         where TContext : DbContext
+    {
+        public RoleStore(TContext context, IdentityErrorDescriber describer = null) : base(context, describer)
+        {
+        }
+
+        protected override IdentityRoleClaim<TKey> OnCreateRoleClaim(TRole role, Claim claim)
+        {
+            return new IdentityRoleClaim<TKey> { RoleId = role.Id, ClaimType = claim.Type, ClaimValue = claim.Value };
+        }
+
+        protected async override Task<List<IdentityRoleClaim<TKey>>> FindRoleClaimsAsync(TRole role, Claim claim, CancellationToken cancellationToken)
+        {
+            return await this.RoleClaims.Where(rc => rc.RoleId.Equals(role.Id) && rc.ClaimValue == claim.Value && rc.ClaimType == claim.Type).ToListAsync(cancellationToken);
+        }
+    }
+
+    /// <summary>
+    /// Creates a new instance of a persistence store for roles.
+    /// </summary>
+    /// <typeparam name="TRole">The type of the class representing a role.</typeparam>
+    /// <typeparam name="TContext">The type of the data context class used to access the store.</typeparam>
+    /// <typeparam name="TKey">The type of the primary key for a role.</typeparam>
+    public abstract class RoleStore<TRole, TContext, TKey, TUserRole, TRoleClaim> :
+        IQueryableRoleStore<TRole>,
+        IRoleClaimStore<TRole>
+        where TRole : IdentityRole<TKey, TUserRole, TRoleClaim>
+        where TKey : IEquatable<TKey>
+        where TContext : DbContext
+        where TUserRole: IdentityUserRole<TKey>
+        where TRoleClaim: IdentityRoleClaim<TKey>
     {
         public RoleStore(TContext context, IdentityErrorDescriber describer = null)
         {
@@ -306,7 +336,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             return Task.FromResult(0);
         }
 
-        private void ThrowIfDisposed()
+        protected void ThrowIfDisposed()
         {
             if (_disposed)
             {
@@ -336,7 +366,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
                 throw new ArgumentNullException(nameof(role));
             }
 
-            return await RoleClaims.Where(rc => rc.RoleId.Equals(role.Id)).Select(c => new Claim(c.ClaimType, c.ClaimValue)).ToListAsync(cancellationToken);
+            return await RoleClaims.Where(rc => rc.RoleId.Equals(role.Id)).Select(c => c.ToClaim()).ToListAsync(cancellationToken);
         }
 
         /// <summary>
@@ -358,7 +388,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
                 throw new ArgumentNullException(nameof(claim));
             }
 
-            RoleClaims.Add(new IdentityRoleClaim<TKey> { RoleId = role.Id, ClaimType = claim.Type, ClaimValue = claim.Value });
+            RoleClaims.Add( this.OnCreateRoleClaim(role, claim));
 
             return Task.FromResult(false);
         }
@@ -381,7 +411,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             {
                 throw new ArgumentNullException(nameof(claim));
             }
-            var claims = await RoleClaims.Where(rc => rc.RoleId.Equals(role.Id) && rc.ClaimValue == claim.Value && rc.ClaimType == claim.Type).ToListAsync(cancellationToken);
+            var claims = await this.FindRoleClaimsAsync(role, claim, cancellationToken);
             foreach (var c in claims)
             {
                 RoleClaims.Remove(c);
@@ -396,6 +426,10 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             get { return Context.Set<TRole>(); }
         }
 
-        private DbSet<IdentityRoleClaim<TKey>> RoleClaims { get { return Context.Set<IdentityRoleClaim<TKey>>(); } }
+        protected DbSet<TRoleClaim> RoleClaims { get { return Context.Set<TRoleClaim>(); } }
+
+        protected abstract TRoleClaim OnCreateRoleClaim(TRole role, Claim claim);
+        protected abstract Task<List<TRoleClaim>> FindRoleClaimsAsync(TRole role, Claim claim, CancellationToken cancellationToken);
+
     }
 }
