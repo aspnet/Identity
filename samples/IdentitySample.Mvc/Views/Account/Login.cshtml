@@ -73,8 +73,11 @@
                         @Html.AntiForgeryToken()
                         <div id="socialLoginList">
                             <p>
-                                @foreach (AuthenticationDescription p in ViewBag.LoginProviders) {
-                                    <button type="submit" class="btn btn-default" id="@p.AuthenticationScheme" name="provider" value="@p.AuthenticationScheme" title="Log in using your @p.DisplayName account">@p.AuthenticationScheme</button>
+                                @{
+                                    var loginProviders = Context.Authentication.GetAuthenticationSchemes().Where(d => !string.IsNullOrEmpty(d.DisplayName) && d.DisplayName != "NTLM" && d.DisplayName != "Negotiate" );
+                                    foreach (AuthenticationDescription p in loginProviders) {
+                                        <button type="submit" class="btn btn-default" id="@p.AuthenticationScheme" name="provider" value="@p.AuthenticationScheme" title="Log in using your @p.DisplayName account">@p.AuthenticationScheme</button>
+                                    }
                                 }
                             </p>
                         </div>

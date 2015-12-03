@@ -14,18 +14,20 @@
                 : Html.ActionLink("Set your password", "SetPassword"))
         </p>
         <p>
-            Phone Number: @(Model.PhoneNumber ?? "None") [
+            Phone Number: @(Model.PhoneNumber ?? "None")
             @if (Model.PhoneNumber != null)
             {
-                @Html.ActionLink("Change", "AddPhoneNumber")
-                @: &nbsp;|&nbsp;
-                @Html.ActionLink("Remove", "RemovePhoneNumber")
+                @Html.ActionLink("[Change]", "AddPhoneNumber")
+                using (Html.BeginForm("RemovePhoneNumber", "Remove"))
+                {
+                    @Html.AntiForgeryToken()
+                    <input type="submit" value="Remove Phone Number" class="btn btn-default"/>
+                }
             }
             else
             {
                 @Html.ActionLink("Add", "AddPhoneNumber")
             }
-            ]
         </p>
         <p>
             External Logins: @Model.Logins.Count
