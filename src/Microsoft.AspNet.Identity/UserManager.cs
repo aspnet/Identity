@@ -63,7 +63,6 @@ namespace Microsoft.AspNet.Identity
             }
             Store = store;
             Options = optionsAccessor?.Value ?? new IdentityOptions();
-            _context = contextAccessor?.HttpContext;
             PasswordHasher = passwordHasher;
             KeyNormalizer = keyNormalizer;
             ErrorDescriber = errors;
@@ -86,6 +85,7 @@ namespace Microsoft.AspNet.Identity
 
             if (services != null)
             {
+                _context = services.GetService<IHttpContextAccessor>()?.HttpContext;
                 foreach (var providerName in Options.Tokens.ProviderMap.Keys)
                 {
                     var provider = services.GetRequiredService(Options.Tokens.ProviderMap[providerName].ProviderType) as IUserTokenProvider<TUser>;
