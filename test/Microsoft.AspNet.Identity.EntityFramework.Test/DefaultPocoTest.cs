@@ -36,7 +36,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
 
         [TestPriority(-1000)]
         [ConditionalFact]
-        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)][OSSkipCondition(OperatingSystems.Linux)][OSSkipCondition(OperatingSystems.MacOSX)]
         public void DropDatabaseStart()
         {
             DropDb();
@@ -58,7 +58,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         }
 
         [ConditionalFact]
-        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)][OSSkipCondition(OperatingSystems.Linux)][OSSkipCondition(OperatingSystems.MacOSX)]
         public async Task EnsureStartupUsageWorks()
         {
             var context = CreateContext(true);
@@ -78,7 +78,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         }
 
         [ConditionalFact]
-        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)][OSSkipCondition(OperatingSystems.Linux)][OSSkipCondition(OperatingSystems.MacOSX)]
         public async Task CanIncludeUserClaimsTest()
         {
             // Arrange
@@ -106,7 +106,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         }
 
         [ConditionalFact]
-        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)][OSSkipCondition(OperatingSystems.Linux)][OSSkipCondition(OperatingSystems.MacOSX)]
         public async Task CanIncludeUserLoginsTest()
         {
             // Arrange
@@ -134,7 +134,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         }
 
         [ConditionalFact]
-        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)][OSSkipCondition(OperatingSystems.Linux)][OSSkipCondition(OperatingSystems.MacOSX)]
         public async Task CanIncludeUserRolesTest()
         {
             // Arrange
@@ -176,7 +176,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         }
 
         [ConditionalFact]
-        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)][OSSkipCondition(OperatingSystems.Linux)][OSSkipCondition(OperatingSystems.MacOSX)]
         public async Task CanIncludeRoleClaimsTest()
         {
             // Arrange
@@ -205,7 +205,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
 
         [TestPriority(10000)]
         [ConditionalFact]
-        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)][OSSkipCondition(OperatingSystems.Linux)][OSSkipCondition(OperatingSystems.MacOSX)]
         public void DropDatabaseDone()
         {
             DropDb();

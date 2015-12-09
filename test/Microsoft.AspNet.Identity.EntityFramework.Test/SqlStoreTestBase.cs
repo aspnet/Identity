@@ -8,6 +8,7 @@ using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity.Test;
+using Microsoft.AspNet.Testing;
 using Microsoft.AspNet.Testing.xunit;
 using Microsoft.Data.Entity;
 using Microsoft.Data.Entity.Storage;
@@ -22,6 +23,11 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         where TKey : IEquatable<TKey>
     {
         public abstract string ConnectionString { get; }
+
+        protected override bool ShouldSkipDbTests()
+        {
+            return TestPlatformHelper.IsMono || !TestPlatformHelper.IsWindows;
+        }
 
         public class TestDbContext : IdentityDbContext<TUser, TRole, TKey> { }
 
@@ -55,7 +61,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
 
         [TestPriority(-1000)]
         [ConditionalFact]
-        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)][OSSkipCondition(OperatingSystems.Linux)][OSSkipCondition(OperatingSystems.MacOSX)]
         public void DropDatabaseStart()
         {
             DropDb();
@@ -63,7 +69,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
 
         [TestPriority(10000)]
         [ConditionalFact]
-        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)][OSSkipCondition(OperatingSystems.Linux)][OSSkipCondition(OperatingSystems.MacOSX)]
         public void DropDatabaseDone()
         {
             DropDb();
@@ -112,7 +118,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         }
 
         [ConditionalFact]
-        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)][OSSkipCondition(OperatingSystems.Linux)][OSSkipCondition(OperatingSystems.MacOSX)]
         public void EnsureDefaultSchema()
         {
             VerifyDefaultSchema(CreateContext());
@@ -181,7 +187,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         }
 
         [ConditionalFact]
-        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)][OSSkipCondition(OperatingSystems.Linux)][OSSkipCondition(OperatingSystems.MacOSX)]
         public async Task DeleteRoleNonEmptySucceedsTest()
         {
             // Need fail if not empty?
@@ -207,7 +213,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         }
 
         [ConditionalFact]
-        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)][OSSkipCondition(OperatingSystems.Linux)][OSSkipCondition(OperatingSystems.MacOSX)]
         public async Task DeleteUserRemovesFromRoleTest()
         {
             // Need fail if not empty?
@@ -232,7 +238,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
 
 
         [ConditionalFact]
-        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)][OSSkipCondition(OperatingSystems.Linux)][OSSkipCondition(OperatingSystems.MacOSX)]
         public void CanCreateUserUsingEF()
         {
             using (var db = CreateContext())
@@ -246,7 +252,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         }
 
         [ConditionalFact]
-        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)][OSSkipCondition(OperatingSystems.Linux)][OSSkipCondition(OperatingSystems.MacOSX)]
         public async Task CanCreateUsingManager()
         {
             var manager = CreateManager();
@@ -280,7 +286,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         }
 
         [ConditionalFact]
-        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)][OSSkipCondition(OperatingSystems.Linux)][OSSkipCondition(OperatingSystems.MacOSX)]
         public async Task LoadFromDbFindByIdTest()
         {
             var db = CreateContext();
@@ -297,7 +303,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         }
 
         [ConditionalFact]
-        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)][OSSkipCondition(OperatingSystems.Linux)][OSSkipCondition(OperatingSystems.MacOSX)]
         public async Task LoadFromDbFindByNameTest()
         {
             var db = CreateContext();
@@ -313,7 +319,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         }
 
         [ConditionalFact]
-        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)][OSSkipCondition(OperatingSystems.Linux)][OSSkipCondition(OperatingSystems.MacOSX)]
         public async Task LoadFromDbFindByLoginTest()
         {
             var db = CreateContext();
@@ -329,7 +335,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         }
 
         [ConditionalFact]
-        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)][OSSkipCondition(OperatingSystems.Linux)][OSSkipCondition(OperatingSystems.MacOSX)]
         public async Task LoadFromDbFindByEmailTest()
         {
             var db = CreateContext();
