@@ -22,6 +22,7 @@ namespace Microsoft.AspNet.Identity
     {
         private const string LoginProviderKey = "LoginProvider";
         private const string XsrfKey = "XsrfId";
+        private IHttpContextAccessor _contextAccessor;
 
         /// <summary>
         /// Creates a new instance of <see cref="SignInManager{TUser}"/>.
@@ -41,7 +42,7 @@ namespace Microsoft.AspNet.Identity
             {
                 throw new ArgumentNullException(nameof(userManager));
             }
-            if (contextAccessor == null || contextAccessor.HttpContext == null)
+            if (contextAccessor == null)
             {
                 throw new ArgumentNullException(nameof(contextAccessor));
             }
@@ -51,7 +52,7 @@ namespace Microsoft.AspNet.Identity
             }
 
             UserManager = userManager;
-            Context = contextAccessor.HttpContext;
+            _contextAccessor = contextAccessor;
             ClaimsFactory = claimsFactory;
             Options = optionsAccessor?.Value ?? new IdentityOptions();
             Logger = logger;
@@ -65,9 +66,10 @@ namespace Microsoft.AspNet.Identity
         /// </value>
         protected internal virtual ILogger Logger { get; set; }
         protected internal UserManager<TUser> UserManager { get; set; }
-        internal HttpContext Context { get; set; }
         internal IUserClaimsPrincipalFactory<TUser> ClaimsFactory { get; set; }
         internal IdentityOptions Options { get; set; }
+
+        internal HttpContext Context => _contextAccessor.HttpContext;
 
         /// <summary>
         /// Creates a <see cref="ClaimsPrincipal"/> for the specified <paramref name="user"/>, as an asynchronous operation.

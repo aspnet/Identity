@@ -8,6 +8,7 @@ using System.Text;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Microsoft.Extensions.OptionsModel;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.AspNet.Identity.Test
 {
@@ -18,9 +19,7 @@ namespace Microsoft.AspNet.Identity.Test
         public static Mock<UserManager<TUser>> MockUserManager<TUser>() where TUser : class
         {
             var store = new Mock<IUserStore<TUser>>();
-            var mgr = new Mock<UserManager<TUser>>(store.Object, null, null, null, null, null, null, null, null, null);
-            mgr.Object.UserValidators.Add(new UserValidator<TUser>());
-            mgr.Object.PasswordValidators.Add(new PasswordValidator<TUser>());
+            var mgr = new Mock<UserManager<TUser>>(store.Object, null, null, null);
             return mgr;
         }
 
@@ -68,16 +67,13 @@ namespace Microsoft.AspNet.Identity.Test
             var idOptions = new IdentityOptions();
             idOptions.Lockout.AllowedForNewUsers = false;
             options.Setup(o => o.Value).Returns(idOptions);
-            var userValidators = new List<IUserValidator<TUser>>();
+            var services = new ServiceCollection();
+            services.AddTransient<PasswordValidator<TUser>>();
             var validator = new Mock<IUserValidator<TUser>>();
-            userValidators.Add(validator.Object);
-            var pwdValidators = new List<PasswordValidator<TUser>>();
-            pwdValidators.Add(new PasswordValidator<TUser>());
-            var userManager = new UserManager<TUser>(store, options.Object, new PasswordHasher<TUser>(),
-                userValidators, pwdValidators, new UpperInvariantLookupNormalizer(),
-                new IdentityErrorDescriber(), null,
-                new Mock<ILogger<UserManager<TUser>>>().Object,
-                null);
+            services.AddSingleton(validator.Object);
+            var userManager = new UserManager<TUser>(store, options.Object,
+                services.BuildServiceProvider(),
+                new Mock<ILogger<UserManager<TUser>>>().Object);
             validator.Setup(v => v.ValidateAsync(userManager, It.IsAny<TUser>()))
                 .Returns(Task.FromResult(IdentityResult.Success)).Verifiable();
             return userManager;

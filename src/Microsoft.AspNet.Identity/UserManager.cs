@@ -48,26 +48,23 @@ namespace Microsoft.AspNet.Identity
         /// <param name="contextAccessor">The accessor used to access the <see cref="HttpContext"/>.</param>
         public UserManager(IUserStore<TUser> store,
             IOptions<IdentityOptions> optionsAccessor,
-            IPasswordHasher<TUser> passwordHasher,
-            IEnumerable<IUserValidator<TUser>> userValidators,
-            IEnumerable<IPasswordValidator<TUser>> passwordValidators,
-            ILookupNormalizer keyNormalizer,
-            IdentityErrorDescriber errors,
             IServiceProvider services,
-            ILogger<UserManager<TUser>> logger,
-            IHttpContextAccessor contextAccessor)
+            ILogger<UserManager<TUser>> logger)
         {
             if (store == null)
             {
                 throw new ArgumentNullException(nameof(store));
             }
             Store = store;
-            Options = optionsAccessor?.Value ?? new IdentityOptions();
-            PasswordHasher = passwordHasher;
-            KeyNormalizer = keyNormalizer;
-            ErrorDescriber = errors;
             Logger = logger;
+            Options = optionsAccessor?.Value ?? new IdentityOptions();
 
+            _context = services?.GetService<IHttpContextAccessor>()?.HttpContext;
+            PasswordHasher = services?.GetService<IPasswordHasher<TUser>>() ?? new PasswordHasher<TUser>();
+            KeyNormalizer = services?.GetService<ILookupNormalizer>() ?? new UpperInvariantLookupNormalizer(); ;
+            ErrorDescriber = services?.GetService<IdentityErrorDescriber>() ?? new IdentityErrorDescriber(); ;
+
+            var userValidators = services?.GetService<IEnumerable<IUserValidator<TUser>>>();
             if (userValidators != null)
             {
                 foreach (var v in userValidators)
@@ -75,6 +72,11 @@ namespace Microsoft.AspNet.Identity
                     UserValidators.Add(v);
                 }
             }
+            else
+            {
+                UserValidators.Add(new UserValidator<TUser>());
+            }
+            var passwordValidators = services?.GetService<IEnumerable<IPasswordValidator<TUser>>>();
             if (passwordValidators != null)
             {
                 foreach (var v in passwordValidators)
@@ -82,17 +84,17 @@ namespace Microsoft.AspNet.Identity
                     PasswordValidators.Add(v);
                 }
             }
-
-            if (services != null)
+            else
             {
-                _context = services.GetService<IHttpContextAccessor>()?.HttpContext;
-                foreach (var providerName in Options.Tokens.ProviderMap.Keys)
+                PasswordValidators.Add(new PasswordValidator<TUser>());
+            }
+
+            foreach (var providerName in Options.Tokens.ProviderMap.Keys)
+            {
+                var provider = services?.GetRequiredService(Options.Tokens.ProviderMap[providerName].ProviderType) as IUserTokenProvider<TUser>;
+                if (provider != null)
                 {
-                    var provider = services.GetRequiredService(Options.Tokens.ProviderMap[providerName].ProviderType) as IUserTokenProvider<TUser>;
-                    if (provider != null)
-                    {
-                        RegisterTokenProvider(providerName, provider);
-                    }
+                    RegisterTokenProvider(providerName, provider);
                 }
             }
         }
