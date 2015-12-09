@@ -21,7 +21,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
 
         [TestPriority(-1000)]
         [ConditionalFact]
-        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)][OSSkipCondition(OperatingSystems.Linux)][OSSkipCondition(OperatingSystems.MacOSX)]
         public void DropDatabaseStart()
         {
             DropDb();
@@ -29,7 +29,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
 
         [TestPriority(10000)]
         [ConditionalFact]
-        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)][OSSkipCondition(OperatingSystems.Linux)][OSSkipCondition(OperatingSystems.MacOSX)]
         public void DropDatabaseDone()
         {
             DropDb();
@@ -42,7 +42,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         }
 
         [ConditionalFact]
-        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)][OSSkipCondition(OperatingSystems.Linux)][OSSkipCondition(OperatingSystems.MacOSX)]
         public void CanCreateUserUsingEF()
         {
             using (var db = CreateContext())
@@ -193,7 +193,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         }
 
         [ConditionalFact]
-        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)][OSSkipCondition(OperatingSystems.Linux)][OSSkipCondition(OperatingSystems.MacOSX)]
         public async Task CanCreateUsingManager()
         {
             var manager = CreateManager();
@@ -204,7 +204,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         }
 
         [ConditionalFact]
-        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)][OSSkipCondition(OperatingSystems.Linux)][OSSkipCondition(OperatingSystems.MacOSX)]
         public async Task TwoUsersSamePasswordDifferentHash()
         {
             var manager = CreateManager();
@@ -217,7 +217,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         }
 
         [ConditionalFact]
-        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)][OSSkipCondition(OperatingSystems.Linux)][OSSkipCondition(OperatingSystems.MacOSX)]
         public async Task AddUserToUnknownRoleFails()
         {
             var manager = CreateManager();
@@ -228,7 +228,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         }
 
         [ConditionalFact]
-        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)][OSSkipCondition(OperatingSystems.Linux)][OSSkipCondition(OperatingSystems.MacOSX)]
         public async Task ConcurrentUpdatesWillFail()
         {
             var user = CreateTestUser();
@@ -255,7 +255,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         }
 
         [ConditionalFact]
-        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)][OSSkipCondition(OperatingSystems.Linux)][OSSkipCondition(OperatingSystems.MacOSX)]
         public async Task ConcurrentUpdatesWillFailWithDetachedUser()
         {
             var user = CreateTestUser();
@@ -280,7 +280,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         }
 
         [ConditionalFact]
-        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)][OSSkipCondition(OperatingSystems.Linux)][OSSkipCondition(OperatingSystems.MacOSX)]
         public async Task DeleteAModifiedUserWillFail()
         {
             var user = CreateTestUser();
@@ -306,7 +306,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         }
 
         [ConditionalFact]
-        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)][OSSkipCondition(OperatingSystems.Linux)][OSSkipCondition(OperatingSystems.MacOSX)]
         public async Task ConcurrentRoleUpdatesWillFail()
         {
             var role = new IdentityRole(Guid.NewGuid().ToString());
@@ -333,7 +333,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         }
 
         [ConditionalFact]
-        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)][OSSkipCondition(OperatingSystems.Linux)][OSSkipCondition(OperatingSystems.MacOSX)]
         public async Task ConcurrentRoleUpdatesWillFailWithDetachedRole()
         {
             var role = new IdentityRole(Guid.NewGuid().ToString());
@@ -359,7 +359,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         }
 
         [ConditionalFact]
-        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)][OSSkipCondition(OperatingSystems.Linux)][OSSkipCondition(OperatingSystems.MacOSX)]
         public async Task DeleteAModifiedRoleWillFail()
         {
             var role = new IdentityRole(Guid.NewGuid().ToString());
