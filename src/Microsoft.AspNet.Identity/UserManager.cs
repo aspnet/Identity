@@ -72,10 +72,6 @@ namespace Microsoft.AspNet.Identity
                     UserValidators.Add(v);
                 }
             }
-            else
-            {
-                UserValidators.Add(new UserValidator<TUser>());
-            }
             var passwordValidators = services?.GetService<IEnumerable<IPasswordValidator<TUser>>>();
             if (passwordValidators != null)
             {
@@ -83,10 +79,6 @@ namespace Microsoft.AspNet.Identity
                 {
                     PasswordValidators.Add(v);
                 }
-            }
-            else
-            {
-                PasswordValidators.Add(new PasswordValidator<TUser>());
             }
 
             foreach (var providerName in Options.Tokens.ProviderMap.Keys)

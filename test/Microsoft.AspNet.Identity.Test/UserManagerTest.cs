@@ -1417,7 +1417,6 @@ namespace Microsoft.AspNet.Identity.Test
                 .AddSingleton<IUserStore<TestUser>>(store.Object)
                 .AddIdentity<TestUser, TestRole>();
             services.AddLogging();
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             var manager = services.BuildServiceProvider().GetRequiredService<UserManager<TestUser>>();
 
