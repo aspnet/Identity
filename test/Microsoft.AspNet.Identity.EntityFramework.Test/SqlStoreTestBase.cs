@@ -8,6 +8,7 @@ using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity.Test;
+using Microsoft.AspNet.Testing;
 using Microsoft.AspNet.Testing.xunit;
 using Microsoft.Data.Entity;
 using Microsoft.Data.Entity.Storage;
@@ -22,6 +23,11 @@ namespace Microsoft.AspNet.Identity.EntityFramework.Test
         where TKey : IEquatable<TKey>
     {
         public abstract string ConnectionString { get; }
+
+        protected override bool ShouldSkipDbTests()
+        {
+            return TestPlatformHelper.IsMono || !TestPlatformHelper.IsWindows;
+        }
 
         public class TestDbContext : IdentityDbContext<TUser, TRole, TKey> { }
 
