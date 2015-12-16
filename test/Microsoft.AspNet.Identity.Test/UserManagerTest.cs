@@ -50,7 +50,7 @@ namespace Microsoft.AspNet.Identity.Test
 
         public class CustomUserManager : UserManager<TestUser>
         {
-            public CustomUserManager() : base(new Mock<IUserStore<TestUser>>().Object, null, null, null, null, null, null, null, null, null)
+            public CustomUserManager() : base(new Mock<IUserStore<TestUser>>().Object, null, null, null)
             { }
         }
 
@@ -694,7 +694,7 @@ namespace Microsoft.AspNet.Identity.Test
         public async Task ManagerPublicNullChecks()
         {
             Assert.Throws<ArgumentNullException>("store",
-                () => new UserManager<TestUser>(null, null, null, null, null, null, null, null, null, null));
+                () => new UserManager<TestUser>(null, null, null, null));
 
             var manager = MockHelpers.TestUserManager(new NotImplementedStore());
 
@@ -1417,7 +1417,6 @@ namespace Microsoft.AspNet.Identity.Test
                 .AddSingleton<IUserStore<TestUser>>(store.Object)
                 .AddIdentity<TestUser, TestRole>();
             services.AddLogging();
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             var manager = services.BuildServiceProvider().GetRequiredService<UserManager<TestUser>>();
 

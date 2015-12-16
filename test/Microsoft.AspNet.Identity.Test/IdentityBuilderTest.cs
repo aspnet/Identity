@@ -94,9 +94,6 @@ namespace Microsoft.AspNet.Identity.Test
 
             var pwdValidator = provider.GetRequiredService<IPasswordValidator<TestUser>>() as PasswordValidator<TestUser>;
             Assert.NotNull(pwdValidator);
-
-            var hasher = provider.GetRequiredService<IPasswordHasher<TestUser>>() as PasswordHasher<TestUser>;
-            Assert.NotNull(hasher);
         }
 
         [Fact]
@@ -255,7 +252,7 @@ namespace Microsoft.AspNet.Identity.Test
 
         private class MyUserManager : UserManager<TestUser>
         {
-            public MyUserManager(IUserStore<TestUser> store) : base(store, null, null, null, null, null, null, null, null, null) { }
+            public MyUserManager(IUserStore<TestUser> store) : base(store, null, null, null) { }
         }
 
         private class MyRoleManager : RoleManager<TestRole>

@@ -73,7 +73,6 @@ namespace Microsoft.AspNet.Identity.Test
             var userManager = MockHelpers.MockUserManager<TestUser>().Object;
             Assert.Throws<ArgumentNullException>("contextAccessor", () => new SignInManager<TestUser>(userManager, null, null, null, null));
             var contextAccessor = new Mock<IHttpContextAccessor>();
-            Assert.Throws<ArgumentNullException>("contextAccessor", () => new SignInManager<TestUser>(userManager, contextAccessor.Object, null, null, null));
             var context = new Mock<HttpContext>();
             contextAccessor.Setup(a => a.HttpContext).Returns(context.Object);
             Assert.Throws<ArgumentNullException>("claimsFactory", () => new SignInManager<TestUser>(userManager, contextAccessor.Object, null, null, null));
@@ -352,7 +351,6 @@ namespace Microsoft.AspNet.Identity.Test
             //signInManager.Setup(s => s.SignInAsync(user, It.Is<AuthenticationProperties>(p => p.IsPersistent == isPersistent),
             //externalLogin? loginProvider : null)).Returns(Task.FromResult(0)).Verifiable();
             signInManager.Setup(s => s.SignInAsync(user, It.IsAny<AuthenticationProperties>(), null)).Returns(Task.FromResult(0)).Verifiable();
-            signInManager.Object.Context = context.Object;
 
             // Act
             await signInManager.Object.RefreshSignInAsync(user);
