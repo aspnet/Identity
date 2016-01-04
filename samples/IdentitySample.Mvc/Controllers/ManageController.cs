@@ -312,7 +312,7 @@ namespace IdentitySample.Controllers
         {
             // Request a redirect to the external login provider to link a login for the current user
             var redirectUrl = Url.Action("LinkLoginCallback", "Manage");
-            var properties = SignInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl, User.GetUserId());
+            var properties = SignInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl, SignInManager.GetUserId(User));
             return new ChallengeResult(provider, properties);
         }
 
@@ -326,7 +326,7 @@ namespace IdentitySample.Controllers
             {
                 return View("Error");
             }
-            var info = await SignInManager.GetExternalLoginInfoAsync(User.GetUserId());
+            var info = await SignInManager.GetExternalLoginInfoAsync(await UserManager.GetUserIdAsync(user));
             if (info == null)
             {
                 return RedirectToAction("ManageLogins", new { Message = ManageMessageId.Error });
@@ -348,7 +348,7 @@ namespace IdentitySample.Controllers
 
         private async Task<bool> HasPhoneNumber()
         {
-            var user = await UserManager.FindByIdAsync(User.GetUserId());
+            var user = await GetCurrentUserAsync();
             if (user != null)
             {
                 return user.PhoneNumber != null;
@@ -370,7 +370,7 @@ namespace IdentitySample.Controllers
 
         private async Task<ApplicationUser> GetCurrentUserAsync()
         {
-            return await UserManager.FindByIdAsync(HttpContext.User.GetUserId());
+            return await SignInManager.GetUserAsync(HttpContext.User);
         }
 
         private IActionResult RedirectToLocal(string returnUrl)
