@@ -241,6 +241,10 @@ namespace Microsoft.AspNet.Identity
         /// if the stamp matches the persisted value, otherwise it will return false.</returns>
         public virtual async Task<TUser> ValidateSecurityStampAsync(ClaimsPrincipal principal)
         {
+            if (principal == null)
+            {
+                return null;
+            }
             var userId = GetUserId(principal);
             var user = await UserManager.FindByIdAsync(userId);
             if (user != null && UserManager.SupportsUserSecurityStamp)
