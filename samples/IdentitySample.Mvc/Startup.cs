@@ -11,6 +11,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using IdentitySample.Models;
 using IdentitySample.Services;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.DataProtection;
+using System.IO;
 
 namespace IdentitySample
 {
@@ -44,7 +47,12 @@ namespace IdentitySample
                 .AddDbContext<ApplicationDbContext>(options =>
                     options.UseSqlServer(Configuration["Data:DefaultConnection:ConnectionString"]));
 
-            services.AddIdentity<ApplicationUser, IdentityRole>()
+            services.AddIdentity<ApplicationUser, IdentityRole>(options => {
+                options.Cookies.ApplicationCookieAuthenticationScheme = "ApplicationCookie";
+                options.Cookies.ApplicationCookie.AuthenticationScheme = "ApplicationCookie";
+                options.Cookies.ApplicationCookie.DataProtectionProvider = new DataProtectionProvider(new DirectoryInfo("C:\\Github\\Identity\\artifacts"));
+                options.Cookies.ApplicationCookie.CookieName = "Interop";
+            })
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
@@ -84,8 +92,22 @@ namespace IdentitySample
             }
             app.UseStaticFiles();
 
-            app.UseIdentity();
-
+            app.UseIdentity()
+               .UseFacebookAuthentication(new FacebookOptions
+               {
+                   AppId = "901611409868059",
+                   AppSecret = "4aa3c530297b1dcebc8860334b39668b"
+               })
+                .UseGoogleAuthentication(new GoogleOptions
+                {
+                    ClientId = "514485782433-fr3ml6sq0imvhi8a7qir0nb46oumtgn9.apps.googleusercontent.com",
+                    ClientSecret = "V2nDD9SkFbvLTqAUBWBBxYAL"
+                })
+                .UseTwitterAuthentication(new TwitterOptions
+                {
+                    ConsumerKey = "BSdJJ0CrDuvEhpkchnukXZBUv",
+                    ConsumerSecret = "xKUNuKhsRdHD03eLn67xhPAyE1wFFEndFo1X2UJaK2m1jdAxf4"
+                });
             // To configure external authentication please see http://go.microsoft.com/fwlink/?LinkID=532715
 
             app.UseMvc(routes =>
