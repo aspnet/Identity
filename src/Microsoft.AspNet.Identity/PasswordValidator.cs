@@ -54,7 +54,7 @@ namespace Microsoft.AspNet.Identity
             }
             if (options.RequireNonAlphanumeric && password.All(IsLetterOrDigit))
             {
-                errors.Add(Describer.PasswordRequiresNonalphanumeric());
+                errors.Add(Describer.PasswordRequiresNonAlphanumeric());
             }
             if (options.RequireDigit && !password.Any(IsDigit))
             {

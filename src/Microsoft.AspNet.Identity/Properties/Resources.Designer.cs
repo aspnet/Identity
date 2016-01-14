@@ -301,17 +301,17 @@ namespace Microsoft.AspNet.Identity
         /// <summary>
         /// Passwords must have at least one non alphanumeric character.
         /// </summary>
-        internal static string PasswordRequiresNonalphanumeric
+        internal static string PasswordRequiresNonAlphanumeric
         {
-            get { return GetString("PasswordRequiresNonalphanumeric"); }
+            get { return GetString("PasswordRequiresNonAlphanumeric"); }
         }
 
         /// <summary>
         /// Passwords must have at least one non alphanumeric character.
         /// </summary>
-        internal static string FormatPasswordRequiresNonalphanumeric()
+        internal static string FormatPasswordRequiresNonAlphanumeric()
         {
-            return GetString("PasswordRequiresNonalphanumeric");
+            return GetString("PasswordRequiresNonAlphanumeric");
         }
 
         /// <summary>
