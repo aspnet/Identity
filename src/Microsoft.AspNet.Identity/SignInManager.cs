@@ -97,46 +97,6 @@ namespace Microsoft.AspNet.Identity
         public virtual async Task<ClaimsPrincipal> CreateUserPrincipalAsync(TUser user) => await ClaimsFactory.CreateAsync(user);
 
         /// <summary>
-        /// Returns the Name claim value if present otherwise returns null.
-        /// </summary>
-        /// <param name="principal">The <see cref="ClaimsPrincipal"/> instance.</param>
-        /// <returns>The Name claim value, or null if the claim is not present.</returns>
-        /// <remarks>The Name claim is identified by <see cref="ClaimsIdentity.DefaultNameClaimType"/>.</remarks>
-        public virtual string GetUserName(ClaimsPrincipal principal)
-        {
-            if (principal == null)
-            {
-                throw new ArgumentNullException(nameof(principal));
-            }
-            return principal.FindFirstValue(Options.ClaimsIdentity.UserNameClaimType);
-        }
-
-        /// <summary>
-        /// Returns the User ID claim value if present otherwise returns null.
-        /// </summary>
-        /// <param name="principal">The <see cref="ClaimsPrincipal"/> instance.</param>
-        /// <returns>The User ID claim value, or null if the claim is not present.</returns>
-        /// <remarks>The User ID claim is identified by <see cref="ClaimTypes.NameIdentifier"/>.</remarks>
-        public virtual string GetUserId(ClaimsPrincipal principal)
-        {
-            if (principal == null)
-            {
-                throw new ArgumentNullException(nameof(principal));
-            }
-            return principal.FindFirstValue(Options.ClaimsIdentity.UserIdClaimType);
-        }
-
-        public virtual Task<TUser> GetUserAsync(ClaimsPrincipal principal)
-        {
-            if (principal == null)
-            {
-                throw new ArgumentNullException(nameof(principal));
-            }
-            var id = GetUserId(principal);
-            return id == null ? null : UserManager.FindByIdAsync(id);
-        }
-
-        /// <summary>
         /// Returns true if the principal has an identity with the application cookie identity
         /// </summary>
         /// <param name="principal">The <see cref="ClaimsPrincipal"/> instance.</param>
@@ -245,8 +205,7 @@ namespace Microsoft.AspNet.Identity
             {
                 return null;
             }
-            var userId = GetUserId(principal);
-            var user = await UserManager.FindByIdAsync(userId);
+            var user = await UserManager.GetUserAsync(principal);
             if (user != null && UserManager.SupportsUserSecurityStamp)
             {
                 var securityStamp =
