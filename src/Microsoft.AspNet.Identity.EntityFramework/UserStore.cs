@@ -1063,6 +1063,23 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         }
 
         /// <summary>
+        /// Gets the user, if any, associated with the specified, phone number.
+        /// </summary>
+        /// <param name="phoneNumber">The phone number to return the user for.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>
+        /// The task object containing the results of the asynchronous lookup operation, the user if any associated with the specified phone number.
+        /// </returns>
+        public virtual Task<TUser> FindByPhoneNumberAsync(string phoneNumber, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            ThrowIfDisposed();
+            return Users.FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber, cancellationToken);
+        }
+
+
+
+        /// <summary>
         /// Sets the provided security <paramref name="stamp"/> for the specified <paramref name="user"/>.
         /// </summary>
         /// <param name="user">The user whose security stamp should be set.</param>

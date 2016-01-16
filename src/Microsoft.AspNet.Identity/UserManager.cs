@@ -1396,6 +1396,18 @@ namespace Microsoft.AspNet.Identity
             return await UpdateUserAsync(user);
         }
 
+        public virtual async Task<TUser> FindByPhoneNumberAsync(string phoneNumber)
+        {
+            ThrowIfDisposed();
+            var store = GetPhoneNumberStore();
+            if (phoneNumber == null)
+            {
+                throw new ArgumentNullException("phoneNumber");
+            }
+
+            return await store.FindByPhoneNumberAsync(phoneNumber, CancellationToken);
+        }
+
         /// <summary>
         /// Gets the telephone number, if any, for the specified <paramref name="user"/>.
         /// </summary>
