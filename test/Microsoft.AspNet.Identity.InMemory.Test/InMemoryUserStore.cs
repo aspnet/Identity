@@ -302,6 +302,11 @@ namespace Microsoft.AspNet.Identity.InMemory
             return Task.FromResult(0);
         }
 
+        public Task<TUser> FindByPhoneNumberAsync(string phoneNumber, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return Task.FromResult(Users.FirstOrDefault(u => u.PhoneNumber == phoneNumber));
+        }
+
         // RoleId == roleName for InMemory
         public Task AddToRoleAsync(TUser user, string role, CancellationToken cancellationToken = default(CancellationToken))
         {

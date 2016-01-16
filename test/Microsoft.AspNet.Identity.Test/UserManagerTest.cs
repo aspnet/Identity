@@ -1050,6 +1050,11 @@ namespace Microsoft.AspNet.Identity.Test
                 return Task.FromResult(0);
             }
 
+            public Task<TestUser> FindByPhoneNumberAsync(string phoneNumber, CancellationToken cancellationToken = default(CancellationToken))
+            {
+                return Task.FromResult<TestUser>(null);
+            }
+
             public Task AddToRoleAsync(TestUser user, string roleName, CancellationToken cancellationToken = default(CancellationToken))
             {
                 return Task.FromResult(0);
@@ -1327,6 +1332,11 @@ namespace Microsoft.AspNet.Identity.Test
             }
 
             public Task SetPhoneNumberConfirmedAsync(TestUser user, bool confirmed, CancellationToken cancellationToken = default(CancellationToken))
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<TestUser> FindByPhoneNumberAsync(string phoneNumber, CancellationToken cancellationToken = default(CancellationToken))
             {
                 throw new NotImplementedException();
             }
