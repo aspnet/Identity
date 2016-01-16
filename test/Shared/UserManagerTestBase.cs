@@ -1761,7 +1761,7 @@ namespace Microsoft.AspNet.Identity.Test
             var secondUser = CreateTestUser(phoneNumber: phone);
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(secondUser));
             var resolvedUsers = await manager.FindByPhoneNumberAsync(phone);
-            Assert.True(resolvedUser.Count > 1);
+            Assert.True(resolvedUsers.Count > 1);
 
         }
 
