@@ -1,6 +1,7 @@
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -50,13 +51,13 @@ namespace Microsoft.AspNet.Identity
         Task SetPhoneNumberConfirmedAsync(TUser user, bool confirmed, CancellationToken cancellationToken);
 
         /// <summary>
-        /// Gets the user, if any, associated with the specified, phone number.
+        /// Gets the users, if any, associated with the specified phone number.
         /// </summary>
-        /// <param name="phoneNumber">The phone number to return the user for.</param>
+        /// <param name="phoneNumber">The phone number to return the users for.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>
-        /// The task object containing the results of the asynchronous lookup operation, the user if any associated with the specified phone number.
+        /// The task object containing the results of the asynchronous lookup operation, the users if any associated with the specified phone number.
         /// </returns>
-        Task<TUser> FindByPhoneNumberAsync(string phoneNumber, CancellationToken cancellationToken);
+        Task<IList<TUser>> FindByPhoneNumberAsync(string phoneNumber, CancellationToken cancellationToken);
     }
 }

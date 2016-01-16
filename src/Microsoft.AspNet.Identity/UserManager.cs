@@ -1396,7 +1396,7 @@ namespace Microsoft.AspNet.Identity
             return await UpdateUserAsync(user);
         }
 
-        public virtual async Task<TUser> FindByPhoneNumberAsync(string phoneNumber)
+        public virtual async Task<IList<TUser>> FindByPhoneNumberAsync(string phoneNumber)
         {
             ThrowIfDisposed();
             var store = GetPhoneNumberStore();

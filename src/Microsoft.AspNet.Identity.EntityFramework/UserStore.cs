@@ -1070,12 +1070,12 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         /// <returns>
         /// The task object containing the results of the asynchronous lookup operation, the user if any associated with the specified phone number.
         /// </returns>
-        public virtual Task<TUser> FindByPhoneNumberAsync(string phoneNumber, CancellationToken cancellationToken)
+        public async virtual Task<IList<TUser>> FindByPhoneNumberAsync(string phoneNumber, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
-            return Users.FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber, cancellationToken);
-        }
+            return await Users.Where(u => u.PhoneNumber == phoneNumber).ToListAsync(cancellationToken);
+        } 
 
 
 

@@ -1740,6 +1740,22 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        public async Task CanFindByPhoneNumber()
+        {
+            if (ShouldSkipDbTests())
+            {
+                return;
+            }
+            var manager = CreateManager();
+            var phone = "123-456-0987";
+            var user = CreateTestUser(phoneNumber: phone);
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
+
+            var resolvedUser = manager.FindByPhoneNumberAsync(phone);
+
+        }
+
+        [Fact]
         public async Task CanChangeEmail()
         {
             if (ShouldSkipDbTests())
