@@ -1757,6 +1757,12 @@ namespace Microsoft.AspNet.Identity.Test
             Assert.True(resolvedUser.Count == 1); //unique so always 1
             Assert.True(resolvedPhoneNumber == phone); //equal to unique value in test
 
+            //create second user to test >1 resolved user
+            var secondUser = CreateTestUser(phoneNumber: phone);
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(secondUser));
+            var resolvedUsers = await manager.FindByPhoneNumberAsync(phone);
+            Assert.True(resolvedUser.Count > 1);
+
         }
 
         [Fact]
