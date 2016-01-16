@@ -1747,11 +1747,15 @@ namespace Microsoft.AspNet.Identity.Test
                 return;
             }
             var manager = CreateManager();
-            var phone = "123-456-0987";
+            var uniqueString = DateTime.Now.Ticks.ToString();
+            var phone = "123-456-0987" + uniqueString;
             var user = CreateTestUser(phoneNumber: phone);
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
 
-            var resolvedUser = manager.FindByPhoneNumberAsync(phone);
+            var resolvedUser = await manager.FindByPhoneNumberAsync(phone);
+            var resolvedPhoneNumber = await manager.GetPhoneNumberAsync(resolvedUser[0]);
+            Assert.True(resolvedUser.Count == 1); //unique so always 1
+            Assert.True(resolvedPhoneNumber == phone); //equal to unique value in test
 
         }
 
