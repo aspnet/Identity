@@ -30,5 +30,16 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         /// Gets or sets the claim value for this claim.
         /// </summary>
         public virtual string ClaimValue { get; set; }
+
+        public virtual System.Security.Claims.Claim ToClaim()
+        {
+            return new System.Security.Claims.Claim(this.ClaimType, this.ClaimValue);
+        }
+
+        public virtual void FromClaim(System.Security.Claims.Claim other)
+        {
+            this.ClaimType = other.Type;
+            this.ClaimValue = other.Value;
+        }
     }
 }

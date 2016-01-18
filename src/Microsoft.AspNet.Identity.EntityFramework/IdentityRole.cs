@@ -39,7 +39,15 @@ namespace Microsoft.AspNet.Identity.EntityFramework
     /// Represents a role in the identity system
     /// </summary>
     /// <typeparam name="TKey">The type used for the primary key for the role.</typeparam>
-    public class IdentityRole<TKey> where TKey : IEquatable<TKey>
+    public class IdentityRole<TKey> : IdentityRole<TKey, IdentityUserRole<TKey>, IdentityRoleClaim<TKey>>
+        where TKey : IEquatable<TKey>
+    {
+    }
+
+    public class IdentityRole<TKey, TUserRole, TRoleClaim>
+        where TKey : IEquatable<TKey>
+        where TUserRole: IdentityUserRole<TKey>
+        where TRoleClaim : IdentityRoleClaim<TKey>
     {
         /// <summary>
         /// Initializes a new instance of <see cref="IdentityRole{TKey}"/>.
@@ -58,12 +66,12 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         /// <summary>
         /// Navigation property for the users in this role.
         /// </summary>
-        public virtual ICollection<IdentityUserRole<TKey>> Users { get; } = new List<IdentityUserRole<TKey>>();
+        public virtual ICollection<TUserRole> Users { get; } = new List<TUserRole>();
 
         /// <summary>
         /// Navigation property for claims in this role.
         /// </summary>
-        public virtual ICollection<IdentityRoleClaim<TKey>> Claims { get; } = new List<IdentityRoleClaim<TKey>>();
+        public virtual ICollection<TRoleClaim> Claims { get; } = new List<TRoleClaim>();
 
         /// <summary>
         /// Gets or sets the primary key for this role.

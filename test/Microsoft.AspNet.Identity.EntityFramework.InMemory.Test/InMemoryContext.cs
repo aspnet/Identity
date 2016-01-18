@@ -3,6 +3,7 @@
 
 using System;
 using Microsoft.Data.Entity;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.AspNet.Identity.EntityFramework.InMemory.Test
 {
@@ -22,11 +23,39 @@ namespace Microsoft.AspNet.Identity.EntityFramework.InMemory.Test
         where TRole : IdentityRole<TKey>
         where TKey : IEquatable<TKey>
     {
-        public InMemoryContext() { }
+        public InMemoryContext() : base(BuildServiceProvider()) { }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseInMemoryDatabase();
         }
+
+        private static IServiceProvider BuildServiceProvider()
+        {
+            var services = new ServiceCollection();
+            services.AddEntityFramework().AddInMemoryDatabase();
+            return services.BuildServiceProvider();
+        }
+    }
+
+    public abstract class InMemoryContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim> : IdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim>
+        where TUser : IdentityUser<TKey, TUserClaim, TUserRole, TUserLogin>
+        where TRole : IdentityRole<TKey, TUserRole, TRoleClaim>
+        where TKey : IEquatable<TKey>
+        where TUserClaim : IdentityUserClaim<TKey>
+        where TUserRole : IdentityUserRole<TKey>
+        where TUserLogin : IdentityUserLogin<TKey>
+        where TRoleClaim : IdentityRoleClaim<TKey>
+    {
+
+        public InMemoryContext() : base(BuildServiceProvider()) { }
+
+        private static IServiceProvider BuildServiceProvider()
+        {
+            var services = new ServiceCollection();
+            services.AddEntityFramework().AddInMemoryDatabase();
+            return services.BuildServiceProvider();
+        }
+
     }
 }

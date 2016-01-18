@@ -111,17 +111,17 @@ namespace Microsoft.AspNet.Identity
         /// </value>
         protected internal virtual ILogger Logger { get; set; }
 
-        internal IPasswordHasher<TUser> PasswordHasher { get; set; }
+        protected internal IPasswordHasher<TUser> PasswordHasher { get; set; }
 
-        internal IList<IUserValidator<TUser>> UserValidators { get; } = new List<IUserValidator<TUser>>();
+        protected internal IList<IUserValidator<TUser>> UserValidators { get; } = new List<IUserValidator<TUser>>();
 
-        internal IList<IPasswordValidator<TUser>> PasswordValidators { get; } = new List<IPasswordValidator<TUser>>();
+        protected internal IList<IPasswordValidator<TUser>> PasswordValidators { get; } = new List<IPasswordValidator<TUser>>();
 
         internal ILookupNormalizer KeyNormalizer { get; set; }
 
         internal IdentityErrorDescriber ErrorDescriber { get; set; }
 
-        internal IdentityOptions Options { get; set; }
+        protected internal IdentityOptions Options { get; set; }
 
         /// <summary>
         /// Gets a flag indicating whether the backing user store supports two factor authentication.
@@ -1138,13 +1138,13 @@ namespace Microsoft.AspNet.Identity
             return await UpdateUserAsync(user);
         }
 
-        private async Task<IdentityResult> UserAlreadyInRoleError(TUser user, string role)
+        protected async Task<IdentityResult> UserAlreadyInRoleError(TUser user, string role)
         {
             Logger.LogWarning(5, "User {userId} is already in role {role}.", await GetUserIdAsync(user), role);
             return IdentityResult.Failed(ErrorDescriber.UserAlreadyInRole(role));
         }
 
-        private async Task<IdentityResult> UserNotInRoleError(TUser user, string role)
+        protected async Task<IdentityResult> UserNotInRoleError(TUser user, string role)
         {
             Logger.LogWarning(6, "User {userId} is not in role {role}.", await GetUserIdAsync(user), role);
             return IdentityResult.Failed(ErrorDescriber.UserNotInRole(role));
@@ -1967,7 +1967,7 @@ namespace Microsoft.AspNet.Identity
         }
 
         // IUserFactorStore methods
-        internal IUserTwoFactorStore<TUser> GetUserTwoFactorStore()
+        protected internal virtual IUserTwoFactorStore<TUser> GetUserTwoFactorStore()
         {
             var cast = Store as IUserTwoFactorStore<TUser>;
             if (cast == null)
@@ -1978,7 +1978,7 @@ namespace Microsoft.AspNet.Identity
         }
 
         // IUserLockoutStore methods
-        internal IUserLockoutStore<TUser> GetUserLockoutStore()
+        protected internal virtual IUserLockoutStore<TUser> GetUserLockoutStore()
         {
             var cast = Store as IUserLockoutStore<TUser>;
             if (cast == null)
@@ -1989,7 +1989,7 @@ namespace Microsoft.AspNet.Identity
         }
 
         // IUserEmailStore methods
-        internal IUserEmailStore<TUser> GetEmailStore(bool throwOnFail = true)
+        protected internal virtual IUserEmailStore<TUser> GetEmailStore(bool throwOnFail = true)
         {
             var cast = Store as IUserEmailStore<TUser>;
             if (throwOnFail && cast == null)
@@ -2000,7 +2000,7 @@ namespace Microsoft.AspNet.Identity
         }
 
         // IUserPhoneNumberStore methods
-        internal IUserPhoneNumberStore<TUser> GetPhoneNumberStore()
+        protected internal virtual IUserPhoneNumberStore<TUser> GetPhoneNumberStore()
         {
             var cast = Store as IUserPhoneNumberStore<TUser>;
             if (cast == null)
@@ -2025,7 +2025,7 @@ namespace Microsoft.AspNet.Identity
             }
         }
 
-        internal async Task<IdentityResult> UpdatePasswordHash(IUserPasswordStore<TUser> passwordStore,
+        protected internal virtual async Task<IdentityResult> UpdatePasswordHash(IUserPasswordStore<TUser> passwordStore,
             TUser user, string newPassword, bool validatePassword = true)
         {
             if (validatePassword)
@@ -2042,7 +2042,7 @@ namespace Microsoft.AspNet.Identity
             return IdentityResult.Success;
         }
 
-        private IUserRoleStore<TUser> GetUserRoleStore()
+        protected virtual IUserRoleStore<TUser> GetUserRoleStore()
         {
             var cast = Store as IUserRoleStore<TUser>;
             if (cast == null)
@@ -2052,13 +2052,13 @@ namespace Microsoft.AspNet.Identity
             return cast;
         }
 
-        private static string NewSecurityStamp()
+        protected virtual string NewSecurityStamp()
         {
             return Guid.NewGuid().ToString();
         }
 
         // IUserLoginStore methods
-        private IUserLoginStore<TUser> GetLoginStore()
+        protected virtual IUserLoginStore<TUser> GetLoginStore()
         {
             var cast = Store as IUserLoginStore<TUser>;
             if (cast == null)
@@ -2068,7 +2068,7 @@ namespace Microsoft.AspNet.Identity
             return cast;
         }
 
-        private IUserSecurityStampStore<TUser> GetSecurityStore()
+        protected virtual IUserSecurityStampStore<TUser> GetSecurityStore()
         {
             var cast = Store as IUserSecurityStampStore<TUser>;
             if (cast == null)
@@ -2078,7 +2078,7 @@ namespace Microsoft.AspNet.Identity
             return cast;
         }
 
-        private IUserClaimStore<TUser> GetClaimStore()
+        protected virtual IUserClaimStore<TUser> GetClaimStore()
         {
             var cast = Store as IUserClaimStore<TUser>;
             if (cast == null)
@@ -2142,7 +2142,7 @@ namespace Microsoft.AspNet.Identity
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        private async Task<IdentityResult> UpdateUserAsync(TUser user)
+        protected virtual async Task<IdentityResult> UpdateUserAsync(TUser user)
         {
             var result = await ValidateUserInternal(user);
             if (!result.Succeeded)
@@ -2155,7 +2155,7 @@ namespace Microsoft.AspNet.Identity
         }
 
         // IUserPasswordStore methods
-        private IUserPasswordStore<TUser> GetPasswordStore()
+        protected virtual IUserPasswordStore<TUser> GetPasswordStore()
         {
             var cast = Store as IUserPasswordStore<TUser>;
             if (cast == null)
@@ -2165,7 +2165,7 @@ namespace Microsoft.AspNet.Identity
             return cast;
         }
 
-        private void ThrowIfDisposed()
+        protected void ThrowIfDisposed()
         {
             if (_disposed)
             {
