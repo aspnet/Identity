@@ -1740,6 +1740,32 @@ namespace Microsoft.AspNet.Identity.Test
         }
 
         [Fact]
+        public async Task CanFindByPhoneNumber()
+        {
+            if (ShouldSkipDbTests())
+            {
+                return;
+            }
+            var manager = CreateManager();
+            var uniqueString = DateTime.Now.Ticks.ToString();
+            var phone = "123-456-0987" + uniqueString;
+            var user = CreateTestUser(phoneNumber: phone);
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
+
+            var resolvedUser = await manager.FindByPhoneNumberAsync(phone);
+            var resolvedPhoneNumber = await manager.GetPhoneNumberAsync(resolvedUser[0]);
+            Assert.True(resolvedUser.Count == 1); //unique so always 1
+            Assert.True(resolvedPhoneNumber == phone); //equal to unique value in test
+
+            //create second user to test >1 resolved user
+            var secondUser = CreateTestUser(phoneNumber: phone);
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(secondUser));
+            var resolvedUsers = await manager.FindByPhoneNumberAsync(phone);
+            Assert.True(resolvedUsers.Count > 1);
+
+        }
+
+        [Fact]
         public async Task CanChangeEmail()
         {
             if (ShouldSkipDbTests())
