@@ -259,11 +259,11 @@ namespace Microsoft.AspNetCore.Identity
         }
 
         /// <summary>
-        /// Gets a flag indicating whether the backing user store supports returning 
+        /// Gets a flag indicating whether the backing user store supports returning
         /// <see cref="IQueryable"/> collections of information.
         /// </summary>
         /// <value>
-        /// true if the backing user store supports returning <see cref="IQueryable"/> collections of 
+        /// true if the backing user store supports returning <see cref="IQueryable"/> collections of
         /// information, otherwise false.
         /// </value>
         public virtual bool SupportsQueryableUsers
@@ -354,7 +354,7 @@ namespace Microsoft.AspNetCore.Identity
         }
 
         /// <summary>
-        /// Creates the specified <paramref name="user"/> in the backing store with no password, 
+        /// Creates the specified <paramref name="user"/> in the backing store with no password,
         /// as an asynchronous operation.
         /// </summary>
         /// <param name="user">The user to create.</param>
@@ -394,7 +394,7 @@ namespace Microsoft.AspNetCore.Identity
             ThrowIfDisposed();
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
 
             return UpdateUserAsync(user);
@@ -413,7 +413,7 @@ namespace Microsoft.AspNetCore.Identity
             ThrowIfDisposed();
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
 
             return Store.DeleteAsync(user, CancellationToken);
@@ -446,14 +446,14 @@ namespace Microsoft.AspNetCore.Identity
             ThrowIfDisposed();
             if (userName == null)
             {
-                throw new ArgumentNullException("userName");
+                throw new ArgumentNullException(nameof(userName));
             }
             userName = NormalizeKey(userName);
             return Store.FindByNameAsync(userName, CancellationToken);
         }
 
         /// <summary>
-        /// Creates the specified <paramref name="user"/> in the backing store with given password, 
+        /// Creates the specified <paramref name="user"/> in the backing store with given password,
         /// as an asynchronous operation.
         /// </summary>
         /// <param name="user">The user to create.</param>
@@ -468,11 +468,11 @@ namespace Microsoft.AspNetCore.Identity
             var passwordStore = GetPasswordStore();
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
             if (password == null)
             {
-                throw new ArgumentNullException("password");
+                throw new ArgumentNullException(nameof(password));
             }
             var result = await UpdatePasswordHash(passwordStore, user, password);
             if (!result.Succeeded)
@@ -513,7 +513,7 @@ namespace Microsoft.AspNetCore.Identity
             ThrowIfDisposed();
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
             return await Store.GetUserNameAsync(user, CancellationToken);
         }
@@ -529,7 +529,7 @@ namespace Microsoft.AspNetCore.Identity
             ThrowIfDisposed();
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
 
             await Store.SetUserNameAsync(user, userName, CancellationToken);
@@ -549,7 +549,7 @@ namespace Microsoft.AspNetCore.Identity
         }
 
         /// <summary>
-        /// Returns a flag indicating whether the given <paramref name="password"/> is valid for the 
+        /// Returns a flag indicating whether the given <paramref name="password"/> is valid for the
         /// specified <paramref name="user"/>.
         /// </summary>
         /// <param name="user">The user whose password should be validated.</param>
@@ -595,7 +595,7 @@ namespace Microsoft.AspNetCore.Identity
             var passwordStore = GetPasswordStore();
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
 
             return passwordStore.HasPasswordAsync(user, CancellationToken);
@@ -617,7 +617,7 @@ namespace Microsoft.AspNetCore.Identity
             var passwordStore = GetPasswordStore();
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
 
             var hash = await passwordStore.GetPasswordHashAsync(user, CancellationToken);
@@ -651,7 +651,7 @@ namespace Microsoft.AspNetCore.Identity
             var passwordStore = GetPasswordStore();
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
 
 
@@ -684,7 +684,7 @@ namespace Microsoft.AspNetCore.Identity
             var passwordStore = GetPasswordStore();
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
 
             await UpdatePasswordHash(passwordStore, user, null, validatePassword: false);
@@ -722,7 +722,7 @@ namespace Microsoft.AspNetCore.Identity
             var securityStore = GetSecurityStore();
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
             return await securityStore.GetSecurityStampAsync(user, CancellationToken);
         }
@@ -744,7 +744,7 @@ namespace Microsoft.AspNetCore.Identity
             GetSecurityStore();
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
 
             await UpdateSecurityStampInternal(user);
@@ -753,10 +753,10 @@ namespace Microsoft.AspNetCore.Identity
 
         /// <summary>
         /// Generates a password reset token for the specified <paramref name="user"/>, using
-        /// the configured password reset token provider. 
+        /// the configured password reset token provider.
         /// </summary>
         /// <param name="user">The user to generate a password reset token for.</param>
-        /// <returns>The <see cref="Task"/> that represents the asynchronous operation, 
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation,
         /// containing a password reset token for the specified <paramref name="user"/>.</returns>
         public virtual Task<string> GeneratePasswordResetTokenAsync(TUser user)
         {
@@ -780,7 +780,7 @@ namespace Microsoft.AspNetCore.Identity
             ThrowIfDisposed();
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
 
             // Make sure the token is valid and the stamp matches
@@ -811,11 +811,11 @@ namespace Microsoft.AspNetCore.Identity
             var loginStore = GetLoginStore();
             if (loginProvider == null)
             {
-                throw new ArgumentNullException("loginProvider");
+                throw new ArgumentNullException(nameof(loginProvider));
             }
             if (providerKey == null)
             {
-                throw new ArgumentNullException("providerKey");
+                throw new ArgumentNullException(nameof(providerKey));
             }
             return loginStore.FindByLoginAsync(loginProvider, providerKey, CancellationToken);
         }
@@ -837,15 +837,15 @@ namespace Microsoft.AspNetCore.Identity
             var loginStore = GetLoginStore();
             if (loginProvider == null)
             {
-                throw new ArgumentNullException("loginProvider");
+                throw new ArgumentNullException(nameof(loginProvider));
             }
             if (providerKey == null)
             {
-                throw new ArgumentNullException("providerKey");
+                throw new ArgumentNullException(nameof(providerKey));
             }
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
 
             await loginStore.RemoveLoginAsync(user, loginProvider, providerKey, CancellationToken);
@@ -868,11 +868,11 @@ namespace Microsoft.AspNetCore.Identity
             var loginStore = GetLoginStore();
             if (login == null)
             {
-                throw new ArgumentNullException("login");
+                throw new ArgumentNullException(nameof(login));
             }
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
 
             var existingUser = await FindByLoginAsync(login.LoginProvider, login.ProviderKey);
@@ -898,7 +898,7 @@ namespace Microsoft.AspNetCore.Identity
             var loginStore = GetLoginStore();
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
             return await loginStore.GetLoginsAsync(user, CancellationToken);
         }
@@ -918,11 +918,11 @@ namespace Microsoft.AspNetCore.Identity
             var claimStore = GetClaimStore();
             if (claim == null)
             {
-                throw new ArgumentNullException("claim");
+                throw new ArgumentNullException(nameof(claim));
             }
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
             return AddClaimsAsync(user, new Claim[] { claim });
         }
@@ -942,11 +942,11 @@ namespace Microsoft.AspNetCore.Identity
             var claimStore = GetClaimStore();
             if (claims == null)
             {
-                throw new ArgumentNullException("claims");
+                throw new ArgumentNullException(nameof(claims));
             }
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
 
             await claimStore.AddClaimsAsync(user, claims, CancellationToken);
@@ -970,15 +970,15 @@ namespace Microsoft.AspNetCore.Identity
             var claimStore = GetClaimStore();
             if (claim == null)
             {
-                throw new ArgumentNullException("claim");
+                throw new ArgumentNullException(nameof(claim));
             }
             if (newClaim == null)
             {
-                throw new ArgumentNullException("newClaim");
+                throw new ArgumentNullException(nameof(newClaim));
             }
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
 
             await claimStore.ReplaceClaimAsync(user, claim, newClaim, CancellationToken);
@@ -1000,11 +1000,11 @@ namespace Microsoft.AspNetCore.Identity
             var claimStore = GetClaimStore();
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
             if (claim == null)
             {
-                throw new ArgumentNullException("claim");
+                throw new ArgumentNullException(nameof(claim));
             }
             return RemoveClaimsAsync(user, new Claim[] { claim });
         }
@@ -1024,11 +1024,11 @@ namespace Microsoft.AspNetCore.Identity
             var claimStore = GetClaimStore();
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
             if (claims == null)
             {
-                throw new ArgumentNullException("claims");
+                throw new ArgumentNullException(nameof(claims));
             }
 
             await claimStore.RemoveClaimsAsync(user, claims, CancellationToken);
@@ -1048,7 +1048,7 @@ namespace Microsoft.AspNetCore.Identity
             var claimStore = GetClaimStore();
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
             return await claimStore.GetClaimsAsync(user, CancellationToken);
         }
@@ -1068,7 +1068,7 @@ namespace Microsoft.AspNetCore.Identity
             var userRoleStore = GetUserRoleStore();
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
 
             var normalizedRole = NormalizeKey(role);
@@ -1095,11 +1095,11 @@ namespace Microsoft.AspNetCore.Identity
             var userRoleStore = GetUserRoleStore();
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
             if (roles == null)
             {
-                throw new ArgumentNullException("roles");
+                throw new ArgumentNullException(nameof(roles));
             }
 
             foreach (var role in roles.Distinct())
@@ -1129,7 +1129,7 @@ namespace Microsoft.AspNetCore.Identity
             var userRoleStore = GetUserRoleStore();
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
 
             var normalizedRole = NormalizeKey(role);
@@ -1168,11 +1168,11 @@ namespace Microsoft.AspNetCore.Identity
             var userRoleStore = GetUserRoleStore();
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
             if (roles == null)
             {
-                throw new ArgumentNullException("roles");
+                throw new ArgumentNullException(nameof(roles));
             }
 
             foreach (var role in roles)
@@ -1198,7 +1198,7 @@ namespace Microsoft.AspNetCore.Identity
             var userRoleStore = GetUserRoleStore();
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
             return await userRoleStore.GetRolesAsync(user, CancellationToken);
         }
@@ -1218,7 +1218,7 @@ namespace Microsoft.AspNetCore.Identity
             var userRoleStore = GetUserRoleStore();
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
             return await userRoleStore.IsInRoleAsync(user, NormalizeKey(role), CancellationToken);
         }
@@ -1235,7 +1235,7 @@ namespace Microsoft.AspNetCore.Identity
             var store = GetEmailStore();
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
             return await store.GetEmailAsync(user, CancellationToken);
         }
@@ -1255,7 +1255,7 @@ namespace Microsoft.AspNetCore.Identity
             var store = GetEmailStore();
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
 
             await store.SetEmailAsync(user, email, CancellationToken);
@@ -1278,7 +1278,7 @@ namespace Microsoft.AspNetCore.Identity
             var store = GetEmailStore();
             if (email == null)
             {
-                throw new ArgumentNullException("email");
+                throw new ArgumentNullException(nameof(email));
             }
             return store.FindByEmailAsync(NormalizeKey(email), CancellationToken);
         }
@@ -1326,7 +1326,7 @@ namespace Microsoft.AspNetCore.Identity
             var store = GetEmailStore();
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
 
             if (!await VerifyUserTokenAsync(user, Options.Tokens.EmailConfirmationTokenProvider, ConfirmEmailTokenPurpose, token))
@@ -1352,7 +1352,7 @@ namespace Microsoft.AspNetCore.Identity
             var store = GetEmailStore();
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
             return await store.GetEmailConfirmedAsync(user, CancellationToken);
         }
@@ -1385,7 +1385,7 @@ namespace Microsoft.AspNetCore.Identity
             ThrowIfDisposed();
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
 
             // Make sure the token is valid and the stamp matches
@@ -1411,7 +1411,7 @@ namespace Microsoft.AspNetCore.Identity
             var store = GetPhoneNumberStore();
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
             return await store.GetPhoneNumberAsync(user, CancellationToken);
         }
@@ -1431,7 +1431,7 @@ namespace Microsoft.AspNetCore.Identity
             var store = GetPhoneNumberStore();
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
 
             await store.SetPhoneNumberAsync(user, phoneNumber, CancellationToken);
@@ -1441,7 +1441,7 @@ namespace Microsoft.AspNetCore.Identity
         }
 
         /// <summary>
-        /// Sets the phone number for the specified <paramref name="user"/> if the specified 
+        /// Sets the phone number for the specified <paramref name="user"/> if the specified
         /// change <paramref name="token"/> is valid.
         /// </summary>
         /// <param name="user">The user whose phone number to set.</param>
@@ -1457,7 +1457,7 @@ namespace Microsoft.AspNetCore.Identity
             var store = GetPhoneNumberStore();
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
 
             if (!await VerifyChangePhoneNumberTokenAsync(user, token, phoneNumber))
@@ -1485,7 +1485,7 @@ namespace Microsoft.AspNetCore.Identity
             var store = GetPhoneNumberStore();
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
             return store.GetPhoneNumberConfirmedAsync(user, CancellationToken);
         }
@@ -1551,7 +1551,7 @@ namespace Microsoft.AspNetCore.Identity
             ThrowIfDisposed();
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
             if (tokenProvider == null)
             {
@@ -1587,7 +1587,7 @@ namespace Microsoft.AspNetCore.Identity
             ThrowIfDisposed();
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
             if (tokenProvider == null)
             {
@@ -1611,13 +1611,13 @@ namespace Microsoft.AspNetCore.Identity
             ThrowIfDisposed();
             if (provider == null)
             {
-                throw new ArgumentNullException("provider");
+                throw new ArgumentNullException(nameof(provider));
             }
             _tokenProviders[providerName] = provider;
         }
 
         /// <summary>
-        /// Gets a list of valid two factor token providers for the specified <paramref name="user"/>, 
+        /// Gets a list of valid two factor token providers for the specified <paramref name="user"/>,
         /// as an asynchronous operation.
         /// </summary>
         /// <param name="user">The user the whose two factor authentication providers will be returned.</param>
@@ -1630,7 +1630,7 @@ namespace Microsoft.AspNetCore.Identity
             ThrowIfDisposed();
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
             var results = new List<string>();
             foreach (var f in _tokenProviders)
@@ -1658,7 +1658,7 @@ namespace Microsoft.AspNetCore.Identity
             ThrowIfDisposed();
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
             if (!_tokenProviders.ContainsKey(tokenProvider))
             {
@@ -1689,7 +1689,7 @@ namespace Microsoft.AspNetCore.Identity
             ThrowIfDisposed();
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
             if (!_tokenProviders.ContainsKey(tokenProvider))
             {
@@ -1706,7 +1706,7 @@ namespace Microsoft.AspNetCore.Identity
         /// </summary>
         /// <param name="user">The user whose two factor authentication enabled status should be retrieved.</param>
         /// <returns>
-        /// The <see cref="Task"/> that represents the asynchronous operation, true if the specified <paramref name="user "/> 
+        /// The <see cref="Task"/> that represents the asynchronous operation, true if the specified <paramref name="user "/>
         /// has two factor authentication enabled, otherwise false.
         /// </returns>
         public virtual async Task<bool> GetTwoFactorEnabledAsync(TUser user)
@@ -1715,7 +1715,7 @@ namespace Microsoft.AspNetCore.Identity
             var store = GetUserTwoFactorStore();
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
             return await store.GetTwoFactorEnabledAsync(user, CancellationToken);
         }
@@ -1734,7 +1734,7 @@ namespace Microsoft.AspNetCore.Identity
             var store = GetUserTwoFactorStore();
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
 
             await store.SetTwoFactorEnabledAsync(user, enabled, CancellationToken);
@@ -1748,7 +1748,7 @@ namespace Microsoft.AspNetCore.Identity
         /// </summary>
         /// <param name="user">The user whose locked out status should be retrieved.</param>
         /// <returns>
-        /// The <see cref="Task"/> that represents the asynchronous operation, true if the specified <paramref name="user "/> 
+        /// The <see cref="Task"/> that represents the asynchronous operation, true if the specified <paramref name="user "/>
         /// is locked out, otherwise false.
         /// </returns>
         public virtual async Task<bool> IsLockedOutAsync(TUser user)
@@ -1757,7 +1757,7 @@ namespace Microsoft.AspNetCore.Identity
             var store = GetUserLockoutStore();
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
             if (!await store.GetLockoutEnabledAsync(user, CancellationToken))
             {
@@ -1782,7 +1782,7 @@ namespace Microsoft.AspNetCore.Identity
             var store = GetUserLockoutStore();
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
 
             await store.SetLockoutEnabledAsync(user, enabled, CancellationToken);
@@ -1802,7 +1802,7 @@ namespace Microsoft.AspNetCore.Identity
             var store = GetUserLockoutStore();
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
             return await store.GetLockoutEnabledAsync(user, CancellationToken);
         }
@@ -1821,7 +1821,7 @@ namespace Microsoft.AspNetCore.Identity
             var store = GetUserLockoutStore();
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
             return await store.GetLockoutEndDateAsync(user, CancellationToken);
         }
@@ -1838,7 +1838,7 @@ namespace Microsoft.AspNetCore.Identity
             var store = GetUserLockoutStore();
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
 
             if (!await store.GetLockoutEnabledAsync(user, CancellationToken))
@@ -1851,8 +1851,8 @@ namespace Microsoft.AspNetCore.Identity
         }
 
         /// <summary>
-        /// Increments the access failed count for the user as an asynchronous operation. 
-        /// If the failed access account is greater than or equal to the configured maximum number of attempts, 
+        /// Increments the access failed count for the user as an asynchronous operation.
+        /// If the failed access account is greater than or equal to the configured maximum number of attempts,
         /// the user will be locked out for the configured lockout time span.
         /// </summary>
         /// <param name="user">The user whose failed access count to increment.</param>
@@ -1863,7 +1863,7 @@ namespace Microsoft.AspNetCore.Identity
             var store = GetUserLockoutStore();
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
 
             // If this puts the user over the threshold for lockout, lock them out and reset the access failed count
@@ -1890,7 +1890,7 @@ namespace Microsoft.AspNetCore.Identity
             var store = GetUserLockoutStore();
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
 
             if (await GetAccessFailedCountAsync(user) == 0)
@@ -1902,7 +1902,7 @@ namespace Microsoft.AspNetCore.Identity
         }
 
         /// <summary>
-        /// Retrieves the current number of failed accesses for the given <paramref name="user"/>. 
+        /// Retrieves the current number of failed accesses for the given <paramref name="user"/>.
         /// </summary>
         /// <param name="user">The user whose access failed count should be retrieved for.</param>
         /// <returns>The <see cref="Task"/> that contains the result the asynchronous operation, the current failed access count
@@ -1913,7 +1913,7 @@ namespace Microsoft.AspNetCore.Identity
             var store = GetUserLockoutStore();
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
             return await store.GetAccessFailedCountAsync(user, CancellationToken);
         }
@@ -1932,7 +1932,7 @@ namespace Microsoft.AspNetCore.Identity
             var store = GetClaimStore();
             if (claim == null)
             {
-                throw new ArgumentNullException("claim");
+                throw new ArgumentNullException(nameof(claim));
             }
             return store.GetUsersForClaimAsync(claim, CancellationToken);
         }
@@ -1951,7 +1951,7 @@ namespace Microsoft.AspNetCore.Identity
             var store = GetUserRoleStore();
             if (roleName == null)
             {
-                throw new ArgumentNullException("role");
+                throw new ArgumentNullException(nameof(roleName));
             }
 
             return store.GetUsersInRoleAsync(NormalizeKey(roleName), CancellationToken);
