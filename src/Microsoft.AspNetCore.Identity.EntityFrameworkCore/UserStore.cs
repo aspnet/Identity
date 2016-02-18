@@ -1258,8 +1258,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
             {
                 throw new ArgumentNullException(nameof(user));
             }
-            var userId = user.Id;
-            var entry = await UserTokens.SingleOrDefaultAsync(l => l.UserId.Equals(userId) && l.LoginProvider == loginProvider && l.TokenName == name, cancellationToken);
+            var entry = await FindToken(user, loginProvider, name, cancellationToken);
             return entry?.TokenValue;
         }
     }
