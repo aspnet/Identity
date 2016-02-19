@@ -15,16 +15,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-// Temp
-namespace Microsoft.AspNetCore.Authentication
-{
-    public class AuthenticationToken
-    {
-        public string Name { get; set; }
-        public string Value { get; set; }
-    }
-}
-
 namespace Microsoft.AspNetCore.Identity
 {
     /// <summary>

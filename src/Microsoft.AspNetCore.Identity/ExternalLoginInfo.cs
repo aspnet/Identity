@@ -1,7 +1,9 @@
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System.Collections.Generic;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
 
 namespace Microsoft.AspNetCore.Identity
 {
@@ -28,5 +30,7 @@ namespace Microsoft.AspNetCore.Identity
         /// </summary>
         /// <value>The <see cref="ClaimsPrincipal"/> associated with this login.</value>
         public ClaimsPrincipal ExternalPrincipal { get; set; }
+
+        public IEnumerable<AuthenticationToken> Tokens { get; set; }
     }
 }
