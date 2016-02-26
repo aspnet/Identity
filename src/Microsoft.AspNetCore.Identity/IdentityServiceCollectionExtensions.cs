@@ -27,23 +27,6 @@ namespace Microsoft.Extensions.DependencyInjection
             where TUser : class
             where TRole : class
         {
-            return services.AddIdentity<TUser, TRole>(setupAction: null);
-        }
-
-        /// <summary>
-        /// Adds and configures the identity system for the specified User and Role types.
-        /// </summary>
-        /// <typeparam name="TUser">The type representing a User in the system.</typeparam>
-        /// <typeparam name="TRole">The type representing a Role in the system.</typeparam>
-        /// <param name="services">The services available in the application.</param>
-        /// <param name="setupAction">An action to configure the <see cref="IdentityOptions"/>.</param>
-        /// <returns>An <see cref="IdentityBuilder"/> for creating and configuring the identity system.</returns>
-        public static IdentityBuilder AddIdentity<TUser, TRole>(
-            this IServiceCollection services, 
-            Action<IdentityOptions> setupAction)
-            where TUser : class
-            where TRole : class
-        {
             // Services used by identity
             services.AddAuthentication(options =>
             {
@@ -68,12 +51,37 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddScoped<SignInManager<TUser>, SignInManager<TUser>>();
             services.TryAddScoped<RoleManager<TRole>, RoleManager<TRole>>();
 
-            if (setupAction != null)
+            return new IdentityBuilder(typeof(TUser), typeof(TRole), services);
+        }
+
+        /// <summary>
+        /// Adds and configures the identity system for the specified User and Role types.
+        /// </summary>
+        /// <typeparam name="TUser">The type representing a User in the system.</typeparam>
+        /// <typeparam name="TRole">The type representing a Role in the system.</typeparam>
+        /// <param name="services">The services available in the application.</param>
+        /// <param name="setupAction">An action to configure the <see cref="IdentityOptions"/>.</param>
+        /// <returns>An <see cref="IdentityBuilder"/> for creating and configuring the identity system.</returns>
+        public static IdentityBuilder AddIdentity<TUser, TRole>(
+            this IServiceCollection services, 
+            Action<IdentityOptions> setupAction)
+            where TUser : class
+            where TRole : class
+        {
+            if (services == null)
             {
-                services.Configure(setupAction);
+                throw new ArgumentNullException(nameof(services));
             }
 
-            return new IdentityBuilder(typeof(TUser), typeof(TRole), services);
+            if (setupAction == null)
+            {
+                throw new ArgumentNullException(nameof(setupAction));
+            }
+
+            var builder = services.AddIdentity<TUser, TRole>();
+            builder.Services.Configure(setupAction);
+
+            return builder;
         }
     }
 }
