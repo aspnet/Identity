@@ -23,11 +23,11 @@ namespace Microsoft.AspNetCore.Identity
         /// </summary>
         /// <param name="userManager">The <see cref="UserManager{TUser}"/> to retrieve user information from.</param>
         /// <param name="roleManager">The <see cref="RoleManager{TRole}"/> to retrieve a user's roles from.</param>
-        /// <param name="optionsAccessor">The configured <see cref="IdentityOptions"/>.</param>
+        /// <param name="options">The configured <see cref="IdentityOptions"/>.</param>
         public UserClaimsPrincipalFactory(
             UserManager<TUser> userManager, 
             RoleManager<TRole> roleManager, 
-            IOptions<IdentityOptions> optionsAccessor)
+            IdentityOptions options)
         {
             if (userManager == null)
             {
@@ -37,13 +37,13 @@ namespace Microsoft.AspNetCore.Identity
             {
                 throw new ArgumentNullException(nameof(roleManager));
             }
-            if (optionsAccessor == null || optionsAccessor.Value == null)
+            if (options == null)
             {
-                throw new ArgumentNullException(nameof(optionsAccessor));
+                throw new ArgumentNullException(nameof(options));
             }
             UserManager = userManager;
             RoleManager = roleManager;
-            Options = optionsAccessor.Value;
+            Options = options;
         }
 
         /// <summary>

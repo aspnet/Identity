@@ -19,7 +19,7 @@ namespace Microsoft.AspNetCore.Identity
         private readonly SignInManager<TUser> _signInManager;
         private readonly IdentityOptions _options;
 
-        public SecurityStampValidator(IOptions<IdentityOptions> options, SignInManager<TUser> signInManager)
+        public SecurityStampValidator(IdentityOptions options, SignInManager<TUser> signInManager)
         {
             if (options == null)
             {
@@ -30,7 +30,7 @@ namespace Microsoft.AspNetCore.Identity
                 throw new ArgumentNullException(nameof(signInManager));
             }
             _signInManager = signInManager;
-            _options = options.Value;
+            _options = options;
         }
 
         /// <summary>

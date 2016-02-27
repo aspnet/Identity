@@ -32,7 +32,7 @@ namespace Microsoft.AspNetCore.Builder
                 throw new InvalidOperationException(Resources.MustCallAddIdentity);
             }
 
-            var options = app.ApplicationServices.GetRequiredService<IOptions<IdentityOptions>>().Value;
+            var options = app.ApplicationServices.GetRequiredService<IdentityOptions>();
             app.UseCookieAuthentication(options.Cookies.ExternalCookie);
             app.UseCookieAuthentication(options.Cookies.TwoFactorRememberMeCookie);
             app.UseCookieAuthentication(options.Cookies.TwoFactorUserIdCookie);
