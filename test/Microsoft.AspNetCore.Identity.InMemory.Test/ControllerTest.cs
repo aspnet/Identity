@@ -77,7 +77,7 @@ namespace Microsoft.AspNetCore.Identity.InMemory.Test
             var externalPrincipal = new ClaimsPrincipal(externalIdentity);
             var externalLogin = new ExternalLoginInfo(externalPrincipal, authScheme, externalId, "displayname")
             {
-                Tokens = new[] {
+                AuthenticationTokens = new[] {
                     new AuthenticationToken { Name = "refresh_token", Value = "refresh" },
                     new AuthenticationToken { Name = "access_token", Value = "access" }
                 }

@@ -215,7 +215,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
 
             builder.Entity<IdentityUserToken<TKey>>(b =>
             {
-                b.HasKey(l => new { l.UserId, l.LoginProvider, l.TokenName });
+                b.HasKey(l => new { l.UserId, l.LoginProvider, l.Name });
                 b.ToTable("AspNetUserTokens");
             });
         }

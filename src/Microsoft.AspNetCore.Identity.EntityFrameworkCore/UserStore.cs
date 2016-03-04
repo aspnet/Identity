@@ -1201,7 +1201,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
         private Task<IdentityUserToken<TKey>> FindToken(TUser user, string loginProvider, string name, CancellationToken cancellationToken)
         {
             var userId = user.Id;
-            return UserTokens.SingleOrDefaultAsync(l => l.UserId.Equals(userId) && l.LoginProvider == loginProvider && l.TokenName == name, cancellationToken);
+            return UserTokens.SingleOrDefaultAsync(l => l.UserId.Equals(userId) && l.LoginProvider == loginProvider && l.Name == name, cancellationToken);
         }
 
         // <inheritdoc>
@@ -1222,13 +1222,13 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
                 {
                     UserId = user.Id,
                     LoginProvider = loginProvider,
-                    TokenName = name,
-                    TokenValue = value
+                    Name = name,
+                    Value = value
                 });
             }
             else
             {
-                token.TokenValue = value;
+                token.Value = value;
             }
         }
 
@@ -1242,7 +1242,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
                 throw new ArgumentNullException(nameof(user));
             }
             var userId = user.Id;
-            var entry = await UserTokens.SingleOrDefaultAsync(l => l.UserId.Equals(userId) && l.LoginProvider == loginProvider && l.TokenName == name, cancellationToken);
+            var entry = await UserTokens.SingleOrDefaultAsync(l => l.UserId.Equals(userId) && l.LoginProvider == loginProvider && l.Name == name, cancellationToken);
             if (entry != null)
             {
                 UserTokens.Remove(entry);
@@ -1259,7 +1259,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
                 throw new ArgumentNullException(nameof(user));
             }
             var entry = await FindToken(user, loginProvider, name, cancellationToken);
-            return entry?.TokenValue;
+            return entry?.Value;
         }
     }
 }

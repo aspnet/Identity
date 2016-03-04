@@ -2001,7 +2001,7 @@ namespace Microsoft.AspNetCore.Identity
         /// <param name="user"></param>
         /// <param name="loginProvider">The authentication scheme for the provider the token is associated with.</param>
         /// <param name="tokenName">The name of the token.</param>
-        /// <param name="tokenName">The value of the token.</param>
+        /// <param name="tokenValue">The value of the token.</param>
         /// <returns></returns>
         public virtual async Task<IdentityResult> SetAuthenticationTokenAsync(TUser user, string loginProvider, string tokenName, string tokenValue)
         {
@@ -2031,7 +2031,6 @@ namespace Microsoft.AspNetCore.Identity
         /// <param name="user"></param>
         /// <param name="loginProvider">The authentication scheme for the provider the token is associated with.</param>
         /// <param name="tokenName">The name of the token.</param>
-        /// <param name="tokenName">The value of the token.</param>
         /// <returns>Whether a token was removed.</returns>
         public virtual async Task<IdentityResult> RemoveAuthenticationTokenAsync(TUser user, string loginProvider, string tokenName)
         {

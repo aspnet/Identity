@@ -463,14 +463,14 @@ namespace Microsoft.AspNetCore.Identity
             }
             return new ExternalLoginInfo(auth.Principal, provider, providerKey, new AuthenticationDescription(auth.Description).DisplayName)
             {
-                Tokens = new AuthenticationProperties(auth.Properties).GetTokens()
+                AuthenticationTokens = new AuthenticationProperties(auth.Properties).GetTokens()
             };
         }
 
         /// <summary>
         /// Stores any authentication tokens found in the external authentication cookie into the associated user.
         /// </summary>
-        /// <param name="expectedXsrf">Flag indication whether a Cross Site Request Forgery token was expected in the current request.</param>
+        /// <param name="externalLogin">The information from the external login provider.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="IdentityResult"/> of the operation.</returns>
         public virtual async Task<IdentityResult> UpdateExternalAuthenticationTokensAsync(ExternalLoginInfo externalLogin)
         {
@@ -479,7 +479,7 @@ namespace Microsoft.AspNetCore.Identity
                 throw new ArgumentNullException(nameof(externalLogin));
             }
 
-            if (externalLogin.Tokens != null && externalLogin.Tokens.Any())
+            if (externalLogin.AuthenticationTokens != null && externalLogin.AuthenticationTokens.Any())
             {
                 var user = await UserManager.FindByLoginAsync(externalLogin.LoginProvider, externalLogin.ProviderKey);
                 if (user == null)
@@ -487,7 +487,7 @@ namespace Microsoft.AspNetCore.Identity
                     return IdentityResult.Failed();
                 }
 
-                foreach (var token in externalLogin.Tokens)
+                foreach (var token in externalLogin.AuthenticationTokens)
                 {
                     var result = await UserManager.SetAuthenticationTokenAsync(user, externalLogin.LoginProvider, token.Name, token.Value);
                     if (!result.Succeeded)
