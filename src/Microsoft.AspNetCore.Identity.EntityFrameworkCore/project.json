@@ -19,6 +19,12 @@
   },
   "frameworks": {
     "net451": { },
+    "dnx451": {
+      "frameworkAssemblies": {
+        "System.Runtime": "",
+        "System.Threading.Tasks": ""
+      }
+    },
     "netstandard1.3": {
       "dependencies": {
         "System.ComponentModel.TypeConverter": "4.0.1-*"
