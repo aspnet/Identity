@@ -7,41 +7,43 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity.Test;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
-namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.InMemory.Test
+namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
 {
-    public class InMemoryEFUserStoreTestWithGenerics : UserManagerTestBase<IdentityUserWithGenerics, MyIdentityRole, string>, IDisposable
+    public class UserStoreWithGenericsTest : UserManagerTestBase<IdentityUserWithGenerics, MyIdentityRole, string>, IClassFixture<ScratchDatabaseFixture>
     {
-        private readonly InMemoryContextWithGenerics _context;
-        private UserStoreWithGenerics _store;
+        private readonly ScratchDatabaseFixture _fixture;
 
-        public InMemoryEFUserStoreTestWithGenerics()
+        public UserStoreWithGenericsTest(ScratchDatabaseFixture fixture)
         {
-            var services = new ServiceCollection();
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddDbContext<InMemoryContextWithGenerics>(options => options.UseInMemoryDatabase());
-            _context = services.BuildServiceProvider().GetRequiredService<InMemoryContextWithGenerics>();
+            _fixture = fixture;
+        }
+
+        public ContextWithGenerics CreateContext()
+        {
+            var db = DbUtil.Create<ContextWithGenerics>(_fixture.ConnectionString);
+            db.Database.EnsureCreated();
+            return db;
         }
 
         protected override object CreateTestContext()
         {
-            return _context;
+            return CreateContext();
         }
+
 
         protected override void AddUserStore(IServiceCollection services, object context = null)
         {
-            _store = new UserStoreWithGenerics((InMemoryContextWithGenerics)context, "TestContext");
-            services.AddSingleton<IUserStore<IdentityUserWithGenerics>>(_store);
+            services.AddSingleton<IUserStore<IdentityUserWithGenerics>>(new UserStoreWithGenerics((ContextWithGenerics)context, "TestContext"));
         }
 
         protected override void AddRoleStore(IServiceCollection services, object context = null)
         {
-            services.AddSingleton<IRoleStore<MyIdentityRole>>(new RoleStoreWithGenerics((InMemoryContextWithGenerics)context, "TestContext"));
+            services.AddSingleton<IRoleStore<MyIdentityRole>>(new RoleStoreWithGenerics((ContextWithGenerics)context, "TestContext"));
         }
 
         protected override IdentityUserWithGenerics CreateTestUser(string namePrefix = "", string email = "", string phoneNumber = "",
@@ -164,10 +166,6 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.InMemory.Test
             Assert.Equal(claim.Value, newClaim.Value);
             Assert.Equal(claim.Issuer, newClaim.Issuer);
         }
-
-        public void Dispose()
-        {
-        }
     }
 
     public class ClaimEqualityComparer : IEqualityComparer<Claim>
@@ -196,11 +194,11 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.InMemory.Test
         }
     }
 
-    public class UserStoreWithGenerics : UserStore<IdentityUserWithGenerics, MyIdentityRole, InMemoryContextWithGenerics, string, IdentityUserClaimWithIssuer, IdentityUserRoleWithDate, IdentityUserLoginWithContext, IdentityUserTokenWithStuff>
+    public class UserStoreWithGenerics : UserStore<IdentityUserWithGenerics, MyIdentityRole, ContextWithGenerics, string, IdentityUserClaimWithIssuer, IdentityUserRoleWithDate, IdentityUserLoginWithContext, IdentityUserTokenWithStuff>
     {
         public string LoginContext { get; set; }
 
-        public UserStoreWithGenerics(InMemoryContextWithGenerics context, string loginContext) : base(context)
+        public UserStoreWithGenerics(ContextWithGenerics context, string loginContext) : base(context)
         {
             LoginContext = loginContext;
         }
@@ -245,10 +243,10 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.InMemory.Test
         }
     }
 
-    public class RoleStoreWithGenerics : RoleStore<MyIdentityRole, InMemoryContextWithGenerics, string, IdentityUserRoleWithDate, IdentityRoleClaim<string>>
+    public class RoleStoreWithGenerics : RoleStore<MyIdentityRole, ContextWithGenerics, string, IdentityUserRoleWithDate, IdentityRoleClaim<string>>
     {
         private string _loginContext;
-        public RoleStoreWithGenerics(InMemoryContextWithGenerics context, string loginContext) : base(context)
+        public RoleStoreWithGenerics(ContextWithGenerics context, string loginContext) : base(context)
         {
             _loginContext = loginContext;
         }
@@ -292,7 +290,6 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.InMemory.Test
         {
             Name = roleName;
         }
-
     }
 
     public class IdentityUserTokenWithStuff : IdentityUserToken<string>
@@ -305,15 +302,9 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.InMemory.Test
         public string Context { get; set; }
     }
 
-    public class InMemoryContextWithGenerics : InMemoryContext<IdentityUserWithGenerics, MyIdentityRole, string, IdentityUserClaimWithIssuer, IdentityUserRoleWithDate, IdentityUserLoginWithContext, IdentityRoleClaim<string>, IdentityUserTokenWithStuff>
+    public class ContextWithGenerics : IdentityDbContext<IdentityUserWithGenerics, MyIdentityRole, string, IdentityUserClaimWithIssuer, IdentityUserRoleWithDate, IdentityUserLoginWithContext, IdentityRoleClaim<string>, IdentityUserTokenWithStuff>
     {
-        public InMemoryContextWithGenerics(DbContextOptions options) : base(options)
-        { }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseInMemoryDatabase();
-        }
+        public ContextWithGenerics(DbContextOptions options) : base(options) { }
     }
 
     #endregion
