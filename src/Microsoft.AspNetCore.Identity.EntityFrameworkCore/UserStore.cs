@@ -71,7 +71,9 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
 
         protected override IdentityUserClaim<TKey> CreateUserClaim(TUser user, Claim claim)
         {
-            return new IdentityUserClaim<TKey> { UserId = user.Id, ClaimType = claim.Type, ClaimValue = claim.Value };
+            var userClaim = new IdentityUserClaim<TKey> { UserId = user.Id };
+            userClaim.FromClaim(claim);
+            return userClaim;
         }
 
         protected override IdentityUserLogin<TKey> CreateUserLogin(TUser user, UserLoginInfo login)
@@ -156,30 +158,11 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
         /// </summary>
         public IdentityErrorDescriber ErrorDescriber { get; set; }
 
-        /// <summary>
-        /// Returns the DbSet of roles.
-        /// </summary>
-        protected DbSet<TRole> Roles { get { return Context.Set<TRole>(); } }
-
-        /// <summary>
-        /// Returns the DbSet of user claims.
-        /// </summary>
-        protected DbSet<TUserClaim> UserClaims { get { return Context.Set<TUserClaim>(); } }
-
-        /// <summary>
-        /// Returns the DbSet of user roles.
-        /// </summary>
-        protected DbSet<TUserRole> UserRoles { get { return Context.Set<TUserRole>(); } }
-
-        /// <summary>
-        /// Returns the DbSet of user logins.
-        /// </summary>
-        protected DbSet<TUserLogin> UserLogins { get { return Context.Set<TUserLogin>(); } }
-
-        /// <summary>
-        /// Returns the DbSet of user tokens.
-        /// </summary>
-        protected DbSet<TUserToken> UserTokens { get { return Context.Set<TUserToken>(); } }
+        private DbSet<TRole> Roles { get { return Context.Set<TRole>(); } }
+        private DbSet<TUserClaim> UserClaims { get { return Context.Set<TUserClaim>(); } }
+        private DbSet<TUserRole> UserRoles { get { return Context.Set<TUserRole>(); } }
+        private DbSet<TUserLogin> UserLogins { get { return Context.Set<TUserLogin>(); } }
+        private DbSet<TUserToken> UserTokens { get { return Context.Set<TUserToken>(); } }
 
         /// <summary>
         /// Creates a new entity to represent a user role.
@@ -650,7 +633,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
                 throw new ArgumentNullException(nameof(user));
             }
 
-            return await UserClaims.Where(uc => uc.UserId.Equals(user.Id)).Select(c => new Claim(c.ClaimType, c.ClaimValue)).ToListAsync(cancellationToken);
+            return await UserClaims.Where(uc => uc.UserId.Equals(user.Id)).Select(c => c.ToClaim()).ToListAsync(cancellationToken);
         }
 
         /// <summary>

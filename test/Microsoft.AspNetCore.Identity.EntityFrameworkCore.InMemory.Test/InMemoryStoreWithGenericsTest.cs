@@ -166,38 +166,6 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.InMemory.Test
             Assert.Equal(claim.Issuer, newClaim.Issuer);
         }
 
-        [Fact]
-        public async Task CanUseDifferentUsersFromSameExternalProviderWhenUsingContext()
-        {
-            if (ShouldSkipDbTests())
-            {
-                return;
-            }
-            var manager = CreateManager();
-            var user1 = CreateTestUser();
-            var user2 = CreateTestUser();
-            var loginInfo = new UserLoginInfo("MyProvider", Guid.NewGuid().ToString(), "MyProvider");
-
-            var firstContext = _store.LoginContext;
-            var secondContext = "TestContext2";
-
-            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user1));
-            IdentityResultAssert.IsSuccess(await manager.AddLoginAsync(user1, loginInfo));
-            IdentityResultAssert.IsFailure(await manager.AddLoginAsync(user1, loginInfo));
-
-            _store.LoginContext = secondContext;
-            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user2));
-            IdentityResultAssert.IsSuccess(await manager.AddLoginAsync(user2, loginInfo));
-
-            _store.LoginContext = firstContext;
-            var foundUser = await manager.FindByLoginAsync(loginInfo.LoginProvider, loginInfo.ProviderKey);
-            Assert.Equal(user1.Id, foundUser.Id);
-
-            _store.LoginContext = secondContext;
-            foundUser = await manager.FindByLoginAsync(loginInfo.LoginProvider, loginInfo.ProviderKey);
-            Assert.Equal(user2.Id, foundUser.Id);
-        }
-
         public void Dispose()
         {
         }

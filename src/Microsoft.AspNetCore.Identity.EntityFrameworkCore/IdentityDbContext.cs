@@ -3,8 +3,6 @@
 
 using System;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
 {
@@ -180,31 +178,31 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
                 b.HasMany(r => r.Claims).WithOne().HasForeignKey(rc => rc.RoleId).IsRequired();
             });
 
-            builder.Entity<IdentityUserClaim<TKey>>(b =>
+            builder.Entity<TUserClaim>(b => 
             {
                 b.HasKey(uc => uc.Id);
                 b.ToTable("AspNetUserClaims");
             });
 
-            builder.Entity<IdentityRoleClaim<TKey>>(b =>
+            builder.Entity<TRoleClaim>(b => 
             {
                 b.HasKey(rc => rc.Id);
                 b.ToTable("AspNetRoleClaims");
             });
 
-            builder.Entity<IdentityUserRole<TKey>>(b =>
+            builder.Entity<TUserRole>(b => 
             {
                 b.HasKey(r => new { r.UserId, r.RoleId });
                 b.ToTable("AspNetUserRoles");
             });
 
-            builder.Entity<IdentityUserLogin<TKey>>(b =>
+            builder.Entity<TUserLogin>(b =>
             {
                 b.HasKey(l => new { l.LoginProvider, l.ProviderKey });
                 b.ToTable("AspNetUserLogins");
             });
 
-            builder.Entity<IdentityUserToken<TKey>>(b =>
+            builder.Entity<TUserToken>(b => 
             {
                 b.HasKey(l => new { l.UserId, l.LoginProvider, l.Name });
                 b.ToTable("AspNetUserTokens");

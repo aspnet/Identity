@@ -32,15 +32,23 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
         /// </summary>
         public virtual string ClaimValue { get; set; }
 
+        /// <summary>
+        /// Converts the entity into a Claim instance.
+        /// </summary>
+        /// <returns></returns>
         public virtual Claim ToClaim()
         {
             return new Claim(ClaimType, ClaimValue);
         }
 
-        public virtual void FromClaim(Claim other)
+        /// <summary>
+        /// Reads the type and value from the Claim.
+        /// </summary>
+        /// <param name="claim"></param>
+        public virtual void FromClaim(Claim claim)
         {
-            ClaimType = other?.Type;
-            ClaimValue = other?.Value;
+            ClaimType = claim.Type;
+            ClaimValue = claim.Value;
         }
     }
 }
