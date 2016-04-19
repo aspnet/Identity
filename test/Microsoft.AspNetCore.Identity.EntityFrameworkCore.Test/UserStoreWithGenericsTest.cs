@@ -8,6 +8,7 @@ using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.Test;
+using Microsoft.AspNetCore.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
@@ -35,6 +36,10 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
             return CreateContext();
         }
 
+        protected override bool ShouldSkipDbTests()
+        {
+            return TestPlatformHelper.IsMono || !TestPlatformHelper.IsWindows;
+        }
 
         protected override void AddUserStore(IServiceCollection services, object context = null)
         {
