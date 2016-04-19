@@ -5,9 +5,9 @@ using Microsoft.Owin;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.Google;
 using Owin;
-using Interop4._5.Models;
+using InitialApp4._5._1.Models;
 
-namespace Interop4._5
+namespace InitialApp4._5._1
 {
     public partial class Startup
     {
@@ -66,27 +66,3 @@ namespace Interop4._5
         }
     }
 }
-
-namespace Owin
-{
-    //using Microsoft.AspNetCore.DataProtection;
-    using Microsoft.Owin.Security.Cookies;
-    //using Microsoft.Owin.Security.Cookies.Interop;
-
-    public static class CookieAuthenticationExtensions
-    {		
-//        public static IAppBuilder UseCookieAuthentication(		
-//            this IAppBuilder app,
-//            CookieAuthenticationOptions options,
-//            DataProtectionProvider dataProtectionProvider,
-//            PipelineStage stage = PipelineStage.Authenticate)
-//        {		
-//            var dataProtector = dataProtectionProvider.CreateProtector(
-//"Microsoft.AspNet.Authentication.Cookies.CookieAuthenticationMiddleware", // full name of the ASP.NET 5 type		
-//options.AuthenticationType, "v2");		
-//            options.TicketDataFormat = new AspNetTicketDataFormat(new DataProtectorShim(dataProtector));		
-		
-//            return app.UseCookieAuthentication(options, stage);		
-//        }		
-    }		
-} 
