@@ -1,0 +1,26 @@
+{
+  "version": "1.0.0-*",
+  "compilationOptions": {
+    "warningsAsErrors": true,
+    "keyFile": "../../tools/Key.snk",
+    "nowarn": [ "CS1591" ],
+    "xmlDoc": true
+  },
+  "description": "A compatibility layer for sharing identity databases between Microsoft.AspNet.Identity.EntityFramework and Microsoft.AspNetCore.Identity.EntityFrameworkCore",
+  "tags": [
+    "aspnetcore",
+    "identity",
+    "membership"
+  ],
+  "dependencies": {
+    "Microsoft.AspNet.Identity.EntityFramework": "2.2.1"
+  },
+  "frameworks": {
+    "net451": {
+      "frameworkAssemblies": {
+        "System.Collections": "",
+        "System.Data": ""
+      }
+    }
+  }
+}
