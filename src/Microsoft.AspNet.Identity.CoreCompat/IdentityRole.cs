@@ -3,8 +3,9 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.AspNet.Identity.EntityFramework;
 
-namespace Microsoft.AspNet.Identity.EntityFramework.Compat
+namespace Microsoft.AspNet.Identity.CoreCompat
 {
     public class IdentityRole : IdentityRole<string, IdentityUserRole>
     {

@@ -4,7 +4,7 @@
 using System;
 using Microsoft.AspNet.Identity.EntityFramework;
 
-namespace Microsoft.AspNet.Identity.Compat
+namespace Microsoft.AspNet.Identity.CoreCompat
 {
     public class IdentityUser : IdentityUser<string, IdentityUserLogin, IdentityUserRole, IdentityUserClaim>
     {
@@ -34,12 +34,24 @@ namespace Microsoft.AspNet.Identity.Compat
         where TUserRole : IdentityUserRole<TKey>
         where TUserClaim : IdentityUserClaim<TKey>
     {
-        public string NormalizedUserName { get; set; }
+        public string NormalizedUserName {
+            get
+            {
+                return UserName.ToUpperInvariant();
+            }
+            set { }
+        }
 
         /// <summary>
         ///     Normalized email
         /// </summary>
-        public string NormalizedEmail { get; set; }
+        public string NormalizedEmail {
+            get
+            {
+                return Email.ToUpperInvariant();
+            }
+            set { }
+        }
 
         /// <summary>
         ///     Concurrency stamp

@@ -5,10 +5,10 @@ using System;
 using System.Data.Entity;
 using Microsoft.AspNet.Identity.EntityFramework;
 
-namespace Microsoft.AspNet.Identity.Compat
+namespace Microsoft.AspNet.Identity.CoreCompat
 {
     public class UserStore<TUser> :
-        IdentityUserStore<TUser, IdentityRole, string, IdentityUserLogin, IdentityUserRole, IdentityUserClaim>, IUserStore<TUser>
+        UserStore<TUser, IdentityRole, string, IdentityUserLogin, IdentityUserRole, IdentityUserClaim>, IUserStore<TUser>
         where TUser : IdentityUser
     {
         /// <summary>
@@ -30,8 +30,8 @@ namespace Microsoft.AspNet.Identity.Compat
         }
     }
 
-    public class IdentityUserStore<TUser, TRole, TKey, TUserLogin, TUserRole, TUserClaim>
-        : UserStore<TUser, TRole, TKey, TUserLogin, TUserRole, TUserClaim>
+    public class UserStore<TUser, TRole, TKey, TUserLogin, TUserRole, TUserClaim>
+        : EntityFramework.UserStore<TUser, TRole, TKey, TUserLogin, TUserRole, TUserClaim>
         where TKey : IEquatable<TKey>
         where TUser : IdentityUser<TKey, TUserLogin, TUserRole, TUserClaim>
         where TRole : IdentityRole<TKey, TUserRole>
@@ -43,7 +43,7 @@ namespace Microsoft.AspNet.Identity.Compat
         ///     Constructor
         /// </summary>
         /// <param name="context"></param>
-        public IdentityUserStore(DbContext context) : base(context) { }
+        public UserStore(DbContext context) : base(context) { }
 
     }
 }

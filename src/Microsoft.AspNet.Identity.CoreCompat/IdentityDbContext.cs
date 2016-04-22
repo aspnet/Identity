@@ -7,8 +7,9 @@ using System.Data.Common;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Validation;
+using Microsoft.AspNet.Identity.EntityFramework;
 
-namespace Microsoft.AspNet.Identity.EntityFramework.Compat
+namespace Microsoft.AspNet.Identity.CoreCompat
 {
     public class IdentityDbContext<TUser> :
         IdentityDbContext<TUser, IdentityRole, string,
