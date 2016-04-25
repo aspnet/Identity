@@ -3,9 +3,12 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security.Cookies;
-using Microsoft.Owin.Security.Google;
 using Owin;
 using Interop4._5.Models;
+using System.IO;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.Owin.Security.Interop;
+using Microsoft.Owin.Security;
 
 namespace Interop4._5
 {
@@ -33,8 +36,9 @@ namespace Interop4._5
                     OnValidateIdentity = SecurityStampValidator.OnValidateIdentity<ApplicationUserManager, ApplicationUser>(
                         validateInterval: TimeSpan.FromMinutes(30),
                         regenerateIdentity: (manager, user) => user.GenerateUserIdentityAsync(manager))
-                }
-            });            
+                },
+                TicketDataFormat = CookieInterop.CreateSharedDataFormat(new DirectoryInfo("C:\\Github\\Identity\\artifacts"), DefaultAuthenticationTypes.ApplicationCookie)
+            });
             app.UseExternalSignInCookie(DefaultAuthenticationTypes.ExternalCookie);
 
             // Enables the application to temporarily store user information when they are verifying the second factor in the two-factor authentication process.
@@ -69,24 +73,15 @@ namespace Interop4._5
 
 namespace Owin
 {
-    //using Microsoft.AspNetCore.DataProtection;
-    using Microsoft.Owin.Security.Cookies;
-    //using Microsoft.Owin.Security.Cookies.Interop;
-
-    public static class CookieAuthenticationExtensions
-    {		
-//        public static IAppBuilder UseCookieAuthentication(		
-//            this IAppBuilder app,
-//            CookieAuthenticationOptions options,
-//            DataProtectionProvider dataProtectionProvider,
-//            PipelineStage stage = PipelineStage.Authenticate)
-//        {		
-//            var dataProtector = dataProtectionProvider.CreateProtector(
-//"Microsoft.AspNet.Authentication.Cookies.CookieAuthenticationMiddleware", // full name of the ASP.NET 5 type		
-//options.AuthenticationType, "v2");		
-//            options.TicketDataFormat = new AspNetTicketDataFormat(new DataProtectorShim(dataProtector));		
-		
-//            return app.UseCookieAuthentication(options, stage);		
-//        }		
-    }		
-} 
+    // REVIEW: should this move to CoreCompat?
+    public static class CookieInterop
+    {
+        public static ISecureDataFormat<AuthenticationTicket> CreateSharedDataFormat(DirectoryInfo keyDirectory, string authenticationType)
+        {
+            var dataProtector = DataProtectionProvider.Create(new DirectoryInfo("C:\\Github\\Identity\\artifacts"))
+                .CreateProtector("Microsoft.AspNet.Authentication.Cookies.CookieAuthenticationMiddleware", // full name of the ASP.NET 5 type
+                authenticationType, "v2");
+            return new AspNetTicketDataFormat(new DataProtectorShim(dataProtector));
+        }
+    }
+}
