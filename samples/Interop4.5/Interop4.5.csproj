@@ -168,12 +168,6 @@
     <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
-    <Compile Include="Compat\CompatDbContext.cs" />
-    <Compile Include="Compat\CompatRole.cs" />
-    <Compile Include="Compat\CompatRoleClaim.cs" />
-    <Compile Include="Compat\CompatUser.cs" />
-    <Compile Include="Compat\CompatUserLogin.cs" />
-    <Compile Include="Compat\CompatUserStore.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
@@ -252,6 +246,12 @@
     <Content Include="packages.config" />
     <None Include="Project_Readme.html" />
     <Content Include="Scripts\jquery-1.10.2.min.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Microsoft.AspNet.Identity.CoreCompat\Microsoft.AspNet.Identity.CoreCompat.xproj">
+      <Project>{6a74c6ea-b241-4d6b-bce4-bf89ec1d2475}</Project>
+      <Name>Microsoft.AspNet.Identity.CoreCompat</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
