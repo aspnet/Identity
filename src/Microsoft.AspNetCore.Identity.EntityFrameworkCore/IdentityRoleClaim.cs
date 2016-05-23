@@ -37,7 +37,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
             return new Claim(ClaimType, ClaimValue);
         }
 
-        public virtual void FromClaim(Claim other)
+        public virtual void InitializeFromClaim(Claim other)
         {
             ClaimType = other?.Type;
             ClaimValue = other?.Value;

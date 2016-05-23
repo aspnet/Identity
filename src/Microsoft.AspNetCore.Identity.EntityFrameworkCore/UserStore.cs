@@ -72,7 +72,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
         protected override IdentityUserClaim<TKey> CreateUserClaim(TUser user, Claim claim)
         {
             var userClaim = new IdentityUserClaim<TKey> { UserId = user.Id };
-            userClaim.FromClaim(claim);
+            userClaim.InitializeFromClaim(claim);
             return userClaim;
         }
 

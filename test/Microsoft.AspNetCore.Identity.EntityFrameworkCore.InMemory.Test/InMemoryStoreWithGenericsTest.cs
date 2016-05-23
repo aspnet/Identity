@@ -268,7 +268,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.InMemory.Test
             return new Claim(ClaimType, ClaimValue, null, Issuer);
         }
 
-        public override void FromClaim(Claim other)
+        public override void InitializeFromClaim(Claim other)
         {
             ClaimValue = other.Value;
             ClaimType = other.Type;

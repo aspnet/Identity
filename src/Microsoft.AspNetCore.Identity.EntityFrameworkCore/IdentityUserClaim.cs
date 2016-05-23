@@ -45,7 +45,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
         /// Reads the type and value from the Claim.
         /// </summary>
         /// <param name="claim"></param>
-        public virtual void FromClaim(Claim claim)
+        public virtual void InitializeFromClaim(Claim claim)
         {
             ClaimType = claim.Type;
             ClaimValue = claim.Value;
