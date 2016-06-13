@@ -73,9 +73,7 @@ namespace Microsoft.AspNetCore.Identity.Test
             var services = new ServiceCollection();
             services.AddIdentity<TestUser,TestRole>();
             services.Configure<IdentityOptions>(config.GetSection("identity"));
-            var accessor = services.BuildServiceProvider().GetRequiredService<IOptions<IdentityOptions>>();
-            Assert.NotNull(accessor);
-            var options = accessor.Value;
+            var options = services.BuildServiceProvider().GetRequiredService<IdentityOptions>();
             Assert.Equal(roleClaimType, options.ClaimsIdentity.RoleClaimType);
             Assert.Equal(useridClaimType, options.ClaimsIdentity.UserIdClaimType);
             Assert.Equal(usernameClaimType, options.ClaimsIdentity.UserNameClaimType);
@@ -105,9 +103,7 @@ namespace Microsoft.AspNetCore.Identity.Test
             var services = new ServiceCollection();
             services.Configure<IdentityOptions>(config.GetSection("identity"));
             services.AddIdentity<TestUser, TestRole>(o => { o.User.RequireUniqueEmail = false; o.Lockout.MaxFailedAccessAttempts++; });
-            var accessor = services.BuildServiceProvider().GetRequiredService<IOptions<IdentityOptions>>();
-            Assert.NotNull(accessor);
-            var options = accessor.Value;
+            var options = services.BuildServiceProvider().GetRequiredService<IdentityOptions>();
             Assert.False(options.User.RequireUniqueEmail);
             Assert.Equal(1001, options.Lockout.MaxFailedAccessAttempts);
         }
@@ -122,9 +118,7 @@ namespace Microsoft.AspNetCore.Identity.Test
 
             var setup = serviceProvider.GetRequiredService<IConfigureOptions<IdentityOptions>>();
             Assert.NotNull(setup);
-            var optionsGetter = serviceProvider.GetRequiredService<IOptions<IdentityOptions>>();
-            Assert.NotNull(optionsGetter);
-            var myOptions = optionsGetter.Value;
+            var myOptions = services.BuildServiceProvider().GetRequiredService<IdentityOptions>();
             Assert.True(myOptions.Password.RequireLowercase);
             Assert.True(myOptions.Password.RequireDigit);
             Assert.True(myOptions.Password.RequireNonAlphanumeric);
@@ -138,11 +132,7 @@ namespace Microsoft.AspNetCore.Identity.Test
             var services = new ServiceCollection();
             services.AddIdentity<TestUser,TestRole>(options => options.User.RequireUniqueEmail = true);
             var serviceProvider = services.BuildServiceProvider();
-
-            var optionsGetter = serviceProvider.GetRequiredService<IOptions<IdentityOptions>>();
-            Assert.NotNull(optionsGetter);
-
-            var myOptions = optionsGetter.Value;
+            var myOptions = services.BuildServiceProvider().GetRequiredService<IdentityOptions>();
             Assert.True(myOptions.User.RequireUniqueEmail);
         }
     }

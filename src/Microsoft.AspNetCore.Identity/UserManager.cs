@@ -38,7 +38,7 @@ namespace Microsoft.AspNetCore.Identity
         /// Constructs a new instance of <see cref="UserManager{TUser}"/>.
         /// </summary>
         /// <param name="store">The persistence store the manager will operate over.</param>
-        /// <param name="optionsAccessor">The accessor used to access the <see cref="IdentityOptions"/>.</param>
+        /// <param name="options">The <see cref="IdentityOptions"/>.</param>
         /// <param name="passwordHasher">The password hashing implementation to use when saving passwords.</param>
         /// <param name="userValidators">A collection of <see cref="IUserValidator{TUser}"/> to validate users against.</param>
         /// <param name="passwordValidators">A collection of <see cref="IPasswordValidator{TUser}"/> to validate passwords against.</param>
@@ -47,7 +47,7 @@ namespace Microsoft.AspNetCore.Identity
         /// <param name="services">The <see cref="IServiceProvider"/> used to resolve services.</param>
         /// <param name="logger">The logger used to log messages, warnings and errors.</param>
         public UserManager(IUserStore<TUser> store,
-            IOptions<IdentityOptions> optionsAccessor,
+            IdentityOptions options,
             IPasswordHasher<TUser> passwordHasher,
             IEnumerable<IUserValidator<TUser>> userValidators,
             IEnumerable<IPasswordValidator<TUser>> passwordValidators,
@@ -61,7 +61,7 @@ namespace Microsoft.AspNetCore.Identity
                 throw new ArgumentNullException(nameof(store));
             }
             Store = store;
-            Options = optionsAccessor?.Value ?? new IdentityOptions();
+            Options = options ?? new IdentityOptions();
             PasswordHasher = passwordHasher;
             KeyNormalizer = keyNormalizer;
             ErrorDescriber = errors;

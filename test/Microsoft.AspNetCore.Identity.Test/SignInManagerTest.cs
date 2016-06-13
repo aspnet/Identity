@@ -118,13 +118,11 @@ namespace Microsoft.AspNetCore.Identity.Test
             var contextAccessor = new Mock<IHttpContextAccessor>();
             contextAccessor.Setup(a => a.HttpContext).Returns(context.Object);
             var roleManager = MockHelpers.MockRoleManager<TestRole>();
-            var identityOptions = new IdentityOptions();
-            var options = new Mock<IOptions<IdentityOptions>>();
-            options.Setup(a => a.Value).Returns(identityOptions);
-            var claimsFactory = new UserClaimsPrincipalFactory<TestUser, TestRole>(manager.Object, roleManager.Object, options.Object);
+            var options = new IdentityOptions();
+            var claimsFactory = new UserClaimsPrincipalFactory<TestUser, TestRole>(manager.Object, roleManager.Object, options);
             var logStore = new StringBuilder();
             var logger = MockHelpers.MockILogger<SignInManager<TestUser>>(logStore);
-            var helper = new SignInManager<TestUser>(manager.Object, contextAccessor.Object, claimsFactory, options.Object, logger.Object);
+            var helper = new SignInManager<TestUser>(manager.Object, contextAccessor.Object, claimsFactory, options, logger.Object);
 
             // Act
             var result = await helper.PasswordSignInAsync(user.UserName, "bogus", false, false);
@@ -146,16 +144,14 @@ namespace Microsoft.AspNetCore.Identity.Test
             return manager;
         }
 
-        private static SignInManager<TestUser> SetupSignInManager(UserManager<TestUser> manager, HttpContext context, StringBuilder logStore = null, IdentityOptions identityOptions = null)
+        private static SignInManager<TestUser> SetupSignInManager(UserManager<TestUser> manager, HttpContext context, StringBuilder logStore = null, IdentityOptions options = null)
         {
             var contextAccessor = new Mock<IHttpContextAccessor>();
             contextAccessor.Setup(a => a.HttpContext).Returns(context);
             var roleManager = MockHelpers.MockRoleManager<TestRole>();
-            identityOptions = identityOptions ?? new IdentityOptions();
-            var options = new Mock<IOptions<IdentityOptions>>();
-            options.Setup(a => a.Value).Returns(identityOptions);
-            var claimsFactory = new UserClaimsPrincipalFactory<TestUser, TestRole>(manager, roleManager.Object, options.Object);
-            var sm = new SignInManager<TestUser>(manager, contextAccessor.Object, claimsFactory, options.Object, null);
+            options = options ?? new IdentityOptions();
+            var claimsFactory = new UserClaimsPrincipalFactory<TestUser, TestRole>(manager, roleManager.Object, options);
+            var sm = new SignInManager<TestUser>(manager, contextAccessor.Object, claimsFactory, options, null);
             sm.Logger = MockHelpers.MockILogger<SignInManager<TestUser>>(logStore ?? new StringBuilder()).Object;
             return sm;
         }

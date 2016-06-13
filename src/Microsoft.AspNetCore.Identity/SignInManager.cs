@@ -31,12 +31,12 @@ namespace Microsoft.AspNetCore.Identity
         /// <param name="userManager">An instance of <see cref="UserManager"/> used to retrieve users from and persist users.</param>
         /// <param name="contextAccessor">The accessor used to access the <see cref="HttpContext"/>.</param>
         /// <param name="claimsFactory">The factory to use to create claims principals for a user.</param>
-        /// <param name="optionsAccessor">The accessor used to access the <see cref="IdentityOptions"/>.</param>
+        /// <param name="options">The <see cref="IdentityOptions"/>.</param>
         /// <param name="logger">The logger used to log messages, warnings and errors.</param>
         public SignInManager(UserManager<TUser> userManager,
             IHttpContextAccessor contextAccessor,
             IUserClaimsPrincipalFactory<TUser> claimsFactory,
-            IOptions<IdentityOptions> optionsAccessor,
+            IdentityOptions options,
             ILogger<SignInManager<TUser>> logger)
         {
             if (userManager == null)
@@ -55,7 +55,7 @@ namespace Microsoft.AspNetCore.Identity
             UserManager = userManager;
             _contextAccessor = contextAccessor;
             ClaimsFactory = claimsFactory;
-            Options = optionsAccessor?.Value ?? new IdentityOptions();
+            Options = options ?? new IdentityOptions();
             Logger = logger;
         }
 

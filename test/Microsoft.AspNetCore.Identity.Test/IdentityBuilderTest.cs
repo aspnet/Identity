@@ -107,7 +107,7 @@ namespace Microsoft.AspNetCore.Identity.Test
             services.AddIdentity<TestUser,TestRole>().AddDefaultTokenProviders();
 
             var provider = services.BuildServiceProvider();
-            var tokenProviders = provider.GetRequiredService<IOptions<IdentityOptions>>().Value.Tokens.ProviderMap.Values;
+            var tokenProviders = provider.GetRequiredService<IdentityOptions>().Tokens.ProviderMap.Values;
             Assert.Equal(3, tokenProviders.Count());
         }
 

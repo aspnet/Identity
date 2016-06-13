@@ -2,7 +2,9 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 
 namespace Microsoft.AspNetCore.Builder
 {
@@ -11,6 +13,18 @@ namespace Microsoft.AspNetCore.Builder
     /// </summary>
     public class IdentityOptions
     {
+        public IdentityOptions(IEnumerable<IConfigureOptions<IdentityOptions>> configureOptions = null)
+        {
+            if (configureOptions != null)
+            {
+                foreach (var configure in configureOptions)
+                {
+                    configure.Configure(this);
+                }
+            }
+        }
+
+
         /// <summary>
         /// Gets or sets the <see cref="ClaimsIdentityOptions"/> for the identity system.
         /// </summary>
