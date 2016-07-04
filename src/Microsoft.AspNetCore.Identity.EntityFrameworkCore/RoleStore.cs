@@ -43,7 +43,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
     public class RoleStore<TRole, TContext, TKey> : RoleStore<TRole, TContext, TKey, IdentityUserRole<TKey>, IdentityRoleClaim<TKey>>,
         IQueryableRoleStore<TRole>,
         IRoleClaimStore<TRole>
-        where TRole : IdentityRole<TKey>
+        where TRole : IdentityRole<TKey, IdentityUserRole<TKey>, IdentityRoleClaim<TKey>>
         where TKey : IEquatable<TKey>
         where TContext : DbContext
     {

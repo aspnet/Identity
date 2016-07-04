@@ -199,7 +199,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
         }
     }
 
-    public class UserStoreWithGenerics : UserStore<IdentityUserWithGenerics, MyIdentityRole, ContextWithGenerics, string, IdentityUserClaimWithIssuer, IdentityUserRoleWithDate, IdentityUserLoginWithContext, IdentityUserTokenWithStuff>
+    public class UserStoreWithGenerics : UserStore<IdentityUserWithGenerics, MyIdentityRole, ContextWithGenerics, string, IdentityUserClaimWithIssuer, IdentityUserRoleWithDate, IdentityUserLoginWithContext, IdentityUserTokenWithStuff, IdentityRoleClaim<string>>
     {
         public string LoginContext { get; set; }
 
