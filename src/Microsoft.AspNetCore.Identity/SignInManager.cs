@@ -118,6 +118,16 @@ namespace Microsoft.AspNetCore.Identity
         }
 
         /// <summary>
+        /// Called after SignInAsync has completed.
+        /// </summary>
+        /// <param name="user">The user who has signed in.</param>
+        /// <returns>The task object representing the asynchronous operation.</returns>
+        public virtual Task SignedInAsync(TUser user)
+        {
+            return Task.FromResult(0);
+        }
+
+        /// <summary>
         /// Returns a flag indicating whether the specified user can sign in.
         /// </summary>
         /// <param name="user">The user whose sign-in status should be returned.</param>
@@ -185,6 +195,7 @@ namespace Microsoft.AspNetCore.Identity
             await Context.Authentication.SignInAsync(Options.Cookies.ApplicationCookieAuthenticationScheme,
                 userPrincipal,
                 authenticationProperties ?? new AuthenticationProperties());
+            await SignedInAsync(user);
         }
 
         /// <summary>

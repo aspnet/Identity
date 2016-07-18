@@ -587,6 +587,33 @@ namespace Microsoft.AspNetCore.Identity.Test
             manager.Verify();
         }
 
+        [Fact]
+        public async Task SignedInCalledAfterSignIn()
+        {
+            var user = new TestUser { UserName = "Foo" };
+            var manager = SetupUserManager(user);
+            var context = new Mock<HttpContext>();
+            var contextAccessor = new Mock<IHttpContextAccessor>();
+            contextAccessor.Setup(a => a.HttpContext).Returns(context.Object);
+            var roleManager = MockHelpers.MockRoleManager<TestRole>();
+            var options = new Mock<IOptions<IdentityOptions>>();
+            options.Setup(a => a.Value).Returns(new IdentityOptions());
+            var claimsFactory = new UserClaimsPrincipalFactory<TestUser, TestRole>(manager.Object, roleManager.Object, options.Object);
+            var sm = new Mock<SignInManager<TestUser>>(manager.Object, contextAccessor.Object, claimsFactory, options.Object, null);
+            sm.Object.Logger = MockHelpers.MockILogger<SignInManager<TestUser>>(new StringBuilder()).Object;
+            var auth = new Mock<AuthenticationManager>();
+            context.Setup(c => c.Authentication).Returns(auth.Object).Verifiable();
+            auth.Setup(a => a.SignInAsync(new IdentityCookieOptions().ApplicationCookieAuthenticationScheme,
+                It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthenticationProperties>()))
+                .Returns(Task.FromResult(0)).Verifiable();
+            sm.Setup(s => s.SignedInAsync(user)).Returns(Task.FromResult(0)).Verifiable();
+            sm.CallBase = true;
+
+            await sm.Object.SignInAsync(user, isPersistent: false);
+
+            sm.VerifyAll();
+        }
+
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
