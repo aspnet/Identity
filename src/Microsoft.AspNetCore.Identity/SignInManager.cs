@@ -596,7 +596,8 @@ namespace Microsoft.AspNetCore.Identity
 
         private async Task<SignInResult> SignInOrTwoFactorAsync(TUser user, bool isPersistent, string loginProvider = null, bool bypassTwoFactor = false)
         {
-            if (UserManager.SupportsUserTwoFactor &&
+            if (!bypassTwoFactor &&
+                UserManager.SupportsUserTwoFactor &&
                 await UserManager.GetTwoFactorEnabledAsync(user) &&
                 (await UserManager.GetValidTwoFactorProvidersAsync(user)).Count > 0)
             {
