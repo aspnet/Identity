@@ -65,7 +65,7 @@ namespace Microsoft.AspNetCore.Identity
         /// </summary>
         /// <param name="user">The user to create a <see cref="ClaimsPrincipal"/> from.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous creation operation, containing the created <see cref="ClaimsPrincipal"/>.</returns>
-        public async Task<ClaimsPrincipal> CreateAsync(TUser user)
+        public virtual async Task<ClaimsPrincipal> CreateAsync(TUser user)
         {
             if (user == null)
             {
