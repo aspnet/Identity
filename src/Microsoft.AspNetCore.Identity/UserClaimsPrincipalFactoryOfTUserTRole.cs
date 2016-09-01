@@ -14,7 +14,7 @@ namespace Microsoft.AspNetCore.Identity
     /// </summary>
     /// <typeparam name="TUser">The type used to represent a user.</typeparam>
     /// <typeparam name="TRole">The type used to represent a role.</typeparam>
-    public class UserClaimsPrincipalFactory<TUser, TRole> : IUserClaimsPrincipalFactory<TUser>
+    public class UserClaimsPrincipalFactory<TUser, TRole> : UserClaimsPrincipalFactoryBase<TUser>
         where TUser : class
         where TRole : class
     {
@@ -27,32 +27,15 @@ namespace Microsoft.AspNetCore.Identity
         public UserClaimsPrincipalFactory(
             UserManager<TUser> userManager, 
             RoleManager<TRole> roleManager, 
-            IOptions<IdentityOptions> optionsAccessor)
+            IOptions<IdentityOptions> optionsAccessor) : base(userManager, optionsAccessor)
         {
-            if (userManager == null)
-            {
-                throw new ArgumentNullException(nameof(userManager));
-            }
             if (roleManager == null)
             {
                 throw new ArgumentNullException(nameof(roleManager));
             }
-            if (optionsAccessor == null || optionsAccessor.Value == null)
-            {
-                throw new ArgumentNullException(nameof(optionsAccessor));
-            }
-            UserManager = userManager;
-            RoleManager = roleManager;
-            Options = optionsAccessor.Value;
-        }
 
-        /// <summary>
-        /// Gets the <see cref="UserManager{TUser}"/> for this factory.
-        /// </summary>
-        /// <value>
-        /// The current <see cref="UserManager{TUser}"/> for this factory instance.
-        /// </value>
-        public UserManager<TUser> UserManager { get; private set; }
+            RoleManager = roleManager;
+        }
 
         /// <summary>
         /// Gets the <see cref="RoleManager{TRole}"/> for this factory.
@@ -63,57 +46,30 @@ namespace Microsoft.AspNetCore.Identity
         public RoleManager<TRole> RoleManager { get; private set; }
 
         /// <summary>
-        /// Gets the <see cref="IdentityOptions"/> for this factory.
-        /// </summary>
-        /// <value>
-        /// The current <see cref="IdentityOptions"/> for this factory instance.
-        /// </value>
-        public IdentityOptions Options { get; private set; }
-
-        /// <summary>
-        /// Creates a <see cref="ClaimsPrincipal"/> from an user asynchronously.
+        /// Adds the roles into given <see cref="ClaimsIdentity"/> instance and returns a new one.
         /// </summary>
         /// <param name="user">The user to create a <see cref="ClaimsPrincipal"/> from.</param>
-        /// <returns>The <see cref="Task"/> that represents the asynchronous creation operation, containing the created <see cref="ClaimsPrincipal"/>.</returns>
-        public virtual async Task<ClaimsPrincipal> CreateAsync(TUser user)
+        /// <param name="baseIdentity">The base <see cref="ClaimsIdentity"/> to add roles into.</param>
+        protected override async Task<ClaimsIdentity> AddRolesAsync(TUser user, ClaimsIdentity baseIdentity)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
-            var userId = await UserManager.GetUserIdAsync(user);
-            var userName = await UserManager.GetUserNameAsync(user);
-            var id = new ClaimsIdentity(Options.Cookies.ApplicationCookieAuthenticationScheme,
-                Options.ClaimsIdentity.UserNameClaimType,
-                Options.ClaimsIdentity.RoleClaimType);
-            id.AddClaim(new Claim(Options.ClaimsIdentity.UserIdClaimType, userId));
-            id.AddClaim(new Claim(Options.ClaimsIdentity.UserNameClaimType, userName));
-            if (UserManager.SupportsUserSecurityStamp)
-            {
-                id.AddClaim(new Claim(Options.ClaimsIdentity.SecurityStampClaimType, 
-                    await UserManager.GetSecurityStampAsync(user)));
-            }
             if (UserManager.SupportsUserRole)
             {
                 var roles = await UserManager.GetRolesAsync(user);
                 foreach (var roleName in roles)
                 {
-                    id.AddClaim(new Claim(Options.ClaimsIdentity.RoleClaimType, roleName));
+                    baseIdentity.AddClaim(new Claim(Options.ClaimsIdentity.RoleClaimType, roleName));
                     if (RoleManager.SupportsRoleClaims)
                     {
                         var role = await RoleManager.FindByNameAsync(roleName);
                         if (role != null)
                         {
-                            id.AddClaims(await RoleManager.GetClaimsAsync(role));
+                            baseIdentity.AddClaims(await RoleManager.GetClaimsAsync(role));
                         }
                     }
                 }
             }
-            if (UserManager.SupportsUserClaim)
-            {
-                id.AddClaims(await UserManager.GetClaimsAsync(user));
-            }
-            return new ClaimsPrincipal(id);
+
+            return baseIdentity;
         }
     }
 }
