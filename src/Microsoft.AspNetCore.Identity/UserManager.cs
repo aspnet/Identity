@@ -2013,11 +2013,11 @@ namespace Microsoft.AspNetCore.Identity
         /// <param name="user"></param>
         /// <param name="loginProvider">The authentication scheme for the provider the token is associated with.</param>
         /// <param name="tokenName">The name of the token.</param>
-        /// <returns></returns>
+        /// <returns>The authentication token for a user</returns>
         public virtual Task<string> GetAuthenticationTokenAsync(TUser user, string loginProvider, string tokenName)
         {
             ThrowIfDisposed();
-            var store = GetTokenStore();
+            var store = GetAuthenticationTokenStore();
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
@@ -2041,11 +2041,11 @@ namespace Microsoft.AspNetCore.Identity
         /// <param name="loginProvider">The authentication scheme for the provider the token is associated with.</param>
         /// <param name="tokenName">The name of the token.</param>
         /// <param name="tokenValue">The value of the token.</param>
-        /// <returns></returns>
+        /// <returns>Whether the user was successfully updated.</returns>
         public virtual async Task<IdentityResult> SetAuthenticationTokenAsync(TUser user, string loginProvider, string tokenName, string tokenValue)
         {
             ThrowIfDisposed();
-            var store = GetTokenStore();
+            var store = GetAuthenticationTokenStore();
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
@@ -2071,10 +2071,10 @@ namespace Microsoft.AspNetCore.Identity
         /// <param name="loginProvider">The authentication scheme for the provider the token is associated with.</param>
         /// <param name="tokenName">The name of the token.</param>
         /// <returns>Whether a token was removed.</returns>
-        public virtual async Task<IdentityResult> RemoveAuthenticationTokenAsync(TUser user, string loginProvider, string tokenName)
+        public virtual async Task<IdentityResult> RemoveTokenAsync(TUser user, string loginProvider, string tokenName)
         {
             ThrowIfDisposed();
-            var store = GetTokenStore();
+            var store = GetAuthenticationTokenStore();
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
@@ -2092,6 +2092,80 @@ namespace Microsoft.AspNetCore.Identity
             return await UpdateUserAsync(user);
         }
 
+        /// <summary>
+        /// Deletes the specified tokens for a user.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="ids">The unique identifiers for the tokens to delete.</param>
+        /// <returns>Whether the user was successfully updated.</returns>
+        public virtual async Task<IdentityResult> DeleteTokenAsync(TUser user, IEnumerable<string> ids)
+        {
+            ThrowIfDisposed();
+            var store = GetUserTokenStore();
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+            if (ids == null)
+            {
+                throw new ArgumentNullException(nameof(ids));
+            }
+
+            await store.DeleteTokensAsync(user, ids, CancellationToken);
+            return await UpdateUserAsync(user);
+        }
+
+        /// <summary>
+        /// Stores tokens for a user.
+        /// </summary>
+        /// <param name="user">The user.</param>
+        /// <param name="tokens">The tokens to store.</param>
+        /// <returns>Whether the user was successfully updated.</returns>
+        public virtual async Task<IdentityResult> StoreTokensAsync(TUser user, IEnumerable<IdentityToken> tokens)
+        {
+            ThrowIfDisposed();
+            var store = GetUserTokenStore();
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+            if (tokens == null)
+            {
+                throw new ArgumentNullException(nameof(tokens));
+            }
+
+            // REVIEW: should updating any tokens affect the security stamp?
+            await store.StoreTokensAsync(user, tokens, CancellationToken);
+            return await UpdateUserAsync(user);
+        }
+
+        /// <summary>
+        /// Updates a user's tokens.
+        /// </summary>
+        /// <param name="user">The user.</param>
+        /// <param name="tokensToDelete">The unique identifiers for the tokens to delete.</param>
+        /// <param name="tokensToStore">Tokens to store.</param>
+        /// <returns>Whether the user was successfully updated.</returns>
+        public virtual async Task<IdentityResult> UpdateTokens(TUser user, IEnumerable<string> tokensToDelete, IEnumerable<IdentityToken> tokensToStore, CancellationToken cancellationToken)
+        {
+            ThrowIfDisposed();
+            var store = GetUserTokenStore();
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+            if (tokensToDelete == null)
+            {
+                throw new ArgumentNullException(nameof(tokensToDelete));
+            }
+            if (tokensToStore == null)
+            {
+                throw new ArgumentNullException(nameof(tokensToStore));
+            }
+            await store.DeleteTokensAsync(user, tokensToDelete, CancellationToken);
+            await store.StoreTokensAsync(user, tokensToStore, CancellationToken);
+            return await UpdateUserAsync(user);
+        }
 
         /// <summary>
         /// Releases the unmanaged resources used by the role manager and optionally releases the managed resources.
@@ -2292,12 +2366,22 @@ namespace Microsoft.AspNetCore.Identity
             return await Store.UpdateAsync(user, CancellationToken);
         }
 
-        private IUserAuthenticationTokenStore<TUser> GetTokenStore()
+        private IUserTokenStore<TUser> GetUserTokenStore()
+        {
+            var cast = Store as IUserTokenStore<TUser>;
+            if (cast == null)
+            {
+                throw new NotSupportedException("Resources.StoreNotIUserTokenStore");
+            }
+            return cast;
+        }
+
+        private IUserAuthenticationTokenStore<TUser> GetAuthenticationTokenStore()
         {
             var cast = Store as IUserAuthenticationTokenStore<TUser>;
             if (cast == null)
             {
-                throw new NotSupportedException("Resources.StoreNotIUserAuthenticationTokenStore");
+                throw new NotSupportedException(Resources.StoreNotIUserAuthenticationTokenStore);
             }
             return cast;
         }

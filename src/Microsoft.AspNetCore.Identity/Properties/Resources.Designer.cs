@@ -427,6 +427,22 @@ namespace Microsoft.AspNetCore.Identity
         }
 
         /// <summary>
+        /// Store does not implement IUserAuthenticationTokenStore&lt;User&gt;.
+        /// </summary>
+        internal static string StoreNotIUserAuthenticationTokenStore
+        {
+            get { return GetString("StoreNotIUserAuthenticationTokenStore"); }
+        }
+
+        /// <summary>
+        /// Store does not implement IUserAuthenticationTokenStore&lt;User&gt;.
+        /// </summary>
+        internal static string FormatStoreNotIUserAuthenticationTokenStore()
+        {
+            return GetString("StoreNotIUserAuthenticationTokenStore");
+        }
+
+        /// <summary>
         /// Store does not implement IUserClaimStore&lt;TUser&gt;.
         /// </summary>
         internal static string StoreNotIUserClaimStore
@@ -568,6 +584,22 @@ namespace Microsoft.AspNetCore.Identity
         internal static string FormatStoreNotIUserSecurityStampStore()
         {
             return GetString("StoreNotIUserSecurityStampStore");
+        }
+
+        /// <summary>
+        /// Store does not implement IUserTokenStore&lt;User&gt;.
+        /// </summary>
+        internal static string StoreNotIUserTokenStore
+        {
+            get { return GetString("StoreNotIUserTokenStore"); }
+        }
+
+        /// <summary>
+        /// Store does not implement IUserTokenStore&lt;User&gt;.
+        /// </summary>
+        internal static string FormatStoreNotIUserTokenStore()
+        {
+            return GetString("StoreNotIUserTokenStore");
         }
 
         /// <summary>

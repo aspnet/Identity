@@ -568,6 +568,29 @@ namespace Microsoft.AspNetCore.Identity
         }
 
         /// <summary>
+        /// Generates recovery codes for the user, this invalidates any previous recovery codes for the user.
+        /// </summary>
+        /// <param name="user">The user to generate recovery codes for.</param>
+        /// <param name="number">The number of codes to generate.</param>
+        /// <returns>The new recovery codes for the user.</returns>
+        public virtual Task<List<string>> GenerateNewRecoveryCodesAsync(TUser user, int number)
+        {
+            return null;
+        }
+
+        /// <summary>
+        /// Returns whether a recovery code is valid for a user. Note: recovery codes are only valid
+        /// once, and will be invalid after use.
+        /// </summary>
+        /// <param name="user">The user who owns the recovery code.</param>
+        /// <param name="code">The recovery code to use.</param>
+        /// <returns>True if the recovery code was found for the user.</returns>
+        public virtual Task<bool> UseRecoveryCodeAsync(TUser user, string code)
+        {
+            return Task.FromResult(false);
+        }
+
+        /// <summary>
         /// Creates a claims principal for the specified 2fa information.
         /// </summary>
         /// <param name="userId">The user whose is logging in via 2fa.</param>
