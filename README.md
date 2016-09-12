@@ -9,6 +9,8 @@ ASP.NET Core Identity is the membership system for building ASP.NET Core web app
 
 This project is part of ASP.NET Core. You can find samples, documentation and getting started instructions for ASP.NET Core at the [Home](https://github.com/aspnet/home) repo.
 
+You can find more information about .NET SDK and NuGet package at [link](https://www.visualstudio.com/features/azure-tools-vs).
+
 ## Community Maintained Store Providers
 
  - [ASP.NET Identity MongoDB Provider](https://github.com/tugberkugurlu/AspNetCore.Identity.MongoDB)
