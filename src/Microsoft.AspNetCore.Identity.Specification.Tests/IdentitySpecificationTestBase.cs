@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -13,6 +14,8 @@ using Microsoft.AspNetCore.Testing;
 using Microsoft.AspNetCore.Testing.xunit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Moq;
 using Xunit;
 
 namespace Microsoft.AspNetCore.Identity.Test
@@ -2375,6 +2378,50 @@ namespace Microsoft.AspNetCore.Identity.Test
         /// Test.
         /// </summary>
         /// <returns>Task</returns>
+        private static SignInManager<TUser> SetupSignInManager(UserManager<TUser> manager, HttpContext context, StringBuilder logStore = null, IdentityOptions identityOptions = null)
+        {
+            var contextAccessor = new Mock<IHttpContextAccessor>();
+            contextAccessor.Setup(a => a.HttpContext).Returns(context);
+            var roleManager = MockHelpers.MockRoleManager<TRole>();
+            identityOptions = identityOptions ?? new IdentityOptions();
+            var options = new Mock<IOptions<IdentityOptions>>();
+            options.Setup(a => a.Value).Returns(identityOptions);
+            var claimsFactory = new UserClaimsPrincipalFactory<TUser, TRole>(manager, roleManager.Object, options.Object);
+            var sm = new SignInManager<TUser>(manager, contextAccessor.Object, claimsFactory, options.Object, null);
+            sm.Logger = MockHelpers.MockILogger<SignInManager<TestUser>>(logStore ?? new StringBuilder()).Object;
+            return sm;
+        }
+
+        [Fact]
+        public async Task CanRedeemRecoveryCodeOnlyOnce()
+        {
+            if (ShouldSkipDbTests())
+            {
+                return;
+            }
+            var manager = CreateManager();
+            var user = CreateTestUser();
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
+
+            var signInManager = SetupSignInManager(manager, new DefaultHttpContext());
+
+            var numCodes = 15;
+            var newCodes = await signInManager.GenerateNewRecoveryCodesAsync(user, numCodes);
+            Assert.Equal(numCodes, newCodes.Count());
+
+            foreach (var code in newCodes)
+            {
+                Assert.True(await signInManager.UseRecoveryCodeAsync(user, code));
+                Assert.False(await signInManager.UseRecoveryCodeAsync(user, code));
+            }
+            // One last time to be sure
+            foreach (var code in newCodes)
+            {
+                Assert.False(await signInManager.UseRecoveryCodeAsync(user, code));
+            }
+
+        }
+
         [Fact]
         public async Task CanGetValidTwoFactor()
         {

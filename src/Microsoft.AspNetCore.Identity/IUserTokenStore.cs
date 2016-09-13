@@ -23,13 +23,13 @@ namespace Microsoft.AspNetCore.Identity
         Task StoreTokensAsync(TUser user, IEnumerable<IdentityToken> tokens, CancellationToken cancellationToken);
 
         /// <summary>
-        /// Deletes tokens for a user.
+        /// Removes tokens for a user.
         /// </summary>
         /// <param name="user">The user.</param>
         /// <param name="ids">The unique identifiers for the tokens to delete.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
-        /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
-        Task DeleteTokensAsync(TUser user, IEnumerable<string> ids, CancellationToken cancellationToken);
+        /// <returns>How many tokens were removed.</returns>
+        Task<int> RemoveTokensAsync(TUser user, IEnumerable<string> ids, CancellationToken cancellationToken);
 
         /// <summary>
         /// Returns the token value.

@@ -742,6 +742,37 @@ namespace Microsoft.AspNetCore.Identity.Test
         }
 
         [Fact]
+        public async Task AuthTokenMethodsFailWhenStoreNotImplemented()
+        {
+            var error = Resources.StoreNotIUserAuthenticationTokenStore;
+            var manager = MockHelpers.TestUserManager(new NoopUserStore());
+            Assert.False(manager.SupportsUserAuthenticationTokens);
+            await VerifyException<NotSupportedException>(async () => await manager.GetAuthenticationTokenAsync(null, null, null), error);
+            await VerifyException<NotSupportedException>(async () => await manager.SetAuthenticationTokenAsync(null, null, null, null), error);
+            await VerifyException<NotSupportedException>(async () => await manager.RemoveAuthenticationTokenAsync(null, null, null), error);
+        }
+
+        [Fact]
+        public async Task UserTokenMethodsFailWhenStoreNotImplemented()
+        {
+            var error = Resources.StoreNotIUserTokenStore;
+            var manager = MockHelpers.TestUserManager(new NoopUserStore());
+            Assert.False(manager.SupportsUserTokens);
+            await VerifyException<NotSupportedException>(async () => await manager.UpdateTokensAsync(null, null, null), error);
+            await VerifyException<NotSupportedException>(async () => await manager.RemoveTokenAsync(null, null), error);
+            await VerifyException<NotSupportedException>(async () => await manager.RemoveTokensAsync(null, null), error);
+            await VerifyException<NotSupportedException>(async () => await manager.GetTokensAsync(null, null), error);
+            await VerifyException<NotSupportedException>(async () => await manager.GetTokensAsync(null), error);
+            await VerifyException<NotSupportedException>(async () => await manager.StoreTokensAsync(null, null), error);
+        }
+
+        private async Task VerifyException<TException>(Func<Task> code, string expectedMessage) where TException : Exception
+        {
+            var error = await Assert.ThrowsAsync<TException>(code);
+            Assert.Equal(expectedMessage, error.Message);
+        }
+
+        [Fact]
         public void DisposeAfterDisposeDoesNotThrow()
         {
             var manager = MockHelpers.TestUserManager(new NoopUserStore());

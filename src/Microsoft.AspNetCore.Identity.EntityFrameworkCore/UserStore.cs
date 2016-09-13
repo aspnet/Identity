@@ -201,7 +201,8 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
         IUserPhoneNumberStore<TUser>,
         IQueryableUserStore<TUser>,
         IUserTwoFactorStore<TUser>,
-        IUserAuthenticationTokenStore<TUser>
+        IUserAuthenticationTokenStore<TUser>,
+        IUserTokenStore<TUser>
         where TUser : IdentityUser<TKey, TUserClaim, TUserRole, TUserLogin>
         where TRole : IdentityRole<TKey, TUserRole, TRoleClaim>
         where TContext : DbContext
@@ -1373,6 +1374,25 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
         private Task<TUserToken> FindToken(TUser user, string loginProvider, string name, CancellationToken cancellationToken)
             => UserTokens.FindAsync(new object[] { user.Id, loginProvider, name }, cancellationToken);
 
+        // Used for local tokens encoding LoginProvider => [Local]:<id>
+        private const string LocalTokenPrefix = "[Local]:";
+
+        private static string GetLocalTokenLoginProvider(string id)
+        {
+            return LocalTokenPrefix + id;
+        }
+
+        private static IdentityToken ExtractLocalToken(TUserToken token)
+        {
+            if (!token.LoginProvider.StartsWith(LocalTokenPrefix))
+            {
+                return null;
+            }
+
+            var id = token.LoginProvider.Substring(LocalTokenPrefix.Length);
+            return new IdentityToken(id, token.Name, token.Value);
+        }
+
         /// <summary>
         /// Sets the token value for a particular user.
         /// </summary>
@@ -1411,7 +1431,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
         /// <param name="name">The name of the token.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
-        public async virtual Task RemoveTokenAsync(TUser user, string loginProvider, string name, CancellationToken cancellationToken)
+        public virtual async Task RemoveTokenAsync(TUser user, string loginProvider, string name, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -1435,7 +1455,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
         /// <param name="name">The name of the token.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
-        public async virtual Task<string> GetTokenAsync(TUser user, string loginProvider, string name, CancellationToken cancellationToken)
+        public virtual async Task<string> GetTokenAsync(TUser user, string loginProvider, string name, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -1446,6 +1466,138 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
             }
             var entry = await FindToken(user, loginProvider, name, cancellationToken);
             return entry?.Value;
+        }
+
+        /// <summary>
+        /// Stores tokens for a particular user. Any tokens with an id that already exists will be replaced.
+        /// </summary>
+        /// <param name="user">The user.</param>
+        /// <param name="tokens">The tokens to store.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
+        public virtual async Task StoreTokensAsync(TUser user, IEnumerable<IdentityToken> tokens, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            ThrowIfDisposed();
+
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            foreach (var t in tokens)
+            {
+                var loginProviderKey = GetLocalTokenLoginProvider(t.Id);
+                var token = await FindToken(user, loginProviderKey, t.Type, cancellationToken);
+                if (token == null)
+                {
+                    UserTokens.Add(CreateUserToken(user, loginProviderKey, t.Type, t.Value));
+                }
+                else
+                {
+                    token.Value = t.Value;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Removes tokens for a user.
+        /// </summary>
+        /// <param name="user">The user.</param>
+        /// <param name="ids">The unique identifiers for the tokens to delete.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>How many tokens were removed.</returns>
+        public virtual async Task<int> RemoveTokensAsync(TUser user, IEnumerable<string> ids, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            ThrowIfDisposed();
+
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            var count = 0;
+            foreach (var t in ids)
+            {
+                var loginProviderKey = GetLocalTokenLoginProvider(t);
+                var toRemove = await UserTokens.SingleOrDefaultAsync(tok => tok.UserId.Equals(user.Id) && tok.LoginProvider == loginProviderKey, cancellationToken);
+                if (toRemove != null)
+                {
+                    UserTokens.Remove(toRemove);
+                    count++;
+                }
+            }
+            return count;
+        }
+
+        /// <summary>
+        /// Returns the token value.
+        /// </summary>
+        /// <param name="user">The user.</param>
+        /// <param name="id">The unique token identifier.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
+        public virtual async Task<string> GetTokenAsync(TUser user, string id, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            ThrowIfDisposed();
+
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+            var token = await UserTokens.SingleOrDefaultAsync(tok => tok.UserId.Equals(user.Id) && tok.LoginProvider == GetLocalTokenLoginProvider(id), cancellationToken);
+            return token?.Value;
+        }
+
+        /// <summary>
+        /// Returns all of a users tokens with the specified type.
+        /// </summary>
+        /// <param name="user">The user.</param>
+        /// <param name="type">The type of tokens to return.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
+        public virtual Task<IEnumerable<IdentityToken>> GetTokensAsync(TUser user, string type, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            ThrowIfDisposed();
+
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+            var tokens = UserTokens.Where(t => t.UserId.Equals(user.Id) && t.Name == type);
+            var result = new List<IdentityToken>();
+            foreach (var t in tokens)
+            {
+                result.Add(ExtractLocalToken(t));
+            }
+            return Task.FromResult<IEnumerable<IdentityToken>>(result);
+        }
+
+        /// <summary>
+        /// Returns all of a users tokens.
+        /// </summary>
+        /// <param name="user">The user.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
+        public virtual Task<IEnumerable<IdentityToken>> GetTokensAsync(TUser user, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            ThrowIfDisposed();
+
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+            var tokens = UserTokens.Where(t => t.UserId.Equals(user.Id));
+            var result = new List<IdentityToken>();
+            foreach (var t in tokens)
+            {
+                result.Add(ExtractLocalToken(t));
+            }
+            return Task.FromResult<IEnumerable<IdentityToken>>(result);
         }
     }
 }

@@ -64,6 +64,19 @@ namespace Microsoft.AspNetCore.Identity
         }
 
         /// <summary>
+        /// Returns an <see cref="IdentityError"/> indicating an token was not removed.
+        /// </summary>
+        /// <returns>An <see cref="IdentityError"/> indicating an token was not removed.</returns>
+        public virtual IdentityError TokenNotRemoved(string id)
+        {
+            return new IdentityError
+            {
+                Code = nameof(TokenNotRemoved),
+                Description = Resources.FormatTokenNotRemoved(id)
+            };
+        }
+
+        /// <summary>
         /// Returns an <see cref="IdentityError"/> indicating an external login is already associated with an account.
         /// </summary>
         /// <returns>An <see cref="IdentityError"/> indicating an external login is already associated with an account.</returns>

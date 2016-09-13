@@ -619,6 +619,22 @@ namespace Microsoft.AspNetCore.Identity
         }
 
         /// <summary>
+        /// Token '{0}' was not removed.
+        /// </summary>
+        internal static string TokenNotRemoved
+        {
+            get { return GetString("TokenNotRemoved"); }
+        }
+
+        /// <summary>
+        /// Token '{0}' was not removed.
+        /// </summary>
+        internal static string FormatTokenNotRemoved(object p0)
+        {
+            return string.Format(CultureInfo.CurrentCulture, GetString("TokenNotRemoved"), p0);
+        }
+
+        /// <summary>
         /// User already has a password set.
         /// </summary>
         internal static string UserAlreadyHasPassword

@@ -158,7 +158,7 @@ namespace Microsoft.AspNetCore.Identity
         /// Gets a flag indicating whether the backing user store supports authentication tokens.
         /// </summary>
         /// <value>
-        /// true if the backing user store supports  authentication tokens, otherwise false.
+        /// true if the backing user store supports authentication tokens, otherwise false.
         /// </value>
         public virtual bool SupportsUserAuthenticationTokens
         {
@@ -166,6 +166,21 @@ namespace Microsoft.AspNetCore.Identity
             {
                 ThrowIfDisposed();
                 return Store is IUserAuthenticationTokenStore<TUser>;
+            }
+        }
+
+        /// <summary>
+        /// Gets a flag indicating whether the backing user store supports user tokens.
+        /// </summary>
+        /// <value>
+        /// true if the backing user store supports user tokens, otherwise false.
+        /// </value>
+        public virtual bool SupportsUserTokens
+        {
+            get
+            {
+                ThrowIfDisposed();
+                return Store is IUserTokenStore<TUser>;
             }
         }
 
@@ -2071,7 +2086,7 @@ namespace Microsoft.AspNetCore.Identity
         /// <param name="loginProvider">The authentication scheme for the provider the token is associated with.</param>
         /// <param name="tokenName">The name of the token.</param>
         /// <returns>Whether a token was removed.</returns>
-        public virtual async Task<IdentityResult> RemoveTokenAsync(TUser user, string loginProvider, string tokenName)
+        public virtual async Task<IdentityResult> RemoveAuthenticationTokenAsync(TUser user, string loginProvider, string tokenName)
         {
             ThrowIfDisposed();
             var store = GetAuthenticationTokenStore();
@@ -2093,12 +2108,49 @@ namespace Microsoft.AspNetCore.Identity
         }
 
         /// <summary>
-        /// Deletes the specified tokens for a user.
+        /// Returns all of a users tokens with the specified type.
+        /// </summary>
+        /// <param name="user">The user.</param>
+        /// <param name="type">The type of tokens to return.</param>
+        public virtual Task<IEnumerable<IdentityToken>> GetTokensAsync(TUser user, string type)
+        {
+            ThrowIfDisposed();
+            var store = GetUserTokenStore();
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
+
+            return store.GetTokensAsync(user, type, CancellationToken);
+        }
+
+        /// <summary>
+        /// Returns all of a users tokens.
+        /// </summary>
+        /// <param name="user">The user.</param>
+        public virtual Task<IEnumerable<IdentityToken>> GetTokensAsync(TUser user)
+        {
+            ThrowIfDisposed();
+            var store = GetUserTokenStore();
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            return store.GetTokensAsync(user, CancellationToken);
+        }
+
+        /// <summary>
+        /// Removes the specified tokens for a user.
         /// </summary>
         /// <param name="user"></param>
         /// <param name="ids">The unique identifiers for the tokens to delete.</param>
         /// <returns>Whether the user was successfully updated.</returns>
-        public virtual async Task<IdentityResult> DeleteTokenAsync(TUser user, IEnumerable<string> ids)
+        public virtual async Task<IdentityResult> RemoveTokensAsync(TUser user, IEnumerable<string> ids)
         {
             ThrowIfDisposed();
             var store = GetUserTokenStore();
@@ -2111,7 +2163,7 @@ namespace Microsoft.AspNetCore.Identity
                 throw new ArgumentNullException(nameof(ids));
             }
 
-            await store.DeleteTokensAsync(user, ids, CancellationToken);
+            await store.RemoveTokensAsync(user, ids, CancellationToken);
             return await UpdateUserAsync(user);
         }
 
@@ -2140,13 +2192,40 @@ namespace Microsoft.AspNetCore.Identity
         }
 
         /// <summary>
+        /// Removes the specified token for a user.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="id">The unique identifier for the token to delete.</param>
+        /// <returns>Success only if the token was removed.</returns>
+        public virtual async Task<IdentityResult> RemoveTokenAsync(TUser user, string id)
+        {
+            ThrowIfDisposed();
+            var store = GetUserTokenStore();
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+            if (id == null)
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            var count = await store.RemoveTokensAsync(user, new string[] { id }, CancellationToken);
+            if (count != 1)
+            {
+                return IdentityResult.Failed(ErrorDescriber.TokenNotRemoved(id));
+            }
+            return await UpdateUserAsync(user);
+        }
+
+        /// <summary>
         /// Updates a user's tokens.
         /// </summary>
         /// <param name="user">The user.</param>
         /// <param name="tokensToDelete">The unique identifiers for the tokens to delete.</param>
         /// <param name="tokensToStore">Tokens to store.</param>
         /// <returns>Whether the user was successfully updated.</returns>
-        public virtual async Task<IdentityResult> UpdateTokens(TUser user, IEnumerable<string> tokensToDelete, IEnumerable<IdentityToken> tokensToStore, CancellationToken cancellationToken)
+        public virtual async Task<IdentityResult> UpdateTokensAsync(TUser user, IEnumerable<string> tokensToDelete, IEnumerable<IdentityToken> tokensToStore)
         {
             ThrowIfDisposed();
             var store = GetUserTokenStore();
@@ -2162,7 +2241,7 @@ namespace Microsoft.AspNetCore.Identity
             {
                 throw new ArgumentNullException(nameof(tokensToStore));
             }
-            await store.DeleteTokensAsync(user, tokensToDelete, CancellationToken);
+            await store.RemoveTokensAsync(user, tokensToDelete, CancellationToken);
             await store.StoreTokensAsync(user, tokensToStore, CancellationToken);
             return await UpdateUserAsync(user);
         }
@@ -2371,7 +2450,7 @@ namespace Microsoft.AspNetCore.Identity
             var cast = Store as IUserTokenStore<TUser>;
             if (cast == null)
             {
-                throw new NotSupportedException("Resources.StoreNotIUserTokenStore");
+                throw new NotSupportedException(Resources.StoreNotIUserTokenStore);
             }
             return cast;
         }

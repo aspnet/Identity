@@ -269,6 +269,10 @@
     <value>Store does not implement IUserTwoFactorStore&lt;TUser&gt;.</value>
     <comment>Error when the store does not implement this interface</comment>
   </data>
+  <data name="TokenNotRemoved" xml:space="preserve">
+    <value>Token '{0}' was not removed.</value>
+    <comment>Error when a token is not removed</comment>
+  </data>
   <data name="UserAlreadyHasPassword" xml:space="preserve">
     <value>User already has a password set.</value>
     <comment>Error when AddPasswordAsync called when a user already has a password</comment>

@@ -25,6 +25,7 @@ namespace Microsoft.AspNetCore.Identity
     {
         private const string LoginProviderKey = "LoginProvider";
         private const string XsrfKey = "XsrfId";
+        private const string RecoveryCodeTokenType = "[RecoveryCode]";
 
         /// <summary>
         /// Creates a new instance of <see cref="SignInManager{TUser}"/>.
@@ -573,9 +574,31 @@ namespace Microsoft.AspNetCore.Identity
         /// <param name="user">The user to generate recovery codes for.</param>
         /// <param name="number">The number of codes to generate.</param>
         /// <returns>The new recovery codes for the user.</returns>
-        public virtual Task<List<string>> GenerateNewRecoveryCodesAsync(TUser user, int number)
+        public virtual async Task<IEnumerable<string>> GenerateNewRecoveryCodesAsync(TUser user, int number)
         {
+            var oldCodes = await UserManager.GetTokensAsync(user, RecoveryCodeTokenType);
+            var newCodes = GenerateNewCodes(number);
+
+            var result = await UserManager.UpdateTokensAsync(user, oldCodes.Select(c => c.Id), newCodes);
+            if (result.Succeeded)
+            {
+                return newCodes.Select(code => code.Value);
+            }
+
+            // Review sufficient to return null for any failure?
             return null;
+        }
+
+        private List<IdentityToken> GenerateNewCodes(int number)
+        {
+            var list = new List<IdentityToken>(number);
+            for (var i=0; i<number; i++)
+            {
+                // TODO: implement for real
+                var id = Guid.NewGuid().ToString();
+                list.Add(new IdentityToken(id, RecoveryCodeTokenType, id));
+            }
+            return list;
         }
 
         /// <summary>
@@ -585,9 +608,17 @@ namespace Microsoft.AspNetCore.Identity
         /// <param name="user">The user who owns the recovery code.</param>
         /// <param name="code">The recovery code to use.</param>
         /// <returns>True if the recovery code was found for the user.</returns>
-        public virtual Task<bool> UseRecoveryCodeAsync(TUser user, string code)
+        public virtual async Task<bool> UseRecoveryCodeAsync(TUser user, string code)
         {
-            return Task.FromResult(false);
+            var recoveryCodes = await UserManager.GetTokensAsync(user, RecoveryCodeTokenType);
+            var token = recoveryCodes.Where(tok => tok.Value == code).FirstOrDefault();
+            if (token == null)
+            {
+                return false;
+            }
+
+            var result = await UserManager.RemoveTokenAsync(user, token.Id);
+            return result.Succeeded;
         }
 
         /// <summary>
