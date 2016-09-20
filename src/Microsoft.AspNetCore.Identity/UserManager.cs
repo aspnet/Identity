@@ -170,17 +170,17 @@ namespace Microsoft.AspNetCore.Identity
         }
 
         /// <summary>
-        /// Gets a flag indicating whether the backing user store supports user tokens.
+        /// Gets a flag indicating whether the backing user store supports a user authenticator.
         /// </summary>
         /// <value>
-        /// true if the backing user store supports user tokens, otherwise false.
+        /// true if the backing user store supports a user authenticatior, otherwise false.
         /// </value>
-        public virtual bool SupportsUserTokens
+        public virtual bool SupportsUserAuthenticator
         {
             get
             {
                 ThrowIfDisposed();
-                return Store is IUserTokenStore<TUser>;
+                return Store is IUserAuthenticatorStore<TUser>;
             }
         }
 
@@ -2108,142 +2108,104 @@ namespace Microsoft.AspNetCore.Identity
         }
 
         /// <summary>
-        /// Returns all of a users tokens with the specified type.
+        /// Returns the authenticator key for the user.
         /// </summary>
         /// <param name="user">The user.</param>
-        /// <param name="type">The type of tokens to return.</param>
-        public virtual Task<IEnumerable<IdentityToken>> GetTokensAsync(TUser user, string type)
+        /// <returns>The authenticator key</returns>
+        public virtual Task<string> GetAuthenticatorKey(TUser user)
         {
             ThrowIfDisposed();
-            var store = GetUserTokenStore();
+            var store = GetAuthenticatorStore();
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
-
-            return store.GetTokensAsync(user, type, CancellationToken);
+            return store.GetAuthenticatorKeyAsync(user, CancellationToken);
         }
 
         /// <summary>
-        /// Returns all of a users tokens.
+        /// Resets the authenticator key for the user.
         /// </summary>
         /// <param name="user">The user.</param>
-        public virtual Task<IEnumerable<IdentityToken>> GetTokensAsync(TUser user)
-        {
-            ThrowIfDisposed();
-            var store = GetUserTokenStore();
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
-
-            return store.GetTokensAsync(user, CancellationToken);
-        }
-
-        /// <summary>
-        /// Removes the specified tokens for a user.
-        /// </summary>
-        /// <param name="user"></param>
-        /// <param name="ids">The unique identifiers for the tokens to delete.</param>
         /// <returns>Whether the user was successfully updated.</returns>
-        public virtual async Task<IdentityResult> RemoveTokensAsync(TUser user, IEnumerable<string> ids)
+        public virtual async Task<IdentityResult> ResetAuthenticatorKey(TUser user)
         {
             ThrowIfDisposed();
-            var store = GetUserTokenStore();
+            var store = GetAuthenticatorStore();
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
-            if (ids == null)
-            {
-                throw new ArgumentNullException(nameof(ids));
-            }
+            await store.SetAuthenticatorKeyAsync(user, GenerateNewAuthenticatorKey(user), CancellationToken);
+            return await UpdateAsync(user);
+        }
 
-            await store.RemoveTokensAsync(user, ids, CancellationToken);
-            return await UpdateUserAsync(user);
+        // REVIEW: pluggable and replaceable? Service?
+        private string GenerateNewAuthenticatorKey(TUser user)
+        {
+            // Implement
+            return Guid.NewGuid().ToString();
         }
 
         /// <summary>
-        /// Stores tokens for a user.
+        /// Generates recovery codes for the user, this invalidates any previous recovery codes for the user.
         /// </summary>
-        /// <param name="user">The user.</param>
-        /// <param name="tokens">The tokens to store.</param>
-        /// <returns>Whether the user was successfully updated.</returns>
-        public virtual async Task<IdentityResult> StoreTokensAsync(TUser user, IEnumerable<IdentityToken> tokens)
+        /// <param name="user">The user to generate recovery codes for.</param>
+        /// <param name="number">The number of codes to generate.</param>
+        /// <returns>The new recovery codes for the user.</returns>
+        public virtual async Task<IEnumerable<string>> GenerateNewRecoveryCodesAsync(TUser user, int number)
         {
             ThrowIfDisposed();
-            var store = GetUserTokenStore();
+            var store = GetAuthenticatorStore();
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
-            if (tokens == null)
-            {
-                throw new ArgumentNullException(nameof(tokens));
-            }
 
-            // REVIEW: should updating any tokens affect the security stamp?
-            await store.StoreTokensAsync(user, tokens, CancellationToken);
-            return await UpdateUserAsync(user);
+            var newCodes = GenerateNewCodes(number);
+            await store.ReplaceRecoveryCodesAsync(user, newCodes, CancellationToken);
+            var update = await UpdateAsync(user);
+            if (update.Succeeded)
+            {
+                return newCodes;
+            }
+            return null;
+        }
+
+        // This should probably go into a service?
+        private List<string> GenerateNewCodes(int number)
+        {
+            var list = new List<string>(number);
+            for (var i = 0; i < number; i++)
+            {
+                // TODO: implement for real
+                list.Add(Guid.NewGuid().ToString());
+            }
+            return list;
         }
 
         /// <summary>
-        /// Removes the specified token for a user.
+        /// Returns whether a recovery code is valid for a user. Note: recovery codes are only valid
+        /// once, and will be invalid after use.
         /// </summary>
-        /// <param name="user"></param>
-        /// <param name="id">The unique identifier for the token to delete.</param>
-        /// <returns>Success only if the token was removed.</returns>
-        public virtual async Task<IdentityResult> RemoveTokenAsync(TUser user, string id)
+        /// <param name="user">The user who owns the recovery code.</param>
+        /// <param name="code">The recovery code to use.</param>
+        /// <returns>True if the recovery code was found for the user.</returns>
+        public virtual async Task<IdentityResult> RedeemRecoveryCodeAsync(TUser user, string code)
         {
             ThrowIfDisposed();
-            var store = GetUserTokenStore();
+            var store = GetAuthenticatorStore();
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
-            if (id == null)
-            {
-                throw new ArgumentNullException(nameof(id));
-            }
 
-            var count = await store.RemoveTokensAsync(user, new string[] { id }, CancellationToken);
-            if (count != 1)
+            var success = await store.RedeemRecoveryCodeAsync(user, code, CancellationToken);
+            if (success)
             {
-                return IdentityResult.Failed(ErrorDescriber.TokenNotRemoved(id));
+                return await UpdateAsync(user);
             }
-            return await UpdateUserAsync(user);
-        }
-
-        /// <summary>
-        /// Updates a user's tokens.
-        /// </summary>
-        /// <param name="user">The user.</param>
-        /// <param name="tokensToDelete">The unique identifiers for the tokens to delete.</param>
-        /// <param name="tokensToStore">Tokens to store.</param>
-        /// <returns>Whether the user was successfully updated.</returns>
-        public virtual async Task<IdentityResult> UpdateTokensAsync(TUser user, IEnumerable<string> tokensToDelete, IEnumerable<IdentityToken> tokensToStore)
-        {
-            ThrowIfDisposed();
-            var store = GetUserTokenStore();
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
-            if (tokensToDelete == null)
-            {
-                throw new ArgumentNullException(nameof(tokensToDelete));
-            }
-            if (tokensToStore == null)
-            {
-                throw new ArgumentNullException(nameof(tokensToStore));
-            }
-            await store.RemoveTokensAsync(user, tokensToDelete, CancellationToken);
-            await store.StoreTokensAsync(user, tokensToStore, CancellationToken);
-            return await UpdateUserAsync(user);
+            return IdentityResult.Failed(ErrorDescriber.RecoveryCodeRedemptionFailed());
         }
 
         /// <summary>
@@ -2445,12 +2407,12 @@ namespace Microsoft.AspNetCore.Identity
             return await Store.UpdateAsync(user, CancellationToken);
         }
 
-        private IUserTokenStore<TUser> GetUserTokenStore()
+        private IUserAuthenticatorStore<TUser> GetAuthenticatorStore()
         {
-            var cast = Store as IUserTokenStore<TUser>;
+            var cast = Store as IUserAuthenticatorStore<TUser>;
             if (cast == null)
             {
-                throw new NotSupportedException(Resources.StoreNotIUserTokenStore);
+                throw new NotSupportedException(Resources.StoreNotIUserAuthenticatorStore);
             }
             return cast;
         }

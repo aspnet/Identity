@@ -2403,21 +2403,19 @@ namespace Microsoft.AspNetCore.Identity.Test
             var user = CreateTestUser();
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
 
-            var signInManager = SetupSignInManager(manager, new DefaultHttpContext());
-
             var numCodes = 15;
-            var newCodes = await signInManager.GenerateNewRecoveryCodesAsync(user, numCodes);
+            var newCodes = await manager.GenerateNewRecoveryCodesAsync(user, numCodes);
             Assert.Equal(numCodes, newCodes.Count());
 
             foreach (var code in newCodes)
             {
-                Assert.True(await signInManager.UseRecoveryCodeAsync(user, code));
-                Assert.False(await signInManager.UseRecoveryCodeAsync(user, code));
+                IdentityResultAssert.IsSuccess(await manager.RedeemRecoveryCodeAsync(user, code));
+                IdentityResultAssert.IsFailure(await manager.RedeemRecoveryCodeAsync(user, code));
             }
             // One last time to be sure
             foreach (var code in newCodes)
             {
-                Assert.False(await signInManager.UseRecoveryCodeAsync(user, code));
+                IdentityResultAssert.IsFailure(await manager.RedeemRecoveryCodeAsync(user, code));
             }
 
         }

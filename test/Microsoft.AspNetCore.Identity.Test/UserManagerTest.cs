@@ -753,17 +753,15 @@ namespace Microsoft.AspNetCore.Identity.Test
         }
 
         [Fact]
-        public async Task UserTokenMethodsFailWhenStoreNotImplemented()
+        public async Task AuthenticatorMethodsFailWhenStoreNotImplemented()
         {
-            var error = Resources.StoreNotIUserTokenStore;
+            var error = Resources.StoreNotIUserAuthenticatorStore;
             var manager = MockHelpers.TestUserManager(new NoopUserStore());
-            Assert.False(manager.SupportsUserTokens);
-            await VerifyException<NotSupportedException>(async () => await manager.UpdateTokensAsync(null, null, null), error);
-            await VerifyException<NotSupportedException>(async () => await manager.RemoveTokenAsync(null, null), error);
-            await VerifyException<NotSupportedException>(async () => await manager.RemoveTokensAsync(null, null), error);
-            await VerifyException<NotSupportedException>(async () => await manager.GetTokensAsync(null, null), error);
-            await VerifyException<NotSupportedException>(async () => await manager.GetTokensAsync(null), error);
-            await VerifyException<NotSupportedException>(async () => await manager.StoreTokensAsync(null, null), error);
+            Assert.False(manager.SupportsUserAuthenticator);
+            await VerifyException<NotSupportedException>(async () => await manager.RedeemRecoveryCodeAsync(null, null), error);
+            await VerifyException<NotSupportedException>(async () => await manager.GenerateNewRecoveryCodesAsync(null, 10), error);
+            await VerifyException<NotSupportedException>(async () => await manager.GetAuthenticatorKey(null), error);
+            await VerifyException<NotSupportedException>(async () => await manager.ResetAuthenticatorKey(null), error);
         }
 
         private async Task VerifyException<TException>(Func<Task> code, string expectedMessage) where TException : Exception

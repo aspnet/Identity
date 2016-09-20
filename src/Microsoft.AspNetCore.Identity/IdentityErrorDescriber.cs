@@ -64,15 +64,15 @@ namespace Microsoft.AspNetCore.Identity
         }
 
         /// <summary>
-        /// Returns an <see cref="IdentityError"/> indicating an token was not removed.
+        /// Returns an <see cref="IdentityError"/> indicating a recovery code was not redeemed.
         /// </summary>
-        /// <returns>An <see cref="IdentityError"/> indicating an token was not removed.</returns>
-        public virtual IdentityError TokenNotRemoved(string id)
+        /// <returns>An <see cref="IdentityError"/> indicating a recovery code was not redeemed.</returns>
+        public virtual IdentityError RecoveryCodeRedemptionFailed()
         {
             return new IdentityError
             {
-                Code = nameof(TokenNotRemoved),
-                Description = Resources.FormatTokenNotRemoved(id)
+                Code = nameof(RecoveryCodeRedemptionFailed),
+                Description = Resources.RecoveryCodeRedemptionFailed
             };
         }
 

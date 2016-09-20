@@ -202,7 +202,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
         IQueryableUserStore<TUser>,
         IUserTwoFactorStore<TUser>,
         IUserAuthenticationTokenStore<TUser>,
-        IUserTokenStore<TUser>
+        IUserAuthenticatorStore<TUser>
         where TUser : IdentityUser<TKey, TUserClaim, TUserRole, TUserLogin>
         where TRole : IdentityRole<TKey, TUserRole, TRoleClaim>
         where TContext : DbContext
@@ -1382,16 +1382,16 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
             return LocalTokenPrefix + id;
         }
 
-        private static IdentityToken ExtractLocalToken(TUserToken token)
-        {
-            if (!token.LoginProvider.StartsWith(LocalTokenPrefix))
-            {
-                return null;
-            }
+        //private static IdentityToken ExtractLocalToken(TUserToken token)
+        //{
+        //    if (!token.LoginProvider.StartsWith(LocalTokenPrefix))
+        //    {
+        //        return null;
+        //    }
 
-            var id = token.LoginProvider.Substring(LocalTokenPrefix.Length);
-            return new IdentityToken(id, token.Name, token.Value);
-        }
+        //    var id = token.LoginProvider.Substring(LocalTokenPrefix.Length);
+        //    return new IdentityToken(id, token.Name, token.Value);
+        //}
 
         /// <summary>
         /// Sets the token value for a particular user.
@@ -1468,97 +1468,55 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
             return entry?.Value;
         }
 
+        private const string AuthenticatorStoreLoginProvider = "[AspNetAuthenticatorStore]";
+        private const string AuthenticatorKeyTokenName = "AuthenticatorKey";
+        private const string RecoveryCodeTokenName = "RecoveryCodes";
+
         /// <summary>
-        /// Stores tokens for a particular user. Any tokens with an id that already exists will be replaced.
+        /// Sets the authenticator key for the specified <paramref name="user"/>.
         /// </summary>
-        /// <param name="user">The user.</param>
-        /// <param name="tokens">The tokens to store.</param>
+        /// <param name="user">The user whose authenticator key should be set.</param>
+        /// <param name="key">The authenticator key to set.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
-        public virtual async Task StoreTokensAsync(TUser user, IEnumerable<IdentityToken> tokens, CancellationToken cancellationToken)
+        public virtual Task SetAuthenticatorKeyAsync(TUser user, string key, CancellationToken cancellationToken)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            ThrowIfDisposed();
-
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
-
-            foreach (var t in tokens)
-            {
-                var loginProviderKey = GetLocalTokenLoginProvider(t.Id);
-                var token = await FindToken(user, loginProviderKey, t.Type, cancellationToken);
-                if (token == null)
-                {
-                    UserTokens.Add(CreateUserToken(user, loginProviderKey, t.Type, t.Value));
-                }
-                else
-                {
-                    token.Value = t.Value;
-                }
-            }
+            return SetTokenAsync(user, AuthenticatorStoreLoginProvider, AuthenticatorKeyTokenName, key, cancellationToken);
         }
 
         /// <summary>
-        /// Removes tokens for a user.
+        /// Get the authenticator key for the specified <paramref name="user" />.
         /// </summary>
-        /// <param name="user">The user.</param>
-        /// <param name="ids">The unique identifiers for the tokens to delete.</param>
+        /// <param name="user">The user whose security stamp should be set.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
-        /// <returns>How many tokens were removed.</returns>
-        public virtual async Task<int> RemoveTokensAsync(TUser user, IEnumerable<string> ids, CancellationToken cancellationToken)
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the security stamp for the specified <paramref name="user"/>.</returns>
+        public virtual Task<string> GetAuthenticatorKeyAsync(TUser user, CancellationToken cancellationToken)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            ThrowIfDisposed();
-
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
-
-            var count = 0;
-            foreach (var t in ids)
-            {
-                var loginProviderKey = GetLocalTokenLoginProvider(t);
-                var toRemove = await UserTokens.SingleOrDefaultAsync(tok => tok.UserId.Equals(user.Id) && tok.LoginProvider == loginProviderKey, cancellationToken);
-                if (toRemove != null)
-                {
-                    UserTokens.Remove(toRemove);
-                    count++;
-                }
-            }
-            return count;
+            return GetTokenAsync(user, AuthenticatorStoreLoginProvider, AuthenticatorKeyTokenName, cancellationToken);
         }
 
         /// <summary>
-        /// Returns the token value.
+        /// Updates the recovery codes for the user while invalidating any previous recovery codes.
         /// </summary>
-        /// <param name="user">The user.</param>
-        /// <param name="id">The unique token identifier.</param>
+        /// <param name="user">The user to store new recovery codes for.</param>
+        /// <param name="recoveryCodes">The new recovery codes for the user.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
-        /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
-        public virtual async Task<string> GetTokenAsync(TUser user, string id, CancellationToken cancellationToken)
+        /// <returns>The new recovery codes for the user.</returns>
+        public virtual Task ReplaceRecoveryCodesAsync(TUser user, IEnumerable<string> recoveryCodes, CancellationToken cancellationToken)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            ThrowIfDisposed();
-
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
-            var token = await UserTokens.SingleOrDefaultAsync(tok => tok.UserId.Equals(user.Id) && tok.LoginProvider == GetLocalTokenLoginProvider(id), cancellationToken);
-            return token?.Value;
+            var mergedCodes = string.Join(";", recoveryCodes);
+            return SetTokenAsync(user, AuthenticatorStoreLoginProvider, RecoveryCodeTokenName, mergedCodes, cancellationToken);
         }
 
         /// <summary>
-        /// Returns all of a users tokens with the specified type.
+        /// Returns whether a recovery code is valid for a user. Note: recovery codes are only valid
+        /// once, and will be invalid after use.
         /// </summary>
-        /// <param name="user">The user.</param>
-        /// <param name="type">The type of tokens to return.</param>
+        /// <param name="user">The user who owns the recovery code.</param>
+        /// <param name="code">The recovery code to use.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
-        /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
-        public virtual Task<IEnumerable<IdentityToken>> GetTokensAsync(TUser user, string type, CancellationToken cancellationToken)
+        /// <returns>True if the recovery code was found for the user.</returns>
+        public virtual async Task<bool> RedeemRecoveryCodeAsync(TUser user, string code, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -1567,37 +1525,20 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
             {
                 throw new ArgumentNullException(nameof(user));
             }
-            var tokens = UserTokens.Where(t => t.UserId.Equals(user.Id) && t.Name == type);
-            var result = new List<IdentityToken>();
-            foreach (var t in tokens)
+            if (code == null)
             {
-                result.Add(ExtractLocalToken(t));
+                throw new ArgumentNullException(nameof(code));
             }
-            return Task.FromResult<IEnumerable<IdentityToken>>(result);
-        }
 
-        /// <summary>
-        /// Returns all of a users tokens.
-        /// </summary>
-        /// <param name="user">The user.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
-        /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
-        public virtual Task<IEnumerable<IdentityToken>> GetTokensAsync(TUser user, CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            ThrowIfDisposed();
-
-            if (user == null)
+            var mergedCodes = await GetTokenAsync(user, AuthenticatorStoreLoginProvider, RecoveryCodeTokenName, cancellationToken) ?? "";
+            var splitCodes = mergedCodes.Split(';');
+            if (splitCodes.Contains(code))
             {
-                throw new ArgumentNullException(nameof(user));
+                var updatedCodes = new List<string>(splitCodes.Where(s => s != code));
+                await ReplaceRecoveryCodesAsync(user, updatedCodes, cancellationToken);
+                return true;
             }
-            var tokens = UserTokens.Where(t => t.UserId.Equals(user.Id));
-            var result = new List<IdentityToken>();
-            foreach (var t in tokens)
-            {
-                result.Add(ExtractLocalToken(t));
-            }
-            return Task.FromResult<IEnumerable<IdentityToken>>(result);
+            return false;
         }
     }
 }

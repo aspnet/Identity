@@ -261,17 +261,17 @@
     <value>Store does not implement IUserSecurityStampStore&lt;TUser&gt;.</value>
     <comment>Error when the store does not implement this interface</comment>
   </data>
-  <data name="StoreNotIUserTokenStore" xml:space="preserve">
-    <value>Store does not implement IUserTokenStore&lt;User&gt;.</value>
+  <data name="StoreNotIUserAuthenticatorStore" xml:space="preserve">
+    <value>Store does not implement IUserAuthenticatorStore&lt;User&gt;.</value>
     <comment>Error when the store does not implement this interface</comment>
   </data>
   <data name="StoreNotIUserTwoFactorStore" xml:space="preserve">
     <value>Store does not implement IUserTwoFactorStore&lt;TUser&gt;.</value>
     <comment>Error when the store does not implement this interface</comment>
   </data>
-  <data name="TokenNotRemoved" xml:space="preserve">
-    <value>Token '{0}' was not removed.</value>
-    <comment>Error when a token is not removed</comment>
+  <data name="RecoveryCodeRedemptionFailed" xml:space="preserve">
+    <value>Recovery code redemption failed.</value>
+    <comment>Error when a recovery code is not redeemed.</comment>
   </data>
   <data name="UserAlreadyHasPassword" xml:space="preserve">
     <value>User already has a password set.</value>

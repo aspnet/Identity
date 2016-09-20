@@ -587,19 +587,19 @@ namespace Microsoft.AspNetCore.Identity
         }
 
         /// <summary>
-        /// Store does not implement IUserTokenStore&lt;User&gt;.
+        /// Store does not implement IUserAuthenticatorStore&lt;User&gt;.
         /// </summary>
-        internal static string StoreNotIUserTokenStore
+        internal static string StoreNotIUserAuthenticatorStore
         {
-            get { return GetString("StoreNotIUserTokenStore"); }
+            get { return GetString("StoreNotIUserAuthenticatorStore"); }
         }
 
         /// <summary>
-        /// Store does not implement IUserTokenStore&lt;User&gt;.
+        /// Store does not implement IUserAuthenticatorStore&lt;User&gt;.
         /// </summary>
-        internal static string FormatStoreNotIUserTokenStore()
+        internal static string FormatStoreNotIUserAuthenticatorStore()
         {
-            return GetString("StoreNotIUserTokenStore");
+            return GetString("StoreNotIUserAuthenticatorStore");
         }
 
         /// <summary>
@@ -619,19 +619,19 @@ namespace Microsoft.AspNetCore.Identity
         }
 
         /// <summary>
-        /// Token '{0}' was not removed.
+        /// Recovery code redemption failed.
         /// </summary>
-        internal static string TokenNotRemoved
+        internal static string RecoveryCodeRedemptionFailed
         {
-            get { return GetString("TokenNotRemoved"); }
+            get { return GetString("RecoveryCodeRedemptionFailed"); }
         }
 
         /// <summary>
-        /// Token '{0}' was not removed.
+        /// Recovery code redemption failed.
         /// </summary>
-        internal static string FormatTokenNotRemoved(object p0)
+        internal static string FormatRecoveryCodeRedemptionFailed()
         {
-            return string.Format(CultureInfo.CurrentCulture, GetString("TokenNotRemoved"), p0);
+            return GetString("RecoveryCodeRedemptionFailed");
         }
 
         /// <summary>
