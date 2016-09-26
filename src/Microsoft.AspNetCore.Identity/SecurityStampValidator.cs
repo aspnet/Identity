@@ -66,8 +66,23 @@ namespace Microsoft.AspNetCore.Identity
                 var user = await _signInManager.ValidateSecurityStampAsync(context.Principal);
                 if (user != null)
                 {
-                    // REVIEW: note we lost login authenticaiton method
-                    context.ReplacePrincipal(await _signInManager.CreateUserPrincipalAsync(user));
+                    var newPrincipal = await _signInManager.CreateUserPrincipalAsync(user);
+
+                    if (_options.OnSecurityStampReplacingPrincipal != null)
+                    {
+                        var replaceContext = new SecurityStampReplacingPrincipalContext
+                        {
+                            Current = context.Principal,
+                            Replacement = newPrincipal
+                        };
+
+                        // Note: a null principal is allowed and results in a failed authentication.
+                        await _options.OnSecurityStampReplacingPrincipal(replaceContext);
+                        newPrincipal = replaceContext.Replacement;
+                    }
+
+                    // REVIEW: note we lost login authentication method
+                    context.ReplacePrincipal(newPrincipal);
                     context.ShouldRenew = true;
                 }
                 else
