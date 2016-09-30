@@ -760,8 +760,8 @@ namespace Microsoft.AspNetCore.Identity.Test
             Assert.False(manager.SupportsUserAuthenticator);
             await VerifyException<NotSupportedException>(async () => await manager.RedeemRecoveryCodeAsync(null, null), error);
             await VerifyException<NotSupportedException>(async () => await manager.GenerateNewRecoveryCodesAsync(null, 10), error);
-            await VerifyException<NotSupportedException>(async () => await manager.GetAuthenticatorKey(null), error);
-            await VerifyException<NotSupportedException>(async () => await manager.ResetAuthenticatorKey(null), error);
+            await VerifyException<NotSupportedException>(async () => await manager.GetAuthenticatorKeyAsync(null), error);
+            await VerifyException<NotSupportedException>(async () => await manager.ResetAuthenticatorKeyAsync(null), error);
         }
 
         private async Task VerifyException<TException>(Func<Task> code, string expectedMessage) where TException : Exception

@@ -2112,7 +2112,7 @@ namespace Microsoft.AspNetCore.Identity
         /// </summary>
         /// <param name="user">The user.</param>
         /// <returns>The authenticator key</returns>
-        public virtual Task<string> GetAuthenticatorKey(TUser user)
+        public virtual Task<string> GetAuthenticatorKeyAsync(TUser user)
         {
             ThrowIfDisposed();
             var store = GetAuthenticatorStore();
@@ -2128,7 +2128,7 @@ namespace Microsoft.AspNetCore.Identity
         /// </summary>
         /// <param name="user">The user.</param>
         /// <returns>Whether the user was successfully updated.</returns>
-        public virtual async Task<IdentityResult> ResetAuthenticatorKey(TUser user)
+        public virtual async Task<IdentityResult> ResetAuthenticatorKeyAsync(TUser user)
         {
             ThrowIfDisposed();
             var store = GetAuthenticatorStore();
