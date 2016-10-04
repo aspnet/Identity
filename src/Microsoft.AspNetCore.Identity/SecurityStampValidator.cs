@@ -68,7 +68,7 @@ namespace Microsoft.AspNetCore.Identity
                 {
                     var newPrincipal = await _signInManager.CreateUserPrincipalAsync(user);
 
-                    if (_options.OnSecurityStampReplacingPrincipal != null)
+                    if (_options.OnSecurityStampRefreshingPrincipal != null)
                     {
                         var replaceContext = new SecurityStampRefreshingPrincipalContext
                         {
@@ -77,7 +77,7 @@ namespace Microsoft.AspNetCore.Identity
                         };
 
                         // Note: a null principal is allowed and results in a failed authentication.
-                        await _options.OnSecurityStampReplacingPrincipal(replaceContext);
+                        await _options.OnSecurityStampRefreshingPrincipal(replaceContext);
                         newPrincipal = replaceContext.NewPrincipal;
                     }
 

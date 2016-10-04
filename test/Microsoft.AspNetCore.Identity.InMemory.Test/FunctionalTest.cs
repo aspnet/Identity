@@ -146,7 +146,7 @@ namespace Microsoft.AspNetCore.Identity.InMemory
             var server = CreateServer(services => services.Configure<IdentityOptions>(options =>
             {
                 options.Cookies.ApplicationCookie.SystemClock = clock;
-                options.OnSecurityStampReplacingPrincipal = c =>
+                options.OnSecurityStampRefreshingPrincipal = c =>
                 {
                     var newId = new ClaimsIdentity();
                     newId.AddClaim(new Claim("PreviousName", c.CurrentPrincipal.Identity.Name));
