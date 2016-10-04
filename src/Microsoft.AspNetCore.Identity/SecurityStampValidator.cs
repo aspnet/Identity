@@ -70,15 +70,15 @@ namespace Microsoft.AspNetCore.Identity
 
                     if (_options.OnSecurityStampReplacingPrincipal != null)
                     {
-                        var replaceContext = new SecurityStampReplacingPrincipalContext
+                        var replaceContext = new SecurityStampRefreshingPrincipalContext
                         {
-                            Current = context.Principal,
-                            Replacement = newPrincipal
+                            CurrentPrincipal = context.Principal,
+                            NewPrincipal = newPrincipal
                         };
 
                         // Note: a null principal is allowed and results in a failed authentication.
                         await _options.OnSecurityStampReplacingPrincipal(replaceContext);
-                        newPrincipal = replaceContext.Replacement;
+                        newPrincipal = replaceContext.NewPrincipal;
                     }
 
                     // REVIEW: note we lost login authentication method

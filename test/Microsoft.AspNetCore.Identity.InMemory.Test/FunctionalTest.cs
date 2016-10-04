@@ -149,8 +149,8 @@ namespace Microsoft.AspNetCore.Identity.InMemory
                 options.OnSecurityStampReplacingPrincipal = c =>
                 {
                     var newId = new ClaimsIdentity();
-                    newId.AddClaim(new Claim("PreviousName", c.Current.Identity.Name));
-                    c.Replacement.AddIdentity(newId);
+                    newId.AddClaim(new Claim("PreviousName", c.CurrentPrincipal.Identity.Name));
+                    c.NewPrincipal.AddIdentity(newId);
                     return Task.FromResult(0);
                 };
             }));

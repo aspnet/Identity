@@ -79,6 +79,6 @@ namespace Microsoft.AspNetCore.Builder
         /// <summary>
         /// Invoked when the default security stamp validator replaces the user's ClaimsPrincipal in the cookie.
         /// </summary>
-        public Func<SecurityStampReplacingPrincipalContext, Task> OnSecurityStampReplacingPrincipal { get; set; }
+        public Func<SecurityStampRefreshingPrincipalContext, Task> OnSecurityStampReplacingPrincipal { get; set; }
     }
 }
