@@ -1374,25 +1374,6 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
         private Task<TUserToken> FindToken(TUser user, string loginProvider, string name, CancellationToken cancellationToken)
             => UserTokens.FindAsync(new object[] { user.Id, loginProvider, name }, cancellationToken);
 
-        // Used for local tokens encoding LoginProvider => [Local]:<id>
-        private const string LocalTokenPrefix = "[Local]:";
-
-        private static string GetLocalTokenLoginProvider(string id)
-        {
-            return LocalTokenPrefix + id;
-        }
-
-        //private static IdentityToken ExtractLocalToken(TUserToken token)
-        //{
-        //    if (!token.LoginProvider.StartsWith(LocalTokenPrefix))
-        //    {
-        //        return null;
-        //    }
-
-        //    var id = token.LoginProvider.Substring(LocalTokenPrefix.Length);
-        //    return new IdentityToken(id, token.Name, token.Value);
-        //}
-
         /// <summary>
         /// Sets the token value for a particular user.
         /// </summary>
