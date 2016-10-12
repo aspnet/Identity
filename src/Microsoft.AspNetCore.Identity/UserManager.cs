@@ -2143,8 +2143,8 @@ namespace Microsoft.AspNetCore.Identity
         // REVIEW: pluggable and replaceable? Service?
         private string GenerateNewAuthenticatorKey(TUser user)
         {
-            // Implement
-            return Guid.NewGuid().ToString();
+            var bytes = Rfc6238AuthenticationService.GenerateRandomKey();
+            return Base32A.ToBase32(bytes);
         }
 
         /// <summary>

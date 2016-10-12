@@ -696,10 +696,22 @@ namespace Microsoft.AspNetCore.Identity.Test
         [Fact]
         public void TOTPTest()
         {
-            var secret = "abcdefghijklmnop";
-            var bytes = Encoding.Unicode.GetBytes(secret);
-            var key = ToString(bytes);
-            Assert.True(Rfc6238AuthenticationService.ValidateCode(bytes, 304210));
+            //var secret = "abcdefghij";
+            var bytes = Rfc6238AuthenticationService.GenerateRandomKey();
+            var authKey = "FZH3CECJQYP3HJSR"; // Base32A.ToBase32String(bytes);
+            var secret = Base32A.FromBase32(authKey);
+
+//            Assert.Equal(bytes, secret);
+
+            var code = Rfc6238AuthenticationService.CalculateOneTimePassword(secret, -1);
+            Assert.Equal(code, 287004);
+
+
+            //var bytes = new byte[] { (byte)'H', (byte)'e', (byte)'l', (byte)'l', (byte)'o', (byte)'!', (byte)0xDE, (byte)0xAD, (byte)0xBE, (byte)0xEF };
+            //var base32 = Base32.ToBase32(bytes);
+            // var code = Rfc6238AuthenticationService.GenerateCode(bytes);
+            // Assert.Equal(Rfc6238AuthenticationService.GenerateCode(bytes), Rfc6238AuthenticationService.CalculateOneTimePassword(new HMACSHA1(bytes)));
+            //Assert.True(Rfc6238AuthenticationService.ValidateCode(bytes, code));
         }
 
         public static byte[] ToBytes(string input)
