@@ -372,6 +372,9 @@ namespace Microsoft.AspNetCore.Identity
             if (int.TryParse(code, out codeValue))
             {
                 var secret = Base32A.FromBase32(key);
+
+                //return Rfc6238AuthenticationService.ValidateCode(secret, codeValue);
+
                 // Allow codes from 90s in each direction
                 for (int i = -2; i <= 2; i++)
                 {
@@ -394,7 +397,7 @@ namespace Microsoft.AspNetCore.Identity
         /// two factor authentication prompts.</param>
         /// <returns>The task object representing the asynchronous operation containing the <see name="SignInResult"/>
         /// for the sign-in attempt.</returns>
-        public virtual async Task<SignInResult> AuthenticatorSignInAsync(string code, bool isPersistent, bool rememberClient)
+        public virtual async Task<SignInResult> TwoFactorAuthenticatorSignInAsync(string code, bool isPersistent, bool rememberClient)
         {
             var twoFactorInfo = await RetrieveTwoFactorInfoAsync();
             if (twoFactorInfo == null || twoFactorInfo.UserId == null)

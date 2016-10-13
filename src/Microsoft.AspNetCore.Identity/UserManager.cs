@@ -2191,7 +2191,7 @@ namespace Microsoft.AspNetCore.Identity
         /// <param name="user">The user who owns the recovery code.</param>
         /// <param name="code">The recovery code to use.</param>
         /// <returns>True if the recovery code was found for the user.</returns>
-        public virtual async Task<IdentityResult> RedeemRecoveryCodeAsync(TUser user, string code)
+        public virtual async Task<IdentityResult> RedeemTwoFactorRecoveryCodeAsync(TUser user, string code)
         {
             ThrowIfDisposed();
             var store = GetAuthenticatorStore();

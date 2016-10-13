@@ -901,7 +901,7 @@ namespace Microsoft.AspNetCore.Identity.Test
             var error = Resources.StoreNotIUserAuthenticatorStore;
             var manager = MockHelpers.TestUserManager(new NoopUserStore());
             Assert.False(manager.SupportsUserAuthenticator);
-            await VerifyException<NotSupportedException>(async () => await manager.RedeemRecoveryCodeAsync(null, null), error);
+            await VerifyException<NotSupportedException>(async () => await manager.RedeemTwoFactorRecoveryCodeAsync(null, null), error);
             await VerifyException<NotSupportedException>(async () => await manager.GenerateNewRecoveryCodesAsync(null, 10), error);
             await VerifyException<NotSupportedException>(async () => await manager.GetAuthenticatorKeyAsync(null), error);
             await VerifyException<NotSupportedException>(async () => await manager.ResetAuthenticatorKeyAsync(null), error);

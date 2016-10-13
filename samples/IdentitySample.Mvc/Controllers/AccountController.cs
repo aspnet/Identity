@@ -476,7 +476,7 @@ namespace IdentitySample.Controllers
             // The following code protects for brute force attacks against the two factor codes.
             // If a user enters incorrect codes for a specified amount of time then the user account
             // will be locked out for a specified amount of time.
-            var result = await _signInManager.AuthenticatorSignInAsync(model.Code, model.RememberMe, model.RememberBrowser);
+            var result = await _signInManager.TwoFactorAuthenticatorSignInAsync(model.Code, model.RememberMe, model.RememberBrowser);
             if (result.Succeeded)
             {
                 return RedirectToLocal(model.ReturnUrl);
@@ -529,7 +529,7 @@ namespace IdentitySample.Controllers
             // The following code protects for brute force attacks against the two factor codes.
             // If a user enters incorrect codes for a specified amount of time then the user account
             // will be locked out for a specified amount of time.
-            var result = await _userManager.RedeemRecoveryCodeAsync(user, model.Code);
+            var result = await _userManager.RedeemTwoFactorRecoveryCodeAsync(user, model.Code);
             if (result.Succeeded)
             {
                 // REVIEW: should we carry rememberMe?

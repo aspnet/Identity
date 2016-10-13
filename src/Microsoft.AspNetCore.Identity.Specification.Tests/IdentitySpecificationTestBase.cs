@@ -2409,13 +2409,13 @@ namespace Microsoft.AspNetCore.Identity.Test
 
             foreach (var code in newCodes)
             {
-                IdentityResultAssert.IsSuccess(await manager.RedeemRecoveryCodeAsync(user, code));
-                IdentityResultAssert.IsFailure(await manager.RedeemRecoveryCodeAsync(user, code));
+                IdentityResultAssert.IsSuccess(await manager.RedeemTwoFactorRecoveryCodeAsync(user, code));
+                IdentityResultAssert.IsFailure(await manager.RedeemTwoFactorRecoveryCodeAsync(user, code));
             }
             // One last time to be sure
             foreach (var code in newCodes)
             {
-                IdentityResultAssert.IsFailure(await manager.RedeemRecoveryCodeAsync(user, code));
+                IdentityResultAssert.IsFailure(await manager.RedeemTwoFactorRecoveryCodeAsync(user, code));
             }
 
         }
