@@ -1254,7 +1254,7 @@ namespace Microsoft.AspNetCore.Identity
         }
 
         /// <summary>
-        /// Returns a flag indicating whether the specified <paramref name="user"/> is a member of the give named role.
+        /// Returns a flag indicating whether the specified <paramref name="user"/> is a member of the given named role.
         /// </summary>
         /// <param name="user">The user whose role membership should be checked.</param>
         /// <param name="role">The name of the role to be checked.</param>
@@ -1840,7 +1840,7 @@ namespace Microsoft.AspNetCore.Identity
         }
 
         /// <summary>
-        /// Retrieves a flag indicating whether user lockout can enabled for the specified user.
+        /// Retrieves a flag indicating whether user lockout can be enabled for the specified user.
         /// </summary>
         /// <param name="user">The user whose ability to be locked out should be returned.</param>
         /// <returns>
@@ -1859,7 +1859,7 @@ namespace Microsoft.AspNetCore.Identity
 
         /// <summary>
         /// Gets the last <see cref="DateTimeOffset"/> a user's last lockout expired, if any.
-        /// Any time in the past should be indicates a user is not locked out.
+        /// Any time value in the past should be indicates a user is not currently locked out.
         /// </summary>
         /// <param name="user">The user whose lockout date should be retrieved.</param>
         /// <returns>
