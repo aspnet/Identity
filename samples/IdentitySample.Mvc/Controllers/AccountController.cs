@@ -68,9 +68,7 @@ namespace IdentitySample.Controllers
                 }
                 if (result.RequiresTwoFactor)
                 {
-                    // REVIEW: Go to authenticator always for now
-                    return RedirectToAction(nameof(VerifyAuthenticatorCode), new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
-                    //return RedirectToAction(nameof(SendCode), new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
+                    return RedirectToAction(nameof(SendCode), new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
                 }
                 if (result.IsLockedOut)
                 {
@@ -377,6 +375,11 @@ namespace IdentitySample.Controllers
             if (user == null)
             {
                 return View("Error");
+            }
+
+            if (model.SelectedProvider == "Authenticator")
+            {
+                return RedirectToAction(nameof(VerifyAuthenticatorCode), new { ReturnUrl = model.ReturnUrl, RememberMe = model.RememberMe });
             }
 
             // Generate the token and send it

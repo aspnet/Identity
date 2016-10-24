@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 namespace Microsoft.AspNetCore.Identity
 {
     /// <summary>
-    /// Used for authenticator secret generation and code verification.
+    /// Used for authenticator code verification.
     /// </summary>
-    public class TotpAuthenticatorVerification<TUser> : IAuthenticatorVerification, IUserTwoFactorTokenProvider<TUser> where TUser : class
+    public class AuthenticatorTokenProvider<TUser> : IUserTwoFactorTokenProvider<TUser> where TUser : class
     {
         private static readonly RandomNumberGenerator _rng = RandomNumberGenerator.Create();
 
@@ -39,17 +39,6 @@ namespace Microsoft.AspNetCore.Identity
         }
 
         /// <summary>
-        /// Generates a new 160-bit security secret (size of SHA1 hash).
-        /// </summary>
-        /// <returns>The new security secret.</returns>
-        public virtual string GenerateSecret()
-        {
-            var bytes = new byte[20];
-            _rng.GetBytes(bytes);
-            return Base32.ToBase32(bytes);
-        }
-
-        /// <summary>
         /// 
         /// </summary>
         /// <param name="purpose"></param>
@@ -67,29 +56,6 @@ namespace Microsoft.AspNetCore.Identity
             }
 
             var hash = new HMACSHA1(Base32.FromBase32(key));
-            var unixTimestamp = Convert.ToInt64(Math.Round((DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0)).TotalSeconds));
-            var timestep = Convert.ToInt64(unixTimestamp / 30);
-            // Allow codes from 90s in each direction
-            for (int i = -2; i <= 2; i++)
-            {
-                var expectedCode = Rfc6238AuthenticationService.ComputeTotp(hash, (ulong)(timestep + i), modifier: null);
-                if (expectedCode == code)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="secret"></param>
-        /// <param name="code"></param>
-        /// <returns></returns>
-        public virtual bool VerifyCode(string secret, int code)
-        {
-            var hash = new HMACSHA1(Base32.FromBase32(secret));
             var unixTimestamp = Convert.ToInt64(Math.Round((DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0)).TotalSeconds));
             var timestep = Convert.ToInt64(unixTimestamp / 30);
             // Allow codes from 90s in each direction

@@ -169,7 +169,7 @@ namespace Microsoft.AspNetCore.Identity
             var dataProtectionProviderType = typeof(DataProtectorTokenProvider<>).MakeGenericType(UserType);
             var phoneNumberProviderType = typeof(PhoneNumberTokenProvider<>).MakeGenericType(UserType);
             var emailTokenProviderType = typeof(EmailTokenProvider<>).MakeGenericType(UserType);
-            var authenticatorProviderType = typeof(TotpAuthenticatorVerification<>).MakeGenericType(UserType);
+            var authenticatorProviderType = typeof(AuthenticatorTokenProvider<>).MakeGenericType(UserType);
             return AddTokenProvider(TokenOptions.DefaultProvider, dataProtectionProviderType)
                 .AddTokenProvider(TokenOptions.DefaultEmailProvider, emailTokenProviderType)
                 .AddTokenProvider(TokenOptions.DefaultPhoneProvider, phoneNumberProviderType)

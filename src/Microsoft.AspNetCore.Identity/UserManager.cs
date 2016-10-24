@@ -2170,7 +2170,7 @@ namespace Microsoft.AspNetCore.Identity
         /// <param name="user">The user to generate recovery codes for.</param>
         /// <param name="number">The number of codes to generate.</param>
         /// <returns>The new recovery codes for the user.</returns>
-        public virtual async Task<IEnumerable<string>> GenerateNewRecoveryCodesAsync(TUser user, int number)
+        public virtual async Task<IEnumerable<string>> GenerateNewTwoFactorRecoveryCodesAsync(TUser user, int number)
         {
             ThrowIfDisposed();
             var store = GetRecoveryCodeStore();
@@ -2179,7 +2179,12 @@ namespace Microsoft.AspNetCore.Identity
                 throw new ArgumentNullException(nameof(user));
             }
 
-            var newCodes = GenerateNewCodes(number);
+            var newCodes = new List<string>(number);
+            for (var i = 0; i < number; i++)
+            {
+                newCodes.Add(CreateTwoFactorRecoveryCode());
+            }
+
             await store.ReplaceCodesAsync(user, newCodes, CancellationToken);
             var update = await UpdateAsync(user);
             if (update.Succeeded)
@@ -2189,16 +2194,13 @@ namespace Microsoft.AspNetCore.Identity
             return null;
         }
 
-        // This should probably go into a service?
-        private List<string> GenerateNewCodes(int number)
+        /// <summary>
+        /// Generate a new recovery code.
+        /// </summary>
+        /// <returns></returns>
+        protected virtual string CreateTwoFactorRecoveryCode()
         {
-            var list = new List<string>(number);
-            for (var i = 0; i < number; i++)
-            {
-                // TODO: implement for real
-                list.Add(Guid.NewGuid().ToString());
-            }
-            return list;
+            return Guid.NewGuid().ToString();
         }
 
         /// <summary>

@@ -141,7 +141,7 @@ namespace IdentitySamples.Controllers
             var user = await GetCurrentUserAsync();
             if (user != null)
             {
-                var codes = await _userManager.GenerateNewRecoveryCodesAsync(user, 5);
+                var codes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 5);
                 _logger.LogInformation(1, "User generated new recovery code.");
                 return View("DisplayRecoveryCodes", new DisplayRecoveryCodesViewModel { Codes = codes });
             }

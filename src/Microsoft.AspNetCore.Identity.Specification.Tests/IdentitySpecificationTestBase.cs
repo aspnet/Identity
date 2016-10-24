@@ -2404,7 +2404,7 @@ namespace Microsoft.AspNetCore.Identity.Test
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
 
             var numCodes = 15;
-            var newCodes = await manager.GenerateNewRecoveryCodesAsync(user, numCodes);
+            var newCodes = await manager.GenerateNewTwoFactorRecoveryCodesAsync(user, numCodes);
             Assert.Equal(numCodes, newCodes.Count());
 
             foreach (var code in newCodes)
@@ -2431,9 +2431,9 @@ namespace Microsoft.AspNetCore.Identity.Test
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
 
             var numCodes = 15;
-            var newCodes = await manager.GenerateNewRecoveryCodesAsync(user, numCodes);
+            var newCodes = await manager.GenerateNewTwoFactorRecoveryCodesAsync(user, numCodes);
             Assert.Equal(numCodes, newCodes.Count());
-            var realCodes = await manager.GenerateNewRecoveryCodesAsync(user, numCodes);
+            var realCodes = await manager.GenerateNewTwoFactorRecoveryCodesAsync(user, numCodes);
             Assert.Equal(numCodes, realCodes.Count());
 
             foreach (var code in newCodes)
