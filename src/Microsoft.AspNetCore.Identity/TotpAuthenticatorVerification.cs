@@ -33,6 +33,7 @@ namespace Microsoft.AspNetCore.Identity
         /// <param name="manager">The <see cref="UserManager{TUser}"/> to retrieve the <paramref name="user"/> from.</param>
         /// <param name="user">The <typeparamref name="TUser"/>.</param>
         /// <returns>string.Empty.</returns>
+        public virtual Task<string> GenerateAsync(string purpose, UserManager<TUser> manager, TUser user)
         {
             return Task.FromResult(string.Empty);
         }
