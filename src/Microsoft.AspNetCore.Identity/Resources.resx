@@ -297,4 +297,8 @@
     <value>User is not in role '{0}'.</value>
     <comment>Error when a user is not in the role</comment>
   </data>
+  <data name="StoreNotIUserTwoFactorRecoveryCodeStore" xml:space="preserve">
+    <value>Store does not implement IUserTwoFactorRecoveryCodeStore&lt;User&gt;.</value>
+    <comment>Error when the store does not implement this interface</comment>
+  </data>
 </root>

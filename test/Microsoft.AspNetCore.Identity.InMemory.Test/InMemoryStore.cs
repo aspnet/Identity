@@ -25,7 +25,8 @@ namespace Microsoft.AspNetCore.Identity.InMemory
         IQueryableRoleStore<TRole>, 
         IRoleClaimStore<TRole>,
         IUserAuthenticationTokenStore<TUser>,
-        IUserAuthenticatorStore<TUser>
+        IUserAuthenticatorStore<TUser>,
+        IUserTwoFactorRecoveryCodeStore<TUser>
         where TRole : TestRole
         where TUser : TestUser
     {
@@ -563,20 +564,20 @@ namespace Microsoft.AspNetCore.Identity.InMemory
             return GetTokenAsync(user, AuthenticatorStoreLoginProvider, AuthenticatorKeyTokenName, cancellationToken);
         }
 
-        public Task ReplaceRecoveryCodesAsync(TUser user, IEnumerable<string> recoveryCodes, CancellationToken cancellationToken)
+        public Task ReplaceCodesAsync(TUser user, IEnumerable<string> recoveryCodes, CancellationToken cancellationToken)
         {
             var mergedCodes = string.Join(";", recoveryCodes);
             return SetTokenAsync(user, AuthenticatorStoreLoginProvider, RecoveryCodeTokenName, mergedCodes, cancellationToken);
         }
 
-        public async Task<bool> RedeemRecoveryCodeAsync(TUser user, string code, CancellationToken cancellationToken)
+        public async Task<bool> RedeemCodeAsync(TUser user, string code, CancellationToken cancellationToken)
         {
             var mergedCodes = await GetTokenAsync(user, AuthenticatorStoreLoginProvider, RecoveryCodeTokenName, cancellationToken) ?? "";
             var splitCodes = mergedCodes.Split(';');
             if (splitCodes.Contains(code))
             {
                 var updatedCodes = new List<string>(splitCodes.Where(s => s != code));
-                await ReplaceRecoveryCodesAsync(user, updatedCodes, cancellationToken);
+                await ReplaceCodesAsync(user, updatedCodes, cancellationToken);
                 return true;
             }
             return false;

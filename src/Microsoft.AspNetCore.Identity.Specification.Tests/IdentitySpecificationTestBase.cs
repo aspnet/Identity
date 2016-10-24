@@ -2417,7 +2417,34 @@ namespace Microsoft.AspNetCore.Identity.Test
             {
                 IdentityResultAssert.IsFailure(await manager.RedeemTwoFactorRecoveryCodeAsync(user, code));
             }
+        }
 
+        [Fact]
+        public async Task RecoveryCodesInvalidAfterReplace()
+        {
+            if (ShouldSkipDbTests())
+            {
+                return;
+            }
+            var manager = CreateManager();
+            var user = CreateTestUser();
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
+
+            var numCodes = 15;
+            var newCodes = await manager.GenerateNewRecoveryCodesAsync(user, numCodes);
+            Assert.Equal(numCodes, newCodes.Count());
+            var realCodes = await manager.GenerateNewRecoveryCodesAsync(user, numCodes);
+            Assert.Equal(numCodes, realCodes.Count());
+
+            foreach (var code in newCodes)
+            {
+                IdentityResultAssert.IsFailure(await manager.RedeemTwoFactorRecoveryCodeAsync(user, code));
+            }
+
+            foreach (var code in realCodes)
+            {
+                IdentityResultAssert.IsSuccess(await manager.RedeemTwoFactorRecoveryCodeAsync(user, code));
+            }
         }
 
         [Fact]

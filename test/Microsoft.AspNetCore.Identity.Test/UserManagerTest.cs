@@ -696,15 +696,14 @@ namespace Microsoft.AspNetCore.Identity.Test
         [Fact]
         public void TOTPTest()
         {
+            //var verify = new TotpAuthenticatorVerification();
             //var secret = "abcdefghij";
-            var bytes = Rfc6238AuthenticationService.GenerateRandomKey();
-            var authKey = "FZH3CECJQYP3HJSR"; // Base32A.ToBase32String(bytes);
-            var secret = Base32A.FromBase32(authKey);
+            //var secret = Base32.FromBase32(authKey);
 
 //            Assert.Equal(bytes, secret);
 
-            var code = Rfc6238AuthenticationService.CalculateOneTimePassword(secret, -1);
-            Assert.Equal(code, 287004);
+            //var code = verify.VerifyCode(secret, -1);
+            //Assert.Equal(code, 287004);
 
 
             //var bytes = new byte[] { (byte)'H', (byte)'e', (byte)'l', (byte)'l', (byte)'o', (byte)'!', (byte)0xDE, (byte)0xAD, (byte)0xBE, (byte)0xEF };
@@ -901,10 +900,18 @@ namespace Microsoft.AspNetCore.Identity.Test
             var error = Resources.StoreNotIUserAuthenticatorStore;
             var manager = MockHelpers.TestUserManager(new NoopUserStore());
             Assert.False(manager.SupportsUserAuthenticator);
-            await VerifyException<NotSupportedException>(async () => await manager.RedeemTwoFactorRecoveryCodeAsync(null, null), error);
-            await VerifyException<NotSupportedException>(async () => await manager.GenerateNewRecoveryCodesAsync(null, 10), error);
             await VerifyException<NotSupportedException>(async () => await manager.GetAuthenticatorKeyAsync(null), error);
             await VerifyException<NotSupportedException>(async () => await manager.ResetAuthenticatorKeyAsync(null), error);
+        }
+
+        [Fact]
+        public async Task RecoveryMethodsFailWhenStoreNotImplemented()
+        {
+            var error = Resources.StoreNotIUserTwoFactorRecoveryCodeStore;
+            var manager = MockHelpers.TestUserManager(new NoopUserStore());
+            Assert.False(manager.SupportsUserTwoFactorRecoveryCodes);
+            await VerifyException<NotSupportedException>(async () => await manager.RedeemTwoFactorRecoveryCodeAsync(null, null), error);
+            await VerifyException<NotSupportedException>(async () => await manager.GenerateNewRecoveryCodesAsync(null, 10), error);
         }
 
         private async Task VerifyException<TException>(Func<Task> code, string expectedMessage) where TException : Exception

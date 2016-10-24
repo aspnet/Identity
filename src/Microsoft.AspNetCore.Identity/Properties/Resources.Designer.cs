@@ -730,6 +730,22 @@ namespace Microsoft.AspNetCore.Identity
             return string.Format(CultureInfo.CurrentCulture, GetString("UserNotInRole"), p0);
         }
 
+        /// <summary>
+        /// Store does not implement IUserTwoFactorRecoveryCodeStore&lt;User&gt;.
+        /// </summary>
+        internal static string StoreNotIUserTwoFactorRecoveryCodeStore
+        {
+            get { return GetString("StoreNotIUserTwoFactorRecoveryCodeStore"); }
+        }
+
+        /// <summary>
+        /// Store does not implement IUserTwoFactorRecoveryCodeStore&lt;User&gt;.
+        /// </summary>
+        internal static string FormatStoreNotIUserTwoFactorRecoveryCodeStore()
+        {
+            return GetString("StoreNotIUserTwoFactorRecoveryCodeStore");
+        }
+
         private static string GetString(string name, params string[] formatterNames)
         {
             var value = _resourceManager.GetString(name);

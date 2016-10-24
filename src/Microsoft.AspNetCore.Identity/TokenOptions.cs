@@ -27,6 +27,11 @@ namespace Microsoft.AspNetCore.Identity
         public static readonly string DefaultPhoneProvider = "Phone";
 
         /// <summary>
+        /// Default token provider name used by the <see cref="TotpAuthenticatorVerification{TUser}"/>.
+        /// </summary>
+        public static readonly string DefaultAuthenticatorProvider = "Authenticator";
+
+        /// <summary>
         /// Will be used to construct UserTokenProviders with the key used as the providerName.
         /// </summary>
         public Dictionary<string, TokenProviderDescriptor> ProviderMap { get; set; } = new Dictionary<string, TokenProviderDescriptor>();

@@ -27,7 +27,6 @@ namespace Microsoft.AspNetCore.Identity
     {
         private const string LoginProviderKey = "LoginProvider";
         private const string XsrfKey = "XsrfId";
-        private const string RecoveryCodeTokenType = "[RecoveryCode]";
 
         /// <summary>
         /// Creates a new instance of <see cref="SignInManager{TUser}"/>.
@@ -365,27 +364,52 @@ namespace Microsoft.AspNetCore.Identity
             return Context.Authentication.SignOutAsync(Options.Cookies.TwoFactorRememberMeCookieAuthenticationScheme);
         }
 
-        private async Task<bool> VerifyAuthenticatorCode(TUser user, string code)
+        /// <summary>
+        /// Signs in the user without two factor authentication using a two factor recovery code.
+        /// </summary>
+        /// <param name="recoveryCode">The two factor recovery code.</param>
+        /// <returns></returns>
+        public virtual async Task<SignInResult> TwoFactorRecoveryCodeSignInAsync(string recoveryCode)
         {
-            var key = await UserManager.GetAuthenticatorKeyAsync(user);
-            int codeValue;
-            if (int.TryParse(code, out codeValue))
+            var twoFactorInfo = await RetrieveTwoFactorInfoAsync();
+            if (twoFactorInfo == null || twoFactorInfo.UserId == null)
             {
-                var secret = Base32A.FromBase32(key);
-
-                //return Rfc6238AuthenticationService.ValidateCode(secret, codeValue);
-
-                // Allow codes from 90s in each direction
-                for (int i = -2; i <= 2; i++)
-                {
-                    var expectedCode = Rfc6238AuthenticationService.CalculateOneTimePassword(secret, i);
-                    if (expectedCode == codeValue)
-                    {
-                        return true;
-                    }
-                }
+                return SignInResult.Failed;
             }
-            return false;
+            var user = await UserManager.FindByIdAsync(twoFactorInfo.UserId);
+            if (user == null)
+            {
+                return SignInResult.Failed;
+            }
+
+            var result = await UserManager.RedeemTwoFactorRecoveryCodeAsync(user, recoveryCode);
+            if (result.Succeeded)
+            {
+                await DoTwoFactorSignInAsync(user, twoFactorInfo, isPersistent: false, rememberClient: false);
+                return SignInResult.Success;
+            }
+
+            // We don't protect against brute force attacks since codes are expected to be random.
+            return SignInResult.Failed;
+        }
+
+        private async Task DoTwoFactorSignInAsync(TUser user, TwoFactorAuthenticationInfo twoFactorInfo, bool isPersistent, bool rememberClient)
+        {
+            // When token is verified correctly, clear the access failed count used for lockout
+            await ResetLockout(user);
+
+            // Cleanup external cookie
+            if (twoFactorInfo.LoginProvider != null)
+            {
+                await Context.Authentication.SignOutAsync(Options.Cookies.ExternalCookieAuthenticationScheme);
+            }
+            // Cleanup two factor user id cookie
+            await Context.Authentication.SignOutAsync(Options.Cookies.TwoFactorUserIdCookieAuthenticationScheme);
+            if (rememberClient)
+            {
+                await RememberTwoFactorClientAsync(user);
+            }
+            await SignInAsync(user, isPersistent, twoFactorInfo.LoginProvider);
         }
 
         /// <summary>
@@ -415,23 +439,10 @@ namespace Microsoft.AspNetCore.Identity
             {
                 return error;
             }
-            if (await VerifyAuthenticatorCode(user, code))
+
+            if (await UserManager.VerifyTwoFactorTokenAsync(user, "Authenticator", code))
             {
-                // When token is verified correctly, clear the access failed count used for lockout
-                await ResetLockout(user);
-                // Cleanup external cookie
-                if (twoFactorInfo.LoginProvider != null)
-                {
-                    await Context.Authentication.SignOutAsync(Options.Cookies.ExternalCookieAuthenticationScheme);
-                }
-                // Cleanup two factor user id cookie
-                await Context.Authentication.SignOutAsync(Options.Cookies.TwoFactorUserIdCookieAuthenticationScheme);
-                if (rememberClient)
-                {
-                    await RememberTwoFactorClientAsync(user);
-                }
-                await UserManager.ResetAccessFailedCountAsync(user);
-                await SignInAsync(user, isPersistent, twoFactorInfo.LoginProvider);
+                await DoTwoFactorSignInAsync(user, twoFactorInfo, isPersistent, rememberClient);
                 return SignInResult.Success;
             }
             // If the token is incorrect, record the failure which also may cause the user to be locked out
@@ -470,21 +481,7 @@ namespace Microsoft.AspNetCore.Identity
             }
             if (await UserManager.VerifyTwoFactorTokenAsync(user, provider, code))
             {
-                // When token is verified correctly, clear the access failed count used for lockout
-                await ResetLockout(user);
-                // Cleanup external cookie
-                if (twoFactorInfo.LoginProvider != null)
-                {
-                    await Context.Authentication.SignOutAsync(Options.Cookies.ExternalCookieAuthenticationScheme);
-                }
-                // Cleanup two factor user id cookie
-                await Context.Authentication.SignOutAsync(Options.Cookies.TwoFactorUserIdCookieAuthenticationScheme);
-                if (rememberClient)
-                {
-                    await RememberTwoFactorClientAsync(user);
-                }
-                await UserManager.ResetAccessFailedCountAsync(user);
-                await SignInAsync(user, isPersistent, twoFactorInfo.LoginProvider);
+                await DoTwoFactorSignInAsync(user, twoFactorInfo, isPersistent, rememberClient);
                 return SignInResult.Success;
             }
             // If the token is incorrect, record the failure which also may cause the user to be locked out

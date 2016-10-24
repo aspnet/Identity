@@ -185,6 +185,21 @@ namespace Microsoft.AspNetCore.Identity
         }
 
         /// <summary>
+        /// Gets a flag indicating whether the backing user store supports recovery codes.
+        /// </summary>
+        /// <value>
+        /// true if the backing user store supports a user authenticatior, otherwise false.
+        /// </value>
+        public virtual bool SupportsUserTwoFactorRecoveryCodes
+        {
+            get
+            {
+                ThrowIfDisposed();
+                return Store is IUserAuthenticatorStore<TUser>;
+            }
+        }
+
+        /// <summary>
         /// Gets a flag indicating whether the backing user store supports two factor authentication.
         /// </summary>
         /// <value>
@@ -2136,15 +2151,17 @@ namespace Microsoft.AspNetCore.Identity
             {
                 throw new ArgumentNullException(nameof(user));
             }
-            await store.SetAuthenticatorKeyAsync(user, GenerateNewAuthenticatorKey(user), CancellationToken);
+            await store.SetAuthenticatorKeyAsync(user, GenerateNewAuthenticatorKey(), CancellationToken);
             return await UpdateAsync(user);
         }
 
-        // REVIEW: pluggable and replaceable? Service?
-        private string GenerateNewAuthenticatorKey(TUser user)
+        /// <summary>
+        /// Generates a new base32 encoded 160-bit security secret (size of SHA1 hash).
+        /// </summary>
+        /// <returns>The new security secret.</returns>
+        public virtual string GenerateNewAuthenticatorKey()
         {
-            var bytes = Rfc6238AuthenticationService.GenerateRandomKey();
-            return Base32A.ToBase32(bytes);
+            return Base32.ToBase32(Rfc6238AuthenticationService.GenerateRandomKey());
         }
 
         /// <summary>
@@ -2156,14 +2173,14 @@ namespace Microsoft.AspNetCore.Identity
         public virtual async Task<IEnumerable<string>> GenerateNewRecoveryCodesAsync(TUser user, int number)
         {
             ThrowIfDisposed();
-            var store = GetAuthenticatorStore();
+            var store = GetRecoveryCodeStore();
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
 
             var newCodes = GenerateNewCodes(number);
-            await store.ReplaceRecoveryCodesAsync(user, newCodes, CancellationToken);
+            await store.ReplaceCodesAsync(user, newCodes, CancellationToken);
             var update = await UpdateAsync(user);
             if (update.Succeeded)
             {
@@ -2194,13 +2211,13 @@ namespace Microsoft.AspNetCore.Identity
         public virtual async Task<IdentityResult> RedeemTwoFactorRecoveryCodeAsync(TUser user, string code)
         {
             ThrowIfDisposed();
-            var store = GetAuthenticatorStore();
+            var store = GetRecoveryCodeStore();
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
 
-            var success = await store.RedeemRecoveryCodeAsync(user, code, CancellationToken);
+            var success = await store.RedeemCodeAsync(user, code, CancellationToken);
             if (success)
             {
                 return await UpdateAsync(user);
@@ -2413,6 +2430,16 @@ namespace Microsoft.AspNetCore.Identity
             if (cast == null)
             {
                 throw new NotSupportedException(Resources.StoreNotIUserAuthenticatorStore);
+            }
+            return cast;
+        }
+
+        private IUserTwoFactorRecoveryCodeStore<TUser> GetRecoveryCodeStore()
+        {
+            var cast = Store as IUserTwoFactorRecoveryCodeStore<TUser>;
+            if (cast == null)
+            {
+                throw new NotSupportedException(Resources.StoreNotIUserTwoFactorRecoveryCodeStore);
             }
             return cast;
         }

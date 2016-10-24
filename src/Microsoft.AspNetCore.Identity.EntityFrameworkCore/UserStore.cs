@@ -202,7 +202,8 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
         IQueryableUserStore<TUser>,
         IUserTwoFactorStore<TUser>,
         IUserAuthenticationTokenStore<TUser>,
-        IUserAuthenticatorStore<TUser>
+        IUserAuthenticatorStore<TUser>,
+        IUserTwoFactorRecoveryCodeStore<TUser>
         where TUser : IdentityUser<TKey, TUserClaim, TUserRole, TUserLogin>
         where TRole : IdentityRole<TKey, TUserRole, TRoleClaim>
         where TContext : DbContext
@@ -1483,7 +1484,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
         /// <param name="recoveryCodes">The new recovery codes for the user.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The new recovery codes for the user.</returns>
-        public virtual Task ReplaceRecoveryCodesAsync(TUser user, IEnumerable<string> recoveryCodes, CancellationToken cancellationToken)
+        public virtual Task ReplaceCodesAsync(TUser user, IEnumerable<string> recoveryCodes, CancellationToken cancellationToken)
         {
             var mergedCodes = string.Join(";", recoveryCodes);
             return SetTokenAsync(user, AuthenticatorStoreLoginProvider, RecoveryCodeTokenName, mergedCodes, cancellationToken);
@@ -1497,7 +1498,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
         /// <param name="code">The recovery code to use.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>True if the recovery code was found for the user.</returns>
-        public virtual async Task<bool> RedeemRecoveryCodeAsync(TUser user, string code, CancellationToken cancellationToken)
+        public virtual async Task<bool> RedeemCodeAsync(TUser user, string code, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -1516,7 +1517,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
             if (splitCodes.Contains(code))
             {
                 var updatedCodes = new List<string>(splitCodes.Where(s => s != code));
-                await ReplaceRecoveryCodesAsync(user, updatedCodes, cancellationToken);
+                await ReplaceCodesAsync(user, updatedCodes, cancellationToken);
                 return true;
             }
             return false;
