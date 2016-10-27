@@ -202,7 +202,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
         IQueryableUserStore<TUser>,
         IUserTwoFactorStore<TUser>,
         IUserAuthenticationTokenStore<TUser>,
-        IUserAuthenticatorStore<TUser>,
+        IUserAuthenticatorKeyStore<TUser>,
         IUserTwoFactorRecoveryCodeStore<TUser>
         where TUser : IdentityUser<TKey, TUserClaim, TUserRole, TUserLogin>
         where TRole : IdentityRole<TKey, TUserRole, TRoleClaim>

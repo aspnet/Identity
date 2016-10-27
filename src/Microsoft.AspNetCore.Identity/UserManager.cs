@@ -175,12 +175,12 @@ namespace Microsoft.AspNetCore.Identity
         /// <value>
         /// true if the backing user store supports a user authenticatior, otherwise false.
         /// </value>
-        public virtual bool SupportsUserAuthenticator
+        public virtual bool SupportsUserAuthenticatorKey
         {
             get
             {
                 ThrowIfDisposed();
-                return Store is IUserAuthenticatorStore<TUser>;
+                return Store is IUserAuthenticatorKeyStore<TUser>;
             }
         }
 
@@ -195,7 +195,7 @@ namespace Microsoft.AspNetCore.Identity
             get
             {
                 ThrowIfDisposed();
-                return Store is IUserAuthenticatorStore<TUser>;
+                return Store is IUserTwoFactorRecoveryCodeStore<TUser>;
             }
         }
 
@@ -2130,7 +2130,7 @@ namespace Microsoft.AspNetCore.Identity
         public virtual Task<string> GetAuthenticatorKeyAsync(TUser user)
         {
             ThrowIfDisposed();
-            var store = GetAuthenticatorStore();
+            var store = GetAuthenticatorKeyStore();
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
@@ -2146,7 +2146,7 @@ namespace Microsoft.AspNetCore.Identity
         public virtual async Task<IdentityResult> ResetAuthenticatorKeyAsync(TUser user)
         {
             ThrowIfDisposed();
-            var store = GetAuthenticatorStore();
+            var store = GetAuthenticatorKeyStore();
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
@@ -2426,9 +2426,9 @@ namespace Microsoft.AspNetCore.Identity
             return await Store.UpdateAsync(user, CancellationToken);
         }
 
-        private IUserAuthenticatorStore<TUser> GetAuthenticatorStore()
+        private IUserAuthenticatorKeyStore<TUser> GetAuthenticatorKeyStore()
         {
-            var cast = Store as IUserAuthenticatorStore<TUser>;
+            var cast = Store as IUserAuthenticatorKeyStore<TUser>;
             if (cast == null)
             {
                 throw new NotSupportedException(Resources.StoreNotIUserAuthenticatorStore);
