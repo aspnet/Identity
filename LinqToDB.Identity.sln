@@ -12,6 +12,9 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "IdentitySample.Mvc", "sampl
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{970CAB07-F853-4712-AA12-BD8961C8E430}"
 	ProjectSection(SolutionItems) = preProject
+		appveyor.yml = appveyor.yml
+		build.cmd = build.cmd
+		build.ps1 = build.ps1
 		global.json = global.json
 		NuGet.config = NuGet.config
 	EndProjectSection
@@ -20,7 +23,7 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Microsoft.AspNetCore.Identi
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Microsoft.AspNetCore.Identity.EntityFrameworkCore.InMemory.Test", "test\Microsoft.AspNetCore.Identity.EntityFrameworkCore.InMemory.Test\Microsoft.AspNetCore.Identity.EntityFrameworkCore.InMemory.Test.xproj", "{EA7EB28F-53B8-4009-9C6B-74DB090CA8DD}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Microsoft.AspNetCore.Identity.EntityFrameworkCore", "src\Microsoft.AspNetCore.Identity.EntityFrameworkCore\Microsoft.AspNetCore.Identity.EntityFrameworkCore.xproj", "{4490894C-3572-4E63-86F1-EE5105CE8A06}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "LinqToDB.Identity", "src\LinqToDB.Identity\LinqToDB.Identity.xproj", "{4490894C-3572-4E63-86F1-EE5105CE8A06}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
