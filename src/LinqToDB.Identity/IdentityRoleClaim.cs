@@ -4,7 +4,7 @@
 using System;
 using System.Security.Claims;
 
-namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
+namespace LinqToDB.Identity
 {
     /// <summary>
     /// Represents a claim that is granted to all users within a role.

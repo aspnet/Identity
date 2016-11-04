@@ -3,6 +3,7 @@
 
 using System;
 using System.Linq.Expressions;
+using LinqToDB.Identity;
 using Microsoft.AspNetCore.Identity.Test;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

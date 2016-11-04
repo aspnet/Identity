@@ -3,8 +3,9 @@
 
 using System;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
+namespace LinqToDB.Identity
 {
     /// <summary>
     /// Base class for the Entity Framework database context used for identity.
@@ -152,7 +153,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
                 b.HasKey(u => u.Id);
                 b.HasIndex(u => u.NormalizedUserName).HasName("UserNameIndex").IsUnique();
                 b.HasIndex(u => u.NormalizedEmail).HasName("EmailIndex");
-                b.ToTable("AspNetUsers");
+                RelationalEntityTypeBuilderExtensions.ToTable((EntityTypeBuilder) b, "AspNetUsers");
                 b.Property(u => u.ConcurrencyStamp).IsConcurrencyToken();
 
                 b.Property(u => u.UserName).HasMaxLength(256);
@@ -168,7 +169,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
             {
                 b.HasKey(r => r.Id);
                 b.HasIndex(r => r.NormalizedName).HasName("RoleNameIndex").IsUnique();
-                b.ToTable("AspNetRoles");
+                RelationalEntityTypeBuilderExtensions.ToTable((EntityTypeBuilder) b, "AspNetRoles");
                 b.Property(r => r.ConcurrencyStamp).IsConcurrencyToken();
 
                 b.Property(u => u.Name).HasMaxLength(256);
@@ -181,7 +182,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
             builder.Entity<TUserClaim>(b => 
             {
                 b.HasKey(uc => uc.Id);
-                b.ToTable("AspNetUserClaims");
+                RelationalEntityTypeBuilderExtensions.ToTable((EntityTypeBuilder) b, "AspNetUserClaims");
             });
 
             builder.Entity<TRoleClaim>(b => 

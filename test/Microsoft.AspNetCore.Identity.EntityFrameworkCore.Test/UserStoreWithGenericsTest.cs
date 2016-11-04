@@ -7,6 +7,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using LinqToDB.Identity;
 using Microsoft.AspNetCore.Identity.Test;
 using Microsoft.AspNetCore.Testing;
 using Microsoft.EntityFrameworkCore;

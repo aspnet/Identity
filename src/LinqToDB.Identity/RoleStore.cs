@@ -8,10 +8,11 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Internal;
 
-namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
+namespace LinqToDB.Identity
 {
     /// <summary>
     /// Creates a new instance of a persistence store for roles.

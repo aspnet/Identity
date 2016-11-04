@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
+namespace LinqToDB.Identity
 {
     /// <summary>
     /// The default implementation of <see cref="IdentityRole{TKey}"/> which uses a string as the primary key.

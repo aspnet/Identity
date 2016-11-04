@@ -3,6 +3,7 @@
 
 using System;
 using System.Threading.Tasks;
+using LinqToDB.Identity;
 using Microsoft.AspNetCore.Identity.Test;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;

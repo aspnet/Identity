@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
+namespace LinqToDB.Identity
 {
     /// <summary>
     /// Represents an authentication token for a user.
