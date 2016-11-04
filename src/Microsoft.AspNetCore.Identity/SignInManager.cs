@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Http.Features.Authentication;
+using Microsoft.Extensions.Internal;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -69,11 +70,26 @@ namespace Microsoft.AspNetCore.Identity
         /// The <see cref="ILogger"/> used to log messages from the manager.
         /// </value>
         protected internal virtual ILogger Logger { get; set; }
-        protected internal UserManager<TUser> UserManager { get; set; }
-        internal IUserClaimsPrincipalFactory<TUser> ClaimsFactory { get; set; }
-        internal IdentityOptions Options { get; set; }
 
-        internal HttpContext Context { 
+        /// <summary>
+        /// The <see cref="UserManager{TUser}"/> used.
+        /// </summary>
+        protected internal UserManager<TUser> UserManager { get; set; }
+
+        /// <summary>
+        /// The <see cref="IUserClaimsPrincipalFactory{TUser}"/> used.
+        /// </summary>
+        protected internal IUserClaimsPrincipalFactory<TUser> ClaimsFactory { get; set; }
+
+        /// <summary>
+        /// The <see cref="IdentityOptions"/> used.
+        /// </summary>
+        protected internal IdentityOptions Options { get; set; }
+
+        /// <summary>
+        /// The <see cref="HttpContext"/> used.
+        /// </summary>
+        protected internal HttpContext Context { 
             get
             {
                 var context = _context ?? _contextAccessor?.HttpContext;
@@ -88,7 +104,6 @@ namespace Microsoft.AspNetCore.Identity
                 _context = value;
             }
         }
-
 
         /// <summary>
         /// Creates a <see cref="ClaimsPrincipal"/> for the specified <paramref name="user"/>, as an asynchronous operation.
@@ -236,32 +251,10 @@ namespace Microsoft.AspNetCore.Identity
                 throw new ArgumentNullException(nameof(user));
             }
 
-            var error = await PreSignInCheck(user);
-            if (error != null)
-            {
-                return error;
-            }
-            if (await IsLockedOut(user))
-            {
-                return await LockedOut(user);
-            }
-            if (await UserManager.CheckPasswordAsync(user, password))
-            {
-                await ResetLockout(user);
-                return await SignInOrTwoFactorAsync(user, isPersistent);
-            }
-            Logger.LogWarning(2, "User {userId} failed to provide the correct password.", await UserManager.GetUserIdAsync(user));
-
-            if (UserManager.SupportsUserLockout && lockoutOnFailure)
-            {
-                // If lockout is requested, increment access failed count which might lock out the user
-                await UserManager.AccessFailedAsync(user);
-                if (await UserManager.IsLockedOutAsync(user))
-                {
-                    return await LockedOut(user);
-                }
-            }
-            return SignInResult.Failed;
+            var attempt = await CheckPasswordSignInAsync(user, password, lockoutOnFailure);
+            return attempt.Succeeded 
+                ? await SignInOrTwoFactorAsync(user, isPersistent)
+                : attempt;
         }
 
         /// <summary>
@@ -285,6 +278,52 @@ namespace Microsoft.AspNetCore.Identity
 
             return await PasswordSignInAsync(user, password, isPersistent, lockoutOnFailure);
         }
+
+        /// <summary>
+        /// Attempts a password sign in for a user.
+        /// </summary>
+        /// <param name="user">The user to sign in.</param>
+        /// <param name="password">The password to attempt to sign in with.</param>
+        /// <param name="lockoutOnFailure">Flag indicating if the user account should be locked if the sign in fails.</param>
+        /// <returns>The task object representing the asynchronous operation containing the <see name="SignInResult"/>
+        /// for the sign-in attempt.</returns>
+        /// <returns></returns>
+        public virtual async Task<SignInResult> CheckPasswordSignInAsync(TUser user, string password, bool lockoutOnFailure)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            var error = await PreSignInCheck(user);
+            if (error != null)
+            {
+                return error;
+            }
+
+            if (await IsLockedOut(user))
+            {
+                return await LockedOut(user);
+            }
+            if (await UserManager.CheckPasswordAsync(user, password))
+            {
+                await ResetLockout(user);
+                return SignInResult.Success;
+            }
+            Logger.LogWarning(2, "User {userId} failed to provide the correct password.", await UserManager.GetUserIdAsync(user));
+
+            if (UserManager.SupportsUserLockout && lockoutOnFailure)
+            {
+                // If lockout is requested, increment access failed count which might lock out the user
+                await UserManager.AccessFailedAsync(user);
+                if (await UserManager.IsLockedOutAsync(user))
+                {
+                    return await LockedOut(user);
+                }
+            }
+            return SignInResult.Failed;
+        }
+
 
         /// <summary>
         /// Returns a flag indicating if the current client browser has been remembered by two factor authentication
@@ -404,7 +443,19 @@ namespace Microsoft.AspNetCore.Identity
         /// <param name="isPersistent">Flag indicating whether the sign-in cookie should persist after the browser is closed.</param>
         /// <returns>The task object representing the asynchronous operation containing the <see name="SignInResult"/>
         /// for the sign-in attempt.</returns>
-        public virtual async Task<SignInResult> ExternalLoginSignInAsync(string loginProvider, string providerKey, bool isPersistent)
+        public virtual Task<SignInResult> ExternalLoginSignInAsync(string loginProvider, string providerKey, bool isPersistent) 
+            => ExternalLoginSignInAsync(loginProvider, providerKey, isPersistent, bypassTwoFactor: false);
+
+        /// <summary>
+        /// Signs in a user via a previously registered third party login, as an asynchronous operation.
+        /// </summary>
+        /// <param name="loginProvider">The login provider to use.</param>
+        /// <param name="providerKey">The unique provider identifier for the user.</param>
+        /// <param name="isPersistent">Flag indicating whether the sign-in cookie should persist after the browser is closed.</param>
+        /// <param name="bypassTwoFactor">Flag indicating whether to bypass two factor authentication.</param>
+        /// <returns>The task object representing the asynchronous operation containing the <see name="SignInResult"/>
+        /// for the sign-in attempt.</returns>
+        public virtual async Task<SignInResult> ExternalLoginSignInAsync(string loginProvider, string providerKey, bool isPersistent, bool bypassTwoFactor)
         {
             var user = await UserManager.FindByLoginAsync(loginProvider, providerKey);
             if (user == null)
@@ -417,7 +468,7 @@ namespace Microsoft.AspNetCore.Identity
             {
                 return error;
             }
-            return await SignInOrTwoFactorAsync(user, isPersistent, loginProvider);
+            return await SignInOrTwoFactorAsync(user, isPersistent, loginProvider, bypassTwoFactor);
         }
 
         /// <summary>
@@ -506,7 +557,7 @@ namespace Microsoft.AspNetCore.Identity
         /// Configures the redirect URL and user identifier for the specified external login <paramref name="provider"/>.
         /// </summary>
         /// <param name="provider">The provider to configure.</param>
-        /// <param name="redirectUrl">The external login URL users should be redirected to during the login glow.</param>
+        /// <param name="redirectUrl">The external login URL users should be redirected to during the login flow.</param>
         /// <param name="userId">The current user's identifier, which will be used to provide CSRF protection.</param>
         /// <returns>A configured <see cref="AuthenticationProperties"/>.</returns>
         public virtual AuthenticationProperties ConfigureExternalAuthenticationProperties(string provider, string redirectUrl, string userId = null)
@@ -553,9 +604,10 @@ namespace Microsoft.AspNetCore.Identity
         }
 
 
-        private async Task<SignInResult> SignInOrTwoFactorAsync(TUser user, bool isPersistent, string loginProvider = null)
+        private async Task<SignInResult> SignInOrTwoFactorAsync(TUser user, bool isPersistent, string loginProvider = null, bool bypassTwoFactor = false)
         {
-            if (UserManager.SupportsUserTwoFactor &&
+            if (!bypassTwoFactor &&
+                UserManager.SupportsUserTwoFactor &&
                 await UserManager.GetTwoFactorEnabledAsync(user) &&
                 (await UserManager.GetValidTwoFactorProvidersAsync(user)).Count > 0)
             {
@@ -590,18 +642,33 @@ namespace Microsoft.AspNetCore.Identity
             return null;
         }
 
-        private async Task<bool> IsLockedOut(TUser user)
+        /// <summary>
+        /// Used to determine if a user is considered locked out.
+        /// </summary>
+        /// <param name="user">The user.</param>
+        /// <returns>Whether a user is considered locked out.</returns>
+        protected virtual async Task<bool> IsLockedOut(TUser user)
         {
             return UserManager.SupportsUserLockout && await UserManager.IsLockedOutAsync(user);
         }
 
-        private async Task<SignInResult> LockedOut(TUser user)
+        /// <summary>
+        /// Returns a locked out SignInResult.
+        /// </summary>
+        /// <param name="user">The user.</param>
+        /// <returns>A locked out SignInResult</returns>
+        protected virtual async Task<SignInResult> LockedOut(TUser user)
         {
             Logger.LogWarning(3, "User {userId} is currently locked out.", await UserManager.GetUserIdAsync(user));
             return SignInResult.LockedOut;
         }
 
-        private async Task<SignInResult> PreSignInCheck(TUser user)
+        /// <summary>
+        /// Used to ensure that a user is allowed to sign in.
+        /// </summary>
+        /// <param name="user">The user</param>
+        /// <returns>Null if the user should be allowed to sign in, otherwise the SignInResult why they should be denied.</returns>
+        protected virtual async Task<SignInResult> PreSignInCheck(TUser user)
         {
             if (!await CanSignInAsync(user))
             {
@@ -614,13 +681,18 @@ namespace Microsoft.AspNetCore.Identity
             return null;
         }
 
-        private Task ResetLockout(TUser user)
+        /// <summary>
+        /// Used to reset a user's lockout count.
+        /// </summary>
+        /// <param name="user">The user</param>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="IdentityResult"/> of the operation.</returns>
+        protected virtual Task ResetLockout(TUser user)
         {
             if (UserManager.SupportsUserLockout)
             {
                 return UserManager.ResetAccessFailedCountAsync(user);
             }
-            return Task.FromResult(0);
+            return TaskCache.CompletedTask;
         }
 
         internal class TwoFactorAuthenticationInfo

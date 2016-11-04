@@ -9,6 +9,7 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Internal;
 
 namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
 {
@@ -19,6 +20,11 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
     public class RoleStore<TRole> : RoleStore<TRole, DbContext, string>
         where TRole : IdentityRole<string>
     {
+        /// <summary>
+        /// Constructs a new instance of <see cref="RoleStore{TRole}"/>.
+        /// </summary>
+        /// <param name="context">The <see cref="DbContext"/>.</param>
+        /// <param name="describer">The <see cref="IdentityErrorDescriber"/>.</param>
         public RoleStore(DbContext context, IdentityErrorDescriber describer = null) : base(context, describer) { }
     }
 
@@ -31,6 +37,11 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
         where TRole : IdentityRole<string>
         where TContext : DbContext
     {
+        /// <summary>
+        /// Constructs a new instance of <see cref="RoleStore{TRole, TContext}"/>.
+        /// </summary>
+        /// <param name="context">The <see cref="DbContext"/>.</param>
+        /// <param name="describer">The <see cref="IdentityErrorDescriber"/>.</param>
         public RoleStore(TContext context, IdentityErrorDescriber describer = null) : base(context, describer) { }
     }
 
@@ -47,10 +58,19 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
         where TKey : IEquatable<TKey>
         where TContext : DbContext
     {
-        public RoleStore(TContext context, IdentityErrorDescriber describer = null) : base(context, describer)
-        {
-        }
+        /// <summary>
+        /// Constructs a new instance of <see cref="RoleStore{TRole, TContext, TKey}"/>.
+        /// </summary>
+        /// <param name="context">The <see cref="DbContext"/>.</param>
+        /// <param name="describer">The <see cref="IdentityErrorDescriber"/>.</param>
+        public RoleStore(TContext context, IdentityErrorDescriber describer = null) : base(context, describer) { }
 
+        /// <summary>
+        /// Creates a entity representing a role claim.
+        /// </summary>
+        /// <param name="role">The associated role.</param>
+        /// <param name="claim">The associated claim.</param>
+        /// <returns>The role claim entity.</returns>
         protected override IdentityRoleClaim<TKey> CreateRoleClaim(TRole role, Claim claim)
         {
             return new IdentityRoleClaim<TKey> { RoleId = role.Id, ClaimType = claim.Type, ClaimValue = claim.Value };
@@ -74,6 +94,11 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
         where TUserRole : IdentityUserRole<TKey>
         where TRoleClaim : IdentityRoleClaim<TKey>
     {
+        /// <summary>
+        /// Constructs a new instance of <see cref="RoleStore{TRole, TContext, TKey, TUserRole, TRoleClaim}"/>.
+        /// </summary>
+        /// <param name="context">The <see cref="DbContext"/>.</param>
+        /// <param name="describer">The <see cref="IdentityErrorDescriber"/>.</param>
         public RoleStore(TContext context, IdentityErrorDescriber describer = null)
         {
             if (context == null)
@@ -239,7 +264,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
                 throw new ArgumentNullException(nameof(role));
             }
             role.Name = roleName;
-            return Task.FromResult(0);
+            return TaskCache.CompletedTask;
         }
 
         /// <summary>
@@ -330,9 +355,12 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
                 throw new ArgumentNullException(nameof(role));
             }
             role.NormalizedName = normalizedName;
-            return Task.FromResult(0);
+            return TaskCache.CompletedTask;
         }
 
+        /// <summary>
+        /// Throws if this class has been disposed.
+        /// </summary>
         protected void ThrowIfDisposed()
         {
             if (_disposed)
@@ -427,9 +455,9 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
         /// <summary>
         /// Creates a entity representing a role claim.
         /// </summary>
-        /// <param name="role"></param>
-        /// <param name="claim"></param>
-        /// <returns></returns>
+        /// <param name="role">The associated role.</param>
+        /// <param name="claim">The associated claim.</param>
+        /// <returns>The role claim entity.</returns>
         protected abstract TRoleClaim CreateRoleClaim(TRole role, Claim claim);
     }
 }

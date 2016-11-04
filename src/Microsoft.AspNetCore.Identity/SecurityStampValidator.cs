@@ -19,6 +19,11 @@ namespace Microsoft.AspNetCore.Identity
         private readonly SignInManager<TUser> _signInManager;
         private readonly IdentityOptions _options;
 
+        /// <summary>
+        /// Creates a new instance of <see cref="SecurityStampValidator{TUser}"/>.
+        /// </summary>
+        /// <param name="options">Used to access the <see cref="IdentityOptions"/>.</param>
+        /// <param name="signInManager">The <see cref="SignInManager{TUser}"/>.</param>
         public SecurityStampValidator(IOptions<IdentityOptions> options, SignInManager<TUser> signInManager)
         {
             if (options == null)
@@ -61,8 +66,23 @@ namespace Microsoft.AspNetCore.Identity
                 var user = await _signInManager.ValidateSecurityStampAsync(context.Principal);
                 if (user != null)
                 {
-                    // REVIEW: note we lost login authenticaiton method
-                    context.ReplacePrincipal(await _signInManager.CreateUserPrincipalAsync(user));
+                    var newPrincipal = await _signInManager.CreateUserPrincipalAsync(user);
+
+                    if (_options.OnSecurityStampRefreshingPrincipal != null)
+                    {
+                        var replaceContext = new SecurityStampRefreshingPrincipalContext
+                        {
+                            CurrentPrincipal = context.Principal,
+                            NewPrincipal = newPrincipal
+                        };
+
+                        // Note: a null principal is allowed and results in a failed authentication.
+                        await _options.OnSecurityStampRefreshingPrincipal(replaceContext);
+                        newPrincipal = replaceContext.NewPrincipal;
+                    }
+
+                    // REVIEW: note we lost login authentication method
+                    context.ReplacePrincipal(newPrincipal);
                     context.ShouldRenew = true;
                 }
                 else

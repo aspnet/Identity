@@ -466,6 +466,7 @@ namespace Microsoft.AspNetCore.Identity.Test
             store.Setup(s => s.GetPasswordHashAsync(user, CancellationToken.None))
                 .ReturnsAsync(hashed)
                 .Verifiable();
+            store.Setup(s => s.SetPasswordHashAsync(user, It.IsAny<string>(), CancellationToken.None)).Returns(Task.FromResult(0)).Verifiable();
             store.Setup(x => x.UpdateAsync(It.IsAny<TestUser>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(IdentityResult.Success));
 
             hasher.Setup(s => s.VerifyHashedPassword(user, hashed, pwd)).Returns(PasswordVerificationResult.SuccessRehashNeeded).Verifiable();
@@ -620,6 +621,52 @@ namespace Microsoft.AspNetCore.Identity.Test
             await Assert.ThrowsAsync<NotSupportedException>(async () => await manager.ReplaceClaimAsync(null, null, null));
             await Assert.ThrowsAsync<NotSupportedException>(async () => await manager.RemoveClaimAsync(null, null));
             await Assert.ThrowsAsync<NotSupportedException>(async () => await manager.GetClaimsAsync(null));
+        }
+
+        private class ATokenProvider : IUserTwoFactorTokenProvider<TestUser>
+        {
+            public Task<bool> CanGenerateTwoFactorTokenAsync(UserManager<TestUser> manager, TestUser user)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<string> GenerateAsync(string purpose, UserManager<TestUser> manager, TestUser user)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<bool> ValidateAsync(string purpose, string token, UserManager<TestUser> manager, TestUser user)
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        [Fact]
+        public void UserManagerWillUseTokenProviderInstance()
+        {
+            var services = new ServiceCollection();
+            var provider = new ATokenProvider();
+            services.AddLogging()
+                .AddIdentity<TestUser, TestRole>(o => o.Tokens.ProviderMap.Add("A", new TokenProviderDescriptor(typeof(ATokenProvider))
+            {
+                ProviderInstance = provider
+            })).AddUserStore<NoopUserStore>();
+            var manager = services.BuildServiceProvider().GetService<UserManager<TestUser>>();
+            Assert.ThrowsAsync<NotImplementedException>(() => manager.GenerateUserTokenAsync(new TestUser(), "A", "purpose"));
+        }
+
+        [Fact]
+        public void UserManagerWillUseTokenProviderInstanceOverDefaults()
+        {
+            var services = new ServiceCollection();
+            var provider = new ATokenProvider();
+            services.AddLogging()
+                .AddIdentity<TestUser, TestRole>(o => o.Tokens.ProviderMap.Add(TokenOptions.DefaultProvider, new TokenProviderDescriptor(typeof(ATokenProvider))
+                {
+                    ProviderInstance = provider
+                })).AddUserStore<NoopUserStore>().AddDefaultTokenProviders();
+            var manager = services.BuildServiceProvider().GetService<UserManager<TestUser>>();
+            Assert.ThrowsAsync<NotImplementedException>(() => manager.GenerateUserTokenAsync(new TestUser(), TokenOptions.DefaultProvider, "purpose"));
         }
 
         [Fact]

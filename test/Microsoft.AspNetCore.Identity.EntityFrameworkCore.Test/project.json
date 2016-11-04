@@ -15,45 +15,32 @@
     ]
   },
   "dependencies": {
-    "dotnet-test-xunit": "1.0.0-rc3-000000-01",
-    "Microsoft.EntityFrameworkCore.InMemory": "1.0.0",
-    "Microsoft.EntityFrameworkCore.SqlServer": "1.0.0",
-    "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0",
-    "Microsoft.Extensions.Configuration.FileExtensions": "1.0.0",
-    "Microsoft.Extensions.Configuration.Json": "1.0.0",
-    "Microsoft.AspNetCore.Hosting": "1.0.0",
-    "Microsoft.AspNetCore.Http": "1.0.0",
-    "Microsoft.AspNetCore.Identity": "1.0.0",
-    "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "1.0.0",
-    "Microsoft.AspNetCore.TestHost": "1.0.0",
-    "Microsoft.AspNetCore.Testing": "1.0.0-rtm-21431",
-    "xunit": "2.1.0"
+    "dotnet-test-xunit": "2.2.0-*",
+    "Microsoft.AspNetCore.Hosting": "1.1.0-*",
+    "Microsoft.AspNetCore.Http": "1.1.0-*",
+    "Microsoft.AspNetCore.Identity": "1.1.0-*",
+    "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "1.1.0-*",
+    "Microsoft.AspNetCore.TestHost": "1.1.0-*",
+    "Microsoft.AspNetCore.Testing": "1.1.0-*",
+    "Microsoft.EntityFrameworkCore.InMemory": "1.1.0-*",
+    "Microsoft.EntityFrameworkCore.SqlServer": "1.1.0-*",
+    "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.1.0-*",
+    "Microsoft.Extensions.Configuration.FileExtensions": "1.1.0-*",
+    "Microsoft.Extensions.Configuration.Json": "1.1.0-*",
+    "Moq": "4.6.36-*",
+    "xunit": "2.2.0-*"
   },
   "frameworks": {
-    "netcoreapp1.0": {
+    "netcoreapp1.1": {
       "dependencies": {
         "Microsoft.NETCore.App": {
-          "version": "1.0.0",
+          "version": "1.1.0-*",
           "type": "platform"
         },
-        "moq.netcore": "4.4.0-beta8",
-        "System.Diagnostics.Process": "4.1.0",
-        "System.Diagnostics.TraceSource": "4.0.0"
-      },
-      "imports": [
-        "dnxcore50",
-        "portable-net451+win8"
-      ]
-    },
-    "net451": {
-      "frameworkAssemblies": {
-        "System.Threading.Tasks": ""
-      },
-      "dependencies": {
-        "Moq": "4.2.1312.1622",
-        "xunit.runner.console": "2.1.0"
+        "System.Diagnostics.TraceSource": "4.3.0-*"
       }
-    }
+    },
+    "net451": {}
   },
   "testRunner": "xunit"
 }
