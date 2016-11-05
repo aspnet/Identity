@@ -3,7 +3,6 @@
 
 using System;
 using LinqToDB.Identity;
-using Microsoft.EntityFrameworkCore;
 
 namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.InMemory.Test
 {

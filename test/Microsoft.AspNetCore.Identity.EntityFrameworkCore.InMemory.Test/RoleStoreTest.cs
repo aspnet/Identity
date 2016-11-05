@@ -6,8 +6,6 @@ using System.Threading.Tasks;
 using LinqToDB;
 using LinqToDB.Identity;
 using Microsoft.AspNetCore.Identity.Test;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -27,7 +25,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.InMemory.Test
         public async Task CanCreateRoleWithSingletonManager()
         {
             var services = TestIdentityFactory.CreateTestServices();
-            services.AddEntityFrameworkInMemoryDatabase();
+            //services.AddEntityFrameworkInMemoryDatabase();
             services.AddSingleton<IConnectionFactory<DataContext, InMemoryContext>>(new DefaultConnectionFactory<DataContext, InMemoryContext>());
             services.AddTransient<IRoleStore<IdentityRole>, RoleStore<DataContext, InMemoryContext, IdentityRole>>();
             services.AddSingleton<RoleManager<IdentityRole>>();

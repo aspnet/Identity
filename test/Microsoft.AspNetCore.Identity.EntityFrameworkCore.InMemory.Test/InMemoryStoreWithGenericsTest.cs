@@ -11,7 +11,6 @@ using LinqToDB;
 using LinqToDB.Identity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity.Test;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 

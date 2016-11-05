@@ -6,7 +6,6 @@ using LinqToDB;
 using LinqToDB.Data;
 using LinqToDB.Identity;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.InMemory.Test
@@ -16,7 +15,6 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.InMemory.Test
         public static InMemoryContext CreateContext()
         {
             var services = new ServiceCollection();
-            services.AddEntityFrameworkInMemoryDatabase();
             var serviceProvider = services.BuildServiceProvider();
 
             var db = new InMemoryContext();
