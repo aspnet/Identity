@@ -51,7 +51,7 @@ namespace IdentitySample
                 options.Cookies.ApplicationCookie.CookieName = "Interop";
                 options.Cookies.ApplicationCookie.DataProtectionProvider = DataProtectionProvider.Create(new DirectoryInfo("C:\\Github\\Identity\\artifacts"));
             })
-                .AddEntityFrameworkStores(new DefaultConnectionFactory<DataContext, ApplicationDbContext>())
+                .AddLinqToDBStores(new DefaultConnectionFactory<DataContext, ApplicationDbContext>())
                 .AddDefaultTokenProviders();
 
             services.AddMvc();

@@ -14,7 +14,7 @@ namespace Microsoft.Extensions.DependencyInjection
     /// <summary>
     /// Contains extension methods to <see cref="IdentityBuilder"/> for adding entity framework stores.
     /// </summary>
-    public static class IdentityEntityFrameworkBuilderExtensions
+    public static class IdentityLinqToDbBuilderExtensions
     {
 		/// <summary>
 		/// Adds an Entity Framework implementation of identity information stores.
@@ -24,7 +24,8 @@ namespace Microsoft.Extensions.DependencyInjection
 		/// <param name="builder">The <see cref="IdentityBuilder"/> instance this method extends.</param>
 		/// <param name="factory"><see cref="IConnectionFactory{TContext,TConnection}"/></param>
 		/// <returns>The <see cref="IdentityBuilder"/> instance this method extends.</returns>
-		public static IdentityBuilder AddEntityFrameworkStores<TContext, TConnection>(this IdentityBuilder builder, IConnectionFactory<TContext, TConnection> factory)
+		// ReSharper disable once InconsistentNaming
+		public static IdentityBuilder AddLinqToDBStores<TContext, TConnection>(this IdentityBuilder builder, IConnectionFactory<TContext, TConnection> factory)
             where TContext : IDataContext
 			where TConnection : DataConnection
 		{
@@ -43,7 +44,8 @@ namespace Microsoft.Extensions.DependencyInjection
 		/// <param name="builder">The <see cref="IdentityBuilder"/> instance this method extends.</param>
 		/// <param name="factory"><see cref="IConnectionFactory{TContext,TConnection}"/></param>
 		/// <returns>The <see cref="IdentityBuilder"/> instance this method extends.</returns>
-		public static IdentityBuilder AddEntityFrameworkStores<TContext, TConnection, TKey>(this IdentityBuilder builder, IConnectionFactory<TContext, TConnection> factory)
+		// ReSharper disable once InconsistentNaming
+		public static IdentityBuilder AddLinqToDBStores<TContext, TConnection, TKey>(this IdentityBuilder builder, IConnectionFactory<TContext, TConnection> factory)
             where TContext : IDataContext
 			where TConnection : DataConnection
             where TKey : IEquatable<TKey>

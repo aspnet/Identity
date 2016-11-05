@@ -28,7 +28,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
 
             services
                 .AddIdentity<IdentityUser, IdentityRole>()
-                .AddEntityFrameworkStores<DataContext, IdentityDbContext>(new DefaultConnectionFactory<DataContext, IdentityDbContext>());
+                .AddLinqToDBStores<DataContext, IdentityDbContext>(new DefaultConnectionFactory<DataContext, IdentityDbContext>());
 
             services.AddLogging();
 
