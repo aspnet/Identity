@@ -2,12 +2,14 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using LinqToDB;
+using LinqToDB.DataProvider.SqlServer;
 using LinqToDB.Identity;
 using Microsoft.AspNetCore.Identity.Test;
 using Microsoft.AspNetCore.Testing;
@@ -36,6 +38,10 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
 
         public class TestDbContext : IdentityDbContext<TUser, TRole, TKey> {
             public TestDbContext() : base() { }
+
+	        public TestDbContext(string configurationString) : base(configurationString)
+	        {
+	        }
         }
 
         protected override TUser CreateTestUser(string namePrefix = "", string email = "", string phoneNumber = "",
@@ -65,12 +71,33 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
 
         protected override Expression<Func<TUser, bool>> UserNameStartsWithPredicate(string userName) => u => u.UserName.StartsWith(userName);
 
+		private static HashSet<string> _connectionStrings = new HashSet<string>();
         public TestDbContext CreateContext()
         {
-			throw new NotImplementedException();
+			//throw new NotImplementedException();
             //var db = DbUtil.Create<TestDbContext>(_fixture.ConnectionString);
             //db.Database.EnsureCreated();
             //return db;
+
+			TestDbContext.AddConfiguration("Test", _fixture.ConnectionString, new SqlServerDataProvider("*", SqlServerVersion.v2012));
+	        TestDbContext.DefaultConfiguration = "Test";
+
+			var dc = new TestDbContext();
+
+	        if (!_connectionStrings.Contains(_fixture.ConnectionString))
+	        {
+		        dc.CreateTable<TUser>();
+		        dc.CreateTable<TRole>();
+		        dc.CreateTable<IdentityUserLogin<TKey>>();
+		        dc.CreateTable<IdentityUserRole<TKey>>();
+		        dc.CreateTable<IdentityRoleClaim<TKey>>();
+		        dc.CreateTable<IdentityUserClaim<TKey>>();
+		        dc.CreateTable<IdentityUserToken<TKey>>();
+
+		        _connectionStrings.Add(_fixture.ConnectionString);
+	        }
+	        return dc;
+
         }
 
         protected override object CreateTestContext()
@@ -108,19 +135,25 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
 
             using (var db = new SqlConnection(sqlConn.ConnectionString))
             {
+	            var ms = dbContext.MappingSchema;
+	            var u = ms.GetEntityDescriptor(typeof(TUser));
+	            var r = ms.GetEntityDescriptor(typeof(TRole));
+	            var ur = ms.GetEntityDescriptor(typeof(IdentityUserRole<TKey>));
+	            var uc = ms.GetEntityDescriptor(typeof(IdentityUserClaim<TKey>));
+	            var ul = ms.GetEntityDescriptor(typeof(IdentityUserLogin<TKey>));
+	            var ut = ms.GetEntityDescriptor(typeof(IdentityUserToken<TKey>));
+
+
                 db.Open();
-                Assert.True(VerifyColumns(db, "AspNetUsers", "Id", "UserName", "Email", "PasswordHash", "SecurityStamp",
+                Assert.True(VerifyColumns(db, u.TableName, "Id", "UserName", "Email", "PasswordHash", "SecurityStamp",
                     "EmailConfirmed", "PhoneNumber", "PhoneNumberConfirmed", "TwoFactorEnabled", "LockoutEnabled",
                     "LockoutEnd", "AccessFailedCount", "ConcurrencyStamp", "NormalizedUserName", "NormalizedEmail"));
-                Assert.True(VerifyColumns(db, "AspNetRoles", "Id", "Name", "NormalizedName", "ConcurrencyStamp"));
-                Assert.True(VerifyColumns(db, "AspNetUserRoles", "UserId", "RoleId"));
-                Assert.True(VerifyColumns(db, "AspNetUserClaims", "Id", "UserId", "ClaimType", "ClaimValue"));
-                Assert.True(VerifyColumns(db, "AspNetUserLogins", "UserId", "ProviderKey", "LoginProvider", "ProviderDisplayName"));
-                Assert.True(VerifyColumns(db, "AspNetUserTokens", "UserId", "LoginProvider", "Name", "Value"));
+                Assert.True(VerifyColumns(db, r.TableName, "Id", "Name", "NormalizedName", "ConcurrencyStamp"));
+                Assert.True(VerifyColumns(db, ur.TableName, "UserId", "RoleId"));
+                Assert.True(VerifyColumns(db, uc.TableName, "Id", "UserId", "ClaimType", "ClaimValue"));
+                Assert.True(VerifyColumns(db, ul.TableName, "UserId", "ProviderKey", "LoginProvider", "ProviderDisplayName"));
+                Assert.True(VerifyColumns(db, ut.TableName, "UserId", "LoginProvider", "Name", "Value"));
 
-                VerifyIndex(db, "AspNetRoles", "RoleNameIndex", isUnique: true);
-                VerifyIndex(db, "AspNetUsers", "UserNameIndex", isUnique: true);
-                VerifyIndex(db, "AspNetUsers", "EmailIndex");
                 db.Close();
             }
         }
@@ -215,6 +248,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
             Assert.Equal(1, roles.Count());
 
             IdentityResultAssert.IsSuccess(await userMgr.DeleteAsync(user));
+            IdentityResultAssert.IsSuccess(await roleMgr.DeleteAsync(role));
 
             roles = await userMgr.GetRolesAsync(user);
             Assert.Equal(0, roles.Count());

@@ -234,11 +234,6 @@ namespace LinqToDB.Identity
 	    private readonly IConnectionFactory<TContext, TConnection> _factory;
 
 	    /// <summary>
-	    /// Gets the database getContext for this store.
-	    /// </summary>
-	    private TContext Context => ((Func<TContext>) _factory.GetContext)();
-
-        /// <summary>
         /// Gets or sets the <see cref="IdentityErrorDescriber"/> for any error that occurred with the current operation.
         /// </summary>
         public IdentityErrorDescriber ErrorDescriber { get; set; }
@@ -380,7 +375,7 @@ namespace LinqToDB.Identity
             {
                 throw new ArgumentNullException(nameof(user));
             }
-	        await Task.Run(() => Context.TryInsertAndSetIdentity(user), cancellationToken);
+	        await Task.Run(() => _factory.GetContext().TryInsertAndSetIdentity(user), cancellationToken);
             return IdentityResult.Success;
         }
 
@@ -403,7 +398,7 @@ namespace LinqToDB.Identity
 			//Context.Attach(user);
 			//user.ConcurrencyStamp = Guid.NewGuid().ToString();
 
-	        await Task.Run(() => Context.Update(user), cancellationToken);
+	        await Task.Run(() => _factory.GetContext().Update(user), cancellationToken);
             return IdentityResult.Success;
         }
 
@@ -422,7 +417,7 @@ namespace LinqToDB.Identity
                 throw new ArgumentNullException(nameof(user));
             }
 
-	        await Task.Run(() => Context.Delete(user), cancellationToken);
+	        await Task.Run(() => _factory.GetContext().Delete(user), cancellationToken);
 			return IdentityResult.Success;
         }
 
@@ -439,7 +434,7 @@ namespace LinqToDB.Identity
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
             var id = ConvertIdFromString(userId);
-	        return Context.GetTable<TUser>().FirstOrDefaultAsync(_ => _.Id.Equals(id), cancellationToken);
+	        return _factory.GetContext().GetTable<TUser>().FirstOrDefaultAsync(_ => _.Id.Equals(id), cancellationToken);
         }
 
         /// <summary>
@@ -488,7 +483,7 @@ namespace LinqToDB.Identity
 	    /// <summary>
 	    /// A navigation property for the users the store contains.
 	    /// </summary>
-	    public virtual IQueryable<TUser> Users => ((Func<TContext>) _factory.GetContext)().GetTable<TUser>();
+	    public virtual IQueryable<TUser> Users => _factory.GetContext().GetTable<TUser>();
 
         /// <summary>
         /// Sets the password hash for a user.
@@ -560,7 +555,7 @@ namespace LinqToDB.Identity
             }
 	        await Task.Run(() =>
 	        {
-		        using (var dc = ((Func<TConnection>) _factory.GetConnection)())
+		        using (var dc = _factory.GetConnection())
 		        {
 
 			        var roleEntity = dc.GetTable<TRole>()
@@ -598,15 +593,15 @@ namespace LinqToDB.Identity
 
 		    await Task.Run(() =>
 			    {
-				    var dc = Context;
+				    var dc = _factory.GetContext();
 
 				    var q =
 					    from ur in dc.GetTable<TUserRole>()
 					    join r  in dc.GetTable<TRole>() on ur.RoleId equals r.Id
 					    where r.NormalizedName == normalizedRoleName && ur.UserId.Equals(user.Id)
-					    select r;
+					    select ur;
 
-				    return q.Delete();
+				    q.Delete();
 
 			    },
 			    cancellationToken);
@@ -627,7 +622,7 @@ namespace LinqToDB.Identity
                 throw new ArgumentNullException(nameof(user));
             }
             var userId = user.Id;
-	        var dc = Context;
+	        var dc = _factory.GetContext();
             var query = from userRole in dc.GetTable<TUserRole>()
                         join role     in dc.GetTable<TRole>() on userRole.RoleId equals role.Id
                         where userRole.UserId.Equals(userId)
@@ -657,7 +652,7 @@ namespace LinqToDB.Identity
 			    throw new ArgumentException(Resources.ValueCannotBeNullOrEmpty, nameof(normalizedRoleName));
 		    }
 
-		    var dc = Context;
+		    var dc = _factory.GetContext();
 
 		    var q = from ur in dc.GetTable<TUserRole>()
 			    join r in dc.GetTable<TRole>() on ur.RoleId equals r.Id
@@ -701,7 +696,7 @@ namespace LinqToDB.Identity
             }
 
 	        return await
-			        Context.GetTable<TUserClaim>()
+			        _factory.GetContext().GetTable<TUserClaim>()
 				        .Where(uc => uc.UserId.Equals(user.Id))
 				        .Select(c => new Claim(c.ClaimType, c.ClaimValue))
 				        .ToListAsync(cancellationToken);
@@ -727,11 +722,12 @@ namespace LinqToDB.Identity
             }
 	        var data = claims.Select(_ => CreateUserClaim(user, _));
 
-	        var dc = Context as DataConnection;
+	        using (var dc = _factory.GetConnection())
+	        {
+		        dc.BulkCopy(data);
+	        }
 
-			dc.BulkCopy(data);
-
-            return Task.FromResult(false);
+	        return Task.FromResult(false);
         }
 
         /// <summary>
@@ -761,7 +757,7 @@ namespace LinqToDB.Identity
 	        await Task.Run(() =>
 	        {
 
-		        var q = Context.GetTable<TUserClaim>()
+		        var q = _factory.GetContext().GetTable<TUserClaim>()
 			        .Where(uc => uc.UserId.Equals(user.Id) && uc.ClaimValue == claim.Value && uc.ClaimType == claim.Type);
 
 		        q.Set(_ => _.ClaimValue, newClaim.Value)
@@ -792,7 +788,7 @@ namespace LinqToDB.Identity
 
 	        await Task.Run(() =>
 	        {
-		        var dc = ((Func<TContext>) _factory.GetContext)();
+		        var dc = _factory.GetContext();
 		        var q = dc.GetTable<TUserClaim>();
 		        var userId = Expression.PropertyOrField(Expression.Constant(user, typeof(TUser)), nameof(user.Id));
 		        var equals = typeof(TKey).GetMethod(nameof(IEquatable<TKey>.Equals), new Type[] {typeof(TKey)});
@@ -807,11 +803,11 @@ namespace LinqToDB.Identity
 
 			        var claimValueEquals = Expression.Equal(
 				        Expression.PropertyOrField(uc, nameof(IIdentityUserClaim<TKey>.ClaimValue)),
-				        Expression.PropertyOrField(cl, nameof(IIdentityUserClaim<TKey>.ClaimValue)));
+				        Expression.PropertyOrField(cl, nameof(Claim.Value)));
 			        var claimTypeEquals =
 				        Expression.Equal(
 							Expression.PropertyOrField(uc, nameof(IIdentityUserClaim<TKey>.ClaimType)),
-					        Expression.PropertyOrField(cl, nameof(IIdentityUserClaim<TKey>.ClaimType)));
+					        Expression.PropertyOrField(cl, nameof(Claim.Type)));
 
 			        var predicatePart = Expression.And(Expression.And(userIdEquals, claimValueEquals), claimTypeEquals);
 
@@ -849,7 +845,7 @@ namespace LinqToDB.Identity
                 throw new ArgumentNullException(nameof(login));
             }
 
-			((Func<TContext>) _factory.GetContext)().Insert(CreateUserLogin(user, login));
+			_factory.GetContext().Insert(CreateUserLogin(user, login));
 
             return Task.FromResult(false);
         }
@@ -872,7 +868,7 @@ namespace LinqToDB.Identity
                 throw new ArgumentNullException(nameof(user));
             }
             await Task.Run(() =>
-				((Func<TContext>) _factory.GetContext)()
+				_factory.GetContext()
 				.GetTable<TUserLogin>()
 				.Delete(userLogin => userLogin.UserId.Equals(user.Id) && userLogin.LoginProvider == loginProvider && userLogin.ProviderKey == providerKey), 
 				cancellationToken);
@@ -895,7 +891,7 @@ namespace LinqToDB.Identity
 			    throw new ArgumentNullException(nameof(user));
 		    }
 		    var userId = user.Id;
-		    return await ((Func<TContext>) _factory.GetContext)()
+		    return await _factory.GetContext()
 			    .GetTable<TUserLogin>()
 			    .Where(l => l.UserId.Equals(userId))
 			    .Select(l => new UserLoginInfo(l.LoginProvider, l.ProviderKey, l.ProviderDisplayName))
@@ -917,7 +913,7 @@ namespace LinqToDB.Identity
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
 
-	        var dc = ((Func<TContext>) _factory.GetContext)();
+	        var dc = _factory.GetContext();
 	        var q = from ul in dc.GetTable<TUserLogin>()
 		        join u in dc.GetTable<TUser>() on ul.UserId equals u.Id
 		        where ul.LoginProvider == loginProvider && ul.ProviderKey == providerKey
@@ -1356,7 +1352,7 @@ namespace LinqToDB.Identity
                 throw new ArgumentNullException(nameof(claim));
             }
 
-	        var dc = ((Func<TContext>) _factory.GetContext)();
+	        var dc = _factory.GetContext();
 
             var query = from userclaims in dc.GetTable<TUserClaim>()
                         join user in Users on userclaims.UserId equals user.Id
@@ -1385,7 +1381,7 @@ namespace LinqToDB.Identity
 			    throw new ArgumentNullException(nameof(normalizedRoleName));
 		    }
 
-		    var dc = ((Func<TContext>) _factory.GetContext)();
+		    var dc = _factory.GetContext();
 
 		    var query = from userrole in dc.GetTable<TUserRole>()
 			    join user in Users on userrole.UserId equals user.Id
@@ -1418,7 +1414,7 @@ namespace LinqToDB.Identity
 
 		    await Task.Run(() =>
 		    {
-			    using (var dc = ((Func<TConnection>) _factory.GetConnection)())
+			    using (var dc = _factory.GetConnection())
 			    {
 				    var q = dc.GetTable<TUserToken>()
 					    .Where(_ => _.UserId.Equals(user.Id) && _.LoginProvider == loginProvider && _.Name == name);
@@ -1456,7 +1452,7 @@ namespace LinqToDB.Identity
 			    throw new ArgumentNullException(nameof(user));
 		    }
 		    await Task.Run(() =>
-				    ((Func<TContext>) _factory.GetContext)()
+				    _factory.GetContext()
 					    .GetTable<TUserToken>()
 					    .Where(_ => _.UserId.Equals(user.Id) && _.LoginProvider == loginProvider && _.Name == name).
 					    Delete(),
@@ -1482,7 +1478,7 @@ namespace LinqToDB.Identity
 			    throw new ArgumentNullException(nameof(user));
 		    }
 
-		    var entry = await ((Func<TContext>) _factory.GetContext)()
+		    var entry = await _factory.GetContext()
 			    .GetTable<TUserToken>()
 			    .Where(_ => _.UserId.Equals(user.Id) && _.LoginProvider == loginProvider && _.Name == name)
 			    .FirstOrDefaultAsync(cancellationToken);

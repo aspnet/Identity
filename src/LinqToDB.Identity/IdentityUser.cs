@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using LinqToDB.Mapping;
 
 namespace LinqToDB.Identity
 {
@@ -150,10 +151,11 @@ namespace LinqToDB.Identity
             UserName = userName;
         }
 
-        /// <summary>
-        /// Gets or sets the primary key for this user.
-        /// </summary>
-        public virtual TKey Id { get; set; }
+		/// <summary>
+		/// Gets or sets the primary key for this user.
+		/// </summary>
+		[PrimaryKey]
+		public virtual TKey Id { get; set; }
 
         /// <summary>
         /// Gets or sets the user name for this user.

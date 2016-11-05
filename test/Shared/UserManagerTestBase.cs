@@ -7,6 +7,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using LinqToDB.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Testing;
@@ -19,14 +20,14 @@ namespace Microsoft.AspNetCore.Identity.Test
 {
     // Common functionality tests that all verifies user manager functionality regardless of store implementation
     public abstract class UserManagerTestBase<TUser, TRole> : UserManagerTestBase<TUser, TRole, string>
-        where TUser : class
-        where TRole : class
-    { }
+        where TUser : class, IIdentityUser<string>
+		where TRole : class, IIdentityRole<string>
+	{ }
 
     public abstract class UserManagerTestBase<TUser, TRole, TKey>
-        where TUser : class
-        where TRole : class
-        where TKey : IEquatable<TKey>
+        where TUser : class, IIdentityUser<TKey>
+        where TRole : class, IIdentityRole<TKey>
+		where TKey : IEquatable<TKey>
     {
         private const string NullValue = "(null)";
 
@@ -65,11 +66,13 @@ namespace Microsoft.AspNetCore.Identity.Test
             {
                 context = CreateTestContext();
             }
+
             SetupIdentityServices(services, context);
             if (configureServices != null)
             {
                 configureServices(services);
             }
+
             return services.BuildServiceProvider().GetService<UserManager<TUser>>();
         }
 
@@ -464,7 +467,7 @@ namespace Microsoft.AspNetCore.Identity.Test
             var logins = await manager.GetLoginsAsync(user);
             Assert.NotNull(logins);
             Assert.Equal(1, logins.Count());
-            Assert.Equal(user, await manager.FindByLoginAsync(login.LoginProvider, login.ProviderKey));
+            Assert.Equal(user.Id, (await manager.FindByLoginAsync(login.LoginProvider, login.ProviderKey)).Id);
             Assert.True(await manager.CheckPasswordAsync(user, "password"));
         }
 
@@ -499,7 +502,7 @@ namespace Microsoft.AspNetCore.Identity.Test
             var login = new UserLoginInfo("Provider", userId, "display");
             IdentityResultAssert.IsSuccess(result);
             IdentityResultAssert.IsSuccess(await manager.AddLoginAsync(user, login));
-            Assert.Equal(user, await manager.FindByLoginAsync(login.LoginProvider, login.ProviderKey));
+            Assert.Equal(user.Id, (await manager.FindByLoginAsync(login.LoginProvider, login.ProviderKey)).Id);
             var logins = await manager.GetLoginsAsync(user);
             Assert.NotNull(logins);
             Assert.Equal(1, logins.Count());
@@ -580,6 +583,26 @@ namespace Microsoft.AspNetCore.Identity.Test
             userClaims = await manager.GetClaimsAsync(user);
             Assert.Equal(1, userClaims.Count);
             IdentityResultAssert.IsSuccess(await manager.RemoveClaimAsync(user, claims[2]));
+            userClaims = await manager.GetClaimsAsync(user);
+            Assert.Equal(0, userClaims.Count);
+        }
+
+        [Fact]
+        public async Task CanAddRemoveUserClaim2()
+        {
+            if (ShouldSkipDbTests())
+            {
+                return;
+            }
+            var manager = CreateManager();
+            var user = CreateTestUser();
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
+            Claim[] claims = { new Claim("c", "v"), new Claim("c2", "v2"), new Claim("c2", "v3") };
+	        IdentityResultAssert.IsSuccess(await manager.AddClaimsAsync(user, claims));
+			var userId = await manager.GetUserIdAsync(user);
+            var userClaims = await manager.GetClaimsAsync(user);
+            Assert.Equal(3, userClaims.Count);
+	        IdentityResultAssert.IsSuccess(await manager.RemoveClaimsAsync(user, claims));
             userClaims = await manager.GetClaimsAsync(user);
             Assert.Equal(0, userClaims.Count);
         }
@@ -780,7 +803,7 @@ namespace Microsoft.AspNetCore.Identity.Test
             var user = CreateTestUser(email: email);
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
             var fetch = await manager.FindByEmailAsync(email);
-            Assert.Equal(user, fetch);
+            Assert.Equal(user.Id, fetch.Id);
         }
 
         [Fact]
@@ -1355,7 +1378,7 @@ namespace Microsoft.AspNetCore.Identity.Test
             var role = CreateTestRole("FindByIdAsync");
             Assert.Null(await manager.FindByIdAsync(await manager.GetRoleIdAsync(role)));
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(role));
-            Assert.Equal(role, await manager.FindByIdAsync(await manager.GetRoleIdAsync(role)));
+            Assert.Equal(role.Id, (await manager.FindByIdAsync(await manager.GetRoleIdAsync(role))).Id);
         }
 
         [Fact]
@@ -1371,7 +1394,7 @@ namespace Microsoft.AspNetCore.Identity.Test
             Assert.Null(await manager.FindByNameAsync(roleName));
             Assert.False(await manager.RoleExistsAsync(roleName));
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(role));
-            Assert.Equal(role, await manager.FindByNameAsync(roleName));
+            Assert.Equal(role.Id, (await manager.FindByNameAsync(roleName)).Id);
         }
 
         [Fact]
@@ -1390,7 +1413,7 @@ namespace Microsoft.AspNetCore.Identity.Test
             IdentityResultAssert.IsSuccess(await manager.SetRoleNameAsync(role, "Changed"));
             IdentityResultAssert.IsSuccess(await manager.UpdateAsync(role));
             Assert.False(await manager.RoleExistsAsync("update"));
-            Assert.Equal(role, await manager.FindByNameAsync("Changed"));
+            Assert.Equal(role.Id, (await manager.FindByNameAsync("Changed")).Id);
         }
 
         [Fact]

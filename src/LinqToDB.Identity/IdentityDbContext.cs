@@ -58,9 +58,9 @@ namespace LinqToDB.Identity
 		/// <summary>
 		/// Constructor
 		/// </summary>
-		/// <param name="connectionString">Connection string</param>
-		public IdentityDbContext(string connectionString)
-			: base(connectionString)
+		/// <param name="configurationString">Connection string</param>
+		public IdentityDbContext(string configurationString)
+			: base(configurationString)
 		{
 		}
 
@@ -126,9 +126,9 @@ namespace LinqToDB.Identity
 		/// <summary>
 		/// Constructor
 		/// </summary>
-		/// <param name="connectionString">Connection string</param>
-		public IdentityDbContext(string connectionString)
-			: base(connectionString)
+		/// <param name="configurationString">Connection string</param>
+		public IdentityDbContext(string configurationString)
+			: base(configurationString)
 		{
 		}
 
@@ -198,9 +198,9 @@ namespace LinqToDB.Identity
 		/// <summary>
 		/// Constructor
 		/// </summary>
-		/// <param name="connectionString">Connection string</param>
-		public IdentityDbContext(string connectionString)
-			: base(connectionString)
+		/// <param name="configurationString">Connection string</param>
+		public IdentityDbContext(string configurationString)
+			: base(configurationString)
 		{
 		}
 
@@ -280,9 +280,9 @@ namespace LinqToDB.Identity
 	    /// <summary>
 	    /// Constructor
 	    /// </summary>
-	    /// <param name="connectionString">Connection string</param>
-	    public IdentityDbContext(string connectionString)
-			: base(connectionString)
+	    /// <param name="configurationString">Connection string</param>
+	    public IdentityDbContext(string configurationString)
+			: base(configurationString)
 	    {
 	    }
 

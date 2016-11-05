@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using LinqToDB.Mapping;
 
 namespace LinqToDB.Identity
 {
@@ -66,6 +67,7 @@ namespace LinqToDB.Identity
 		/// <summary>
 		/// Gets or sets the primary key for this role.
 		/// </summary>
+		[PrimaryKey]
 		TKey Id { get; set; }
 
 		/// <summary>
