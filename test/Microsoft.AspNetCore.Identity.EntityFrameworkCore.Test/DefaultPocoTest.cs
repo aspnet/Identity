@@ -10,7 +10,6 @@ using LinqToDB.Identity;
 using Microsoft.AspNetCore.Builder.Internal;
 using Microsoft.AspNetCore.Identity.Test;
 using Microsoft.AspNetCore.Testing.xunit;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -82,7 +81,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
                 IdentityResultAssert.IsSuccess(await userManager.AddClaimAsync(user, new Claim(i.ToString(), "foo")));
             }
 
-            user = dbContext.Users.Include(x => x.Claims).FirstOrDefault(x => x.UserName == username);
+            user = dbContext.Users.LoadWith(x => x.Claims).FirstOrDefault(x => x.UserName == username);
 
             // Assert
             Assert.NotNull(user);
@@ -109,7 +108,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
                 IdentityResultAssert.IsSuccess(await userManager.AddLoginAsync(user, new UserLoginInfo("foo" + i, "bar" + i, "foo")));
             }
 
-            user = dbContext.Users.Include(x => x.Logins).FirstOrDefault(x => x.UserName == username);
+            user = dbContext.Users.LoadWith(x => x.Logins).FirstOrDefault(x => x.UserName == username);
 
             // Assert
             Assert.NotNull(user);
@@ -142,7 +141,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
                 IdentityResultAssert.IsSuccess(await userManager.AddToRoleAsync(user, roleName + i));
             }
 
-            user = dbContext.Users.Include(x => x.Roles).FirstOrDefault(x => x.UserName == username);
+            user = dbContext.Users.LoadWith(x => x.Roles).FirstOrDefault(x => x.UserName == username);
 
             // Assert
             Assert.NotNull(user);
@@ -151,7 +150,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
 
             for (var i = 0; i < 10; i++)
             {
-                var role = dbContext.Roles.Include(r => r.Users).FirstOrDefault(r => r.Name == (roleName + i));
+                var role = dbContext.Roles.LoadWith(r => r.Users).FirstOrDefault(r => r.Name == (roleName + i));
                 Assert.NotNull(role);
                 Assert.NotNull(role.Users);
                 Assert.Equal(1, role.Users.Count());
@@ -177,7 +176,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
                 IdentityResultAssert.IsSuccess(await roleManager.AddClaimAsync(role, new Claim("foo" + i, "bar" + i)));
             }
 
-            role = dbContext.Roles.Include(x => x.Claims).FirstOrDefault(x => x.Name == "Admin");
+            role = dbContext.Roles.LoadWith(x => x.Claims).FirstOrDefault(x => x.Name == "Admin");
 
             // Assert
             Assert.NotNull(role);

@@ -7,8 +7,6 @@ using System.Threading.Tasks;
 using LinqToDB;
 using LinqToDB.Data;
 using Microsoft.AspNetCore.Testing.xunit;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using Xunit;
 
 namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test

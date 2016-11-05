@@ -22,8 +22,6 @@
 		"LinqToDB.Identity": "1.1.0-*",
 		"Microsoft.AspNetCore.TestHost": "1.1.0-*",
 		"Microsoft.AspNetCore.Testing": "1.1.0-*",
-		"Microsoft.EntityFrameworkCore.InMemory": "1.1.0-*",
-		"Microsoft.EntityFrameworkCore.SqlServer": "1.1.0-*",
 		"Microsoft.Extensions.Configuration.EnvironmentVariables": "1.1.0-*",
 		"Microsoft.Extensions.Configuration.FileExtensions": "1.1.0-*",
 		"Microsoft.Extensions.Configuration.Json": "1.1.0-*",

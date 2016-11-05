@@ -4,7 +4,6 @@
 using LinqToDB.DataProvider.SqlServer;
 using LinqToDB.Identity;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test

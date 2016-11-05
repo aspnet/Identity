@@ -3,27 +3,19 @@
 
 using System;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test.Utilities;
-using Microsoft.EntityFrameworkCore.Internal;
 
 namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
 {
     public class ScratchDatabaseFixture : IDisposable
     {
-        private LazyRef<SqlServerTestStore> _testStore;
+        private SqlServerTestStore _testStore;
+	    private SqlServerTestStore TestStore => _testStore ?? (_testStore = SqlServerTestStore.CreateScratch());
 
-        public ScratchDatabaseFixture()
-        {
-            _testStore = new LazyRef<SqlServerTestStore>(() => SqlServerTestStore.CreateScratch());
-        }
-
-        public string ConnectionString => _testStore.Value.Connection.ConnectionString;
+        public string ConnectionString => TestStore.Connection.ConnectionString;
 
         public void Dispose()
         {
-            if (_testStore.HasValue)
-            {
-                _testStore.Value?.Dispose();
-            }
+	        _testStore?.Dispose();
         }
     }
 }
