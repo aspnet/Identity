@@ -4,6 +4,8 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using LinqToDB;
+using LinqToDB.Data;
 using Microsoft.AspNetCore.Testing.xunit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -26,28 +28,30 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
             public string UserName { get; set; }
         }
 
-        public class CustomDbContext<TKey> : DbContext where TKey : IEquatable<TKey>
+        public class CustomDbContext<TKey> : DataConnection where TKey : IEquatable<TKey>
         {
-            public CustomDbContext(DbContextOptions options) : base(options)
-            { }
+	        public ITable<User<TKey>> Users => GetTable<User<TKey>>();
 
-            public DbSet<User<TKey>> Users { get; set; }
-
-        }
-
-        public CustomDbContext<TKey> GetContext<TKey>() where TKey : IEquatable<TKey>
-        {
-            return DbUtil.Create<CustomDbContext<TKey>>(_fixture.ConnectionString);
         }
 
         public CustomDbContext<TKey> CreateContext<TKey>(bool delete = false) where TKey : IEquatable<TKey>
         {
-            var db = GetContext<TKey>();
+	        var db = new CustomDbContext<TKey>();
             if (delete)
             {
-                db.Database.EnsureDeleted();
+				//db.Database.EnsureDeleted();
+				//throw new NotImplementedException();
+	            try
+	            {
+		            db.DropTable<User<TKey>>();
+	            }
+	            catch
+	            {
+		            //
+	            }
             }
-            db.Database.EnsureCreated();
+
+	        db.CreateTable<User<TKey>>();
             return db;
         }
 
@@ -55,17 +59,18 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
         [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         [OSSkipCondition(OperatingSystems.Linux)]
         [OSSkipCondition(OperatingSystems.MacOSX)]
-        public async Task CanUpdateNameGuid()
+        public void CanUpdateNameGuid()
         {
             using (var db = CreateContext<Guid>(true))
             {
                 var oldName = Guid.NewGuid().ToString();
                 var user = new User<Guid> { UserName = oldName, Id = Guid.NewGuid() };
-                db.Users.Add(user);
-                await db.SaveChangesAsync();
+				db.Insert(user);
                 var newName = Guid.NewGuid().ToString();
-                user.UserName = newName;
-                await db.SaveChangesAsync();
+
+				user.UserName = newName;
+	            db.Update(user);
+
                 Assert.Null(db.Users.SingleOrDefault(u => u.UserName == oldName));
                 Assert.Equal(user, db.Users.Single(u => u.UserName == newName));
             }
@@ -75,17 +80,18 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
         [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         [OSSkipCondition(OperatingSystems.Linux)]
         [OSSkipCondition(OperatingSystems.MacOSX)]
-        public async Task CanUpdateNameString()
+        public void CanUpdateNameString()
         {
             using (var db = CreateContext<string>(true))
             {
                 var oldName = Guid.NewGuid().ToString();
                 var user = new User<string> { UserName = oldName, Id = Guid.NewGuid().ToString() };
-                db.Users.Add(user);
-                await db.SaveChangesAsync();
+	            db.Insert(user);
+
                 var newName = Guid.NewGuid().ToString();
                 user.UserName = newName;
-                await db.SaveChangesAsync();
+	            db.Update(user);
+
                 Assert.Null(db.Users.SingleOrDefault(u => u.UserName == oldName));
                 Assert.Equal(user, db.Users.Single(u => u.UserName == newName));
             }
@@ -95,15 +101,16 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
         [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         [OSSkipCondition(OperatingSystems.Linux)]
         [OSSkipCondition(OperatingSystems.MacOSX)]
-        public async Task CanCreateUserInt()
+        public void CanCreateUserInt()
         {
             using (var db = CreateContext<int>(true))
             {
                 var user = new User<int>();
-                db.Users.Add(user);
-                await db.SaveChangesAsync();
+	            db.Insert(user);
+
                 user.UserName = "Boo";
-                await db.SaveChangesAsync();
+	            db.Update(user);
+
                 var fetch = db.Users.First(u => u.UserName == "Boo");
                 Assert.Equal(user, fetch);
             }
@@ -113,58 +120,20 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
         [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         [OSSkipCondition(OperatingSystems.Linux)]
         [OSSkipCondition(OperatingSystems.MacOSX)]
-        public async Task CanCreateUserIntViaSet()
-        {
-            using (var db = CreateContext<int>(true))
-            {
-                var user = new User<int>();
-                var users = db.Set<User<int>>();
-                users.Add(user);
-                await db.SaveChangesAsync();
-                user.UserName = "Boo";
-                await db.SaveChangesAsync();
-                var fetch = users.First(u => u.UserName == "Boo");
-                Assert.Equal(user, fetch);
-            }
-        }
-
-        [ConditionalFact]
-        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
-        [OSSkipCondition(OperatingSystems.Linux)]
-        [OSSkipCondition(OperatingSystems.MacOSX)]
-        public async Task CanUpdateNameInt()
+        public void CanUpdateNameInt()
         {
             using (var db = CreateContext<int>(true))
             {
                 var oldName = Guid.NewGuid().ToString();
                 var user = new User<int> { UserName = oldName };
-                db.Users.Add(user);
-                await db.SaveChangesAsync();
+                db.Insert(user);
+
                 var newName = Guid.NewGuid().ToString();
                 user.UserName = newName;
-                await db.SaveChangesAsync();
+	            db.Update(user);
+
                 Assert.Null(db.Users.SingleOrDefault(u => u.UserName == oldName));
                 Assert.Equal(user, db.Users.Single(u => u.UserName == newName));
-            }
-        }
-
-        [ConditionalFact]
-        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
-        [OSSkipCondition(OperatingSystems.Linux)]
-        [OSSkipCondition(OperatingSystems.MacOSX)]
-        public async Task CanUpdateNameIntWithSet()
-        {
-            using (var db = CreateContext<int>(true))
-            {
-                var oldName = Guid.NewGuid().ToString();
-                var user = new User<int> { UserName = oldName };
-                db.Set<User<int>>().Add(user);
-                await db.SaveChangesAsync();
-                var newName = Guid.NewGuid().ToString();
-                user.UserName = newName;
-                await db.SaveChangesAsync();
-                Assert.Null(db.Set<User<int>>().SingleOrDefault(u => u.UserName == oldName));
-                Assert.Equal(user, db.Set<User<int>>().Single(u => u.UserName == newName));
             }
         }
     }

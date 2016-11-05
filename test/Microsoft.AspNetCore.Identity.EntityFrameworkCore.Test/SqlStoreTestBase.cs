@@ -7,6 +7,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using LinqToDB;
 using LinqToDB.Identity;
 using Microsoft.AspNetCore.Identity.Test;
 using Microsoft.AspNetCore.Testing;
@@ -20,7 +21,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
     public abstract class SqlStoreTestBase<TUser, TRole, TKey> : UserManagerTestBase<TUser, TRole, TKey>, IClassFixture<ScratchDatabaseFixture>
         where TUser : IdentityUser<TKey>, new()
         where TRole : IdentityRole<TKey>, new()
-        where TKey : IEquatable<TKey>
+        where TKey  : IEquatable<TKey>
     {
         private readonly ScratchDatabaseFixture _fixture;
 
@@ -35,7 +36,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
         }
 
         public class TestDbContext : IdentityDbContext<TUser, TRole, TKey> {
-            public TestDbContext(DbContextOptions options) : base(options) { }
+            public TestDbContext() : base() { }
         }
 
         protected override TUser CreateTestUser(string namePrefix = "", string email = "", string phoneNumber = "",
@@ -67,9 +68,10 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
 
         public TestDbContext CreateContext()
         {
-            var db = DbUtil.Create<TestDbContext>(_fixture.ConnectionString);
-            db.Database.EnsureCreated();
-            return db;
+			throw new NotImplementedException();
+            //var db = DbUtil.Create<TestDbContext>(_fixture.ConnectionString);
+            //db.Database.EnsureCreated();
+            //return db;
         }
 
         protected override object CreateTestContext()
@@ -79,12 +81,12 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
 
         protected override void AddUserStore(IServiceCollection services, object context = null)
         {
-            services.AddSingleton<IUserStore<TUser>>(new UserStore<TUser, TRole, TestDbContext, TKey>((TestDbContext)context));
+            services.AddSingleton<IUserStore<TUser>>(new UserStore<DataContext, TestDbContext, TUser, TRole, TKey>(new DefaultConnectionFactory<DataContext, TestDbContext>()));
         }
 
         protected override void AddRoleStore(IServiceCollection services, object context = null)
         {
-            services.AddSingleton<IRoleStore<TRole>>(new RoleStore<TRole, TestDbContext, TKey>((TestDbContext)context));
+            services.AddSingleton<IRoleStore<TRole>>(new RoleStore<DataContext, TestDbContext, TRole, TKey>(new DefaultConnectionFactory<DataContext, TestDbContext>()));
         }
 
         protected override void SetUserPasswordHash(TUser user, string hashedPassword)
@@ -103,7 +105,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
 
         internal static void VerifyDefaultSchema(TestDbContext dbContext)
         {
-            var sqlConn = dbContext.Database.GetDbConnection();
+	        var sqlConn = dbContext.Connection;
 
             using (var db = new SqlConnection(sqlConn.ConnectionString))
             {
@@ -229,9 +231,9 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
             using (var db = CreateContext())
             {
                 var user = CreateTestUser();
-                db.Users.Add(user);
-                db.SaveChanges();
-                Assert.True(db.Users.Any(u => u.UserName == user.UserName));
+                db.Insert(user);
+
+				Assert.True(db.Users.Any(u => u.UserName == user.UserName));
                 Assert.NotNull(db.Users.FirstOrDefault(u => u.UserName == user.UserName));
             }
         }

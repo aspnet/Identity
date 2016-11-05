@@ -6,82 +6,78 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using LinqToDB.Data;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Internal;
 
 namespace LinqToDB.Identity
 {
-    /// <summary>
-    /// Represents a new instance of a persistence store for users, using the default implementation
-    /// of <see cref="IdentityUser{TKey}"/> with a string as a primary key.
-    /// </summary>
-    public class UserStore : UserStore<IdentityUser<string>>
-    {
-        /// <summary>
-        /// Constructs a new instance of <see cref="UserStore"/>.
-        /// </summary>
-        /// <param name="context">The <see cref="DbContext"/>.</param>
-        /// <param name="describer">The <see cref="IdentityErrorDescriber"/>.</param>
-        public UserStore(DbContext context, IdentityErrorDescriber describer = null) : base(context, describer) { }
+	/// <summary>
+	/// Creates a new instance of a persistence store for the specified user type.
+	/// </summary>
+	/// <typeparam name="TUser">The type representing a user.</typeparam>
+	/// <typeparam name="TContext">The type of the data getContext class used to access the store.</typeparam>
+	/// <typeparam name="TConnection">The type repewsenting database getConnection <see cref="DataConnection"/></typeparam>
+	public class UserStore<TContext, TConnection, TUser> : UserStore<TContext, TConnection, TUser, IdentityRole, string>
+        where TUser       : IdentityUser<string>, new()
+		where TContext    : IDataContext
+		where TConnection : DataConnection
+	{
+		/// <summary>
+		/// Constructs a new instance of <see cref="UserStore{TUser, TContext, TConnection}"/>.
+		/// </summary>
+		/// <param name="factory"><see cref="IConnectionFactory{TContext,TConnection}"/></param>
+		/// <param name="describer">The <see cref="IdentityErrorDescriber"/>.</param>
+		public UserStore(IConnectionFactory<TContext, TConnection> factory, IdentityErrorDescriber describer = null) : base(factory, describer) { }
     }
 
-    /// <summary>
-    /// Creates a new instance of a persistence store for the specified user type.
-    /// </summary>
-    /// <typeparam name="TUser">The type representing a user.</typeparam>
-    public class UserStore<TUser> : UserStore<TUser, IdentityRole, DbContext, string>
-        where TUser : IdentityUser<string>, new()
-    {
-        /// <summary>
-        /// Constructs a new instance of <see cref="UserStore{TUser}"/>.
-        /// </summary>
-        /// <param name="context">The <see cref="DbContext"/>.</param>
-        /// <param name="describer">The <see cref="IdentityErrorDescriber"/>.</param>
-        public UserStore(DbContext context, IdentityErrorDescriber describer = null) : base(context, describer) { }
+	/// <summary>
+	/// Represents a new instance of a persistence store for the specified user and role types.
+	/// </summary>
+	/// <typeparam name="TUser">The type representing a user.</typeparam>
+	/// <typeparam name="TRole">The type representing a role.</typeparam>
+	/// <typeparam name="TContext">The type of the data getContext class used to access the store.</typeparam>
+	/// <typeparam name="TConnection">The type repewsenting database getConnection <see cref="DataConnection"/></typeparam>
+	public class UserStore<TContext, TConnection, TUser, TRole> : UserStore<TContext, TConnection, TUser, TRole,  string>
+        where TUser       : IdentityUser<string>
+        where TRole       : IdentityRole<string>
+        where TContext    : IDataContext
+		where TConnection : DataConnection
+	{
+		/// <summary>
+		/// Constructs a new instance of <see cref="UserStore{TUser, TRole, TContext, TConnection}"/>.
+		/// </summary>
+		/// <param name="factory"><see cref="IConnectionFactory{TContext,TConnection}"/></param>
+		/// <param name="describer">The <see cref="IdentityErrorDescriber"/>.</param>
+		public UserStore(IConnectionFactory<TContext, TConnection> factory, IdentityErrorDescriber describer = null) : base(factory, describer) { }
     }
 
-    /// <summary>
-    /// Represents a new instance of a persistence store for the specified user and role types.
-    /// </summary>
-    /// <typeparam name="TUser">The type representing a user.</typeparam>
-    /// <typeparam name="TRole">The type representing a role.</typeparam>
-    /// <typeparam name="TContext">The type of the data context class used to access the store.</typeparam>
-    public class UserStore<TUser, TRole, TContext> : UserStore<TUser, TRole, TContext, string>
-        where TUser : IdentityUser<string>
-        where TRole : IdentityRole<string>
-        where TContext : DbContext
-    {
-        /// <summary>
-        /// Constructs a new instance of <see cref="UserStore{TUser, TRole, TContext}"/>.
-        /// </summary>
-        /// <param name="context">The <see cref="DbContext"/>.</param>
-        /// <param name="describer">The <see cref="IdentityErrorDescriber"/>.</param>
-        public UserStore(TContext context, IdentityErrorDescriber describer = null) : base(context, describer) { }
-    }
-
-    /// <summary>
-    /// Represents a new instance of a persistence store for the specified user and role types.
-    /// </summary>
-    /// <typeparam name="TUser">The type representing a user.</typeparam>
-    /// <typeparam name="TRole">The type representing a role.</typeparam>
-    /// <typeparam name="TContext">The type of the data context class used to access the store.</typeparam>
-    /// <typeparam name="TKey">The type of the primary key for a role.</typeparam>
-    public class UserStore<TUser, TRole, TContext, TKey> : UserStore<TUser, TRole, TContext, TKey, IdentityUserClaim<TKey>, IdentityUserRole<TKey>, IdentityUserLogin<TKey>, IdentityUserToken<TKey>>
-        where TUser : IdentityUser<TKey>
-        where TRole : IdentityRole<TKey>
-        where TContext : DbContext
-        where TKey : IEquatable<TKey>
-    {
-        /// <summary>
-        /// Constructs a new instance of <see cref="UserStore{TUser, TRole, TContext, TKey}"/>.
-        /// </summary>
-        /// <param name="context">The <see cref="DbContext"/>.</param>
-        /// <param name="describer">The <see cref="IdentityErrorDescriber"/>.</param>
-        public UserStore(TContext context, IdentityErrorDescriber describer = null) : base(context, describer) { }
+	/// <summary>
+	/// Represents a new instance of a persistence store for the specified user and role types.
+	/// </summary>
+	/// <typeparam name="TUser">The type representing a user.</typeparam>
+	/// <typeparam name="TRole">The type representing a role.</typeparam>
+	/// <typeparam name="TContext">The type of the data getContext class used to access the store.</typeparam>
+	/// <typeparam name="TKey">The type of the primary key for a role.</typeparam>
+	/// <typeparam name="TConnection">The type repewsenting database getConnection <see cref="DataConnection"/></typeparam>
+	public class UserStore<TContext, TConnection, TUser, TRole, TKey> : UserStore<TContext, TConnection, TUser, TRole, TKey, IdentityUserClaim<TKey>, IdentityUserRole<TKey>, IdentityUserLogin<TKey>, IdentityUserToken<TKey>>
+        where TUser       : IdentityUser<TKey>
+        where TRole       : IdentityRole<TKey>
+        where TContext    : IDataContext
+		where TKey        : IEquatable<TKey>
+		where TConnection : DataConnection
+	{
+		/// <summary>
+		/// Constructs a new instance of <see cref="UserStore{TUser, TRole, TContext, TConncttion, TKey}"/>.
+		/// </summary>
+		/// <param name="factory"><see cref="IConnectionFactory{TContext,TConnection}"/></param>
+		/// <param name="describer">The <see cref="IdentityErrorDescriber"/>.</param>
+		public UserStore(IConnectionFactory<TContext, TConnection> factory, IdentityErrorDescriber describer = null) : base(factory, describer) { }
 
         /// <summary>
         /// Called to create a new instance of a <see cref="IdentityUserRole{TKey}"/>.
@@ -148,50 +144,53 @@ namespace LinqToDB.Identity
         }
     }
 
-    /// <summary>
-    /// Represents a new instance of a persistence store for the specified user and role types.
-    /// </summary>
-    /// <typeparam name="TUser">The type representing a user.</typeparam>
-    /// <typeparam name="TRole">The type representing a role.</typeparam>
-    /// <typeparam name="TContext">The type of the data context class used to access the store.</typeparam>
-    /// <typeparam name="TKey">The type of the primary key for a role.</typeparam>
-    /// <typeparam name="TUserClaim">The type representing a claim.</typeparam>
-    /// <typeparam name="TUserRole">The type representing a user role.</typeparam>
-    /// <typeparam name="TUserLogin">The type representing a user external login.</typeparam>
-    /// <typeparam name="TUserToken">The type representing a user token.</typeparam>
-    public abstract class UserStore<TUser, TRole, TContext, TKey, TUserClaim, TUserRole, TUserLogin, TUserToken> :
-        UserStore<TUser, TRole, TContext, TKey,TUserClaim, TUserRole, TUserLogin, TUserToken, IdentityRoleClaim<TKey>>
-        where TUser : IdentityUser<TKey, TUserClaim, TUserRole, TUserLogin>
-        where TRole : IdentityRole<TKey, TUserRole, IdentityRoleClaim<TKey>>
-        where TContext : DbContext
-        where TKey : IEquatable<TKey>
-        where TUserClaim : IdentityUserClaim<TKey>
-        where TUserRole : IdentityUserRole<TKey>
-        where TUserLogin : IdentityUserLogin<TKey>
-        where TUserToken : IdentityUserToken<TKey>
+	/// <summary>
+	/// Represents a new instance of a persistence store for the specified user and role types.
+	/// </summary>
+	/// <typeparam name="TUser">The type representing a user.</typeparam>
+	/// <typeparam name="TRole">The type representing a role.</typeparam>
+	/// <typeparam name="TContext">The type of the data getContext class used to access the store.</typeparam>
+	/// <typeparam name="TKey">The type of the primary key for a role.</typeparam>
+	/// <typeparam name="TUserClaim">The type representing a claim.</typeparam>
+	/// <typeparam name="TUserRole">The type representing a user role.</typeparam>
+	/// <typeparam name="TUserLogin">The type representing a user external login.</typeparam>
+	/// <typeparam name="TUserToken">The type representing a user token.</typeparam>
+	/// <typeparam name="TConnection">The type repewsenting database getConnection <see cref="DataConnection"/></typeparam>
+	public abstract class UserStore<TContext, TConnection, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TUserToken> :
+        UserStore<TContext, TConnection, TUser, TRole, TKey,TUserClaim, TUserRole, TUserLogin, TUserToken, IdentityRoleClaim<TKey>>
+        where TUser       : IdentityUser<TKey, TUserClaim, TUserRole, TUserLogin>
+        where TRole       : IdentityRole<TKey, TUserRole, IdentityRoleClaim<TKey>>
+        where TContext    : IDataContext
+		where TKey        : IEquatable<TKey>
+        where TUserClaim  : IdentityUserClaim<TKey>
+        where TUserRole   : IdentityUserRole<TKey>
+        where TUserLogin  : IdentityUserLogin<TKey>
+        where TUserToken  : IdentityUserToken<TKey> 
+		where TConnection : DataConnection
     {
-        /// <summary>
-        /// Creates a new instance of <see cref="UserStore"/>.
-        /// </summary>
-        /// <param name="context">The context used to access the store.</param>
-        /// <param name="describer">The <see cref="IdentityErrorDescriber"/> used to describe store errors.</param>
-        public UserStore(TContext context, IdentityErrorDescriber describer = null) : base(context, describer) { }
+		/// <summary>
+		/// Creates a new instance of <see cref="UserStore{TUser, TRole, TContext, TConnection, TKey, TUserClaim, TUserRole, TUserLogin, TUserToken}"/>.
+		/// </summary>
+		/// <param name="factory"><see cref="IConnectionFactory{TContext,TConnection}"/></param>
+		/// <param name="describer">The <see cref="IdentityErrorDescriber"/> used to describe store errors.</param>
+		public UserStore(IConnectionFactory<TContext, TConnection> factory, IdentityErrorDescriber describer = null) : base(factory, describer) { }
     }
 
 
-    /// <summary>
-    /// Represents a new instance of a persistence store for the specified user and role types.
-    /// </summary>
-    /// <typeparam name="TUser">The type representing a user.</typeparam>
-    /// <typeparam name="TRole">The type representing a role.</typeparam>
-    /// <typeparam name="TContext">The type of the data context class used to access the store.</typeparam>
-    /// <typeparam name="TKey">The type of the primary key for a role.</typeparam>
-    /// <typeparam name="TUserClaim">The type representing a claim.</typeparam>
-    /// <typeparam name="TUserRole">The type representing a user role.</typeparam>
-    /// <typeparam name="TUserLogin">The type representing a user external login.</typeparam>
-    /// <typeparam name="TUserToken">The type representing a user token.</typeparam>
-    /// <typeparam name="TRoleClaim">The type representing a role claim.</typeparam>
-    public abstract class UserStore<TUser, TRole, TContext, TKey, TUserClaim, TUserRole, TUserLogin, TUserToken, TRoleClaim> :
+	/// <summary>
+	/// Represents a new instance of a persistence store for the specified user and role types.
+	/// </summary>
+	/// <typeparam name="TUser">The type representing a user.</typeparam>
+	/// <typeparam name="TRole">The type representing a role.</typeparam>
+	/// <typeparam name="TContext">The type of the data getContext class used to access the store.</typeparam>
+	/// <typeparam name="TKey">The type of the primary key for a role.</typeparam>
+	/// <typeparam name="TUserClaim">The type representing a claim.</typeparam>
+	/// <typeparam name="TUserRole">The type representing a user role.</typeparam>
+	/// <typeparam name="TUserLogin">The type representing a user external login.</typeparam>
+	/// <typeparam name="TUserToken">The type representing a user token.</typeparam>
+	/// <typeparam name="TRoleClaim">The type representing a role claim.</typeparam>
+	/// <typeparam name="TConnection">The type repewsenting database getConnection <see cref="DataConnection"/></typeparam>
+	public abstract class UserStore<TContext, TConnection, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TUserToken, TRoleClaim> :
         IUserLoginStore<TUser>,
         IUserRoleStore<TUser>,
         IUserClaimStore<TUser>,
@@ -203,49 +202,46 @@ namespace LinqToDB.Identity
         IQueryableUserStore<TUser>,
         IUserTwoFactorStore<TUser>,
         IUserAuthenticationTokenStore<TUser>
-        where TUser : IdentityUser<TKey, TUserClaim, TUserRole, TUserLogin>
-        where TRole : IdentityRole<TKey, TUserRole, TRoleClaim>
-        where TContext : DbContext
-        where TKey : IEquatable<TKey>
-        where TUserClaim : IdentityUserClaim<TKey>
-        where TUserRole : IdentityUserRole<TKey>
-        where TUserLogin : IdentityUserLogin<TKey>
-        where TUserToken : IdentityUserToken<TKey>
-        where TRoleClaim : IdentityRoleClaim<TKey>
+        where TUser      : class, IIdentityUser<TKey>
+        where TRole      : class, IIdentityRole<TKey>
+        where TUserClaim : class, IIdentityUserClaim<TKey>
+        where TUserRole  : class, IIdentityUserRole<TKey>
+        where TUserLogin : class, IIdentityUserLogin<TKey>
+        where TUserToken : class, IIdentityUserToken<TKey>
+        where TRoleClaim : class, IIdentityRoleClaim<TKey>
+        where TContext   :        IDataContext
+        where TConnection:        DataConnection
+        where TKey       :        IEquatable<TKey>
     {
-        /// <summary>
-        /// Creates a new instance of <see cref="UserStore"/>.
-        /// </summary>
-        /// <param name="context">The context used to access the store.</param>
-        /// <param name="describer">The <see cref="IdentityErrorDescriber"/> used to describe store errors.</param>
-        public UserStore(TContext context, IdentityErrorDescriber describer = null)
+		/// <summary>
+		/// Creates a new instance of <see cref="UserStore{TUser, TRole, TContext, TConnection, TKey, TUserClaim, TUserRole, TUserLogin, TUserToken, TRoleClaim}"/>.
+		/// </summary>
+		/// <param name="factory"><see cref="IConnectionFactory{TContext,TConnection}"/></param>
+		/// <param name="describer">The <see cref="IdentityErrorDescriber"/> used to describe store errors.</param>
+		public UserStore(IConnectionFactory<TContext, TConnection> factory, IdentityErrorDescriber describer = null)
         {
-            if (context == null)
+            if (factory == null)
             {
-                throw new ArgumentNullException(nameof(context));
+                throw new ArgumentNullException(nameof(factory));
             }
-            Context = context;
+
+	        _factory = factory;
+
             ErrorDescriber = describer ?? new IdentityErrorDescriber();
         }
 
         private bool _disposed;
+	    private readonly IConnectionFactory<TContext, TConnection> _factory;
 
-        /// <summary>
-        /// Gets the database context for this store.
-        /// </summary>
-        public TContext Context { get; private set; }
+	    /// <summary>
+	    /// Gets the database getContext for this store.
+	    /// </summary>
+	    private TContext Context => ((Func<TContext>) _factory.GetContext)();
 
         /// <summary>
         /// Gets or sets the <see cref="IdentityErrorDescriber"/> for any error that occurred with the current operation.
         /// </summary>
         public IdentityErrorDescriber ErrorDescriber { get; set; }
-
-        private DbSet<TUser> UsersSet { get { return Context.Set<TUser>(); } }
-        private DbSet<TRole> Roles { get { return Context.Set<TRole>(); } }
-        private DbSet<TUserClaim> UserClaims { get { return Context.Set<TUserClaim>(); } }
-        private DbSet<TUserRole> UserRoles { get { return Context.Set<TUserRole>(); } }
-        private DbSet<TUserLogin> UserLogins { get { return Context.Set<TUserLogin>(); } }
-        private DbSet<TUserToken> UserTokens { get { return Context.Set<TUserToken>(); } }
 
         /// <summary>
         /// Creates a new entity to represent a user role.
@@ -280,22 +276,6 @@ namespace LinqToDB.Identity
         /// <param name="value"></param>
         /// <returns></returns>
         protected abstract TUserToken CreateUserToken(TUser user, string loginProvider, string name, string value);
-
-        /// <summary>
-        /// Gets or sets a flag indicating if changes should be persisted after CreateAsync, UpdateAsync and DeleteAsync are called.
-        /// </summary>
-        /// <value>
-        /// True if changes should be automatically persisted, otherwise false.
-        /// </value>
-        public bool AutoSaveChanges { get; set; } = true;
-
-        /// <summary>Saves the current store.</summary>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
-        /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
-        protected Task SaveChanges(CancellationToken cancellationToken)
-        {
-            return AutoSaveChanges ? Context.SaveChangesAsync(cancellationToken) : TaskCache.CompletedTask;
-        }
 
         /// <summary>
         /// Gets the user identifier for the specified <paramref name="user"/>.
@@ -400,8 +380,7 @@ namespace LinqToDB.Identity
             {
                 throw new ArgumentNullException(nameof(user));
             }
-            Context.Add(user);
-            await SaveChanges(cancellationToken);
+	        await Task.Run(() => Context.TryInsertAndSetIdentity(user), cancellationToken);
             return IdentityResult.Success;
         }
 
@@ -420,17 +399,11 @@ namespace LinqToDB.Identity
                 throw new ArgumentNullException(nameof(user));
             }
 
-            Context.Attach(user);
-            user.ConcurrencyStamp = Guid.NewGuid().ToString();
-            Context.Update(user);
-            try
-            {
-                await SaveChanges(cancellationToken);
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                return IdentityResult.Failed(ErrorDescriber.ConcurrencyFailure());
-            }
+			//TODO
+			//Context.Attach(user);
+			//user.ConcurrencyStamp = Guid.NewGuid().ToString();
+
+	        await Task.Run(() => Context.Update(user), cancellationToken);
             return IdentityResult.Success;
         }
 
@@ -449,16 +422,8 @@ namespace LinqToDB.Identity
                 throw new ArgumentNullException(nameof(user));
             }
 
-            Context.Remove(user);
-            try
-            {
-                await SaveChanges(cancellationToken);
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                return IdentityResult.Failed(ErrorDescriber.ConcurrencyFailure());
-            }
-            return IdentityResult.Success;
+	        await Task.Run(() => Context.Delete(user), cancellationToken);
+			return IdentityResult.Success;
         }
 
         /// <summary>
@@ -474,7 +439,7 @@ namespace LinqToDB.Identity
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
             var id = ConvertIdFromString(userId);
-            return UsersSet.FindAsync(new object[] { id }, cancellationToken);
+	        return Context.GetTable<TUser>().FirstOrDefaultAsync(_ => _.Id.Equals(id), cancellationToken);
         }
 
         /// <summary>
@@ -520,13 +485,10 @@ namespace LinqToDB.Identity
             return Users.FirstOrDefaultAsync(u => u.NormalizedUserName == normalizedUserName, cancellationToken);
         }
 
-        /// <summary>
-        /// A navigation property for the users the store contains.
-        /// </summary>
-        public virtual IQueryable<TUser> Users
-        {
-            get { return UsersSet; }
-        }
+	    /// <summary>
+	    /// A navigation property for the users the store contains.
+	    /// </summary>
+	    public virtual IQueryable<TUser> Users => ((Func<TContext>) _factory.GetContext)().GetTable<TUser>();
 
         /// <summary>
         /// Sets the password hash for a user.
@@ -596,45 +558,61 @@ namespace LinqToDB.Identity
             {
                 throw new ArgumentException(Resources.ValueCannotBeNullOrEmpty, nameof(normalizedRoleName));
             }
-            var roleEntity = await Roles.SingleOrDefaultAsync(r => r.NormalizedName == normalizedRoleName, cancellationToken);
-            if (roleEntity == null)
-            {
-                throw new InvalidOperationException(String.Format(CultureInfo.CurrentCulture, Resources.RoleNotFound, normalizedRoleName));
-            }
-            UserRoles.Add(CreateUserRole(user, roleEntity));
+	        await Task.Run(() =>
+	        {
+		        using (var dc = ((Func<TConnection>) _factory.GetConnection)())
+		        {
+
+			        var roleEntity = dc.GetTable<TRole>()
+				        .SingleOrDefault(r => r.NormalizedName == normalizedRoleName);
+			        if (roleEntity == null)
+			        {
+				        throw new InvalidOperationException(String.Format(CultureInfo.CurrentCulture, Resources.RoleNotFound,
+					        normalizedRoleName));
+			        }
+			        dc.TryInsertAndSetIdentity(CreateUserRole(user, roleEntity));
+		        }
+	        }, cancellationToken);
         }
 
-        /// <summary>
-        /// Removes the given <paramref name="normalizedRoleName"/> from the specified <paramref name="user"/>.
-        /// </summary>
-        /// <param name="user">The user to remove the role from.</param>
-        /// <param name="normalizedRoleName">The role to remove.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
-        /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
-        public async virtual Task RemoveFromRoleAsync(TUser user, string normalizedRoleName, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            ThrowIfDisposed();
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
-            if (string.IsNullOrWhiteSpace(normalizedRoleName))
-            {
-                throw new ArgumentException(Resources.ValueCannotBeNullOrEmpty, nameof(normalizedRoleName));
-            }
-            var roleEntity = await Roles.SingleOrDefaultAsync(r => r.NormalizedName == normalizedRoleName, cancellationToken);
-            if (roleEntity != null)
-            {
-                var userRole = await UserRoles.FindAsync(new object[] { user.Id, roleEntity.Id }, cancellationToken);
-                if (userRole != null)
-                {
-                    UserRoles.Remove(userRole);
-                }
-            }
-        }
+	    /// <summary>
+	    /// Removes the given <paramref name="normalizedRoleName"/> from the specified <paramref name="user"/>.
+	    /// </summary>
+	    /// <param name="user">The user to remove the role from.</param>
+	    /// <param name="normalizedRoleName">The role to remove.</param>
+	    /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+	    /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
+	    public async virtual Task RemoveFromRoleAsync(TUser user, string normalizedRoleName,
+		    CancellationToken cancellationToken = default(CancellationToken))
+	    {
+		    cancellationToken.ThrowIfCancellationRequested();
+		    ThrowIfDisposed();
+		    if (user == null)
+		    {
+			    throw new ArgumentNullException(nameof(user));
+		    }
+		    if (string.IsNullOrWhiteSpace(normalizedRoleName))
+		    {
+			    throw new ArgumentException(Resources.ValueCannotBeNullOrEmpty, nameof(normalizedRoleName));
+		    }
 
-        /// <summary>
+		    await Task.Run(() =>
+			    {
+				    var dc = Context;
+
+				    var q =
+					    from ur in dc.GetTable<TUserRole>()
+					    join r  in dc.GetTable<TRole>() on ur.RoleId equals r.Id
+					    where r.NormalizedName == normalizedRoleName && ur.UserId.Equals(user.Id)
+					    select r;
+
+				    return q.Delete();
+
+			    },
+			    cancellationToken);
+	    }
+
+	    /// <summary>
         /// Retrieves the roles the specified <paramref name="user"/> is a member of.
         /// </summary>
         /// <param name="user">The user whose roles should be retrieved.</param>
@@ -649,43 +627,47 @@ namespace LinqToDB.Identity
                 throw new ArgumentNullException(nameof(user));
             }
             var userId = user.Id;
-            var query = from userRole in UserRoles
-                        join role in Roles on userRole.RoleId equals role.Id
+	        var dc = Context;
+            var query = from userRole in dc.GetTable<TUserRole>()
+                        join role     in dc.GetTable<TRole>() on userRole.RoleId equals role.Id
                         where userRole.UserId.Equals(userId)
                         select role.Name;
-            return await query.ToListAsync();
+
+            return await query.ToListAsync(cancellationToken);
         }
 
-        /// <summary>
-        /// Returns a flag indicating if the specified user is a member of the give <paramref name="normalizedRoleName"/>.
-        /// </summary>
-        /// <param name="user">The user whose role membership should be checked.</param>
-        /// <param name="normalizedRoleName">The role to check membership of</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
-        /// <returns>A <see cref="Task{TResult}"/> containing a flag indicating if the specified user is a member of the given group. If the 
-        /// user is a member of the group the returned value with be true, otherwise it will be false.</returns>
-        public virtual async Task<bool> IsInRoleAsync(TUser user, string normalizedRoleName, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            ThrowIfDisposed();
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
-            if (string.IsNullOrWhiteSpace(normalizedRoleName))
-            {
-                throw new ArgumentException(Resources.ValueCannotBeNullOrEmpty, nameof(normalizedRoleName));
-            }
-            var role = await Roles.SingleOrDefaultAsync(r => r.NormalizedName == normalizedRoleName, cancellationToken);
-            if (role != null)
-            {
-                var userRole = await UserRoles.FindAsync(new object[] { user.Id, role.Id }, cancellationToken);
-                return userRole != null;
-            }
-            return false;
-        }
+	    /// <summary>
+	    /// Returns a flag indicating if the specified user is a member of the give <paramref name="normalizedRoleName"/>.
+	    /// </summary>
+	    /// <param name="user">The user whose role membership should be checked.</param>
+	    /// <param name="normalizedRoleName">The role to check membership of</param>
+	    /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+	    /// <returns>A <see cref="Task{TResult}"/> containing a flag indicating if the specified user is a member of the given group. If the 
+	    /// user is a member of the group the returned value with be true, otherwise it will be false.</returns>
+	    public virtual async Task<bool> IsInRoleAsync(TUser user, string normalizedRoleName, CancellationToken cancellationToken = default(CancellationToken))
+	    {
+		    cancellationToken.ThrowIfCancellationRequested();
+		    ThrowIfDisposed();
+		    if (user == null)
+		    {
+			    throw new ArgumentNullException(nameof(user));
+		    }
+		    if (string.IsNullOrWhiteSpace(normalizedRoleName))
+		    {
+			    throw new ArgumentException(Resources.ValueCannotBeNullOrEmpty, nameof(normalizedRoleName));
+		    }
 
-        /// <summary>
+		    var dc = Context;
+
+		    var q = from ur in dc.GetTable<TUserRole>()
+			    join r in dc.GetTable<TRole>() on ur.RoleId equals r.Id
+			    where r.NormalizedName == normalizedRoleName && ur.UserId.Equals(user.Id)
+			    select ur;
+
+		    return await q.AnyAsync(cancellationToken);
+	    }
+
+	    /// <summary>
         /// Throws if this class has been disposed.
         /// </summary>
         protected void ThrowIfDisposed()
@@ -718,7 +700,11 @@ namespace LinqToDB.Identity
                 throw new ArgumentNullException(nameof(user));
             }
 
-            return await UserClaims.Where(uc => uc.UserId.Equals(user.Id)).Select(c => c.ToClaim()).ToListAsync(cancellationToken);
+	        return await
+			        Context.GetTable<TUserClaim>()
+				        .Where(uc => uc.UserId.Equals(user.Id))
+				        .Select(c => new Claim(c.ClaimType, c.ClaimValue))
+				        .ToListAsync(cancellationToken);
         }
 
         /// <summary>
@@ -739,10 +725,12 @@ namespace LinqToDB.Identity
             {
                 throw new ArgumentNullException(nameof(claims));
             }
-            foreach (var claim in claims)
-            {
-                UserClaims.Add(CreateUserClaim(user, claim));
-            }
+	        var data = claims.Select(_ => CreateUserClaim(user, _));
+
+	        var dc = Context as DataConnection;
+
+			dc.BulkCopy(data);
+
             return Task.FromResult(false);
         }
 
@@ -770,12 +758,17 @@ namespace LinqToDB.Identity
                 throw new ArgumentNullException(nameof(newClaim));
             }
 
-            var matchedClaims = await UserClaims.Where(uc => uc.UserId.Equals(user.Id) && uc.ClaimValue == claim.Value && uc.ClaimType == claim.Type).ToListAsync(cancellationToken);
-            foreach (var matchedClaim in matchedClaims)
-            {
-                matchedClaim.ClaimValue = newClaim.Value;
-                matchedClaim.ClaimType = newClaim.Type;
-            }
+	        await Task.Run(() =>
+	        {
+
+		        var q = Context.GetTable<TUserClaim>()
+			        .Where(uc => uc.UserId.Equals(user.Id) && uc.ClaimValue == claim.Value && uc.ClaimType == claim.Type);
+
+		        q.Set(_ => _.ClaimValue, newClaim.Value)
+			        .Set(_ => _.ClaimType, newClaim.Type)
+			        .Update();
+	        }, cancellationToken);
+
         }
 
         /// <summary>
@@ -796,14 +789,43 @@ namespace LinqToDB.Identity
             {
                 throw new ArgumentNullException(nameof(claims));
             }
-            foreach (var claim in claims)
-            {
-                var matchedClaims = await UserClaims.Where(uc => uc.UserId.Equals(user.Id) && uc.ClaimValue == claim.Value && uc.ClaimType == claim.Type).ToListAsync(cancellationToken);
-                foreach (var c in matchedClaims)
-                {
-                    UserClaims.Remove(c);
-                }
-            }
+
+	        await Task.Run(() =>
+	        {
+		        var dc = ((Func<TContext>) _factory.GetContext)();
+		        var q = dc.GetTable<TUserClaim>();
+		        var userId = Expression.PropertyOrField(Expression.Constant(user, typeof(TUser)), nameof(user.Id));
+		        var equals = typeof(TKey).GetMethod(nameof(IEquatable<TKey>.Equals), new Type[] {typeof(TKey)});
+		        var uc = Expression.Parameter(typeof(TUserClaim));
+		        Expression body = null;
+			    var ucUserId = Expression.PropertyOrField(uc, nameof(IIdentityUserClaim<TKey>.UserId));
+			    var userIdEquals = Expression.Call(ucUserId, equals, userId);
+
+		        foreach (var claim in claims)
+		        {
+			        var cl = Expression.Constant(claim);
+
+			        var claimValueEquals = Expression.Equal(
+				        Expression.PropertyOrField(uc, nameof(IIdentityUserClaim<TKey>.ClaimValue)),
+				        Expression.PropertyOrField(cl, nameof(IIdentityUserClaim<TKey>.ClaimValue)));
+			        var claimTypeEquals =
+				        Expression.Equal(
+							Expression.PropertyOrField(uc, nameof(IIdentityUserClaim<TKey>.ClaimType)),
+					        Expression.PropertyOrField(cl, nameof(IIdentityUserClaim<TKey>.ClaimType)));
+
+			        var predicatePart = Expression.And(Expression.And(userIdEquals, claimValueEquals), claimTypeEquals);
+
+			        body = body == null ? predicatePart : Expression.Or(body, predicatePart);
+		        }
+
+		        if (body != null)
+		        {
+			        var predicate = Expression.Lambda<Func<TUserClaim, bool>>(body, uc);
+
+			        q.Where(predicate).Delete();
+		        }
+	        }, cancellationToken);
+
         }
 
         /// <summary>
@@ -826,7 +848,9 @@ namespace LinqToDB.Identity
             {
                 throw new ArgumentNullException(nameof(login));
             }
-            UserLogins.Add(CreateUserLogin(user, login));
+
+			((Func<TContext>) _factory.GetContext)().Insert(CreateUserLogin(user, login));
+
             return Task.FromResult(false);
         }
 
@@ -847,35 +871,38 @@ namespace LinqToDB.Identity
             {
                 throw new ArgumentNullException(nameof(user));
             }
-            var entry = await UserLogins.SingleOrDefaultAsync(userLogin => userLogin.UserId.Equals(user.Id) && userLogin.LoginProvider == loginProvider && userLogin.ProviderKey == providerKey, cancellationToken);
-            if (entry != null)
-            {
-                UserLogins.Remove(entry);
-            }
+            await Task.Run(() =>
+				((Func<TContext>) _factory.GetContext)()
+				.GetTable<TUserLogin>()
+				.Delete(userLogin => userLogin.UserId.Equals(user.Id) && userLogin.LoginProvider == loginProvider && userLogin.ProviderKey == providerKey), 
+				cancellationToken);
         }
 
-        /// <summary>
-        /// Retrieves the associated logins for the specified <param ref="user"/>.
-        /// </summary>
-        /// <param name="user">The user whose associated logins to retrieve.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
-        /// <returns>
-        /// The <see cref="Task"/> for the asynchronous operation, containing a list of <see cref="UserLoginInfo"/> for the specified <paramref name="user"/>, if any.
-        /// </returns>
-        public async virtual Task<IList<UserLoginInfo>> GetLoginsAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            ThrowIfDisposed();
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
-            var userId = user.Id;
-            return await UserLogins.Where(l => l.UserId.Equals(userId))
-                .Select(l => new UserLoginInfo(l.LoginProvider, l.ProviderKey, l.ProviderDisplayName)).ToListAsync(cancellationToken);
-        }
+	    /// <summary>
+	    /// Retrieves the associated logins for the specified <param ref="user"/>.
+	    /// </summary>
+	    /// <param name="user">The user whose associated logins to retrieve.</param>
+	    /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+	    /// <returns>
+	    /// The <see cref="Task"/> for the asynchronous operation, containing a list of <see cref="UserLoginInfo"/> for the specified <paramref name="user"/>, if any.
+	    /// </returns>
+	    public async virtual Task<IList<UserLoginInfo>> GetLoginsAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+	    {
+		    cancellationToken.ThrowIfCancellationRequested();
+		    ThrowIfDisposed();
+		    if (user == null)
+		    {
+			    throw new ArgumentNullException(nameof(user));
+		    }
+		    var userId = user.Id;
+		    return await ((Func<TContext>) _factory.GetContext)()
+			    .GetTable<TUserLogin>()
+			    .Where(l => l.UserId.Equals(userId))
+			    .Select(l => new UserLoginInfo(l.LoginProvider, l.ProviderKey, l.ProviderDisplayName))
+			    .ToListAsync(cancellationToken);
+	    }
 
-        /// <summary>
+	    /// <summary>
         /// Retrieves the user associated with the specified login provider and login provider key..
         /// </summary>
         /// <param name="loginProvider">The login provider who provided the <paramref name="providerKey"/>.</param>
@@ -889,12 +916,14 @@ namespace LinqToDB.Identity
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
-            var userLogin = await UserLogins.FindAsync(new object[] { loginProvider, providerKey }, cancellationToken);
-            if (userLogin != null)
-            {
-                return await Users.FirstOrDefaultAsync(u => u.Id.Equals(userLogin.UserId), cancellationToken);
-            }
-            return null;
+
+	        var dc = ((Func<TContext>) _factory.GetContext)();
+	        var q = from ul in dc.GetTable<TUserLogin>()
+		        join u in dc.GetTable<TUser>() on ul.UserId equals u.Id
+		        where ul.LoginProvider == loginProvider && ul.ProviderKey == providerKey
+		        select u;
+
+	        return await q.FirstOrDefaultAsync(cancellationToken);
         }
 
         /// <summary>
@@ -1327,7 +1356,9 @@ namespace LinqToDB.Identity
                 throw new ArgumentNullException(nameof(claim));
             }
 
-            var query = from userclaims in UserClaims
+	        var dc = ((Func<TContext>) _factory.GetContext)();
+
+            var query = from userclaims in dc.GetTable<TUserClaim>()
                         join user in Users on userclaims.UserId equals user.Id
                         where userclaims.ClaimValue == claim.Value
                         && userclaims.ClaimType == claim.Type
@@ -1336,113 +1367,127 @@ namespace LinqToDB.Identity
             return await query.ToListAsync(cancellationToken);
         }
 
-        /// <summary>
-        /// Retrieves all users in the specified role.
-        /// </summary>
-        /// <param name="normalizedRoleName">The role whose users should be retrieved.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
-        /// <returns>
-        /// The <see cref="Task"/> contains a list of users, if any, that are in the specified role. 
-        /// </returns>
-        public async virtual Task<IList<TUser>> GetUsersInRoleAsync(string normalizedRoleName, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            ThrowIfDisposed();
-            if (string.IsNullOrEmpty(normalizedRoleName))
-            {
-                throw new ArgumentNullException(nameof(normalizedRoleName));
-            }
+	    /// <summary>
+	    /// Retrieves all users in the specified role.
+	    /// </summary>
+	    /// <param name="normalizedRoleName">The role whose users should be retrieved.</param>
+	    /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+	    /// <returns>
+	    /// The <see cref="Task"/> contains a list of users, if any, that are in the specified role. 
+	    /// </returns>
+	    public async virtual Task<IList<TUser>> GetUsersInRoleAsync(string normalizedRoleName,
+		    CancellationToken cancellationToken = default(CancellationToken))
+	    {
+		    cancellationToken.ThrowIfCancellationRequested();
+		    ThrowIfDisposed();
+		    if (string.IsNullOrEmpty(normalizedRoleName))
+		    {
+			    throw new ArgumentNullException(nameof(normalizedRoleName));
+		    }
 
-            var role = await Roles.Where(x => x.NormalizedName == normalizedRoleName).FirstOrDefaultAsync(cancellationToken);
+		    var dc = ((Func<TContext>) _factory.GetContext)();
 
-            if (role != null)
-            {
-                var query = from userrole in UserRoles
-                            join user in Users on userrole.UserId equals user.Id
-                            where userrole.RoleId.Equals(role.Id)
-                            select user;
+		    var query = from userrole in dc.GetTable<TUserRole>()
+			    join user in Users on userrole.UserId equals user.Id
+			    join role in dc.GetTable<TRole>() on userrole.RoleId equals role.Id
+			    where role.NormalizedName == normalizedRoleName
+			    select user;
 
-                return await query.ToListAsync(cancellationToken);
-            }
-            return new List<TUser>();
-        }
+		    return await query.ToListAsync(cancellationToken);
+	    }
 
-        private Task<TUserToken> FindToken(TUser user, string loginProvider, string name, CancellationToken cancellationToken)
-            => UserTokens.FindAsync(new object[] { user.Id, loginProvider, name }, cancellationToken);
+	    /// <summary>
+	    /// Sets the token value for a particular user.
+	    /// </summary>
+	    /// <param name="user">The user.</param>
+	    /// <param name="loginProvider">The authentication provider for the token.</param>
+	    /// <param name="name">The name of the token.</param>
+	    /// <param name="value">The value of the token.</param>
+	    /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+	    /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
+	    public virtual async Task SetTokenAsync(TUser user, string loginProvider, string name, string value,
+		    CancellationToken cancellationToken)
+	    {
+		    cancellationToken.ThrowIfCancellationRequested();
+		    ThrowIfDisposed();
 
-        /// <summary>
-        /// Sets the token value for a particular user.
-        /// </summary>
-        /// <param name="user">The user.</param>
-        /// <param name="loginProvider">The authentication provider for the token.</param>
-        /// <param name="name">The name of the token.</param>
-        /// <param name="value">The value of the token.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
-        /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
-        public virtual async Task SetTokenAsync(TUser user, string loginProvider, string name, string value, CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            ThrowIfDisposed();
+		    if (user == null)
+		    {
+			    throw new ArgumentNullException(nameof(user));
+		    }
 
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+		    await Task.Run(() =>
+		    {
+			    using (var dc = ((Func<TConnection>) _factory.GetConnection)())
+			    {
+				    var q = dc.GetTable<TUserToken>()
+					    .Where(_ => _.UserId.Equals(user.Id) && _.LoginProvider == loginProvider && _.Name == name);
 
-            var token = await FindToken(user, loginProvider, name, cancellationToken);
-            if (token == null)
-            {
-                UserTokens.Add(CreateUserToken(user, loginProvider, name, value));
-            }
-            else
-            {
-                token.Value = value;
-            }
-        }
+				    var token = q.FirstOrDefault();
 
-        /// <summary>
-        /// Deletes a token for a user.
-        /// </summary>
-        /// <param name="user">The user.</param>
-        /// <param name="loginProvider">The authentication provider for the token.</param>
-        /// <param name="name">The name of the token.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
-        /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
-        public async Task RemoveTokenAsync(TUser user, string loginProvider, string name, CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            ThrowIfDisposed();
+				    if (token == null)
+					    dc.Insert(CreateUserToken(user, loginProvider, name, value));
+				    else
+				    {
+					    token.Value = value;
+					    q.Set(_ => _.Value, value)
+						    .Update();
+				    }
+			    }
+		    }, cancellationToken);
+	    }
 
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
-            var entry = await FindToken(user, loginProvider, name, cancellationToken);
-            if (entry != null)
-            {
-                UserTokens.Remove(entry);
-            }
-        }
+	    /// <summary>
+	    /// Deletes a token for a user.
+	    /// </summary>
+	    /// <param name="user">The user.</param>
+	    /// <param name="loginProvider">The authentication provider for the token.</param>
+	    /// <param name="name">The name of the token.</param>
+	    /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+	    /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
+	    public async Task RemoveTokenAsync(TUser user, string loginProvider, string name,
+		    CancellationToken cancellationToken)
+	    {
+		    cancellationToken.ThrowIfCancellationRequested();
+		    ThrowIfDisposed();
 
-        /// <summary>
-        /// Returns the token value.
-        /// </summary>
-        /// <param name="user">The user.</param>
-        /// <param name="loginProvider">The authentication provider for the token.</param>
-        /// <param name="name">The name of the token.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
-        /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
-        public async Task<string> GetTokenAsync(TUser user, string loginProvider, string name, CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            ThrowIfDisposed();
+		    if (user == null)
+		    {
+			    throw new ArgumentNullException(nameof(user));
+		    }
+		    await Task.Run(() =>
+				    ((Func<TContext>) _factory.GetContext)()
+					    .GetTable<TUserToken>()
+					    .Where(_ => _.UserId.Equals(user.Id) && _.LoginProvider == loginProvider && _.Name == name).
+					    Delete(),
+			    cancellationToken);
+	    }
 
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
-            var entry = await FindToken(user, loginProvider, name, cancellationToken);
-            return entry?.Value;
-        }
+	    /// <summary>
+	    /// Returns the token value.
+	    /// </summary>
+	    /// <param name="user">The user.</param>
+	    /// <param name="loginProvider">The authentication provider for the token.</param>
+	    /// <param name="name">The name of the token.</param>
+	    /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+	    /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
+	    public async Task<string> GetTokenAsync(TUser user, string loginProvider, string name,
+		    CancellationToken cancellationToken)
+	    {
+		    cancellationToken.ThrowIfCancellationRequested();
+		    ThrowIfDisposed();
+
+		    if (user == null)
+		    {
+			    throw new ArgumentNullException(nameof(user));
+		    }
+
+		    var entry = await ((Func<TContext>) _factory.GetContext)()
+			    .GetTable<TUserToken>()
+			    .Where(_ => _.UserId.Equals(user.Id) && _.LoginProvider == loginProvider && _.Name == name)
+			    .FirstOrDefaultAsync(cancellationToken);
+
+		    return entry?.Value;
+	    }
     }
 }

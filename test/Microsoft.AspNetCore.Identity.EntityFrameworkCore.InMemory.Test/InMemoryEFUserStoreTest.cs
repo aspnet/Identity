@@ -3,6 +3,7 @@
 
 using System;
 using System.Linq.Expressions;
+using LinqToDB;
 using LinqToDB.Identity;
 using Microsoft.AspNetCore.Identity.Test;
 using Microsoft.EntityFrameworkCore;
@@ -14,17 +15,17 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.InMemory.Test
     {
         protected override object CreateTestContext()
         {
-            return new InMemoryContext(new DbContextOptionsBuilder().Options);
+            return new InMemoryContext();
         }
 
         protected override void AddUserStore(IServiceCollection services, object context = null)
         {
-            services.AddSingleton<IUserStore<IdentityUser>>(new UserStore<IdentityUser>((InMemoryContext)context));
+            services.AddSingleton<IUserStore<IdentityUser>>(new UserStore<DataContext, InMemoryContext, IdentityUser>(new DefaultConnectionFactory<DataContext, InMemoryContext>()));
         }
 
         protected override void AddRoleStore(IServiceCollection services, object context = null)
         {
-            var store = new RoleStore<IdentityRole, InMemoryContext>((InMemoryContext)context);
+            var store = new RoleStore<DataContext, InMemoryContext, IdentityRole>(new DefaultConnectionFactory<DataContext, InMemoryContext>());
             services.AddSingleton<IRoleStore<IdentityRole>>(store);
         }
 

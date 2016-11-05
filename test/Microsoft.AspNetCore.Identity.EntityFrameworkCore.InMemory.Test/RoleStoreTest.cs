@@ -3,6 +3,7 @@
 
 using System;
 using System.Threading.Tasks;
+using LinqToDB;
 using LinqToDB.Identity;
 using Microsoft.AspNetCore.Identity.Test;
 using Microsoft.EntityFrameworkCore;
@@ -27,8 +28,8 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.InMemory.Test
         {
             var services = TestIdentityFactory.CreateTestServices();
             services.AddEntityFrameworkInMemoryDatabase();
-            services.AddSingleton(new InMemoryContext(new DbContextOptionsBuilder().Options));
-            services.AddTransient<IRoleStore<IdentityRole>, RoleStore<IdentityRole, InMemoryContext>>();
+            services.AddSingleton<IConnectionFactory<DataContext, InMemoryContext>>(new DefaultConnectionFactory<DataContext, InMemoryContext>());
+            services.AddTransient<IRoleStore<IdentityRole>, RoleStore<DataContext, InMemoryContext, IdentityRole>>();
             services.AddSingleton<RoleManager<IdentityRole>>();
             var provider = services.BuildServiceProvider();
             var manager = provider.GetRequiredService<RoleManager<IdentityRole>>();
@@ -39,7 +40,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.InMemory.Test
         [Fact]
         public async Task RoleStoreMethodsThrowWhenDisposedTest()
         {
-            var store = new RoleStore<IdentityRole>(new InMemoryContext(new DbContextOptionsBuilder().Options));
+            var store = new RoleStore<DataContext, InMemoryContext, IdentityRole>(new DefaultConnectionFactory<DataContext, InMemoryContext>());
             store.Dispose();
             await Assert.ThrowsAsync<ObjectDisposedException>(async () => await store.FindByIdAsync(null));
             await Assert.ThrowsAsync<ObjectDisposedException>(async () => await store.FindByNameAsync(null));
@@ -54,8 +55,8 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.InMemory.Test
         [Fact]
         public async Task RoleStorePublicNullCheckTest()
         {
-            Assert.Throws<ArgumentNullException>("context", () => new RoleStore<IdentityRole>(null));
-            var store = new RoleStore<IdentityRole>(new InMemoryContext(new DbContextOptionsBuilder().Options));
+            Assert.Throws<ArgumentNullException>("factory", () => new RoleStore<DataContext, InMemoryContext, IdentityRole>(null));
+            var store = new RoleStore<DataContext, InMemoryContext, IdentityRole>(new DefaultConnectionFactory<DataContext, InMemoryContext>());
             await Assert.ThrowsAsync<ArgumentNullException>("role", async () => await store.GetRoleIdAsync(null));
             await Assert.ThrowsAsync<ArgumentNullException>("role", async () => await store.GetRoleNameAsync(null));
             await Assert.ThrowsAsync<ArgumentNullException>("role", async () => await store.SetRoleNameAsync(null, null));

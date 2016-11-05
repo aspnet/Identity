@@ -7,6 +7,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using LinqToDB;
 using LinqToDB.Identity;
 using Microsoft.AspNetCore.Identity.Test;
 using Microsoft.AspNetCore.Testing;
@@ -27,9 +28,10 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
 
         public ContextWithGenerics CreateContext()
         {
-            var db = DbUtil.Create<ContextWithGenerics>(_fixture.ConnectionString);
-            db.Database.EnsureCreated();
-            return db;
+			throw new NotImplementedException();
+            //var db = DbUtil.Create<ContextWithGenerics>(_fixture.ConnectionString);
+            //db.Database.EnsureCreated();
+            //return db;
         }
 
         protected override object CreateTestContext()
@@ -44,12 +46,12 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
 
         protected override void AddUserStore(IServiceCollection services, object context = null)
         {
-            services.AddSingleton<IUserStore<IdentityUserWithGenerics>>(new UserStoreWithGenerics((ContextWithGenerics)context, "TestContext"));
+            services.AddSingleton<IUserStore<IdentityUserWithGenerics>>(new UserStoreWithGenerics("TestContext"));
         }
 
         protected override void AddRoleStore(IServiceCollection services, object context = null)
         {
-            services.AddSingleton<IRoleStore<MyIdentityRole>>(new RoleStoreWithGenerics((ContextWithGenerics)context, "TestContext"));
+            services.AddSingleton<IRoleStore<MyIdentityRole>>(new RoleStoreWithGenerics("TestContext"));
         }
 
         protected override IdentityUserWithGenerics CreateTestUser(string namePrefix = "", string email = "", string phoneNumber = "",
@@ -200,11 +202,11 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
         }
     }
 
-    public class UserStoreWithGenerics : UserStore<IdentityUserWithGenerics, MyIdentityRole, ContextWithGenerics, string, IdentityUserClaimWithIssuer, IdentityUserRoleWithDate, IdentityUserLoginWithContext, IdentityUserTokenWithStuff, IdentityRoleClaimWithIssuer>
+    public class UserStoreWithGenerics : UserStore<DataContext, ContextWithGenerics, IdentityUserWithGenerics, MyIdentityRole, string, IdentityUserClaimWithIssuer, IdentityUserRoleWithDate, IdentityUserLoginWithContext, IdentityUserTokenWithStuff, IdentityRoleClaimWithIssuer>
     {
         public string LoginContext { get; set; }
 
-        public UserStoreWithGenerics(ContextWithGenerics context, string loginContext) : base(context)
+        public UserStoreWithGenerics(string loginContext) : base(new DefaultConnectionFactory<DataContext, ContextWithGenerics>())
         {
             LoginContext = loginContext;
         }
@@ -249,10 +251,10 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
         }
     }
 
-    public class RoleStoreWithGenerics : RoleStore<MyIdentityRole, ContextWithGenerics, string, IdentityUserRoleWithDate, IdentityRoleClaimWithIssuer>
+    public class RoleStoreWithGenerics : RoleStore<DataContext, ContextWithGenerics, MyIdentityRole, string, IdentityUserRoleWithDate, IdentityRoleClaimWithIssuer>
     {
         private string _loginContext;
-        public RoleStoreWithGenerics(ContextWithGenerics context, string loginContext) : base(context)
+        public RoleStoreWithGenerics(string loginContext) : base(new DefaultConnectionFactory<DataContext, ContextWithGenerics>())
         {
             _loginContext = loginContext;
         }
@@ -327,7 +329,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
 
     public class ContextWithGenerics : IdentityDbContext<IdentityUserWithGenerics, MyIdentityRole, string, IdentityUserClaimWithIssuer, IdentityUserRoleWithDate, IdentityUserLoginWithContext, IdentityRoleClaimWithIssuer, IdentityUserTokenWithStuff>
     {
-        public ContextWithGenerics(DbContextOptions options) : base(options) { }
+        public ContextWithGenerics() : base() { }
     }
 
     #endregion

@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using LinqToDB;
 using LinqToDB.Identity;
 using Microsoft.AspNetCore.Identity.Test;
 using Microsoft.AspNetCore.Testing.xunit;
@@ -29,7 +30,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
 
         public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         {
-            public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+            public ApplicationDbContext() : base()
             { }
         }
 
@@ -42,22 +43,23 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
             using (var db = CreateContext())
             {
                 var guid = Guid.NewGuid().ToString();
-                db.Users.Add(new IdentityUser { Id = guid, UserName = guid });
-                db.SaveChanges();
-                Assert.True(db.Users.Any(u => u.UserName == guid));
+                db.Insert(new IdentityUser { Id = guid, UserName = guid });
+
+				Assert.True(db.Users.Any(u => u.UserName == guid));
                 Assert.NotNull(db.Users.FirstOrDefault(u => u.UserName == guid));
             }
         }
 
         public IdentityDbContext CreateContext(bool delete = false)
         {
-            var db = DbUtil.Create<IdentityDbContext>(_fixture.ConnectionString);
-            if (delete)
-            {
-                db.Database.EnsureDeleted();
-            }
-            db.Database.EnsureCreated();
-            return db;
+			throw new NotImplementedException();
+            //var db = DbUtil.Create<IdentityDbContext>(_fixture.ConnectionString);
+            //if (delete)
+            //{
+            //    db.Database.EnsureDeleted();
+            //}
+            //db.Database.EnsureCreated();
+            //return db;
         }
 
         protected override object CreateTestContext()
@@ -72,25 +74,26 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
 
         public ApplicationDbContext CreateAppContext()
         {
-            var db = DbUtil.Create<ApplicationDbContext>(_fixture.ConnectionString);
-            db.Database.EnsureCreated();
-            return db;
+			throw new NotImplementedException();
+            //var db = DbUtil.Create<ApplicationDbContext>(_fixture.ConnectionString);
+            //db.Database.EnsureCreated();
+            //return db;
         }
 
         protected override void AddUserStore(IServiceCollection services, object context = null)
         {
-            services.AddSingleton<IUserStore<IdentityUser>>(new UserStore<IdentityUser, IdentityRole, IdentityDbContext>((IdentityDbContext)context));
+            services.AddSingleton<IUserStore<IdentityUser>>(new UserStore<DataContext, IdentityDbContext, IdentityUser, IdentityRole>(new DefaultConnectionFactory<DataContext, IdentityDbContext>()));
         }
 
         protected override void AddRoleStore(IServiceCollection services, object context = null)
         {
-            services.AddSingleton<IRoleStore<IdentityRole>>(new RoleStore<IdentityRole, IdentityDbContext>((IdentityDbContext)context));
+            services.AddSingleton<IRoleStore<IdentityRole>>(new RoleStore<DataContext, IdentityDbContext, IdentityRole>(new DefaultConnectionFactory<DataContext, IdentityDbContext>()));
         }
 
         [Fact]
         public async Task SqlUserStoreMethodsThrowWhenDisposedTest()
         {
-            var store = new UserStore(new IdentityDbContext(new DbContextOptionsBuilder<IdentityDbContext>().Options));
+            var store = new UserStore<DataContext, IdentityDbContext, IdentityUser>(new DefaultConnectionFactory<DataContext, IdentityDbContext>());
             store.Dispose();
             await Assert.ThrowsAsync<ObjectDisposedException>(async () => await store.AddClaimsAsync(null, null));
             await Assert.ThrowsAsync<ObjectDisposedException>(async () => await store.AddLoginAsync(null, null));
@@ -123,8 +126,8 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
         [Fact]
         public async Task UserStorePublicNullCheckTest()
         {
-            Assert.Throws<ArgumentNullException>("context", () => new UserStore(null));
-            var store = new UserStore(new IdentityDbContext(new DbContextOptionsBuilder<IdentityDbContext>().Options));
+            Assert.Throws<ArgumentNullException>("factory", () => new UserStore<DataContext, IdentityDbContext, IdentityUser>(null));
+            var store = new UserStore<DataContext, IdentityDbContext, IdentityUser>(new DefaultConnectionFactory<DataContext, IdentityDbContext>());
             await Assert.ThrowsAsync<ArgumentNullException>("user", async () => await store.GetUserIdAsync(null));
             await Assert.ThrowsAsync<ArgumentNullException>("user", async () => await store.GetUserNameAsync(null));
             await Assert.ThrowsAsync<ArgumentNullException>("user", async () => await store.SetUserNameAsync(null, null));

@@ -6,11 +6,11 @@ using System.Security.Claims;
 
 namespace LinqToDB.Identity
 {
-    /// <summary>
+	/// <summary>
     /// Represents a claim that is granted to all users within a role.
     /// </summary>
     /// <typeparam name="TKey">The type of the primary key of the role associated with this claim.</typeparam>
-    public class IdentityRoleClaim<TKey> where TKey : IEquatable<TKey>
+    public class IdentityRoleClaim<TKey> : IClameConverter, IIdentityRoleClaim<TKey> where TKey : IEquatable<TKey>
     {
         /// <summary>
         /// Gets or sets the identifier for this role claim.

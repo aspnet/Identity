@@ -8,63 +8,53 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using LinqToDB.Data;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Internal;
+using Microsoft.Extensions.Options;
 
 namespace LinqToDB.Identity
 {
     /// <summary>
     /// Creates a new instance of a persistence store for roles.
     /// </summary>
-    /// <typeparam name="TRole">The type of the class representing a role</typeparam>
-    public class RoleStore<TRole> : RoleStore<TRole, DbContext, string>
-        where TRole : IdentityRole<string>
-    {
-        /// <summary>
-        /// Constructs a new instance of <see cref="RoleStore{TRole}"/>.
-        /// </summary>
-        /// <param name="context">The <see cref="DbContext"/>.</param>
-        /// <param name="describer">The <see cref="IdentityErrorDescriber"/>.</param>
-        public RoleStore(DbContext context, IdentityErrorDescriber describer = null) : base(context, describer) { }
+    /// <typeparam name="TRole">The type of the class representing a role.</typeparam>
+	/// <typeparam name="TContext">The type of the class for <see cref="IDataContext"/>, <see cref="IConnectionFactory{TContext,TConnection}"/></typeparam>
+	/// <typeparam name="TConnection">The type of the class for <see cref="DataConnection"/>, <see cref="IConnectionFactory{TContext,TConnection}"/></typeparam>
+    public class RoleStore<TContext, TConnection, TRole> : RoleStore<TContext, TConnection, TRole, string>
+        where TRole       : IdentityRole<string>
+		where TContext    : IDataContext
+		where TConnection : DataConnection
+	{
+		/// <summary>
+		/// Constructs a new instance of <see cref="RoleStore{TRole, TContext, TConnection}"/>.
+		/// </summary>
+		/// <param name="factory"><see cref="IConnectionFactory{TContext,TConnection}"/></param>
+		/// <param name="describer">The <see cref="IdentityErrorDescriber"/>.</param>
+		public RoleStore(IConnectionFactory<TContext, TConnection> factory, IdentityErrorDescriber describer = null) : base(factory, describer) { }
     }
 
-    /// <summary>
-    /// Creates a new instance of a persistence store for roles.
-    /// </summary>
-    /// <typeparam name="TRole">The type of the class representing a role.</typeparam>
-    /// <typeparam name="TContext">The type of the data context class used to access the store.</typeparam>
-    public class RoleStore<TRole, TContext> : RoleStore<TRole, TContext, string>
-        where TRole : IdentityRole<string>
-        where TContext : DbContext
-    {
-        /// <summary>
-        /// Constructs a new instance of <see cref="RoleStore{TRole, TContext}"/>.
-        /// </summary>
-        /// <param name="context">The <see cref="DbContext"/>.</param>
-        /// <param name="describer">The <see cref="IdentityErrorDescriber"/>.</param>
-        public RoleStore(TContext context, IdentityErrorDescriber describer = null) : base(context, describer) { }
-    }
-
-    /// <summary>
-    /// Creates a new instance of a persistence store for roles.
-    /// </summary>
-    /// <typeparam name="TRole">The type of the class representing a role.</typeparam>
-    /// <typeparam name="TContext">The type of the data context class used to access the store.</typeparam>
-    /// <typeparam name="TKey">The type of the primary key for a role.</typeparam>
-    public class RoleStore<TRole, TContext, TKey> : RoleStore<TRole, TContext, TKey, IdentityUserRole<TKey>, IdentityRoleClaim<TKey>>,
+	/// <summary>
+	/// Creates a new instance of a persistence store for roles.
+	/// </summary>
+	/// <typeparam name="TRole">The type of the class representing a role.</typeparam>
+	/// <typeparam name="TKey">The type of the primary key for a role.</typeparam>
+	/// <typeparam name="TContext">The type of the class for <see cref="IDataContext"/>, <see cref="IConnectionFactory{TContext,TConnection}"/></typeparam>
+	/// <typeparam name="TConnection">The type of the class for <see cref="DataConnection"/>, <see cref="IConnectionFactory{TContext,TConnection}"/></typeparam>
+	public class RoleStore<TContext, TConnection, TRole, TKey> : RoleStore<TContext, TConnection, TRole, TKey, IdentityUserRole<TKey>, IdentityRoleClaim<TKey>>,
         IQueryableRoleStore<TRole>,
         IRoleClaimStore<TRole>
-        where TRole : IdentityRole<TKey>
-        where TKey : IEquatable<TKey>
-        where TContext : DbContext
-    {
-        /// <summary>
-        /// Constructs a new instance of <see cref="RoleStore{TRole, TContext, TKey}"/>.
-        /// </summary>
-        /// <param name="context">The <see cref="DbContext"/>.</param>
-        /// <param name="describer">The <see cref="IdentityErrorDescriber"/>.</param>
-        public RoleStore(TContext context, IdentityErrorDescriber describer = null) : base(context, describer) { }
+        where TRole       : IdentityRole<TKey>
+        where TKey        : IEquatable<TKey>
+		where TContext    : IDataContext
+		where TConnection : DataConnection
+	{
+		/// <summary>
+		/// Constructs a new instance of <see cref="RoleStore{TRole, TKey, TContext, TConnection}"/>.
+		/// </summary>
+		/// <param name="factory"><see cref="IConnectionFactory{TContext,TConnection}"/></param>
+		/// <param name="describer">The <see cref="IdentityErrorDescriber"/>.</param>
+		public RoleStore(IConnectionFactory<TContext, TConnection> factory, IdentityErrorDescriber describer = null) : base(factory, describer) { }
 
         /// <summary>
         /// Creates a entity representing a role claim.
@@ -78,69 +68,56 @@ namespace LinqToDB.Identity
         }
     }
 
-    /// <summary>
-    /// Creates a new instance of a persistence store for roles.
-    /// </summary>
-    /// <typeparam name="TRole">The type of the class representing a role.</typeparam>
-    /// <typeparam name="TContext">The type of the data context class used to access the store.</typeparam>
-    /// <typeparam name="TKey">The type of the primary key for a role.</typeparam>
-    /// <typeparam name="TUserRole">The type of the class representing a user role.</typeparam>
-    /// <typeparam name="TRoleClaim">The type of the class representing a role claim.</typeparam>
-    public abstract class RoleStore<TRole, TContext, TKey, TUserRole, TRoleClaim> :
+	/// <summary>
+	/// Creates a new instance of a persistence store for roles.
+	/// </summary>
+	/// <typeparam name="TRole">The type of the class representing a role.</typeparam>
+	/// <typeparam name="TKey">The type of the primary key for a role.</typeparam>
+	/// <typeparam name="TUserRole">The type of the class representing a user role.</typeparam>
+	/// <typeparam name="TRoleClaim">The type of the class representing a role claim.</typeparam>
+	/// <typeparam name="TContext">The type of the class for <see cref="IDataContext"/>, <see cref="IConnectionFactory{TContext,TConnection}"/></typeparam>
+	/// <typeparam name="TConnection">The type of the class for <see cref="DataConnection"/>, <see cref="IConnectionFactory{TContext,TConnection}"/></typeparam>
+	public abstract class RoleStore<TContext, TConnection, TRole, TKey, TUserRole, TRoleClaim> :
         IQueryableRoleStore<TRole>,
         IRoleClaimStore<TRole>
-        where TRole : IdentityRole<TKey, TUserRole, TRoleClaim>
-        where TKey : IEquatable<TKey>
-        where TContext : DbContext
-        where TUserRole : IdentityUserRole<TKey>
-        where TRoleClaim : IdentityRoleClaim<TKey>
+        where TRole       : class, IIdentityRole<TKey>
+        where TKey        :        IEquatable<TKey>
+		where TUserRole   : class, IIdentityUserRole<TKey>
+        where TRoleClaim  : class, IIdentityRoleClaim<TKey>
+		where TContext    :        IDataContext
+		where TConnection :        DataConnection
     {
-        /// <summary>
-        /// Constructs a new instance of <see cref="RoleStore{TRole, TContext, TKey, TUserRole, TRoleClaim}"/>.
-        /// </summary>
-        /// <param name="context">The <see cref="DbContext"/>.</param>
-        /// <param name="describer">The <see cref="IdentityErrorDescriber"/>.</param>
-        public RoleStore(TContext context, IdentityErrorDescriber describer = null)
+	    /// <summary>
+	    /// Constructs a new instance of <see cref="RoleStore{TRole, TKey, TUserRole, TRoleClaim, TContext, TConnection}"/>.
+	    /// </summary>
+	    /// <param name="factory"><see cref="IConnectionFactory{TContext,TConnection}"/></param>
+	    /// <param name="describer">The <see cref="IdentityErrorDescriber"/>.</param>
+	    public RoleStore(IConnectionFactory<TContext, TConnection> factory, IdentityErrorDescriber describer = null)
         {
-            if (context == null)
+            if (factory == null)
             {
-                throw new ArgumentNullException(nameof(context));
+                throw new ArgumentNullException(nameof(factory));
             }
-            Context = context;
+
+	        _factory = factory;
+
             ErrorDescriber = describer ?? new IdentityErrorDescriber();
         }
 
         private bool _disposed;
+	    private readonly IConnectionFactory<TContext, TConnection> _factory;
 
 
-        /// <summary>
-        /// Gets the database context for this store.
-        /// </summary>
-        public TContext Context { get; private set; }
+	    /// <summary>
+	    /// Gets the database context for this store.
+	    /// </summary>
+	    private IDataContext Context => _factory.GetContext();
 
         /// <summary>
         /// Gets or sets the <see cref="IdentityErrorDescriber"/> for any error that occurred with the current operation.
         /// </summary>
         public IdentityErrorDescriber ErrorDescriber { get; set; }
 
-        /// <summary>
-        /// Gets or sets a flag indicating if changes should be persisted after CreateAsync, UpdateAsync and DeleteAsync are called.
-        /// </summary>
-        /// <value>
-        /// True if changes should be automatically persisted, otherwise false.
-        /// </value>
-        public bool AutoSaveChanges { get; set; } = true;
-
-        /// <summary>Saves the current store.</summary>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
-        /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
-        private async Task SaveChanges(CancellationToken cancellationToken)
-        {
-            if (AutoSaveChanges)
-            {
-                await Context.SaveChangesAsync(cancellationToken);
-            }
-        }
 
         /// <summary>
         /// Creates a new role in a store as an asynchronous operation.
@@ -148,7 +125,7 @@ namespace LinqToDB.Identity
         /// <param name="role">The role to create in the store.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>A <see cref="Task{TResult}"/> that represents the <see cref="IdentityResult"/> of the asynchronous query.</returns>
-        public async virtual Task<IdentityResult> CreateAsync(TRole role, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<IdentityResult> CreateAsync(TRole role, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -156,8 +133,9 @@ namespace LinqToDB.Identity
             {
                 throw new ArgumentNullException(nameof(role));
             }
-            Context.Add(role);
-            await SaveChanges(cancellationToken);
+
+
+	        await Task.Run(() => Context.TryInsertAndSetIdentity(role), cancellationToken);
             return IdentityResult.Success;
         }
 
@@ -167,7 +145,7 @@ namespace LinqToDB.Identity
         /// <param name="role">The role to update in the store.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>A <see cref="Task{TResult}"/> that represents the <see cref="IdentityResult"/> of the asynchronous query.</returns>
-        public async virtual Task<IdentityResult> UpdateAsync(TRole role, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<IdentityResult> UpdateAsync(TRole role, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -175,17 +153,11 @@ namespace LinqToDB.Identity
             {
                 throw new ArgumentNullException(nameof(role));
             }
-            Context.Attach(role);
-            role.ConcurrencyStamp = Guid.NewGuid().ToString();
-            Context.Update(role);
-            try
-            {
-                await SaveChanges(cancellationToken);
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                return IdentityResult.Failed(ErrorDescriber.ConcurrencyFailure());
-            }
+
+			// TODO 
+			role.ConcurrencyStamp = Guid.NewGuid().ToString();
+
+            await Task.Run(() => Context.Update(role), cancellationToken);
             return IdentityResult.Success;
         }
 
@@ -195,7 +167,7 @@ namespace LinqToDB.Identity
         /// <param name="role">The role to delete from the store.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>A <see cref="Task{TResult}"/> that represents the <see cref="IdentityResult"/> of the asynchronous query.</returns>
-        public async virtual Task<IdentityResult> DeleteAsync(TRole role, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<IdentityResult> DeleteAsync(TRole role, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -203,16 +175,10 @@ namespace LinqToDB.Identity
             {
                 throw new ArgumentNullException(nameof(role));
             }
-            Context.Remove(role);
-            try
-            {
-                await SaveChanges(cancellationToken);
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                return IdentityResult.Failed(ErrorDescriber.ConcurrencyFailure());
-            }
-            return IdentityResult.Success;
+
+	        await Task.Run(() => Context.Delete(role), cancellationToken);
+
+			return IdentityResult.Success;
         }
 
         /// <summary>
@@ -392,7 +358,7 @@ namespace LinqToDB.Identity
                 throw new ArgumentNullException(nameof(role));
             }
 
-            return await RoleClaims.Where(rc => rc.RoleId.Equals(role.Id)).Select(c => new Claim(c.ClaimType, c.ClaimValue)).ToListAsync(cancellationToken);
+            return await Context.GetTable<TRoleClaim>().Where(rc => rc.RoleId.Equals(role.Id)).Select(c => new Claim(c.ClaimType, c.ClaimValue)).ToListAsync(cancellationToken);
         }
 
         /// <summary>
@@ -402,7 +368,7 @@ namespace LinqToDB.Identity
         /// <param name="claim">The claim to add to the role.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
-        public Task AddClaimAsync(TRole role, Claim claim, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task AddClaimAsync(TRole role, Claim claim, CancellationToken cancellationToken = default(CancellationToken))
         {
             ThrowIfDisposed();
             if (role == null)
@@ -414,8 +380,9 @@ namespace LinqToDB.Identity
                 throw new ArgumentNullException(nameof(claim));
             }
 
-            RoleClaims.Add(CreateRoleClaim(role, claim));
-            return Task.FromResult(false);
+	        Context.TryInsertAndSetIdentity(CreateRoleClaim(role, claim));
+
+			return Task.FromResult(false);
         }
 
         /// <summary>
@@ -436,24 +403,22 @@ namespace LinqToDB.Identity
             {
                 throw new ArgumentNullException(nameof(claim));
             }
-            var claims = await RoleClaims.Where(rc => rc.RoleId.Equals(role.Id) && rc.ClaimValue == claim.Value && rc.ClaimType == claim.Type).ToListAsync(cancellationToken);
-            foreach (var c in claims)
-            {
-                RoleClaims.Remove(c);
-            }
+
+	        await Task.Run(() =>
+			        Context.GetTable<TRoleClaim>()
+				        .Where(rc => rc.RoleId.Equals(role.Id) && rc.ClaimValue == claim.Value && rc.ClaimType == claim.Type)
+				        .Delete(),
+		            cancellationToken);
+
         }
 
         /// <summary>
         /// A navigation property for the roles the store contains.
         /// </summary>
-        public virtual IQueryable<TRole> Roles
-        {
-            get { return Context.Set<TRole>(); }
-        }
+        public virtual IQueryable<TRole> Roles => Context.GetTable<TRole>();
 
-        private DbSet<TRoleClaim> RoleClaims { get { return Context.Set<TRoleClaim>(); } }
 
-        /// <summary>
+	    /// <summary>
         /// Creates a entity representing a role claim.
         /// </summary>
         /// <param name="role">The associated role.</param>

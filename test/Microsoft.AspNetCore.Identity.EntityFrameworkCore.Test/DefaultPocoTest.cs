@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using LinqToDB;
 using LinqToDB.Identity;
 using Microsoft.AspNetCore.Builder.Internal;
 using Microsoft.AspNetCore.Identity.Test;
@@ -24,21 +25,23 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
         {
             var services = new ServiceCollection();
 
+	        DbUtil.ConfigureDbServices(fixture.ConnectionString, services);
+
             services
-                .AddDbContext<IdentityDbContext>(o => o.UseSqlServer(fixture.ConnectionString))
                 .AddIdentity<IdentityUser, IdentityRole>()
-                .AddEntityFrameworkStores<IdentityDbContext>();
+                .AddEntityFrameworkStores<DataContext, IdentityDbContext>(new DefaultConnectionFactory<DataContext, IdentityDbContext>());
 
             services.AddLogging();
 
             var provider = services.BuildServiceProvider();
             _builder = new ApplicationBuilder(provider);
 
-            using(var scoped = provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
-            using (var db = scoped.ServiceProvider.GetRequiredService<IdentityDbContext>())
-            {
-                db.Database.EnsureCreated();
-            }
+			throw new NotImplementedException();
+            //using(var scoped = provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            //using (var db = scoped.ServiceProvider.GetRequiredService<IdentityDbContext>())
+            //{
+            //    db.Database.EnsureCreated();
+            //}
         }
 
         [ConditionalFact]

@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using LinqToDB;
 using LinqToDB.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
@@ -33,24 +34,24 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
         {
         }
 
-        public class ApplicationUserStore : UserStore<GuidUser, GuidRole, TestDbContext, Guid>
+        public class ApplicationUserStore : UserStore<DataContext, TestDbContext, GuidUser, GuidRole, Guid>
         {
-            public ApplicationUserStore(TestDbContext context) : base(context) { }
+            public ApplicationUserStore() : base(new DefaultConnectionFactory<DataContext, TestDbContext>()) { }
         }
 
-        public class ApplicationRoleStore : RoleStore<GuidRole, TestDbContext, Guid>
+        public class ApplicationRoleStore : RoleStore<DataContext, TestDbContext, GuidRole, Guid>
         {
-            public ApplicationRoleStore(TestDbContext context) : base(context) { }
+            public ApplicationRoleStore() : base(new DefaultConnectionFactory<DataContext, TestDbContext>()) { }
         }
 
         protected override void AddUserStore(IServiceCollection services, object context = null)
         {
-            services.AddSingleton<IUserStore<GuidUser>>(new ApplicationUserStore((TestDbContext)context));
+            services.AddSingleton<IUserStore<GuidUser>>(new ApplicationUserStore());
         }
 
         protected override void AddRoleStore(IServiceCollection services, object context = null)
         {
-            services.AddSingleton<IRoleStore<GuidRole>>(new ApplicationRoleStore((TestDbContext)context));
+            services.AddSingleton<IRoleStore<GuidRole>>(new ApplicationRoleStore());
         }
     }
 }

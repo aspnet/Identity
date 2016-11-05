@@ -6,6 +6,6 @@ using System.Resources;
 
 [assembly: AssemblyMetadata("Serviceable", "True")]
 [assembly: NeutralResourcesLanguage("en-us")]
-[assembly: AssemblyCompany("Microsoft Corporation.")]
-[assembly: AssemblyCopyright("© Microsoft Corporation. All rights reserved.")]
-[assembly: AssemblyProduct("Microsoft ASP.NET Core")]
+[assembly: AssemblyCompany("blog.linq2db.com")]
+[assembly: AssemblyCopyright("\xA9 2011-2016 blog.linq2db.com")]
+[assembly: AssemblyProduct("Linq to DB")]

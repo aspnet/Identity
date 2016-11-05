@@ -7,6 +7,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using LinqToDB;
 using LinqToDB.Identity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity.Test;
@@ -25,7 +26,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.InMemory.Test
         {
             var services = new ServiceCollection();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddDbContext<InMemoryContextWithGenerics>(options => options.UseInMemoryDatabase());
+            //services.AddDbContext<InMemoryContextWithGenerics>(options => options.UseInMemoryDatabase());
             _context = services.BuildServiceProvider().GetRequiredService<InMemoryContextWithGenerics>();
         }
 
@@ -36,13 +37,13 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.InMemory.Test
 
         protected override void AddUserStore(IServiceCollection services, object context = null)
         {
-            _store = new UserStoreWithGenerics((InMemoryContextWithGenerics)context, "TestContext");
+            _store = new UserStoreWithGenerics("TestContext");
             services.AddSingleton<IUserStore<IdentityUserWithGenerics>>(_store);
         }
 
         protected override void AddRoleStore(IServiceCollection services, object context = null)
         {
-            services.AddSingleton<IRoleStore<MyIdentityRole>>(new RoleStoreWithGenerics((InMemoryContextWithGenerics)context, "TestContext"));
+            services.AddSingleton<IRoleStore<MyIdentityRole>>(new RoleStoreWithGenerics("TestContext"));
         }
 
         protected override IdentityUserWithGenerics CreateTestUser(string namePrefix = "", string email = "", string phoneNumber = "",
@@ -197,11 +198,11 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.InMemory.Test
         }
     }
 
-    public class UserStoreWithGenerics : UserStore<IdentityUserWithGenerics, MyIdentityRole, InMemoryContextWithGenerics, string, IdentityUserClaimWithIssuer, IdentityUserRoleWithDate, IdentityUserLoginWithContext, IdentityUserTokenWithStuff>
+    public class UserStoreWithGenerics : UserStore<DataContext, InMemoryContextWithGenerics, IdentityUserWithGenerics, MyIdentityRole, string, IdentityUserClaimWithIssuer, IdentityUserRoleWithDate, IdentityUserLoginWithContext, IdentityUserTokenWithStuff>
     {
         public string LoginContext { get; set; }
 
-        public UserStoreWithGenerics(InMemoryContextWithGenerics context, string loginContext) : base(context)
+        public UserStoreWithGenerics(string loginContext) : base(new DefaultConnectionFactory<DataContext, InMemoryContextWithGenerics>())
         {
             LoginContext = loginContext;
         }
@@ -246,10 +247,10 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.InMemory.Test
         }
     }
 
-    public class RoleStoreWithGenerics : RoleStore<MyIdentityRole, InMemoryContextWithGenerics, string, IdentityUserRoleWithDate, IdentityRoleClaim<string>>
+    public class RoleStoreWithGenerics : RoleStore<DataContext, InMemoryContextWithGenerics, MyIdentityRole, string, IdentityUserRoleWithDate, IdentityRoleClaim<string>>
     {
         private string _loginContext;
-        public RoleStoreWithGenerics(InMemoryContextWithGenerics context, string loginContext) : base(context)
+        public RoleStoreWithGenerics(string loginContext) : base(new DefaultConnectionFactory<DataContext, InMemoryContextWithGenerics>())
         {
             _loginContext = loginContext;
         }
@@ -308,13 +309,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.InMemory.Test
 
     public class InMemoryContextWithGenerics : InMemoryContext<IdentityUserWithGenerics, MyIdentityRole, string, IdentityUserClaimWithIssuer, IdentityUserRoleWithDate, IdentityUserLoginWithContext, IdentityRoleClaim<string>, IdentityUserTokenWithStuff>
     {
-        public InMemoryContextWithGenerics(DbContextOptions options) : base(options)
-        { }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseInMemoryDatabase();
-        }
     }
 
     #endregion
