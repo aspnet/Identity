@@ -32,9 +32,14 @@ build:
 after_build:
 - cmd: dotnet pack --no-build src/LinqToDB.Identity/project.json --version-suffix=beta%APPVEYOR_BUILD_NUMBER% -c=Release
 
-test_script:
+before_test:
 - ps: |
     [Environment]::SetEnvironmentVariable("Test:SqlServer:DefaultConnectionString", "Server=(local)\SQL2012SP1;Database=master;User ID=sa;Password=Password12!", "Machine")
+
+test_script:
+- ps: |
+    Write-Host "Connection string"
+    Write-Host [Environment]::GetEnvironmentVariable("Test:SqlServer:DefaultConnectionString")
     dotnet test test\Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test -c Release -f netcoreapp1.0 
     # upload results to AppVeyor
     $wc = New-Object 'System.Net.WebClient'
