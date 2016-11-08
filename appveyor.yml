@@ -1,13 +1,45 @@
 init:
   - git config --global core.autocrlf true
-branches:
-  only:
-    - master
-    - release
-    - dev
-    - /^(.*\/)?ci-.*$/
-build_script:
-  - build.cmd --quiet verify
-clone_depth: 1
-test: off
-deploy: off
+
+version: 1.0.0.{build}
+
+configuration: Release
+
+cache:
+- packages -> **\packages.config
+- '%USERPROFILE%\.nuget\packages -> **\project.json'
+
+
+assembly_info:
+  patch: true
+  file: '**\AssemblyInfo.*'
+  assembly_version: '{version}'
+  assembly_file_version: '{version}'
+  assembly_informational_version: '{version}'
+
+services:
+- mssql2012sp1
+- mysql
+- postgresql
+
+before_build:
+- cmd: dotnet restore 
+
+build:
+  project: LinqToDB.Identity.sln
+  verbosity: minimal
+
+after_build:
+- cmd: dotnet pack --no-build src/LinqToDB.Identity/project.json --version-suffix=beta%APPVEYOR_BUILD_NUMBER% -c=Release
+
+test:
+
+artifacts:
+- path: src\**\*.nupkg
+
+deploy:
+- provider: NuGet
+  server: https://www.myget.org/F/ili/api/v2
+  api_key:
+    secure: pFvgey1/w68ZvVHFN/GWZdDFjSABpBRfb0XfLnW3wvhlfyEUiSyfr3dAUcbmlpsk
+  skip_symbols: true
