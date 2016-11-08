@@ -108,10 +108,12 @@ namespace LinqToDB.Identity
 		    get { return _claims; }
 	    }
 
-	    /// <summary>
-        /// Gets or sets the primary key for this role.
-        /// </summary>
-        public virtual TKey Id { get; set; }
+		/// <summary>
+		/// Gets or sets the primary key for this role.
+		/// </summary>
+		[PrimaryKey]
+		[Column(CanBeNull = false, IsPrimaryKey = true, Length = 255)]
+		public virtual TKey Id { get; set; }
 
         /// <summary>
         /// Gets or sets the name for this role.

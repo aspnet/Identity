@@ -155,6 +155,7 @@ namespace LinqToDB.Identity
 		/// Gets or sets the primary key for this user.
 		/// </summary>
 		[PrimaryKey]
+		[Column(CanBeNull = false, IsPrimaryKey = true, Length = 255)]
 		public virtual TKey Id { get; set; }
 
         /// <summary>
