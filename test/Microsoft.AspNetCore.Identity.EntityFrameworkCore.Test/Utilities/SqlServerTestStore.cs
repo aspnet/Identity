@@ -103,19 +103,27 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test.Utilities
 
         private static bool DatabaseExists(string name)
         {
-            using (var master = new SqlConnection(CreateConnectionString("master")))
-            {
-                master.Open();
-				Console.WriteLine(master.ConnectionString);
+	        var connectionString = CreateConnectionString("master");
+	        try
+	        {
+		        using (var master = new SqlConnection(connectionString))
+		        {
+			        master.Open();
+			        Console.WriteLine(master.ConnectionString);
 
-                using (var command = master.CreateCommand())
-                {
-                    command.CommandTimeout = CommandTimeout;
-                    command.CommandText = $@"SELECT COUNT(*) FROM sys.databases WHERE name = N'{name}'";
+			        using (var command = master.CreateCommand())
+			        {
+				        command.CommandTimeout = CommandTimeout;
+				        command.CommandText = $@"SELECT COUNT(*) FROM sys.databases WHERE name = N'{name}'";
 
-                    return (int) command.ExecuteScalar() > 0;
-                }
-            }
+				        return (int) command.ExecuteScalar() > 0;
+			        }
+		        }
+	        }
+	        catch (Exception ex)
+	        {
+		        throw new Exception(connectionString + " " + ex.Message, ex);
+	        }
         }
 
         private static bool DatabaseFilesExist(string name)

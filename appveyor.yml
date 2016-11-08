@@ -38,11 +38,11 @@ test_script:
     dotnet test test\Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test -c Release -f netcoreapp1.0 
     # upload results to AppVeyor
     $wc = New-Object 'System.Net.WebClient'
-    $wc.UploadFile("https://ci.appveyor.com/api/testresults/xunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\TestResult.xml))
+    #$wc.UploadFile("https://ci.appveyor.com/api/testresults/xunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\TestResult.xml))
     dotnet test test\Microsoft.AspNetCore.Identity.EntityFrameworkCore.InMemory.Test -c Release -f netcoreapp1.0 
     # upload results to AppVeyor
     $wc = New-Object 'System.Net.WebClient'
-    $wc.UploadFile("https://ci.appveyor.com/api/testresults/xunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\TestResult.xml))
+    #$wc.UploadFile("https://ci.appveyor.com/api/testresults/xunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\TestResult.xml))
 
 artifacts:
 - path: src\**\*.nupkg
