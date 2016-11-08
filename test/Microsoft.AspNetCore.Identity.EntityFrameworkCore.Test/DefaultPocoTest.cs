@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using LinqToDB;
 using LinqToDB.DataProvider.SqlServer;
 using LinqToDB.Identity;
+using LinqToDB.Mapping;
 using Microsoft.AspNetCore.Builder.Internal;
 using Microsoft.AspNetCore.Identity.Test;
 using Microsoft.AspNetCore.Testing.xunit;
@@ -22,7 +23,23 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
         private readonly ApplicationBuilder _builder;
 	    private readonly SqlServerDataProvider _dataProvider = new SqlServerDataProvider("*", SqlServerVersion.v2012);
 
-        public DefaultPocoTest(ScratchDatabaseFixture fixture)
+	    static DefaultPocoTest()
+	    {
+		    MappingSchema.Default
+			    .GetFluentMappingBuilder()
+			    .Entity<IdentityUser>()
+			    .HasPrimaryKey(_ => _.Id)
+			    .Property(_ => _.Id)
+			    .HasLength(255)
+			    .IsNullable(false)
+			    .Entity<IdentityRole>()
+			    .HasPrimaryKey(_ => _.Id)
+			    .Property(_ => _.Id)
+			    .HasLength(255)
+			    .IsNullable(false);
+	    }
+
+	    public DefaultPocoTest(ScratchDatabaseFixture fixture)
         {
             var services = new ServiceCollection();
 
