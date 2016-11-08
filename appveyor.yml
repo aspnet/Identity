@@ -35,11 +35,12 @@ after_build:
 before_test:
 - ps: |
     [Environment]::SetEnvironmentVariable("Test:SqlServer:DefaultConnectionString", "Server=(local)\SQL2012SP1;Database=master;User ID=sa;Password=Password12!", "Machine")
+    [Environment]::SetEnvironmentVariable("Test:SqlServer:DefaultConnectionString", "Server=(local)\SQL2012SP1;Database=master;User ID=sa;Password=Password12!")
 
 test_script:
 - ps: |
     Write-Host "Connection string"
-    Write-Host [Environment]::GetEnvironmentVariable("Test:SqlServer:DefaultConnectionString")
+    Write-Host $([Environment]::GetEnvironmentVariable("Test:SqlServer:DefaultConnectionString"))
     dotnet test test\Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test -c Release -f netcoreapp1.0 
     # upload results to AppVeyor
     $wc = New-Object 'System.Net.WebClient'
