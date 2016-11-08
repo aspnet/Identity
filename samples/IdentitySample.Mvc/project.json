@@ -20,10 +20,6 @@
     "Microsoft.AspNetCore.StaticFiles": "1.0.1",
     "Microsoft.AspNetCore.Server.IISIntegration": "1.0.1",
     "Microsoft.AspNetCore.Server.Kestrel": "1.0.2",
-    "Microsoft.EntityFrameworkCore.Tools": {
-      "version": "1.0.0-preview2-final",
-      "type": "build"
-    },
     "Microsoft.EntityFrameworkCore.SqlServer": "1.0.2",
     "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.1",
     "Microsoft.Extensions.Configuration.Json": "1.0.1",
@@ -36,9 +32,20 @@
     "preserveCompilationContext": true
   },
   "frameworks": {
-    "net451": {},
+    "net451": {
+      "dependencies": {
+        "Microsoft.EntityFrameworkCore.Tools": {
+          "version": "1.0.0-*",
+          "type": "build"
+        }
+      }
+    },
     "netcoreapp1.0": {
       "dependencies": {
+        "Microsoft.EntityFrameworkCore.Tools.Dotnet": {
+          "version": "1.0.0-*",
+          "type": "build"
+        },
         "Microsoft.NETCore.App": {
           "version": "1.0.0",
           "type": "platform"
