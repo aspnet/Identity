@@ -34,8 +34,8 @@ after_build:
 
 before_test:
 - ps: |
-    [Environment]::SetEnvironmentVariable("Test:SqlServer:DefaultConnectionString", "Server=(local)\SQL2012SP1;Database=master;User ID=sa;Password=Password12!", "Machine")
-    [Environment]::SetEnvironmentVariable("Test:SqlServer:DefaultConnectionString", "Server=(local)\SQL2012SP1;Database=master;User ID=sa;Password=Password12!")
+    [Environment]::SetEnvironmentVariable("Test:SqlServer:DefaultConnectionString", "Server=(local)\SQL2012SP1;Database=master;Integrated Security=true", "Machine")
+    [Environment]::SetEnvironmentVariable("Test:SqlServer:DefaultConnectionString", "Server=(local)\SQL2012SP1;Database=master;Integrated Security=true")
 
 test_script:
 - ps: |
