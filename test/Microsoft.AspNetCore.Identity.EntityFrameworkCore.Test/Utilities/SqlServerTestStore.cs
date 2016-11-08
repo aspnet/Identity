@@ -106,6 +106,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test.Utilities
             using (var master = new SqlConnection(CreateConnectionString("master")))
             {
                 master.Open();
+				Console.WriteLine(master.ConnectionString);
 
                 using (var command = master.CreateCommand())
                 {
