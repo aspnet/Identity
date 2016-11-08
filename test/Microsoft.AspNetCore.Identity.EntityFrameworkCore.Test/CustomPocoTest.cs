@@ -6,6 +6,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using LinqToDB;
 using LinqToDB.Data;
+using LinqToDB.DataProvider;
+using LinqToDB.DataProvider.SqlServer;
+using LinqToDB.Identity;
+using LinqToDB.Mapping;
+using Microsoft.AspNetCore.Identity.Test;
 using Microsoft.AspNetCore.Testing.xunit;
 using Xunit;
 
@@ -14,42 +19,59 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
     public class CustomPocoTest : IClassFixture<ScratchDatabaseFixture>
     {
         private readonly ScratchDatabaseFixture _fixture;
+	    private readonly TestConnectionFactory _factory;
+	    private readonly SqlServerDataProvider _dataProvider = new SqlServerDataProvider("*", SqlServerVersion.v2012);
 
-        public CustomPocoTest(ScratchDatabaseFixture fixture)
+	    public CustomPocoTest(ScratchDatabaseFixture fixture)
         {
             _fixture = fixture;
+	        _factory = new TestConnectionFactory(_dataProvider, nameof(CustomPocoTest), _fixture.ConnectionString);
+
         }
 
         public class User<TKey> where TKey : IEquatable<TKey>
         {
+			[PrimaryKey]
+			[Column(Length = 255, CanBeNull = false)]
             public TKey Id { get; set; }
             public string UserName { get; set; }
+
+	        public override bool Equals(object obj)
+	        {
+		        var other = obj as User<TKey>;
+		        if (other == null)
+			        return false;
+
+		        return Id.Equals(other.Id) && UserName == other.UserName;
+	        }
+
+	        public override int GetHashCode()
+	        {
+		        return Id.GetHashCode();
+	        }
         }
 
         public class CustomDbContext<TKey> : DataConnection where TKey : IEquatable<TKey>
         {
+			public CustomDbContext(IDataProvider dataProvider, string connectionString)
+				:base(dataProvider, connectionString)
+	        {
+		        
+	        }
+
 	        public ITable<User<TKey>> Users => GetTable<User<TKey>>();
 
         }
 
         public CustomDbContext<TKey> CreateContext<TKey>(bool delete = false) where TKey : IEquatable<TKey>
         {
-	        var db = new CustomDbContext<TKey>();
+	        var db = new CustomDbContext<TKey>(_dataProvider, _fixture.ConnectionString);
             if (delete)
             {
-				//db.Database.EnsureDeleted();
-				//throw new NotImplementedException();
-	            try
-	            {
-		            db.DropTable<User<TKey>>();
-	            }
-	            catch
-	            {
-		            //
-	            }
+				_factory.DropTable<User<TKey>>();
             }
 
-	        db.CreateTable<User<TKey>>();
+			_factory.CreateTable<User<TKey>>();
             return db;
         }
 

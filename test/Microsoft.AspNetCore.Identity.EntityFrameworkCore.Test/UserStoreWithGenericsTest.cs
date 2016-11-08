@@ -8,6 +8,8 @@ using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using LinqToDB;
+using LinqToDB.Data;
+using LinqToDB.DataProvider.SqlServer;
 using LinqToDB.Identity;
 using Microsoft.AspNetCore.Identity.Test;
 using Microsoft.AspNetCore.Testing;
@@ -25,15 +27,31 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
             _fixture = fixture;
         }
 
-        public ContextWithGenerics CreateContext()
+        public TestConnectionFactory CreateContext()
         {
-			throw new NotImplementedException();
-            //var db = DbUtil.Create<ContextWithGenerics>(_fixture.ConnectionString);
-            //db.Database.EnsureCreated();
-            //return db;
+			var factory = new TestConnectionFactory(new SqlServerDataProvider("*", SqlServerVersion.v2012), "UserStoreWithGenericsTest",
+				_fixture.ConnectionString);
+
+			CreateTables(factory, _fixture.ConnectionString);
+
+
+	        factory.CreateTable<IdentityUserClaimWithIssuer>();
+	        factory.CreateTable<IdentityUserRoleWithDate>();
+	        factory.CreateTable<IdentityUserLoginWithContext>();
+	        factory.CreateTable < IdentityUserTokenWithStuff>();
+	        factory.CreateTable<IdentityRoleClaimWithIssuer>();
+
+
+
+
+
+			return factory;
+	        //var db = DbUtil.Create<ContextWithGenerics>(_fixture.ConnectionString);
+	        //db.Database.EnsureCreated();
+	        //return db;
         }
 
-        protected override object CreateTestContext()
+        protected override TestConnectionFactory CreateTestContext()
         {
             return CreateContext();
         }
@@ -43,14 +61,14 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
             return TestPlatformHelper.IsMono || !TestPlatformHelper.IsWindows;
         }
 
-        protected override void AddUserStore(IServiceCollection services, object context = null)
+        protected override void AddUserStore(IServiceCollection services, TestConnectionFactory context = null)
         {
-            services.AddSingleton<IUserStore<IdentityUserWithGenerics>>(new UserStoreWithGenerics("TestContext"));
+            services.AddSingleton<IUserStore<IdentityUserWithGenerics>>(new UserStoreWithGenerics(context ?? CreateTestContext(), "TestContext"));
         }
 
-        protected override void AddRoleStore(IServiceCollection services, object context = null)
+        protected override void AddRoleStore(IServiceCollection services, TestConnectionFactory context = null)
         {
-            services.AddSingleton<IRoleStore<MyIdentityRole>>(new RoleStoreWithGenerics("TestContext"));
+            services.AddSingleton<IRoleStore<MyIdentityRole>>(new RoleStoreWithGenerics(context ?? CreateTestContext(), "TestContext"));
         }
 
         protected override IdentityUserWithGenerics CreateTestUser(string namePrefix = "", string email = "", string phoneNumber = "",
@@ -201,11 +219,22 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
         }
     }
 
-    public class UserStoreWithGenerics : UserStore<DataContext, ContextWithGenerics, IdentityUserWithGenerics, MyIdentityRole, string, IdentityUserClaimWithIssuer, IdentityUserRoleWithDate, IdentityUserLoginWithContext, IdentityUserTokenWithStuff, IdentityRoleClaimWithIssuer>
+    public class UserStoreWithGenerics : 
+		UserStore<
+			DataContext, 
+			DataConnection, 
+			IdentityUserWithGenerics, 
+			MyIdentityRole, 
+			string, 
+			IdentityUserClaimWithIssuer, 
+			IdentityUserRoleWithDate, 
+			IdentityUserLoginWithContext, 
+			IdentityUserTokenWithStuff, 
+			IdentityRoleClaimWithIssuer>
     {
         public string LoginContext { get; set; }
 
-        public UserStoreWithGenerics(string loginContext) : base(new DefaultConnectionFactory<DataContext, ContextWithGenerics>())
+        public UserStoreWithGenerics(IConnectionFactory<DataContext, DataConnection> fasctory, string loginContext) : base(fasctory)
         {
             LoginContext = loginContext;
         }
@@ -250,10 +279,10 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
         }
     }
 
-    public class RoleStoreWithGenerics : RoleStore<DataContext, ContextWithGenerics, MyIdentityRole, string, IdentityUserRoleWithDate, IdentityRoleClaimWithIssuer>
+    public class RoleStoreWithGenerics : RoleStore<DataContext, DataConnection, MyIdentityRole, string, IdentityUserRoleWithDate, IdentityRoleClaimWithIssuer>
     {
         private string _loginContext;
-        public RoleStoreWithGenerics(string loginContext) : base(new DefaultConnectionFactory<DataContext, ContextWithGenerics>())
+        public RoleStoreWithGenerics(IConnectionFactory<DataContext, DataConnection> factory, string loginContext) : base(factory)
         {
             _loginContext = loginContext;
         }
@@ -326,10 +355,10 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
         public string Context { get; set; }
     }
 
-    public class ContextWithGenerics : IdentityDbContext<IdentityUserWithGenerics, MyIdentityRole, string, IdentityUserClaimWithIssuer, IdentityUserRoleWithDate, IdentityUserLoginWithContext, IdentityRoleClaimWithIssuer, IdentityUserTokenWithStuff>
-    {
-        public ContextWithGenerics() : base() { }
-    }
+    //public class ContextWithGenerics : IdentityDbContext<IdentityUserWithGenerics, MyIdentityRole, string, IdentityUserClaimWithIssuer, IdentityUserRoleWithDate, IdentityUserLoginWithContext, IdentityRoleClaimWithIssuer, IdentityUserTokenWithStuff>
+    //{
+    //    public ContextWithGenerics() : base() { }
+    //}
 
     #endregion
 }

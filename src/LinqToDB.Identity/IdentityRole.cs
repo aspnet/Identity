@@ -59,41 +59,14 @@ namespace LinqToDB.Identity
     }
 
 	/// <summary>
-	/// Represents a role in the identity system
-	/// </summary>
-	/// <typeparam name="TKey">The type used for the primary key for the role.</typeparam>
-	public interface IIdentityRole<TKey> where TKey : IEquatable<TKey>
-	{
-		/// <summary>
-		/// Gets or sets the primary key for this role.
-		/// </summary>
-		[PrimaryKey]
-		TKey Id { get; set; }
-
-		/// <summary>
-		/// Gets or sets the name for this role.
-		/// </summary>
-		string Name { get; set; }
-
-		/// <summary>
-		/// Gets or sets the normalized name for this role.
-		/// </summary>
-		string NormalizedName { get; set; }
-
-		/// <summary>
-		/// A random value that should change whenever a role is persisted to the store
-		/// </summary>
-		string ConcurrencyStamp { get; set; }
-	}
-
-	/// <summary>
     /// Represents a role in the identity system
     /// </summary>
     /// <typeparam name="TKey">The type used for the primary key for the role.</typeparam>
     /// <typeparam name="TUserRole">The type used for user roles.</typeparam>
     /// <typeparam name="TRoleClaim">The type used for role claims.</typeparam>
-    public class IdentityRole<TKey, TUserRole, TRoleClaim> : IIdentityRole<TKey> where TKey : IEquatable<TKey>
-        where TUserRole : IdentityUserRole<TKey>
+    public class IdentityRole<TKey, TUserRole, TRoleClaim> : IIdentityRole<TKey> 
+		where TKey       : IEquatable<TKey>
+        where TUserRole  : IdentityUserRole<TKey>
         where TRoleClaim : IdentityRoleClaim<TKey>
     {
         /// <summary>
@@ -110,17 +83,32 @@ namespace LinqToDB.Identity
             Name = roleName;
         }
 
-        /// <summary>
-        /// Navigation property for the users in this role.
-        /// </summary>
-        public virtual ICollection<TUserRole> Users { get; } = new List<TUserRole>();
+		/// <summary>
+		/// <see cref="Users"/> storage
+		/// </summary>
+		protected ICollection<TUserRole> _users = new List<TUserRole>();
 
-        /// <summary>
-        /// Navigation property for claims in this role.
-        /// </summary>
-        public virtual ICollection<TRoleClaim> Claims { get; } = new List<TRoleClaim>();
+	    /// <summary>
+	    /// Navigation property for the users in this role.
+	    /// </summary>
+	    [Association(ThisKey = nameof(Id), OtherKey = nameof(IdentityUserRole<TKey>.RoleId), Storage = nameof(_users))]
+	    public virtual ICollection<TUserRole> Users => _users;
 
-        /// <summary>
+		/// <summary>
+		/// <see cref="Claims"/> storage
+		/// </summary>
+		protected ICollection<TRoleClaim> _claims = new List<TRoleClaim>();
+
+	    /// <summary>
+	    /// Navigation property for claims in this role.
+	    /// </summary>
+	    [Association(ThisKey = nameof(Id), OtherKey = nameof(IdentityRoleClaim<TKey>.RoleId), Storage = nameof(_claims))]
+	    public virtual ICollection<TRoleClaim> Claims
+	    {
+		    get { return _claims; }
+	    }
+
+	    /// <summary>
         /// Gets or sets the primary key for this role.
         /// </summary>
         public virtual TKey Id { get; set; }

@@ -11,18 +11,18 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
     public static class DbUtil
     {
 
-        public static IServiceCollection ConfigureDbServices(string connectionString, IServiceCollection services = null) 
-        {
-            if (services == null)
-            {
-                services = new ServiceCollection();
-            }
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+   //     public static IServiceCollection ConfigureDbServices(string connectionString, IServiceCollection services = null) 
+   //     {
+   //         if (services == null)
+   //         {
+   //             services = new ServiceCollection();
+   //         }
+   //         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-			LinqToDB.Data.DataConnection.AddConfiguration("*", connectionString, new SqlServerDataProvider("*", SqlServerVersion.v2008));
+			//LinqToDB.Data.DataConnection.AddConfiguration("*", connectionString, new SqlServerDataProvider("*", SqlServerVersion.v2008));
 
-            return services;
-        }
+   //         return services;
+   //     }
 
         //public static TContext Create<TContext>(string connectionString) where TContext : DbContext
         //{

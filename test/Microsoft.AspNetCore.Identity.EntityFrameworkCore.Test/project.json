@@ -26,7 +26,9 @@
 		"Microsoft.Extensions.Configuration.FileExtensions": "1.1.0-*",
 		"Microsoft.Extensions.Configuration.Json": "1.1.0-*",
 		"Moq": "4.6.36-*",
-		"xunit": "2.2.0-*"
+		"xunit": "2.2.0-*",
+
+		"Microsoft.Data.SQLite": "1.0.0"
 	},
   "frameworks": {
     "netcoreapp1.0": {

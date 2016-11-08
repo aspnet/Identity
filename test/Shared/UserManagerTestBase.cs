@@ -7,6 +7,8 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using LinqToDB;
+using LinqToDB.Data;
 using LinqToDB.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -15,21 +17,130 @@ using Microsoft.AspNetCore.Testing.xunit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Xunit;
+using LinqToDB.DataProvider;
+using LinqToDB.Mapping;
 
 namespace Microsoft.AspNetCore.Identity.Test
 {
-    // Common functionality tests that all verifies user manager functionality regardless of store implementation
-    public abstract class UserManagerTestBase<TUser, TRole> : UserManagerTestBase<TUser, TRole, string>
+	public class TestConnectionFactory : IConnectionFactory<DataContext, DataConnection>
+	{
+		private string _configuration;
+		private string _connectionString;
+		private string _key;
+
+		private static Dictionary<string, HashSet<string>> _tables = new Dictionary<string, HashSet<string>>();
+		private IDataProvider _provider;
+
+		public TestConnectionFactory(IDataProvider provider, string configuration, string connectionString)
+		{
+			_provider = provider;
+			LinqToDB.Common.Configuration.Linq.AllowMultipleQuery = true;
+			//DataConnection.AddConfiguration(configuration, connectionString, provider);
+			_configuration = configuration;
+			_connectionString = connectionString;
+			_key = _configuration + "$$" + _connectionString;
+		}
+
+		public DataContext GetContext() => new DataContext(_provider, _connectionString);
+
+		public DataConnection GetConnection() => new DataConnection(_provider, _connectionString);
+
+		public void CreateTable<T>()
+		{
+			var dc = GetContext();
+			var e = dc.MappingSchema.GetEntityDescriptor(typeof(T));
+			HashSet<string> set;
+			
+			lock (_tables)
+			{
+				if (!_tables.TryGetValue(_key, out set))
+				{
+					set = new HashSet<string>();
+					_tables.Add(_key, set);
+				}
+
+				if (set.Contains(e.TableName))
+					return;
+
+				set.Add(e.TableName);
+				dc.CreateTable<T>();
+			}
+		}
+
+		public void CreateTables<TUser, TRole, TKey>()
+			where TUser : class, IIdentityUser<TKey>
+			where TRole : class, IIdentityRole<TKey>
+			where TKey : IEquatable<TKey>
+		{
+			lock (_tables)
+			{
+				CreateTable<TUser>();
+				CreateTable<TRole>();
+				CreateTable<IdentityUserLogin<TKey>>();
+				CreateTable<IdentityUserRole<TKey>>();
+				CreateTable<IdentityRoleClaim<TKey>>();
+				CreateTable<IdentityUserClaim<TKey>>();
+				CreateTable<IdentityUserToken<TKey>>();
+			}
+		}
+
+		public void DropTable<T>()
+		{
+			var dc = GetContext();
+			var e = dc.MappingSchema.GetEntityDescriptor(typeof(T));
+			HashSet<string> set;
+
+			lock (_tables)
+			{
+				if (!_tables.TryGetValue(_key, out set))
+					return;
+
+				if (!set.Contains(e.TableName))
+					return;
+
+				set.Remove(e.TableName);
+
+				dc.DropTable<T>();
+			}
+		}
+	}
+
+
+	// Common functionality tests that all verifies user manager functionality regardless of store implementation
+	public abstract class UserManagerTestBase<TUser, TRole> : UserManagerTestBase<TUser, TRole, string>
         where TUser : class, IIdentityUser<string>
 		where TRole : class, IIdentityRole<string>
 	{ }
 
     public abstract class UserManagerTestBase<TUser, TRole, TKey>
-        where TUser : class, IIdentityUser<TKey>
-        where TRole : class, IIdentityRole<TKey>
-		where TKey : IEquatable<TKey>
-    {
-        private const string NullValue = "(null)";
+			where TUser : class, IIdentityUser<TKey>
+			where TRole : class, IIdentityRole<TKey>
+			where TKey : IEquatable<TKey>
+	{
+		static UserManagerTestBase()
+		{
+			MappingSchema.Default
+				.GetFluentMappingBuilder()
+				.Entity<TRole>()
+				.HasPrimaryKey(_ => _.Id)
+				.Property(_ => _.Id)
+				.HasLength(255)
+				.IsNullable(false)
+				.Entity<TUser>()
+				.HasPrimaryKey(_ => _.Id)
+				.Property(_ => _.Id)
+				.HasLength(255)
+				.IsNullable(false);
+
+		}
+
+		protected void CreateTables(TestConnectionFactory factory, string connectionString)
+		{
+			factory.CreateTables<TUser, TRole, TKey>();
+		}
+
+
+		private const string NullValue = "(null)";
 
         private readonly IdentityErrorDescriber _errorDescriber = new IdentityErrorDescriber();
 
@@ -38,7 +149,7 @@ namespace Microsoft.AspNetCore.Identity.Test
             return false;
         }
 
-        protected virtual void SetupIdentityServices(IServiceCollection services, object context = null)
+        protected virtual void SetupIdentityServices(IServiceCollection services, TestConnectionFactory context = null)
         {
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddIdentity<TUser, TRole>(options =>
@@ -56,7 +167,7 @@ namespace Microsoft.AspNetCore.Identity.Test
             services.AddSingleton<ILogger<RoleManager<TRole>>>(new TestLogger<RoleManager<TRole>>());
         }
 
-        protected virtual UserManager<TUser> CreateManager(object context = null, IServiceCollection services = null, Action<IServiceCollection> configureServices = null)
+        protected virtual UserManager<TUser> CreateManager(TestConnectionFactory context = null, IServiceCollection services = null, Action<IServiceCollection> configureServices = null)
         {
             if (services == null)
             {
@@ -67,6 +178,8 @@ namespace Microsoft.AspNetCore.Identity.Test
                 context = CreateTestContext();
             }
 
+	        services.AddSingleton<IConnectionFactory<DataContext, DataConnection>>(context);
+
             SetupIdentityServices(services, context);
             if (configureServices != null)
             {
@@ -76,7 +189,7 @@ namespace Microsoft.AspNetCore.Identity.Test
             return services.BuildServiceProvider().GetService<UserManager<TUser>>();
         }
 
-        protected RoleManager<TRole> CreateRoleManager(object context = null, IServiceCollection services = null)
+        protected RoleManager<TRole> CreateRoleManager(TestConnectionFactory context = null, IServiceCollection services = null)
         {
             if (services == null)
             {
@@ -90,10 +203,10 @@ namespace Microsoft.AspNetCore.Identity.Test
             return services.BuildServiceProvider().GetService<RoleManager<TRole>>();
         }
 
-        protected abstract object CreateTestContext();
+        protected abstract TestConnectionFactory CreateTestContext();
 
-        protected abstract void AddUserStore(IServiceCollection services, object context = null);
-        protected abstract void AddRoleStore(IServiceCollection services, object context = null);
+        protected abstract void AddUserStore(IServiceCollection services, TestConnectionFactory context = null);
+        protected abstract void AddRoleStore(IServiceCollection services, TestConnectionFactory context = null);
 
         protected abstract void SetUserPasswordHash(TUser user, string hashedPassword);
 

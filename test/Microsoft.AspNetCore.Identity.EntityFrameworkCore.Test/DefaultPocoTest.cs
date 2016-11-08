@@ -6,11 +6,13 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using LinqToDB;
+using LinqToDB.DataProvider.SqlServer;
 using LinqToDB.Identity;
 using Microsoft.AspNetCore.Builder.Internal;
 using Microsoft.AspNetCore.Identity.Test;
 using Microsoft.AspNetCore.Testing.xunit;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Xunit;
 
 namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
@@ -18,29 +20,25 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
     public class DefaultPocoTest : IClassFixture<ScratchDatabaseFixture>
     {
         private readonly ApplicationBuilder _builder;
-        private const string DatabaseName = nameof(DefaultPocoTest);
+	    private readonly SqlServerDataProvider _dataProvider = new SqlServerDataProvider("*", SqlServerVersion.v2012);
 
         public DefaultPocoTest(ScratchDatabaseFixture fixture)
         {
             var services = new ServiceCollection();
 
-	        DbUtil.ConfigureDbServices(fixture.ConnectionString, services);
+	        var factory = new TestConnectionFactory(_dataProvider, nameof(DefaultPocoTest), fixture.ConnectionString);
+	        services
+		        .AddIdentity<IdentityUser, IdentityRole>()
+		        .AddLinqToDBStores(factory);
 
-            services
-                .AddIdentity<IdentityUser, IdentityRole>()
-                .AddLinqToDBStores<DataContext, IdentityDbContext>(new DefaultConnectionFactory<DataContext, IdentityDbContext>());
+	        services.AddTransient(_ => new IdentityDbContext(_dataProvider, fixture.ConnectionString));
 
             services.AddLogging();
 
             var provider = services.BuildServiceProvider();
             _builder = new ApplicationBuilder(provider);
 
-			throw new NotImplementedException();
-            //using(var scoped = provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
-            //using (var db = scoped.ServiceProvider.GetRequiredService<IdentityDbContext>())
-            //{
-            //    db.Database.EnsureCreated();
-            //}
+			factory.CreateTables<IdentityUser, IdentityRole, string>();
         }
 
         [ConditionalFact]

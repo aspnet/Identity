@@ -3,7 +3,9 @@
 
 using System;
 using LinqToDB;
+using LinqToDB.Data;
 using LinqToDB.Identity;
+using Microsoft.AspNetCore.Identity.Test;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -34,24 +36,24 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
         {
         }
 
-        public class ApplicationUserStore : UserStore<DataContext, TestDbContext, GuidUser, GuidRole, Guid>
+        public class ApplicationUserStore : UserStore<DataContext, DataConnection, GuidUser, GuidRole, Guid>
         {
-            public ApplicationUserStore() : base(new DefaultConnectionFactory<DataContext, TestDbContext>()) { }
+            public ApplicationUserStore(IConnectionFactory<DataContext, DataConnection> factory) : base(factory) { }
         }
 
-        public class ApplicationRoleStore : RoleStore<DataContext, TestDbContext, GuidRole, Guid>
+        public class ApplicationRoleStore : RoleStore<DataContext, DataConnection, GuidRole, Guid>
         {
-            public ApplicationRoleStore() : base(new DefaultConnectionFactory<DataContext, TestDbContext>()) { }
+            public ApplicationRoleStore(IConnectionFactory<DataContext, DataConnection> factory) : base(factory) { }
         }
 
-        protected override void AddUserStore(IServiceCollection services, object context = null)
+        protected override void AddUserStore(IServiceCollection services, TestConnectionFactory context = null)
         {
-            services.AddSingleton<IUserStore<GuidUser>>(new ApplicationUserStore());
+            services.AddSingleton<IUserStore<GuidUser>>(new ApplicationUserStore(context ?? CreateTestContext()));
         }
 
-        protected override void AddRoleStore(IServiceCollection services, object context = null)
+        protected override void AddRoleStore(IServiceCollection services, TestConnectionFactory context = null)
         {
-            services.AddSingleton<IRoleStore<GuidRole>>(new ApplicationRoleStore());
+            services.AddSingleton<IRoleStore<GuidRole>>(new ApplicationRoleStore(context ?? CreateTestContext()));
         }
     }
 }

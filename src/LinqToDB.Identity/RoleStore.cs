@@ -64,7 +64,9 @@ namespace LinqToDB.Identity
         /// <returns>The role claim entity.</returns>
         protected override IdentityRoleClaim<TKey> CreateRoleClaim(TRole role, Claim claim)
         {
-            return new IdentityRoleClaim<TKey> { RoleId = role.Id, ClaimType = claim.Type, ClaimValue = claim.Value };
+	        var roleClaim = new IdentityRoleClaim<TKey> {RoleId = role.Id};
+			roleClaim.InitializeFromClaim(claim);
+	        return roleClaim;
         }
     }
 
@@ -358,7 +360,10 @@ namespace LinqToDB.Identity
                 throw new ArgumentNullException(nameof(role));
             }
 
-            return await Context.GetTable<TRoleClaim>().Where(rc => rc.RoleId.Equals(role.Id)).Select(c => new Claim(c.ClaimType, c.ClaimValue)).ToListAsync(cancellationToken);
+            return await Context.GetTable<TRoleClaim>()
+				.Where(rc => rc.RoleId.Equals(role.Id))
+				.Select(c => c.ToClaim())
+				.ToListAsync(cancellationToken);
         }
 
         /// <summary>

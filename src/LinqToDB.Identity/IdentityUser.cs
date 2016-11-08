@@ -234,20 +234,38 @@ namespace LinqToDB.Identity
         /// </summary>
         public virtual int AccessFailedCount { get; set; }
 
-        /// <summary>
-        /// Navigation property for the roles this user belongs to.
-        /// </summary>
-        public virtual ICollection<TUserRole> Roles { get; } = new List<TUserRole>();
+		/// <summary>
+		/// <see cref="Roles"/> storage
+		/// </summary>
+		protected ICollection<TUserRole> _roles = new List<TUserRole>();
 
-        /// <summary>
-        /// Navigation property for the claims this user possesses.
-        /// </summary>
-        public virtual ICollection<TUserClaim> Claims { get; } = new List<TUserClaim>();
+	    /// <summary>
+	    /// Navigation property for the roles this user belongs to.
+	    /// </summary>
+	    [Association(ThisKey = nameof(Id), OtherKey = nameof(IdentityUserRole<TKey>.UserId), Storage = nameof(_roles))]
+	    public virtual ICollection<TUserRole> Roles => _roles;
 
-        /// <summary>
-        /// Navigation property for this users login accounts.
-        /// </summary>
-        public virtual ICollection<TUserLogin> Logins { get; } = new List<TUserLogin>();
+		/// <summary>
+		/// <see cref="Claims"/> storage
+		/// </summary>
+		protected ICollection<TUserClaim> _claims = new List<TUserClaim>();
+
+	    /// <summary>
+	    /// Navigation property for the claims this user possesses.
+	    /// </summary>
+	    [Association(ThisKey = nameof(Id), OtherKey = nameof(IdentityUserClaim<TKey>.UserId), Storage = nameof(_claims))]
+	    public virtual ICollection<TUserClaim> Claims => _claims;
+
+		/// <summary>
+		/// <see cref="Logins"/> storage
+		/// </summary>
+		protected ICollection<TUserLogin> _logins = new List<TUserLogin>();
+
+	    /// <summary>
+	    /// Navigation property for this users login accounts.
+	    /// </summary>
+	    [Association(ThisKey = nameof(Id), OtherKey = nameof(IdentityUserLogin<TKey>.UserId), Storage = nameof(_logins))]
+	    public virtual ICollection<TUserLogin> Logins => _logins;
 
         /// <summary>
         /// Returns the username for this user.

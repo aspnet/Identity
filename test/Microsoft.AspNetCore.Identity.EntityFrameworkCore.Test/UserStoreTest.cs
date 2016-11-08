@@ -6,6 +6,8 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using LinqToDB;
+using LinqToDB.Data;
+using LinqToDB.DataProvider.SqlServer;
 using LinqToDB.Identity;
 using Microsoft.AspNetCore.Identity.Test;
 using Microsoft.AspNetCore.Testing.xunit;
@@ -27,11 +29,11 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
         protected override bool ShouldSkipDbTests()
             => TestPlatformHelper.IsMono || !TestPlatformHelper.IsWindows;
 
-        public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
-        {
-            public ApplicationDbContext() : base()
-            { }
-        }
+        //public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+        //{
+        //    public ApplicationDbContext() : base()
+        //    { }
+        //}
 
         [ConditionalFact]
         [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
@@ -39,29 +41,27 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
         [OSSkipCondition(OperatingSystems.MacOSX)]
         public void CanCreateUserUsingEF()
         {
-            using (var db = CreateContext())
+            using (var db = CreateContext().GetConnection())
             {
                 var guid = Guid.NewGuid().ToString();
                 db.Insert(new IdentityUser { Id = guid, UserName = guid });
 
-				Assert.True(db.Users.Any(u => u.UserName == guid));
-                Assert.NotNull(db.Users.FirstOrDefault(u => u.UserName == guid));
+				Assert.True(db.GetTable<IdentityUser>().Any(u => u.UserName == guid));
+                Assert.NotNull(db.GetTable<IdentityUser>().FirstOrDefault(u => u.UserName == guid));
             }
         }
 
-        public IdentityDbContext CreateContext(bool delete = false)
+        public TestConnectionFactory CreateContext(bool delete = false)
         {
-			throw new NotImplementedException();
-            //var db = DbUtil.Create<IdentityDbContext>(_fixture.ConnectionString);
-            //if (delete)
-            //{
-            //    db.Database.EnsureDeleted();
-            //}
-            //db.Database.EnsureCreated();
-            //return db;
-        }
+			var factory = new TestConnectionFactory(new SqlServerDataProvider("*", SqlServerVersion.v2012), "Test",
+				_fixture.ConnectionString);
 
-        protected override object CreateTestContext()
+			CreateTables(factory, _fixture.ConnectionString);
+
+			return factory;
+		}
+
+		protected override TestConnectionFactory CreateTestContext()
         {
             return CreateContext();
         }
@@ -71,28 +71,28 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
             CreateContext();
         }
 
-        public ApplicationDbContext CreateAppContext()
+   //     public ApplicationDbContext CreateAppContext()
+   //     {
+			//throw new NotImplementedException();
+   //         //var db = DbUtil.Create<ApplicationDbContext>(_fixture.ConnectionString);
+   //         //db.Database.EnsureCreated();
+   //         //return db;
+   //     }
+
+        protected override void AddUserStore(IServiceCollection services, TestConnectionFactory context = null)
         {
-			throw new NotImplementedException();
-            //var db = DbUtil.Create<ApplicationDbContext>(_fixture.ConnectionString);
-            //db.Database.EnsureCreated();
-            //return db;
+            services.AddSingleton<IUserStore<IdentityUser>>(new UserStore<DataContext, DataConnection, IdentityUser, IdentityRole>(context ?? CreateTestContext()));
         }
 
-        protected override void AddUserStore(IServiceCollection services, object context = null)
+        protected override void AddRoleStore(IServiceCollection services, TestConnectionFactory context = null)
         {
-            services.AddSingleton<IUserStore<IdentityUser>>(new UserStore<DataContext, IdentityDbContext, IdentityUser, IdentityRole>(new DefaultConnectionFactory<DataContext, IdentityDbContext>()));
-        }
-
-        protected override void AddRoleStore(IServiceCollection services, object context = null)
-        {
-            services.AddSingleton<IRoleStore<IdentityRole>>(new RoleStore<DataContext, IdentityDbContext, IdentityRole>(new DefaultConnectionFactory<DataContext, IdentityDbContext>()));
+            services.AddSingleton<IRoleStore<IdentityRole>>(new RoleStore<DataContext, DataConnection, IdentityRole>(context ?? CreateTestContext()));
         }
 
         [Fact]
         public async Task SqlUserStoreMethodsThrowWhenDisposedTest()
         {
-            var store = new UserStore<DataContext, IdentityDbContext, IdentityUser>(new DefaultConnectionFactory<DataContext, IdentityDbContext>());
+            var store = new UserStore<DataContext, DataConnection, IdentityUser>(CreateTestContext());
             store.Dispose();
             await Assert.ThrowsAsync<ObjectDisposedException>(async () => await store.AddClaimsAsync(null, null));
             await Assert.ThrowsAsync<ObjectDisposedException>(async () => await store.AddLoginAsync(null, null));
@@ -126,7 +126,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
         public async Task UserStorePublicNullCheckTest()
         {
             Assert.Throws<ArgumentNullException>("factory", () => new UserStore<DataContext, IdentityDbContext, IdentityUser>(null));
-            var store = new UserStore<DataContext, IdentityDbContext, IdentityUser>(new DefaultConnectionFactory<DataContext, IdentityDbContext>());
+            var store = new UserStore<DataContext, DataConnection, IdentityUser>(CreateTestContext());
             await Assert.ThrowsAsync<ArgumentNullException>("user", async () => await store.GetUserIdAsync(null));
             await Assert.ThrowsAsync<ArgumentNullException>("user", async () => await store.GetUserNameAsync(null));
             await Assert.ThrowsAsync<ArgumentNullException>("user", async () => await store.SetUserNameAsync(null, null));
@@ -229,176 +229,150 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
                 async () => await manager.AddToRoleAsync(u, "bogus"));
         }
 
-        [ConditionalFact]
-        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
-        [OSSkipCondition(OperatingSystems.Linux)]
-        [OSSkipCondition(OperatingSystems.MacOSX)]
-        public async Task ConcurrentUpdatesWillFail()
-        {
-            var user = CreateTestUser();
-            using (var db = CreateContext())
-            {
-                var manager = CreateManager(db);
-                IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
-            }
-            using (var db = CreateContext())
-            using (var db2 = CreateContext())
-            {
-                var manager1 = CreateManager(db);
-                var manager2 = CreateManager(db2);
-                var user1 = await manager1.FindByIdAsync(user.Id);
-                var user2 = await manager2.FindByIdAsync(user.Id);
-                Assert.NotNull(user1);
-                Assert.NotNull(user2);
-                Assert.NotSame(user1, user2);
-                user1.UserName = Guid.NewGuid().ToString();
-                user2.UserName = Guid.NewGuid().ToString();
-                IdentityResultAssert.IsSuccess(await manager1.UpdateAsync(user1));
-                IdentityResultAssert.IsFailure(await manager2.UpdateAsync(user2), new IdentityErrorDescriber().ConcurrencyFailure());
-            }
-        }
+	    [ConditionalFact]
+	    [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
+	    [OSSkipCondition(OperatingSystems.Linux)]
+	    [OSSkipCondition(OperatingSystems.MacOSX)]
+	    public async Task ConcurrentUpdatesWillFail()
+	    {
+		    var user = CreateTestUser();
+		    var factory = CreateContext();
 
-        [ConditionalFact]
-        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
-        [OSSkipCondition(OperatingSystems.Linux)]
-        [OSSkipCondition(OperatingSystems.MacOSX)]
-        public async Task ConcurrentUpdatesWillFailWithDetachedUser()
-        {
-            var user = CreateTestUser();
-            using (var db = CreateContext())
-            {
-                var manager = CreateManager(db);
-                IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
-            }
-            using (var db = CreateContext())
-            using (var db2 = CreateContext())
-            {
-                var manager1 = CreateManager(db);
-                var manager2 = CreateManager(db2);
-                var user2 = await manager2.FindByIdAsync(user.Id);
-                Assert.NotNull(user2);
-                Assert.NotSame(user, user2);
-                user.UserName = Guid.NewGuid().ToString();
-                user2.UserName = Guid.NewGuid().ToString();
-                IdentityResultAssert.IsSuccess(await manager1.UpdateAsync(user));
-                IdentityResultAssert.IsFailure(await manager2.UpdateAsync(user2), new IdentityErrorDescriber().ConcurrencyFailure());
-            }
-        }
+		    var manager = CreateManager(factory);
+		    IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
 
-        [ConditionalFact]
-        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
-        [OSSkipCondition(OperatingSystems.Linux)]
-        [OSSkipCondition(OperatingSystems.MacOSX)]
-        public async Task DeleteAModifiedUserWillFail()
-        {
-            var user = CreateTestUser();
-            using (var db = CreateContext())
-            {
-                var manager = CreateManager(db);
-                IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
-            }
-            using (var db = CreateContext())
-            using (var db2 = CreateContext())
-            {
-                var manager1 = CreateManager(db);
-                var manager2 = CreateManager(db2);
-                var user1 = await manager1.FindByIdAsync(user.Id);
-                var user2 = await manager2.FindByIdAsync(user.Id);
-                Assert.NotNull(user1);
-                Assert.NotNull(user2);
-                Assert.NotSame(user1, user2);
-                user1.UserName = Guid.NewGuid().ToString();
-                IdentityResultAssert.IsSuccess(await manager1.UpdateAsync(user1));
-                IdentityResultAssert.IsFailure(await manager2.DeleteAsync(user2), new IdentityErrorDescriber().ConcurrencyFailure());
-            }
-        }
+		    var manager1 = CreateManager(factory);
+		    var manager2 = CreateManager(factory);
+		    var user1 = await manager1.FindByIdAsync(user.Id);
+		    var user2 = await manager2.FindByIdAsync(user.Id);
+		    Assert.NotNull(user1);
+		    Assert.NotNull(user2);
+		    Assert.NotSame(user1, user2);
+		    user1.UserName = Guid.NewGuid().ToString();
+		    user2.UserName = Guid.NewGuid().ToString();
+		    IdentityResultAssert.IsSuccess(await manager1.UpdateAsync(user1));
+		    IdentityResultAssert.IsFailure(await manager2.UpdateAsync(user2),
+			    new IdentityErrorDescriber().ConcurrencyFailure());
+	    }
 
-        [ConditionalFact]
-        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
-        [OSSkipCondition(OperatingSystems.Linux)]
-        [OSSkipCondition(OperatingSystems.MacOSX)]
-        public async Task ConcurrentRoleUpdatesWillFail()
-        {
-            var role = new IdentityRole(Guid.NewGuid().ToString());
-            using (var db = CreateContext())
-            {
-                var manager = CreateRoleManager(db);
-                IdentityResultAssert.IsSuccess(await manager.CreateAsync(role));
-            }
-            using (var db = CreateContext())
-            using (var db2 = CreateContext())
-            {
-                var manager1 = CreateRoleManager(db);
-                var manager2 = CreateRoleManager(db2);
-                var role1 = await manager1.FindByIdAsync(role.Id);
-                var role2 = await manager2.FindByIdAsync(role.Id);
-                Assert.NotNull(role1);
-                Assert.NotNull(role2);
-                Assert.NotSame(role1, role2);
-                role1.Name = Guid.NewGuid().ToString();
-                role2.Name = Guid.NewGuid().ToString();
-                IdentityResultAssert.IsSuccess(await manager1.UpdateAsync(role1));
-                IdentityResultAssert.IsFailure(await manager2.UpdateAsync(role2), new IdentityErrorDescriber().ConcurrencyFailure());
-            }
-        }
+	    [ConditionalFact]
+	    [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
+	    [OSSkipCondition(OperatingSystems.Linux)]
+	    [OSSkipCondition(OperatingSystems.MacOSX)]
+	    public async Task ConcurrentUpdatesWillFailWithDetachedUser()
+	    {
+		    var user = CreateTestUser();
+		    var factory = CreateContext();
+		    var manager = CreateManager(factory);
+		    IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
 
-        [ConditionalFact]
-        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
-        [OSSkipCondition(OperatingSystems.Linux)]
-        [OSSkipCondition(OperatingSystems.MacOSX)]
-        public async Task ConcurrentRoleUpdatesWillFailWithDetachedRole()
-        {
-            var role = new IdentityRole(Guid.NewGuid().ToString());
-            using (var db = CreateContext())
-            {
-                var manager = CreateRoleManager(db);
-                IdentityResultAssert.IsSuccess(await manager.CreateAsync(role));
-            }
-            using (var db = CreateContext())
-            using (var db2 = CreateContext())
-            {
-                var manager1 = CreateRoleManager(db);
-                var manager2 = CreateRoleManager(db2);
-                var role2 = await manager2.FindByIdAsync(role.Id);
-                Assert.NotNull(role);
-                Assert.NotNull(role2);
-                Assert.NotSame(role, role2);
-                role.Name = Guid.NewGuid().ToString();
-                role2.Name = Guid.NewGuid().ToString();
-                IdentityResultAssert.IsSuccess(await manager1.UpdateAsync(role));
-                IdentityResultAssert.IsFailure(await manager2.UpdateAsync(role2), new IdentityErrorDescriber().ConcurrencyFailure());
-            }
-        }
+		    var manager1 = CreateManager(factory);
+		    var manager2 = CreateManager(factory);
+		    var user2 = await manager2.FindByIdAsync(user.Id);
+		    Assert.NotNull(user2);
+		    Assert.NotSame(user, user2);
+		    user.UserName = Guid.NewGuid().ToString();
+		    user2.UserName = Guid.NewGuid().ToString();
+		    IdentityResultAssert.IsSuccess(await manager1.UpdateAsync(user));
+		    IdentityResultAssert.IsFailure(await manager2.UpdateAsync(user2),
+			    new IdentityErrorDescriber().ConcurrencyFailure());
+	    }
 
-        [ConditionalFact]
-        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
-        [OSSkipCondition(OperatingSystems.Linux)]
-        [OSSkipCondition(OperatingSystems.MacOSX)]
-        public async Task DeleteAModifiedRoleWillFail()
-        {
-            var role = new IdentityRole(Guid.NewGuid().ToString());
-            using (var db = CreateContext())
-            {
-                var manager = CreateRoleManager(db);
-                IdentityResultAssert.IsSuccess(await manager.CreateAsync(role));
-            }
-            using (var db = CreateContext())
-            using (var db2 = CreateContext())
-            {
-                var manager1 = CreateRoleManager(db);
-                var manager2 = CreateRoleManager(db2);
-                var role1 = await manager1.FindByIdAsync(role.Id);
-                var role2 = await manager2.FindByIdAsync(role.Id);
-                Assert.NotNull(role1);
-                Assert.NotNull(role2);
-                Assert.NotSame(role1, role2);
-                role1.Name = Guid.NewGuid().ToString();
-                IdentityResultAssert.IsSuccess(await manager1.UpdateAsync(role1));
-                IdentityResultAssert.IsFailure(await manager2.DeleteAsync(role2), new IdentityErrorDescriber().ConcurrencyFailure());
-            }
-        }
+	    [ConditionalFact]
+	    [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
+	    [OSSkipCondition(OperatingSystems.Linux)]
+	    [OSSkipCondition(OperatingSystems.MacOSX)]
+	    public async Task DeleteAModifiedUserWillFail()
+	    {
+		    var user = CreateTestUser();
+		    var factory = CreateContext();
+		    var manager = CreateManager(factory);
+		    IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
+		    var manager1 = CreateManager(factory);
+		    var manager2 = CreateManager(factory);
+		    var user1 = await manager1.FindByIdAsync(user.Id);
+		    var user2 = await manager2.FindByIdAsync(user.Id);
+		    Assert.NotNull(user1);
+		    Assert.NotNull(user2);
+		    Assert.NotSame(user1, user2);
+		    user1.UserName = Guid.NewGuid().ToString();
+		    IdentityResultAssert.IsSuccess(await manager1.UpdateAsync(user1));
+		    IdentityResultAssert.IsFailure(await manager2.DeleteAsync(user2),
+			    new IdentityErrorDescriber().ConcurrencyFailure());
+	    }
 
-        protected override IdentityUser CreateTestUser(string namePrefix = "", string email = "", string phoneNumber = "",
+	    [ConditionalFact]
+	    [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
+	    [OSSkipCondition(OperatingSystems.Linux)]
+	    [OSSkipCondition(OperatingSystems.MacOSX)]
+	    public async Task ConcurrentRoleUpdatesWillFail()
+	    {
+		    var role = new IdentityRole(Guid.NewGuid().ToString());
+		    var factory = CreateContext();
+
+		    var manager = CreateRoleManager(factory);
+		    IdentityResultAssert.IsSuccess(await manager.CreateAsync(role));
+		    var manager1 = CreateRoleManager(factory);
+		    var manager2 = CreateRoleManager(factory);
+		    var role1 = await manager1.FindByIdAsync(role.Id);
+		    var role2 = await manager2.FindByIdAsync(role.Id);
+		    Assert.NotNull(role1);
+		    Assert.NotNull(role2);
+		    Assert.NotSame(role1, role2);
+		    role1.Name = Guid.NewGuid().ToString();
+		    role2.Name = Guid.NewGuid().ToString();
+		    IdentityResultAssert.IsSuccess(await manager1.UpdateAsync(role1));
+		    IdentityResultAssert.IsFailure(await manager2.UpdateAsync(role2),
+			    new IdentityErrorDescriber().ConcurrencyFailure());
+	    }
+
+	    [ConditionalFact]
+	    [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
+	    [OSSkipCondition(OperatingSystems.Linux)]
+	    [OSSkipCondition(OperatingSystems.MacOSX)]
+	    public async Task ConcurrentRoleUpdatesWillFailWithDetachedRole()
+	    {
+		    var role = new IdentityRole(Guid.NewGuid().ToString());
+		    var factory = CreateContext();
+		    var manager = CreateRoleManager(factory);
+		    IdentityResultAssert.IsSuccess(await manager.CreateAsync(role));
+		    var manager1 = CreateRoleManager(factory);
+		    var manager2 = CreateRoleManager(factory);
+		    var role2 = await manager2.FindByIdAsync(role.Id);
+		    Assert.NotNull(role);
+		    Assert.NotNull(role2);
+		    Assert.NotSame(role, role2);
+		    role.Name = Guid.NewGuid().ToString();
+		    role2.Name = Guid.NewGuid().ToString();
+		    IdentityResultAssert.IsSuccess(await manager1.UpdateAsync(role));
+		    IdentityResultAssert.IsFailure(await manager2.UpdateAsync(role2),
+			    new IdentityErrorDescriber().ConcurrencyFailure());
+	    }
+
+	    [ConditionalFact]
+	    [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
+	    [OSSkipCondition(OperatingSystems.Linux)]
+	    [OSSkipCondition(OperatingSystems.MacOSX)]
+	    public async Task DeleteAModifiedRoleWillFail()
+	    {
+		    var role = new IdentityRole(Guid.NewGuid().ToString());
+		    var factory = CreateContext();
+		    var manager = CreateRoleManager(factory);
+		    IdentityResultAssert.IsSuccess(await manager.CreateAsync(role));
+		    var manager1 = CreateRoleManager(factory);
+		    var manager2 = CreateRoleManager(factory);
+		    var role1 = await manager1.FindByIdAsync(role.Id);
+		    var role2 = await manager2.FindByIdAsync(role.Id);
+		    Assert.NotNull(role1);
+		    Assert.NotNull(role2);
+		    Assert.NotSame(role1, role2);
+		    role1.Name = Guid.NewGuid().ToString();
+		    IdentityResultAssert.IsSuccess(await manager1.UpdateAsync(role1));
+		    IdentityResultAssert.IsFailure(await manager2.DeleteAsync(role2),
+			    new IdentityErrorDescriber().ConcurrencyFailure());
+	    }
+
+	    protected override IdentityUser CreateTestUser(string namePrefix = "", string email = "", string phoneNumber = "",
             bool lockoutEnabled = false, DateTimeOffset? lockoutEnd = default(DateTimeOffset?), bool useNamePrefixAsUserName = false)
         {
             return new IdentityUser

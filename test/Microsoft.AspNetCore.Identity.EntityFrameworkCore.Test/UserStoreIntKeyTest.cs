@@ -8,16 +8,20 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
 {
     public class IntUser : IdentityUser<int>
     {
+	    private static volatile int _id = 0;
         public IntUser()
         {
+	        Id = ++_id;
             UserName = Guid.NewGuid().ToString();
         }
     }
 
     public class IntRole : IdentityRole<int>
     {
+	    private static volatile int _id = 0;
         public IntRole()
         {
+	        Id = ++_id;
             Name = Guid.NewGuid().ToString();
         }
     }

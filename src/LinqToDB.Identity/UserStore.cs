@@ -698,7 +698,7 @@ namespace LinqToDB.Identity
 	        return await
 			        _factory.GetContext().GetTable<TUserClaim>()
 				        .Where(uc => uc.UserId.Equals(user.Id))
-				        .Select(c => new Claim(c.ClaimType, c.ClaimValue))
+				        .Select(c => c.ToClaim())
 				        .ToListAsync(cancellationToken);
         }
 

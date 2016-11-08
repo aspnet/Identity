@@ -10,7 +10,8 @@ namespace LinqToDB.Identity
 	/// Represents a claim that a user possesses. 
 	/// </summary>
 	/// <typeparam name="TKey">The type used for the primary key for this user that possesses this claim.</typeparam>
-	public interface IIdentityUserClaim<TKey> where TKey : IEquatable<TKey>
+	public interface IIdentityUserClaim<TKey> : IClameConverter
+		where TKey : IEquatable<TKey>
 	{
 		/// <summary>
 		/// Gets or sets the primary key of the user associated with this claim.

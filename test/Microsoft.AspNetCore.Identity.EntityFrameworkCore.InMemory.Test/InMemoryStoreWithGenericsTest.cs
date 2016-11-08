@@ -8,6 +8,8 @@ using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using LinqToDB;
+using LinqToDB.Data;
+using LinqToDB.DataProvider.SQLite;
 using LinqToDB.Identity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity.Test;
@@ -16,33 +18,39 @@ using Xunit;
 
 namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.InMemory.Test
 {
-    public class InMemoryEFUserStoreTestWithGenerics : UserManagerTestBase<IdentityUserWithGenerics, MyIdentityRole, string>, IDisposable
-    {
-        private readonly InMemoryContextWithGenerics _context;
+    public class InMemoryEFUserStoreTestWithGenerics : UserManagerTestBase<IdentityUserWithGenerics, MyIdentityRole, string>, IDisposable, IClassFixture<InMemoryStorage>
+	{
+//        private readonly InMemoryContextWithGenerics _context;
         private UserStoreWithGenerics _store;
+		private InMemoryStorage _storage;
 
-        public InMemoryEFUserStoreTestWithGenerics()
+		public InMemoryEFUserStoreTestWithGenerics(InMemoryStorage storage)
         {
             var services = new ServiceCollection();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             //services.AddDbContext<InMemoryContextWithGenerics>(options => options.UseInMemoryDatabase());
-            _context = services.BuildServiceProvider().GetRequiredService<InMemoryContextWithGenerics>();
+//            _context = services.BuildServiceProvider().GetRequiredService<InMemoryContextWithGenerics>();
+	        _storage = storage;
         }
 
-        protected override object CreateTestContext()
-        {
-            return _context;
-        }
+		protected override TestConnectionFactory CreateTestContext()
+		{
+			var connectionString = _storage.ConnectionString; //"Data Source=:memory:;";
 
-        protected override void AddUserStore(IServiceCollection services, object context = null)
+			var factory = new TestConnectionFactory(new SQLiteDataProvider(), "InMemoryEFUserStoreTestWithGenerics", connectionString);
+			CreateTables(factory, connectionString);
+			return factory;
+		}
+
+		protected override void AddUserStore(IServiceCollection services, TestConnectionFactory context = null)
         {
-            _store = new UserStoreWithGenerics("TestContext");
+            _store = new UserStoreWithGenerics(context ?? CreateTestContext(), "TestContext");
             services.AddSingleton<IUserStore<IdentityUserWithGenerics>>(_store);
         }
 
-        protected override void AddRoleStore(IServiceCollection services, object context = null)
+        protected override void AddRoleStore(IServiceCollection services, TestConnectionFactory context = null)
         {
-            services.AddSingleton<IRoleStore<MyIdentityRole>>(new RoleStoreWithGenerics("TestContext"));
+            services.AddSingleton<IRoleStore<MyIdentityRole>>(new RoleStoreWithGenerics(context ?? CreateTestContext(), "TestContext"));
         }
 
         protected override IdentityUserWithGenerics CreateTestUser(string namePrefix = "", string email = "", string phoneNumber = "",
@@ -197,16 +205,21 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.InMemory.Test
         }
     }
 
-    public class UserStoreWithGenerics : UserStore<DataContext, InMemoryContextWithGenerics, IdentityUserWithGenerics, MyIdentityRole, string, IdentityUserClaimWithIssuer, IdentityUserRoleWithDate, IdentityUserLoginWithContext, IdentityUserTokenWithStuff>
+    public class UserStoreWithGenerics : UserStore<DataContext, DataConnection, IdentityUserWithGenerics, MyIdentityRole, string, IdentityUserClaimWithIssuer, IdentityUserRoleWithDate, IdentityUserLoginWithContext, IdentityUserTokenWithStuff>
     {
         public string LoginContext { get; set; }
 
-        public UserStoreWithGenerics(string loginContext) : base(new DefaultConnectionFactory<DataContext, InMemoryContextWithGenerics>())
-        {
-            LoginContext = loginContext;
-        }
+	    public UserStoreWithGenerics(TestConnectionFactory factory, string loginContext)
+		    : base(factory)
+	    {
+		    LoginContext = loginContext;
+		    factory.CreateTable<IdentityUserClaimWithIssuer>();
+		    factory.CreateTable<IdentityUserRoleWithDate>();
+		    factory.CreateTable<IdentityUserLoginWithContext>();
+		    factory.CreateTable<IdentityUserTokenWithStuff>();
+	    }
 
-        protected override IdentityUserRoleWithDate CreateUserRole(IdentityUserWithGenerics user, MyIdentityRole role)
+	    protected override IdentityUserRoleWithDate CreateUserRole(IdentityUserWithGenerics user, MyIdentityRole role)
         {
             return new IdentityUserRoleWithDate()
             {
@@ -246,15 +259,17 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.InMemory.Test
         }
     }
 
-    public class RoleStoreWithGenerics : RoleStore<DataContext, InMemoryContextWithGenerics, MyIdentityRole, string, IdentityUserRoleWithDate, IdentityRoleClaim<string>>
+    public class RoleStoreWithGenerics : RoleStore<DataContext, DataConnection, MyIdentityRole, string, IdentityUserRoleWithDate, IdentityRoleClaim<string>>
     {
         private string _loginContext;
-        public RoleStoreWithGenerics(string loginContext) : base(new DefaultConnectionFactory<DataContext, InMemoryContextWithGenerics>())
+        public RoleStoreWithGenerics(TestConnectionFactory factory, string loginContext) : base(factory)
         {
             _loginContext = loginContext;
-        }
+			factory.CreateTable<IdentityRoleClaim<string>>();
+			factory.CreateTable<IdentityUserRoleWithDate>();
+		}
 
-        protected override IdentityRoleClaim<string> CreateRoleClaim(MyIdentityRole role, Claim claim)
+		protected override IdentityRoleClaim<string> CreateRoleClaim(MyIdentityRole role, Claim claim)
         {
             return new IdentityRoleClaim<string> { RoleId = role.Id, ClaimType = claim.Type, ClaimValue = claim.Value };
         }
@@ -306,10 +321,10 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.InMemory.Test
         public string Context { get; set; }
     }
 
-    public class InMemoryContextWithGenerics : InMemoryContext<IdentityUserWithGenerics, MyIdentityRole, string, IdentityUserClaimWithIssuer, IdentityUserRoleWithDate, IdentityUserLoginWithContext, IdentityRoleClaim<string>, IdentityUserTokenWithStuff>
-    {
+    //public class InMemoryContextWithGenerics : InMemoryContext<IdentityUserWithGenerics, MyIdentityRole, string, IdentityUserClaimWithIssuer, IdentityUserRoleWithDate, IdentityUserLoginWithContext, IdentityRoleClaim<string>, IdentityUserTokenWithStuff>
+    //{
 
-    }
+    //}
 
     #endregion
 }

@@ -9,6 +9,8 @@ using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using LinqToDB;
+using LinqToDB.Data;
+using LinqToDB.DataProvider;
 using LinqToDB.DataProvider.SqlServer;
 using LinqToDB.Identity;
 using Microsoft.AspNetCore.Identity.Test;
@@ -23,8 +25,8 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
         where TUser : IdentityUser<TKey>, new()
         where TRole : IdentityRole<TKey>, new()
         where TKey  : IEquatable<TKey>
-    {
-        private readonly ScratchDatabaseFixture _fixture;
+	{
+		private readonly ScratchDatabaseFixture _fixture;
 
         protected SqlStoreTestBase(ScratchDatabaseFixture fixture)
         {
@@ -36,13 +38,13 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
             return TestPlatformHelper.IsMono || !TestPlatformHelper.IsWindows;
         }
 
-        public class TestDbContext : IdentityDbContext<TUser, TRole, TKey> {
-            public TestDbContext() : base() { }
+        //public class TestDbContext : IdentityDbContext<TUser, TRole, TKey> {
+        //    public TestDbContext() : base() { }
 
-	        public TestDbContext(string configurationString) : base(configurationString)
-	        {
-	        }
-        }
+	       // public TestDbContext(string configurationString) : base(configurationString)
+	       // {
+	       // }
+        //}
 
         protected override TUser CreateTestUser(string namePrefix = "", string email = "", string phoneNumber = "",
             bool lockoutEnabled = false, DateTimeOffset? lockoutEnd = default(DateTimeOffset?), bool useNamePrefixAsUserName = false)
@@ -71,48 +73,35 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
 
         protected override Expression<Func<TUser, bool>> UserNameStartsWithPredicate(string userName) => u => u.UserName.StartsWith(userName);
 
-		private static HashSet<string> _connectionStrings = new HashSet<string>();
-        public TestDbContext CreateContext()
+
+        public TestConnectionFactory CreateContext()
         {
 			//throw new NotImplementedException();
             //var db = DbUtil.Create<TestDbContext>(_fixture.ConnectionString);
             //db.Database.EnsureCreated();
             //return db;
 
-			TestDbContext.AddConfiguration("Test", _fixture.ConnectionString, new SqlServerDataProvider("*", SqlServerVersion.v2012));
-	        TestDbContext.DefaultConfiguration = "Test";
+	        var factory = new TestConnectionFactory(new SqlServerDataProvider("*", SqlServerVersion.v2012), "Test",
+		        _fixture.ConnectionString);
 
-			var dc = new TestDbContext();
+			CreateTables(factory, _fixture.ConnectionString);
 
-	        if (!_connectionStrings.Contains(_fixture.ConnectionString))
-	        {
-		        dc.CreateTable<TUser>();
-		        dc.CreateTable<TRole>();
-		        dc.CreateTable<IdentityUserLogin<TKey>>();
-		        dc.CreateTable<IdentityUserRole<TKey>>();
-		        dc.CreateTable<IdentityRoleClaim<TKey>>();
-		        dc.CreateTable<IdentityUserClaim<TKey>>();
-		        dc.CreateTable<IdentityUserToken<TKey>>();
-
-		        _connectionStrings.Add(_fixture.ConnectionString);
-	        }
-	        return dc;
-
+			return factory;
         }
 
-        protected override object CreateTestContext()
+		protected override TestConnectionFactory CreateTestContext()
         {
             return CreateContext();
         }
 
-        protected override void AddUserStore(IServiceCollection services, object context = null)
+        protected override void AddUserStore(IServiceCollection services, TestConnectionFactory context = null)
         {
-            services.AddSingleton<IUserStore<TUser>>(new UserStore<DataContext, TestDbContext, TUser, TRole, TKey>(new DefaultConnectionFactory<DataContext, TestDbContext>()));
+            services.AddSingleton<IUserStore<TUser>>(new UserStore<DataContext, DataConnection, TUser, TRole, TKey>(CreateTestContext()));
         }
 
-        protected override void AddRoleStore(IServiceCollection services, object context = null)
+        protected override void AddRoleStore(IServiceCollection services, TestConnectionFactory context = null)
         {
-            services.AddSingleton<IRoleStore<TRole>>(new RoleStore<DataContext, TestDbContext, TRole, TKey>(new DefaultConnectionFactory<DataContext, TestDbContext>()));
+            services.AddSingleton<IRoleStore<TRole>>(new RoleStore<DataContext, DataConnection, TRole, TKey>(CreateTestContext()));
         }
 
         protected override void SetUserPasswordHash(TUser user, string hashedPassword)
@@ -126,10 +115,10 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
         [OSSkipCondition(OperatingSystems.MacOSX)]
         public void EnsureDefaultSchema()
         {
-            VerifyDefaultSchema(CreateContext());
+            VerifyDefaultSchema(CreateContext().GetConnection());
         }
 
-        internal static void VerifyDefaultSchema(TestDbContext dbContext)
+        internal static void VerifyDefaultSchema(DataConnection dbContext)
         {
 	        var sqlConn = dbContext.Connection;
 
@@ -261,13 +250,13 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
         [OSSkipCondition(OperatingSystems.MacOSX)]
         public void CanCreateUserUsingEF()
         {
-            using (var db = CreateContext())
+            using (var db = CreateContext().GetConnection())
             {
                 var user = CreateTestUser();
                 db.Insert(user);
 
-				Assert.True(db.Users.Any(u => u.UserName == user.UserName));
-                Assert.NotNull(db.Users.FirstOrDefault(u => u.UserName == user.UserName));
+				Assert.True(db.GetTable<TUser>().Any(u => u.UserName == user.UserName));
+                Assert.NotNull(db.GetTable<TUser>().FirstOrDefault(u => u.UserName == user.UserName));
             }
         }
 
@@ -283,7 +272,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
             IdentityResultAssert.IsSuccess(await manager.DeleteAsync(user));
         }
 
-        private async Task LazyLoadTestSetup(TestDbContext db, TUser user)
+        private async Task LazyLoadTestSetup(TUser user)
         {
             var context = CreateContext();
             var manager = CreateManager(context);
@@ -313,12 +302,11 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
         [OSSkipCondition(OperatingSystems.MacOSX)]
         public async Task LoadFromDbFindByIdTest()
         {
-            var db = CreateContext();
             var user = CreateTestUser();
-            await LazyLoadTestSetup(db, user);
+            await LazyLoadTestSetup(user);
 
-            db = CreateContext();
-            var manager = CreateManager(db);
+            var factory  = CreateContext();
+            var manager = CreateManager(factory);
 
             var userById = await manager.FindByIdAsync(user.Id.ToString());
             Assert.Equal(2, (await manager.GetClaimsAsync(userById)).Count);
@@ -334,9 +322,8 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
         {
             var db = CreateContext();
             var user = CreateTestUser();
-            await LazyLoadTestSetup(db, user);
+            await LazyLoadTestSetup(user);
 
-            db = CreateContext();
             var manager = CreateManager(db);
             var userByName = await manager.FindByNameAsync(user.UserName);
             Assert.Equal(2, (await manager.GetClaimsAsync(userByName)).Count);
@@ -352,9 +339,8 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
         {
             var db = CreateContext();
             var user = CreateTestUser();
-            await LazyLoadTestSetup(db, user);
+            await LazyLoadTestSetup(user);
 
-            db = CreateContext();
             var manager = CreateManager(db);
             var userByLogin = await manager.FindByLoginAsync("provider", user.Id.ToString());
             Assert.Equal(2, (await manager.GetClaimsAsync(userByLogin)).Count);
@@ -371,9 +357,8 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
             var db = CreateContext();
             var user = CreateTestUser();
             user.Email = "fooz@fizzy.pop";
-            await LazyLoadTestSetup(db, user);
+            await LazyLoadTestSetup(user);
 
-            db = CreateContext();
             var manager = CreateManager(db);
             var userByEmail = await manager.FindByEmailAsync(user.Email);
             Assert.Equal(2, (await manager.GetClaimsAsync(userByEmail)).Count);
