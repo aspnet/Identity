@@ -539,6 +539,22 @@ namespace Microsoft.AspNetCore.Identity
         }
 
         /// <summary>
+        /// Store does not implement IUserActivityStore&lt;TUser&gt;.
+        /// </summary>
+        internal static string StoreNotIUserActivityStore
+        {
+            get { return GetString("StoreNotIUserActivityStore"); }
+        }
+
+        /// <summary>
+        /// Store does not implement IUserActivityStore&lt;TUser&gt;.
+        /// </summary>
+        internal static string FormatStoreNotIUserActivityStore()
+        {
+            return GetString("StoreNotIUserActivityStore");
+        }
+
+        /// <summary>
         /// Store does not implement IUserSecurityStampStore&lt;TUser&gt;.
         /// </summary>
         internal static string StoreNotIUserSecurityStampStore

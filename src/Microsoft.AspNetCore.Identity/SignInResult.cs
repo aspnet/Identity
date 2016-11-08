@@ -15,6 +15,7 @@ namespace Microsoft.AspNetCore.Identity
         private static readonly SignInResult _lockedOut = new SignInResult { IsLockedOut = true };
         private static readonly SignInResult _notAllowed = new SignInResult { IsNotAllowed = true };
         private static readonly SignInResult _twoFactorRequired = new SignInResult { RequiresTwoFactor = true };
+        private static readonly SignInResult _alreadySignedIn = new SignInResult {AlreadySignedIn = true};
 
         /// <summary>
         /// Returns a flag indication whether the sign-in was successful.
@@ -39,6 +40,12 @@ namespace Microsoft.AspNetCore.Identity
         /// </summary>
         /// <value>True if the user attempting to sign-in requires two factor authentication, otherwise false.</value>
         public bool RequiresTwoFactor { get; protected set; }
+
+        /// <summary>
+        /// Returns a flag indication whether the user attempting to sign-in is already signed in.
+        /// </summary>
+        /// <value>True if user attempting so sign-is is already signed in and multiple sign in is not allowed</value>
+        public bool AlreadySignedIn { get; protected set; }
 
         /// <summary>
         /// Returns a <see cref="SignInResult"/> that represents a successful sign-in.
@@ -76,6 +83,15 @@ namespace Microsoft.AspNetCore.Identity
         /// authentication.</returns>
         public static SignInResult TwoFactorRequired => _twoFactorRequired;
 
+
+        /// <summary>
+        /// Returns a <see cref="SignInResult"/> that represents a sign-in attempt from a user
+        /// which is already signed in when multiple sign-in is not allowed.
+        /// </summary>
+        /// <returns>Returns a &lt;see cref="SignInResult"/&gt; that represents a sign-in attempt from a user
+        ///  which is already signed in when multiple sign-in is not allowed.</returns>
+        public static SignInResult SignedIn => _alreadySignedIn;
+
         /// <summary>
         /// Converts the value of the current <see cref="SignInResult"/> object to its equivalent string representation.
         /// </summary>
@@ -85,7 +101,8 @@ namespace Microsoft.AspNetCore.Identity
             return IsLockedOut ? "Lockedout" : 
 		   	       IsNotAllowed ? "NotAllowed" : 
 			       RequiresTwoFactor ? "RequiresTwoFactor" : 
-			       Succeeded ? "Succeeded" : "Failed";
+			       Succeeded ? "Succeeded" :
+                   AlreadySignedIn ? "SignedIn" : "Failed";
         }
     }
 }

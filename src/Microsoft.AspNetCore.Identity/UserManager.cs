@@ -170,6 +170,21 @@ namespace Microsoft.AspNetCore.Identity
         }
 
         /// <summary>
+        /// Gets a flag indicating whether the backing user store supports user activity tracking.
+        /// </summary>
+        /// <value>
+        /// true  if the backing user store supports user activity, otherwise false.
+        /// </value>
+        public virtual bool SupportsUserActivity
+        {
+            get
+            {
+                ThrowIfDisposed();
+                return Store is IUserActivityStore<TUser>;
+            }
+        }
+
+        /// <summary>
         /// Gets a flag indicating whether the backing user store supports two factor authentication.
         /// </summary>
         /// <value>
@@ -1449,6 +1464,51 @@ namespace Microsoft.AspNetCore.Identity
             return await UpdateUserAsync(user);
         }
 
+
+        /// <summary>
+        /// Checks if user was active in the time span specified in options
+        /// </summary>
+        /// <param name="user">The user whose activity is being checked</param>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the user's activity flag.</returns>
+        public virtual async Task<bool> IsUserActiveAsync(TUser user)
+        {
+            ThrowIfDisposed();
+            var store = GetActivityStore();
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+            
+            return await store.IsUserActiveAsync(user, Options.User.MultipleLoginTimeout, CancellationToken);
+        }
+
+
+        /// <summary>
+        /// Depending on provided activity flag updates user's last activity time or resets it
+        /// </summary>
+        /// <param name="user">The user, whose activity is being changed</param>
+        /// <param name="active">The activity flag</param>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation</returns>
+        public virtual async Task<IdentityResult> SetUserActiveAsync(TUser user, bool active)
+        {
+            ThrowIfDisposed();
+            var store = GetActivityStore();
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+            if (active)
+            {
+                await store.UpdateActivityTimeAsync(user, CancellationToken);
+            }
+            else
+            {
+                await store.ResetActivityTimeAsync(user, CancellationToken);
+            }
+
+            return await UpdateUserAsync(user);
+        }
+
         /// <summary>
         /// Gets the telephone number, if any, for the specified <paramref name="user"/>.
         /// </summary>
@@ -2145,6 +2205,17 @@ namespace Microsoft.AspNetCore.Identity
             }
             return cast;
         }
+
+        internal IUserActivityStore<TUser> GetActivityStore()
+        {
+            var cast = Store as IUserActivityStore<TUser>;
+            if (cast == null)
+            {
+                throw new NotSupportedException(Resources.StoreNotIUserActivityStore);
+            }
+            return cast;
+        }
+
 
         internal async Task<byte[]> CreateSecurityTokenAsync(TUser user)
         {
