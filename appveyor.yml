@@ -17,8 +17,8 @@ assembly_info:
   assembly_file_version: '{version}'
   assembly_informational_version: '{version}'
 
-#services:
-#- mssql2012sp1
+services:
+- mssql2012sp1
 #- mysql
 #- postgresql
 
@@ -34,6 +34,7 @@ after_build:
 
 test_script:
 - ps: |
+    [Environment]::SetEnvironmentVariable("Test:SqlServer:DefaultConnectionString", "Server=(local)\SQL2012SP1;Database=master;User ID=sa;Password=Password12!", "Machine")
     dotnet test test\Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test -c Release -f netcoreapp1.0 
     # upload results to AppVeyor
     $wc = New-Object 'System.Net.WebClient'
