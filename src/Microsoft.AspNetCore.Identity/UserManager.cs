@@ -1479,7 +1479,20 @@ namespace Microsoft.AspNetCore.Identity
                 throw new ArgumentNullException(nameof(user));
             }
             
-            return await store.IsUserActiveAsync(user, Options.User.MultipleLoginTimeout, CancellationToken);
+            return await store.IsUserActiveAsync(user, Options.User.ActivityTimeout, CancellationToken);
+        }
+
+
+        /// <summary>
+        /// Returns an <see cref="IQueryable{T}"/> collection of currently active users
+        /// </summary>
+        /// <returns>An <see cref="IQueryable{T}"/> collection of currently active users</returns>
+        public virtual async Task<IQueryable<TUser>> GetActiveUsers()
+        {
+            ThrowIfDisposed();
+            var store = GetActivityStore();
+
+            return await store.GetOnlineUsers(Options.User.ActivityTimeout, CancellationToken);
         }
 
 

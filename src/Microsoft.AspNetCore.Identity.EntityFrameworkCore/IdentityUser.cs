@@ -137,6 +137,15 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
         /// </remarks>
         public virtual DateTimeOffset? LockoutEnd { get; set; }
 
+
+        /// <summary>
+        /// Gets or sets the date and time, in UTC, when last user's activity was registered
+        /// </summary>
+        /// <remarks>
+        /// Null value means that user signed off manually (or never signed in)
+        /// </remarks>
+        public virtual DateTimeOffset? LastActivity { get; set; }
+
         /// <summary>
         /// Gets or sets a flag indicating if the user could be locked out.
         /// </summary>
