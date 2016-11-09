@@ -1487,7 +1487,7 @@ namespace Microsoft.AspNetCore.Identity
         /// Returns an <see cref="IQueryable{T}"/> collection of currently active users
         /// </summary>
         /// <returns>An <see cref="IQueryable{T}"/> collection of currently active users</returns>
-        public virtual async Task<IQueryable<TUser>> GetActiveUsers()
+        public virtual async Task<IQueryable<TUser>> GetActiveUsersAsync()
         {
             ThrowIfDisposed();
             var store = GetActivityStore();

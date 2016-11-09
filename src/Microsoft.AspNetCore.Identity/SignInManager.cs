@@ -698,7 +698,7 @@ namespace Microsoft.AspNetCore.Identity
             }
             if (Options.User.MaximumSignedIn > 0 && UserManager.SupportsUserActivity)
             {
-                var usersCount = (await UserManager.GetActiveUsers()).Count();
+                var usersCount = (await UserManager.GetActiveUsersAsync()).Count();
                 if (usersCount >= Options.User.MaximumSignedIn)
                 {
                     return SignInResult.SignedIn;

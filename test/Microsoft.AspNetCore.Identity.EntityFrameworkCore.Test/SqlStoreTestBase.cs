@@ -109,7 +109,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
                 db.Open();
                 Assert.True(VerifyColumns(db, "AspNetUsers", "Id", "UserName", "Email", "PasswordHash", "SecurityStamp",
                     "EmailConfirmed", "PhoneNumber", "PhoneNumberConfirmed", "TwoFactorEnabled", "LockoutEnabled",
-                    "LockoutEnd", "AccessFailedCount", "ConcurrencyStamp", "NormalizedUserName", "NormalizedEmail"));
+                    "LockoutEnd", "AccessFailedCount", "ConcurrencyStamp", "NormalizedUserName", "NormalizedEmail", "LastActivity"));
                 Assert.True(VerifyColumns(db, "AspNetRoles", "Id", "Name", "NormalizedName", "ConcurrencyStamp"));
                 Assert.True(VerifyColumns(db, "AspNetUserRoles", "UserId", "RoleId"));
                 Assert.True(VerifyColumns(db, "AspNetUserClaims", "Id", "UserId", "ClaimType", "ClaimValue"));
@@ -119,6 +119,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
                 VerifyIndex(db, "AspNetRoles", "RoleNameIndex", isUnique: true);
                 VerifyIndex(db, "AspNetUsers", "UserNameIndex", isUnique: true);
                 VerifyIndex(db, "AspNetUsers", "EmailIndex");
+                VerifyIndex(db, "AspNetUsers", "ActivityIndex");
                 db.Close();
             }
         }
