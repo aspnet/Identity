@@ -20,7 +20,7 @@ namespace Microsoft.AspNetCore.Identity
         /// <param name="activitySpan">Time span for activity</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>A <see cref="Task{TResult}"/> that represents the result of the asynchronous query, a list of online users</returns>
-        Task<IQueryable<TUser>> GetOnlineUsers(TimeSpan activitySpan, CancellationToken cancellationToken);
+        Task<IQueryable<TUser>> GetOnlineUsersAsync(TimeSpan activitySpan, CancellationToken cancellationToken);
 
         /// <summary>
         /// Updates user's last activity timestamp

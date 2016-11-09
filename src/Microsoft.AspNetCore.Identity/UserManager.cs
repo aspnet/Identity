@@ -1492,7 +1492,7 @@ namespace Microsoft.AspNetCore.Identity
             ThrowIfDisposed();
             var store = GetActivityStore();
 
-            return await store.GetOnlineUsers(Options.User.ActivityTimeout, CancellationToken);
+            return await store.GetOnlineUsersAsync(Options.User.ActivityTimeout, CancellationToken);
         }
 
         /// <summary>
@@ -1510,13 +1510,13 @@ namespace Microsoft.AspNetCore.Identity
                 return;
             }
 
-            var everActiveCount = (await store.GetOnlineUsers(TimeSpan.MaxValue, CancellationToken)).Count();
+            var everActiveCount = (await store.GetOnlineUsersAsync(TimeSpan.MaxValue, CancellationToken)).Count();
             if (everActiveCount <= Options.User.MaximumSignedIn)
             {
                 return;
             }
 
-            var userTaskList = (await store.GetOnlineUsers(TimeSpan.MaxValue, CancellationToken))
+            var userTaskList = (await store.GetOnlineUsersAsync(TimeSpan.MaxValue, CancellationToken))
                             .Select(u => new { User = u, ActivityTask = store.GetUserActivityTimestampAsync(u, CancellationToken) })
                             .ToList();
             await Task.WhenAll(userTaskList.Select(x => x.ActivityTask));

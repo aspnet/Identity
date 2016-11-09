@@ -1452,7 +1452,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
         /// <param name="activitySpan">Time span for activity</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>A <see cref="Task{TResult}"/> that represents the result of the asynchronous query, a list of online users</returns>
-        public Task<IQueryable<TUser>> GetOnlineUsers(TimeSpan activitySpan, CancellationToken cancellationToken)
+        public Task<IQueryable<TUser>> GetOnlineUsersAsync(TimeSpan activitySpan, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
