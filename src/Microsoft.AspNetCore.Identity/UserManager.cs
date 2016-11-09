@@ -1495,6 +1495,42 @@ namespace Microsoft.AspNetCore.Identity
             return await store.GetOnlineUsers(Options.User.ActivityTimeout, CancellationToken);
         }
 
+        /// <summary>
+        /// Ensures that maximum allowed online limit is not exceeded and signs off
+        /// users with most old activity timestamps if necessary
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing asyncronous operation </returns>
+        public virtual async Task EnsureMaximumOnlineAsync()
+        {
+            ThrowIfDisposed();
+            var store = GetActivityStore();
+
+            if (Options.User.MaximumSignedIn <= 0)
+            {
+                return;
+            }
+
+            var everActiveCount = (await store.GetOnlineUsers(TimeSpan.MaxValue, CancellationToken)).Count();
+            if (everActiveCount <= Options.User.MaximumSignedIn)
+            {
+                return;
+            }
+
+            var userTaskList = (await store.GetOnlineUsers(TimeSpan.MaxValue, CancellationToken))
+                            .Select(u => new { User = u, ActivityTask = store.GetUserActivityTimestampAsync(u, CancellationToken) })
+                            .ToList();
+            await Task.WhenAll(userTaskList.Select(x => x.ActivityTask));
+            var signingOffUsers =
+                userTaskList.OrderBy(i => i.ActivityTask.Result)
+                    .Take(everActiveCount - Options.User.MaximumSignedIn)
+                    .Select(i => i.User);
+            foreach (var user in signingOffUsers)
+            {
+                await UpdateSecurityStampAsync(user);
+                await SetUserActiveAsync(user, false);
+                await UpdateUserAsync(user);
+            }
+        }
 
         /// <summary>
         /// Depending on provided activity flag updates user's last activity time or resets it
@@ -1502,7 +1538,7 @@ namespace Microsoft.AspNetCore.Identity
         /// <param name="user">The user, whose activity is being changed</param>
         /// <param name="active">The activity flag</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation</returns>
-        public virtual async Task<IdentityResult> SetUserActiveAsync(TUser user, bool active)
+        public virtual async Task<IdentityResult> SetUserActiveAsync(TUser user, bool active = true)
         {
             ThrowIfDisposed();
             var store = GetActivityStore();
@@ -1510,12 +1546,22 @@ namespace Microsoft.AspNetCore.Identity
             {
                 throw new ArgumentNullException(nameof(user));
             }
+            //not to bother DB too often
+            var lastActivity = await store.GetUserActivityTimestampAsync(user, CancellationToken);
             if (active)
             {
+                if (lastActivity.HasValue && (DateTimeOffset.UtcNow - lastActivity.Value < TimeSpan.FromMinutes(1)))
+                {
+                    return await Task.FromResult(IdentityResult.Success);
+                }
                 await store.UpdateActivityTimeAsync(user, CancellationToken);
             }
             else
             {
+                if (!lastActivity.HasValue)
+                {
+                    return await Task.FromResult(IdentityResult.Success);
+                }
                 await store.ResetActivityTimeAsync(user, CancellationToken);
             }
 

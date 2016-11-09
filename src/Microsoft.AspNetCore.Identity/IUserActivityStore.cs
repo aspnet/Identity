@@ -50,5 +50,14 @@ namespace Microsoft.AspNetCore.Identity
         Task<bool> IsUserActiveAsync(TUser user, TimeSpan activitySpan, CancellationToken cancellationToken);
 
 
+        /// <summary>
+        /// Gets activity timestamp of the specified user
+        /// </summary>
+        /// <param name="user">The user, whose activity timestamp is being retrived</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>Activity timestamp of the specified user</returns>
+        Task<DateTimeOffset?> GetUserActivityTimestampAsync(TUser user, CancellationToken cancellationToken);
+
+
     }
 }

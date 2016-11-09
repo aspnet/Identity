@@ -1456,6 +1456,10 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
+            if (activitySpan > TimeSpan.FromDays(10000))
+            {
+                activitySpan = TimeSpan.FromDays(10000);
+            }
             var margin = DateTimeOffset.UtcNow - activitySpan;
             var query = Users.Where(u => u.LastActivity.HasValue && u.LastActivity.Value > margin);
             return Task.FromResult(query);
@@ -1522,8 +1526,30 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
             {
                 throw new ArgumentNullException(nameof(user));
             }
+            if (activitySpan > TimeSpan.FromDays(10000))
+            {
+                activitySpan = TimeSpan.FromDays(10000);
+            }
             var margin = DateTimeOffset.UtcNow - activitySpan;
             return await Task.FromResult(user.LastActivity.HasValue && user.LastActivity.Value > margin);
+        }
+
+        /// <summary>
+        /// Gets activity timestamp of the specified user
+        /// </summary>
+        /// <param name="user">The user, whose activity timestamp is being retrived</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>Activity timestamp of the specified user</returns>
+        public Task<DateTimeOffset?> GetUserActivityTimestampAsync(TUser user, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            ThrowIfDisposed();
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+            
+            return Task.FromResult(user.LastActivity);
         }
     }
 }

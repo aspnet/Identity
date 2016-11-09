@@ -37,10 +37,11 @@ namespace Microsoft.AspNetCore.Identity
 
 
         /// <summary>
-        /// Gets or sets time before user is considered idle
+        /// Gets or sets time before user is considered idle. If MaximumSignedIn is set to positive
+        /// value, idle users can be signed off forcefully when new users sign in.
         /// </summary>
         /// <value>
-        /// Time before user is considered idle
+        /// Time before user is considered idle. 
         /// </value>
         public TimeSpan ActivityTimeout { get; set; } = TimeSpan.FromMinutes(30);
 

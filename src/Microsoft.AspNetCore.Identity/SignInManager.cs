@@ -199,7 +199,11 @@ namespace Microsoft.AspNetCore.Identity
 
             if (UserManager.SupportsUserActivity)
             {
-                await UserManager.SetUserActiveAsync(user, true);
+                await UserManager.SetUserActiveAsync(user);
+                if (Options.User.MaximumSignedIn > 0)
+                {
+                    await UserManager.EnsureMaximumOnlineAsync();
+                }
             }            
 
             await Context.Authentication.SignInAsync(Options.Cookies.ApplicationCookieAuthenticationScheme,
