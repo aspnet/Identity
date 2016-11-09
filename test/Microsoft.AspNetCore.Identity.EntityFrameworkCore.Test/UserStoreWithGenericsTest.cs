@@ -209,7 +209,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
 
     #region Generic Type defintions
 
-    public class IdentityUserWithGenerics : IdentityUser<string, IdentityUserClaimWithIssuer, IdentityUserRoleWithDate, IdentityUserLoginWithContext>
+    public class IdentityUserWithGenerics : IdentityUser<string, IdentityUserClaimWithIssuer, IdentityUserRoleWithDate, IdentityUserLoginWithContext, IdentityUserTokenWithStuff>
     {
         public IdentityUserWithGenerics()
         {

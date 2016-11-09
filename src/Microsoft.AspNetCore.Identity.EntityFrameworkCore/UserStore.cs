@@ -160,7 +160,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
     /// <typeparam name="TUserToken">The type representing a user token.</typeparam>
     public abstract class UserStore<TUser, TRole, TContext, TKey, TUserClaim, TUserRole, TUserLogin, TUserToken> :
         UserStore<TUser, TRole, TContext, TKey,TUserClaim, TUserRole, TUserLogin, TUserToken, IdentityRoleClaim<TKey>>
-        where TUser : IdentityUser<TKey, TUserClaim, TUserRole, TUserLogin>
+        where TUser : IdentityUser<TKey, TUserClaim, TUserRole, TUserLogin, TUserToken>
         where TRole : IdentityRole<TKey, TUserRole, IdentityRoleClaim<TKey>>
         where TContext : DbContext
         where TKey : IEquatable<TKey>
@@ -204,7 +204,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
         IUserAuthenticationTokenStore<TUser>,
         IUserAuthenticatorKeyStore<TUser>,
         IUserTwoFactorRecoveryCodeStore<TUser>
-        where TUser : IdentityUser<TKey, TUserClaim, TUserRole, TUserLogin>
+        where TUser : IdentityUser<TKey, TUserClaim, TUserRole, TUserLogin, TUserToken>
         where TRole : IdentityRole<TKey, TUserRole, TRoleClaim>
         where TContext : DbContext
         where TKey : IEquatable<TKey>
