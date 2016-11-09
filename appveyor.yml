@@ -51,7 +51,7 @@ test_script:
     # upload results to AppVeyor
     #$wc = New-Object 'System.Net.WebClient'
     #$wc.UploadFile("https://ci.appveyor.com/api/testresults/xunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\TestResult.xml))
-    IF ($test1res -ne 0 -or $test2res -ne 0) { exit $LASTEXITCODE }
+    IF ($test1res -ne 0 -or $test2res -ne 0) { exit -1 }
 
 artifacts:
 - path: src\**\*.nupkg
