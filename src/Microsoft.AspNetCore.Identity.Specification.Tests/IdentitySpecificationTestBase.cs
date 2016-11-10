@@ -2480,6 +2480,11 @@ namespace Microsoft.AspNetCore.Identity.Test
             Assert.NotNull(factors);
             Assert.Equal(1, factors.Count());
             Assert.Equal("Phone", factors[0]);
+            IdentityResultAssert.IsSuccess(await manager.ResetAuthenticatorKeyAsync(user));
+            factors = await manager.GetValidTwoFactorProvidersAsync(user);
+            Assert.NotNull(factors);
+            Assert.Equal(2, factors.Count());
+            Assert.Equal("Authenticator", factors[1]);
         }
 
         /// <summary>

@@ -25,7 +25,7 @@ namespace Microsoft.AspNetCore.Identity.InMemory
         IQueryableRoleStore<TRole>, 
         IRoleClaimStore<TRole>,
         IUserAuthenticationTokenStore<TUser>,
-        IUserAuthenticatorStore<TUser>,
+        IUserAuthenticatorKeyStore<TUser>,
         IUserTwoFactorRecoveryCodeStore<TUser>
         where TRole : TestRole
         where TUser : TestUser

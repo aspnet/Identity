@@ -58,7 +58,7 @@ namespace Microsoft.AspNetCore.Identity
             var hash = new HMACSHA1(Base32.FromBase32(key));
             var unixTimestamp = Convert.ToInt64(Math.Round((DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0)).TotalSeconds));
             var timestep = Convert.ToInt64(unixTimestamp / 30);
-            // Allow codes from 90s in each direction
+            // Allow codes from 90s in each direction (we could make this configurable?)
             for (int i = -2; i <= 2; i++)
             {
                 var expectedCode = Rfc6238AuthenticationService.ComputeTotp(hash, (ulong)(timestep + i), modifier: null);

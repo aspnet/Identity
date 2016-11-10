@@ -1450,7 +1450,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
             return entry?.Value;
         }
 
-        private const string AuthenticatorStoreLoginProvider = "[AspNetAuthenticatorStore]";
+        private const string InternalLoginProvider = "[AspNetUserStore]";
         private const string AuthenticatorKeyTokenName = "AuthenticatorKey";
         private const string RecoveryCodeTokenName = "RecoveryCodes";
 
@@ -1463,7 +1463,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
         public virtual Task SetAuthenticatorKeyAsync(TUser user, string key, CancellationToken cancellationToken)
         {
-            return SetTokenAsync(user, AuthenticatorStoreLoginProvider, AuthenticatorKeyTokenName, key, cancellationToken);
+            return SetTokenAsync(user, InternalLoginProvider, AuthenticatorKeyTokenName, key, cancellationToken);
         }
 
         /// <summary>
@@ -1474,7 +1474,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the security stamp for the specified <paramref name="user"/>.</returns>
         public virtual Task<string> GetAuthenticatorKeyAsync(TUser user, CancellationToken cancellationToken)
         {
-            return GetTokenAsync(user, AuthenticatorStoreLoginProvider, AuthenticatorKeyTokenName, cancellationToken);
+            return GetTokenAsync(user, InternalLoginProvider, AuthenticatorKeyTokenName, cancellationToken);
         }
 
         /// <summary>
@@ -1487,7 +1487,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
         public virtual Task ReplaceCodesAsync(TUser user, IEnumerable<string> recoveryCodes, CancellationToken cancellationToken)
         {
             var mergedCodes = string.Join(";", recoveryCodes);
-            return SetTokenAsync(user, AuthenticatorStoreLoginProvider, RecoveryCodeTokenName, mergedCodes, cancellationToken);
+            return SetTokenAsync(user, InternalLoginProvider, RecoveryCodeTokenName, mergedCodes, cancellationToken);
         }
 
         /// <summary>
@@ -1512,7 +1512,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
                 throw new ArgumentNullException(nameof(code));
             }
 
-            var mergedCodes = await GetTokenAsync(user, AuthenticatorStoreLoginProvider, RecoveryCodeTokenName, cancellationToken) ?? "";
+            var mergedCodes = await GetTokenAsync(user, InternalLoginProvider, RecoveryCodeTokenName, cancellationToken) ?? "";
             var splitCodes = mergedCodes.Split(';');
             if (splitCodes.Contains(code))
             {
