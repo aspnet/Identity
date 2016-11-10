@@ -360,6 +360,63 @@ namespace Microsoft.AspNetCore.Identity.Test
             auth.Verify();
         }
 
+        private class GoodTokenProvider : AuthenticatorTokenProvider<TestUser>
+        {
+            public override Task<bool> ValidateAsync(string purpose, string token, UserManager<TestUser> manager, TestUser user)
+            {
+                return Task.FromResult(true);
+            }
+        }
+
+
+        [Theory]
+        [InlineData(null, true, true)]
+        [InlineData("Authenticator", false, true)]
+        [InlineData("Gooblygook", true, false)]
+        [InlineData("--", false, false)]
+        public async Task CanTwoFactorAuthenticatorSignIn(string providerName, bool isPersistent, bool rememberClient)
+        {
+            // Setup
+            var user = new TestUser { UserName = "Foo" };
+            const string code = "3123";
+            var manager = SetupUserManager(user);
+            manager.Setup(m => m.SupportsUserLockout).Returns(true).Verifiable();
+            manager.Setup(m => m.VerifyTwoFactorTokenAsync(user, providerName, code)).ReturnsAsync(true).Verifiable();
+            manager.Setup(m => m.ResetAccessFailedCountAsync(user)).ReturnsAsync(IdentityResult.Success).Verifiable();
+
+            var context = new Mock<HttpContext>();
+            var auth = new Mock<AuthenticationManager>();
+            var twoFactorInfo = new SignInManager<TestUser>.TwoFactorAuthenticationInfo { UserId = user.Id };
+            var helper = SetupSignInManager(manager.Object, context.Object);
+            if (providerName != null)
+            {
+                helper.Options.Tokens.AuthenticatorTokenProvider = providerName;
+            }
+            var id = helper.StoreTwoFactorInfo(user.Id, null);
+            SetupSignIn(auth, user.Id, isPersistent);
+            auth.Setup(a => a.AuthenticateAsync(helper.Options.Cookies.TwoFactorUserIdCookieAuthenticationScheme)).ReturnsAsync(id).Verifiable();
+            context.Setup(c => c.Authentication).Returns(auth.Object).Verifiable();
+            if (rememberClient)
+            {
+                auth.Setup(a => a.SignInAsync(
+                    helper.Options.Cookies.TwoFactorRememberMeCookieAuthenticationScheme,
+                    It.Is<ClaimsPrincipal>(i => i.FindFirstValue(ClaimTypes.Name) == user.Id
+                        && i.Identities.First().AuthenticationType == helper.Options.Cookies.TwoFactorRememberMeCookieAuthenticationScheme),
+                    It.IsAny<AuthenticationProperties>())).Returns(Task.FromResult(0)).Verifiable();
+            }
+
+            // Act
+            var result = await helper.TwoFactorAuthenticatorSignInAsync(code, isPersistent, rememberClient);
+
+            // Assert
+            Assert.True(result.Succeeded);
+            manager.Verify();
+            context.Verify();
+            auth.Verify();
+
+        }
+
+
         [Theory]
         [InlineData(true, true)]
         [InlineData(true, false)]

@@ -440,7 +440,7 @@ namespace Microsoft.AspNetCore.Identity
                 return error;
             }
 
-            if (await UserManager.VerifyTwoFactorTokenAsync(user, "Authenticator", code))
+            if (await UserManager.VerifyTwoFactorTokenAsync(user, Options.Tokens.AuthenticatorTokenProvider, code))
             {
                 await DoTwoFactorSignInAsync(user, twoFactorInfo, isPersistent, rememberClient);
                 return SignInResult.Success;

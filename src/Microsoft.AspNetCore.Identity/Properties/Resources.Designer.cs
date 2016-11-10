@@ -587,19 +587,19 @@ namespace Microsoft.AspNetCore.Identity
         }
 
         /// <summary>
-        /// Store does not implement IUserAuthenticatorStore&lt;User&gt;.
+        /// Store does not implement IUserAuthenticatorKeyStore&lt;User&gt;.
         /// </summary>
-        internal static string StoreNotIUserAuthenticatorStore
+        internal static string StoreNotIUserAuthenticatorKeyStore
         {
-            get { return GetString("StoreNotIUserAuthenticatorStore"); }
+            get { return GetString("StoreNotIUserAuthenticatorKeyStore"); }
         }
 
         /// <summary>
-        /// Store does not implement IUserAuthenticatorStore&lt;User&gt;.
+        /// Store does not implement IUserAuthenticatorKeyStore&lt;User&gt;.
         /// </summary>
-        internal static string FormatStoreNotIUserAuthenticatorStore()
+        internal static string FormatStoreNotIUserAuthenticatorKeyStore()
         {
-            return GetString("StoreNotIUserAuthenticatorStore");
+            return GetString("StoreNotIUserAuthenticatorKeyStore");
         }
 
         /// <summary>

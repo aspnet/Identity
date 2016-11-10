@@ -261,8 +261,8 @@
     <value>Store does not implement IUserSecurityStampStore&lt;TUser&gt;.</value>
     <comment>Error when the store does not implement this interface</comment>
   </data>
-  <data name="StoreNotIUserAuthenticatorStore" xml:space="preserve">
-    <value>Store does not implement IUserAuthenticatorStore&lt;User&gt;.</value>
+  <data name="StoreNotIUserAuthenticatorKeyStore" xml:space="preserve">
+    <value>Store does not implement IUserAuthenticatorKeyStore&lt;User&gt;.</value>
     <comment>Error when the store does not implement this interface</comment>
   </data>
   <data name="StoreNotIUserTwoFactorStore" xml:space="preserve">

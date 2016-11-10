@@ -12,8 +12,6 @@ namespace Microsoft.AspNetCore.Identity
     /// </summary>
     public class AuthenticatorTokenProvider<TUser> : IUserTwoFactorTokenProvider<TUser> where TUser : class
     {
-        private static readonly RandomNumberGenerator _rng = RandomNumberGenerator.Create();
-
         /// <summary>
         /// Checks if a two factor authentication token can be generated for the specified <paramref name="user"/>.
         /// </summary>
