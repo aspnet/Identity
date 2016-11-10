@@ -105,15 +105,6 @@ namespace IdentitySamples.Controllers
             var user = await GetCurrentUserAsync();
             var code = await _userManager.GenerateChangePhoneNumberTokenAsync(user, model.PhoneNumber);
             await _smsSender.SendSmsAsync(model.PhoneNumber, "Your security code is: " + code);
-
-            // REMOVE:
-            var result = await _userManager.ChangePhoneNumberAsync(user, model.PhoneNumber, code);
-            if (result.Succeeded)
-            {
-                await _signInManager.SignInAsync(user, isPersistent: false);
-                return RedirectToAction(nameof(Index), new { Message = ManageMessageId.AddPhoneSuccess });
-            }
-
             return RedirectToAction(nameof(VerifyPhoneNumber), new { PhoneNumber = model.PhoneNumber });
         }
 
