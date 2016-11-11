@@ -381,7 +381,7 @@ namespace Microsoft.AspNetCore.Identity.Test
             const string code = "3123";
             var manager = SetupUserManager(user);
             manager.Setup(m => m.SupportsUserLockout).Returns(true).Verifiable();
-            manager.Setup(m => m.VerifyTwoFactorTokenAsync(user, providerName, code)).ReturnsAsync(true).Verifiable();
+            manager.Setup(m => m.VerifyTwoFactorTokenAsync(user, providerName ?? TokenOptions.DefaultAuthenticatorProvider, code)).ReturnsAsync(true).Verifiable();
             manager.Setup(m => m.ResetAccessFailedCountAsync(user)).ReturnsAsync(IdentityResult.Success).Verifiable();
 
             var context = new Mock<HttpContext>();
@@ -413,9 +413,7 @@ namespace Microsoft.AspNetCore.Identity.Test
             manager.Verify();
             context.Verify();
             auth.Verify();
-
         }
-
 
         [Theory]
         [InlineData(true, true)]
