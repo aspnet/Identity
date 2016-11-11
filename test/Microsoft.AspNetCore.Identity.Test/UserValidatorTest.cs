@@ -2,7 +2,9 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
+using Moq;
 using Xunit;
 
 namespace Microsoft.AspNetCore.Identity.Test
@@ -37,6 +39,26 @@ namespace Microsoft.AspNetCore.Identity.Test
 
             // Assert
             IdentityResultAssert.IsFailure(result, new IdentityErrorDescriber().InvalidUserName(input));
+        }
+
+        [Fact]
+        public async Task ValidateFailsWithNullSecurityStamp()
+        {
+            // Setup
+            var store = new Mock<IUserSecurityStampStore<TestUser>>();
+            var manager = MockHelpers.TestUserManager(store.Object);
+            var validator = new UserValidator<TestUser>();
+            var user = new TestUser { UserName = "nulldude" };
+            store.Setup(s => s.GetSecurityStampAsync(user, It.IsAny<CancellationToken>())).ReturnsAsync(null).Verifiable();
+            store.Setup(s => s.GetUserNameAsync(user, It.IsAny<CancellationToken>())).ReturnsAsync(user.UserName).Verifiable();
+
+            // Act
+            var result = await validator.ValidateAsync(manager, user);
+
+            // Assert
+            IdentityResultAssert.IsFailure(result, new IdentityErrorDescriber().NullSecurityStamp());
+
+            store.VerifyAll();
         }
 
         [Theory]

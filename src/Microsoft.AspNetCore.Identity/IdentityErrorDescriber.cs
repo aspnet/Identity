@@ -14,7 +14,7 @@ namespace Microsoft.AspNetCore.Identity
         /// <summary>
         /// Returns the default <see cref="IdentityError"/>.
         /// </summary>
-        /// <returns>The default <see cref="IdentityError"/>,</returns>
+        /// <returns>The default <see cref="IdentityError"/>.</returns>
         public virtual IdentityError DefaultError()
         {
             return new IdentityError
@@ -36,6 +36,20 @@ namespace Microsoft.AspNetCore.Identity
                 Description = Resources.ConcurrencyFailure
             };
         }
+
+        /// <summary>
+        /// Returns an <see cref="IdentityError"/> indicating a security stamp was null.
+        /// </summary>
+        /// <returns>An <see cref="IdentityError"/> indicating a security stamp was null.</returns>
+        public virtual IdentityError NullSecurityStamp()
+        {
+            return new IdentityError
+            {
+                Code = nameof(NullSecurityStamp),
+                Description = Resources.NullSecurityStamp
+            };
+        }
+
 
         /// <summary>
         /// Returns an <see cref="IdentityError"/> indicating a password mismatch.

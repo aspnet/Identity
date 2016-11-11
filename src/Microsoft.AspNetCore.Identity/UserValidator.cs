@@ -56,6 +56,14 @@ namespace Microsoft.AspNetCore.Identity
             {
                 await ValidateEmail(manager, user, errors);
             }
+            if (manager.SupportsUserSecurityStamp)
+            {
+                var stamp = await manager.GetSecurityStampAsync(user);
+                if (stamp == null)
+                {
+                    errors.Add(Describer.NullSecurityStamp());
+                }
+            }
             return errors.Count > 0 ? IdentityResult.Failed(errors.ToArray()) : IdentityResult.Success;
         }
 
