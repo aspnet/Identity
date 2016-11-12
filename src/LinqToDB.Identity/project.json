@@ -1,40 +1,40 @@
 {
-  "description": "ASP.NET Core Identity provider that uses Entity Framework Core.",
-  "version": "1.1.0-*",
-  "buildOptions": {
-    "warningsAsErrors": true,
-    "keyFile": "../../tools/Key.snk",
-    "xmlDoc": true
-  },
-  "packOptions": {
-    "repository": {
-      "type": "git",
-      "url": "git://github.com/ili/LinqToDB.Identity"
-    },
-    "tags": [
-      "aspnetcore",
-      "linq2db",
-      "identity",
+	"description": "ASP.NET Core Identity provider that uses Entity Framework Core.",
+	"version": "1.1.0-*",
+	"buildOptions": {
+		"warningsAsErrors": true,
+		"keyFile": "../../tools/Key.snk",
+		"xmlDoc": true
+	},
+	"packOptions": {
+		"repository": {
+			"type": "git",
+			"url": "git://github.com/ili/LinqToDB.Identity"
+		},
+		"tags": [
+			"aspnetcore",
+			"linq2db",
+			"identity",
 			"membership",
 			"LinqToDB"
-    ]
-  },
-  "dependencies": {
-    "Microsoft.AspNetCore.Identity": "1.1.0-*",
-    "Microsoft.Extensions.TaskCache.Sources": {
-      "version": "1.1.0-*",
-      "type": "build"
-    },
-			"NETStandard.Library": "1.6.1-*",
-			"linq2db.core": "1.7.5-*",
-			"Microsoft.Extensions.DependencyInjection": "1.1.0-preview2-22514" 
-  },
-  "frameworks": {
-			"netstandard1.6": {
-				"dependencies": {
-					"System.ComponentModel.TypeConverter": "4.3.0-*"
-				}
-			},
-			"net451": {}
-  }
+		]
+	},
+	"dependencies": {
+		"Microsoft.AspNetCore.Identity": "1.1.0-*",
+		"Microsoft.Extensions.TaskCache.Sources": {
+			"version": "1.1.0-*",
+			"type": "build"
+		},
+		"NETStandard.Library": "1.6.1-*",
+		"linq2db.core": "1.7.5-*",
+		"Microsoft.Extensions.DependencyInjection": "1.1.0-preview2-22514"
+	},
+	"frameworks": {
+		"netstandard1.6": {
+			"dependencies": {
+				"System.ComponentModel.TypeConverter": "4.3.0-*"
+			}
+		},
+		"net451": {}
+	}
 }

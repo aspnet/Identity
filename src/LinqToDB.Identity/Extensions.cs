@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
-using LinqToDB.Data;
-using LinqToDB.Linq;
 using LinqToDB.Mapping;
 
 namespace LinqToDB.Identity
 {
-	static class Extensions
+	internal static class Extensions
 	{
 		public static T TryInsertAndSetIdentity<T>(this IDataContext db, T obj)
 			where T : class
@@ -43,12 +39,15 @@ namespace LinqToDB.Identity
 			var stamp = Guid.NewGuid().ToString();
 
 			var query = dc.GetTable<T>()
-				.Where(_ => _.Id.Equals(obj.Id) && _.ConcurrencyStamp == obj.ConcurrencyStamp)
+				.Where(_ => _.Id.Equals(obj.Id) && (_.ConcurrencyStamp == obj.ConcurrencyStamp))
 				.Set(_ => _.ConcurrencyStamp, stamp);
 
 			var ed = dc.MappingSchema.GetEntityDescriptor(typeof(T));
 			var p = Expression.Parameter(typeof(T));
-			foreach (var column in ed.Columns.Where(_ => _.MemberName != nameof(IConcurrency<TKey>.ConcurrencyStamp) && !_.IsPrimaryKey && !_.SkipOnUpdate))
+			foreach (
+				var column in
+				ed.Columns.Where(
+					_ => (_.MemberName != nameof(IConcurrency<TKey>.ConcurrencyStamp)) && !_.IsPrimaryKey && !_.SkipOnUpdate))
 			{
 				var expr = Expression
 					.Lambda<Func<T, object>>(

@@ -8,37 +8,37 @@ using LinqToDB.DataProvider;
 
 namespace LinqToDB.Identity
 {
-    /// <summary>
-    /// Base class for the LinqToDB database context used for identity.
-    /// </summary>
-    public class IdentityDbContext : IdentityDbContext<IdentityUser, IdentityRole, string>
-    {
+	/// <summary>
+	///     Base class for the LinqToDB database context used for identity.
+	/// </summary>
+	public class IdentityDbContext : IdentityDbContext<IdentityUser, IdentityRole, string>
+	{
 		#region Constructors 
 
 		/// <summary>
-		/// Constructor
+		///     Constructor
 		/// </summary>
-		/// <param name="dataProvider">Data provider object, see <see cref="IDataProvider"/></param>
-		/// <param name="connection">Connection object <see cref="IDbConnection"/></param>
+		/// <param name="dataProvider">Data provider object, see <see cref="IDataProvider" /></param>
+		/// <param name="connection">Connection object <see cref="IDbConnection" /></param>
 		public IdentityDbContext(IDataProvider dataProvider, IDbConnection connection)
 			: base(dataProvider, connection)
 		{
 		}
 
 		/// <summary>
-		/// Constructor
+		///     Constructor
 		/// </summary>
-		/// <param name="dataProvider">Data provider object, see <see cref="IDataProvider"/></param>
-		/// <param name="transaction">Transdaction object <see cref="IDbTransaction"/></param>
+		/// <param name="dataProvider">Data provider object, see <see cref="IDataProvider" /></param>
+		/// <param name="transaction">Transdaction object <see cref="IDbTransaction" /></param>
 		public IdentityDbContext(IDataProvider dataProvider, IDbTransaction transaction)
 			: base(dataProvider, transaction)
 		{
 		}
 
 		/// <summary>
-		/// Constructor
+		///     Constructor
 		/// </summary>
-		/// <param name="dataProvider">Data provider object, see <see cref="IDataProvider"/> </param>
+		/// <param name="dataProvider">Data provider object, see <see cref="IDataProvider" /> </param>
 		/// <param name="connectionString">Connection string</param>
 		public IdentityDbContext(IDataProvider dataProvider, string connectionString)
 			: base(dataProvider, connectionString)
@@ -46,7 +46,7 @@ namespace LinqToDB.Identity
 		}
 
 		/// <summary>
-		/// Constructor
+		///     Constructor
 		/// </summary>
 		/// <param name="providerName">Data provider name</param>
 		/// <param name="connectionString">Connection string</param>
@@ -56,7 +56,7 @@ namespace LinqToDB.Identity
 		}
 
 		/// <summary>
-		/// Constructor
+		///     Constructor
 		/// </summary>
 		/// <param name="configurationString">Connection string</param>
 		public IdentityDbContext(string configurationString)
@@ -65,7 +65,7 @@ namespace LinqToDB.Identity
 		}
 
 		/// <summary>
-		/// Default constructor
+		///     Default constructor
 		/// </summary>
 		public IdentityDbContext()
 		{
@@ -75,38 +75,38 @@ namespace LinqToDB.Identity
 	}
 
 	/// <summary>
-	/// Base class for the LinqToDB database context used for identity.
+	///     Base class for the LinqToDB database context used for identity.
 	/// </summary>
 	/// <typeparam name="TUser">The type of the user objects.</typeparam>
-	public class IdentityDbContext<TUser> : IdentityDbContext<TUser, IdentityRole, string> 
+	public class IdentityDbContext<TUser> : IdentityDbContext<TUser, IdentityRole, string>
 		where TUser : IdentityUser
-    {
+	{
 		#region Constructors 
 
 		/// <summary>
-		/// Constructor
+		///     Constructor
 		/// </summary>
-		/// <param name="dataProvider">Data provider object, see <see cref="IDataProvider"/></param>
-		/// <param name="connection">Connection object <see cref="IDbConnection"/></param>
+		/// <param name="dataProvider">Data provider object, see <see cref="IDataProvider" /></param>
+		/// <param name="connection">Connection object <see cref="IDbConnection" /></param>
 		public IdentityDbContext(IDataProvider dataProvider, IDbConnection connection)
 			: base(dataProvider, connection)
 		{
 		}
 
 		/// <summary>
-		/// Constructor
+		///     Constructor
 		/// </summary>
-		/// <param name="dataProvider">Data provider object, see <see cref="IDataProvider"/></param>
-		/// <param name="transaction">Transdaction object <see cref="IDbTransaction"/></param>
+		/// <param name="dataProvider">Data provider object, see <see cref="IDataProvider" /></param>
+		/// <param name="transaction">Transdaction object <see cref="IDbTransaction" /></param>
 		public IdentityDbContext(IDataProvider dataProvider, IDbTransaction transaction)
 			: base(dataProvider, transaction)
 		{
 		}
 
 		/// <summary>
-		/// Constructor
+		///     Constructor
 		/// </summary>
-		/// <param name="dataProvider">Data provider object, see <see cref="IDataProvider"/> </param>
+		/// <param name="dataProvider">Data provider object, see <see cref="IDataProvider" /> </param>
 		/// <param name="connectionString">Connection string</param>
 		public IdentityDbContext(IDataProvider dataProvider, string connectionString)
 			: base(dataProvider, connectionString)
@@ -114,7 +114,7 @@ namespace LinqToDB.Identity
 		}
 
 		/// <summary>
-		/// Constructor
+		///     Constructor
 		/// </summary>
 		/// <param name="providerName">Data provider name</param>
 		/// <param name="connectionString">Connection string</param>
@@ -124,7 +124,7 @@ namespace LinqToDB.Identity
 		}
 
 		/// <summary>
-		/// Constructor
+		///     Constructor
 		/// </summary>
 		/// <param name="configurationString">Connection string</param>
 		public IdentityDbContext(string configurationString)
@@ -133,7 +133,7 @@ namespace LinqToDB.Identity
 		}
 
 		/// <summary>
-		/// Default constructor
+		///     Default constructor
 		/// </summary>
 		public IdentityDbContext()
 		{
@@ -143,42 +143,45 @@ namespace LinqToDB.Identity
 	}
 
 	/// <summary>
-	/// Base class for the LinqToDB database context used for identity.
+	///     Base class for the LinqToDB database context used for identity.
 	/// </summary>
 	/// <typeparam name="TUser">The type of user objects.</typeparam>
 	/// <typeparam name="TRole">The type of role objects.</typeparam>
 	/// <typeparam name="TKey">The type of the primary key for users and roles.</typeparam>
-	public class IdentityDbContext<TUser, TRole, TKey> : IdentityDbContext<TUser, TRole, TKey, IdentityUserClaim<TKey>, IdentityUserRole<TKey>, IdentityUserLogin<TKey>, IdentityRoleClaim<TKey>, IdentityUserToken<TKey>>
-        where TUser : class, IIdentityUser<TKey>
-        where TRole : class, IIdentityRole<TKey>
-        where TKey  :        IEquatable<TKey>
-    {
+	public class IdentityDbContext<TUser, TRole, TKey> :
+			IdentityDbContext
+			<TUser, TRole, TKey, IdentityUserClaim<TKey>, IdentityUserRole<TKey>, IdentityUserLogin<TKey>,
+				IdentityRoleClaim<TKey>, IdentityUserToken<TKey>>
+		where TUser : class, IIdentityUser<TKey>
+		where TRole : class, IIdentityRole<TKey>
+		where TKey : IEquatable<TKey>
+	{
 		#region Constructors 
 
 		/// <summary>
-		/// Constructor
+		///     Constructor
 		/// </summary>
-		/// <param name="dataProvider">Data provider object, see <see cref="IDataProvider"/></param>
-		/// <param name="connection">Connection object <see cref="IDbConnection"/></param>
+		/// <param name="dataProvider">Data provider object, see <see cref="IDataProvider" /></param>
+		/// <param name="connection">Connection object <see cref="IDbConnection" /></param>
 		public IdentityDbContext(IDataProvider dataProvider, IDbConnection connection)
 			: base(dataProvider, connection)
 		{
 		}
 
 		/// <summary>
-		/// Constructor
+		///     Constructor
 		/// </summary>
-		/// <param name="dataProvider">Data provider object, see <see cref="IDataProvider"/></param>
-		/// <param name="transaction">Transdaction object <see cref="IDbTransaction"/></param>
+		/// <param name="dataProvider">Data provider object, see <see cref="IDataProvider" /></param>
+		/// <param name="transaction">Transdaction object <see cref="IDbTransaction" /></param>
 		public IdentityDbContext(IDataProvider dataProvider, IDbTransaction transaction)
 			: base(dataProvider, transaction)
 		{
 		}
 
 		/// <summary>
-		/// Constructor
+		///     Constructor
 		/// </summary>
-		/// <param name="dataProvider">Data provider object, see <see cref="IDataProvider"/> </param>
+		/// <param name="dataProvider">Data provider object, see <see cref="IDataProvider" /> </param>
 		/// <param name="connectionString">Connection string</param>
 		public IdentityDbContext(IDataProvider dataProvider, string connectionString)
 			: base(dataProvider, connectionString)
@@ -186,7 +189,7 @@ namespace LinqToDB.Identity
 		}
 
 		/// <summary>
-		/// Constructor
+		///     Constructor
 		/// </summary>
 		/// <param name="providerName">Data provider name</param>
 		/// <param name="connectionString">Connection string</param>
@@ -196,7 +199,7 @@ namespace LinqToDB.Identity
 		}
 
 		/// <summary>
-		/// Constructor
+		///     Constructor
 		/// </summary>
 		/// <param name="configurationString">Connection string</param>
 		public IdentityDbContext(string configurationString)
@@ -205,7 +208,7 @@ namespace LinqToDB.Identity
 		}
 
 		/// <summary>
-		/// Default constructor
+		///     Default constructor
 		/// </summary>
 		public IdentityDbContext()
 		{
@@ -215,7 +218,7 @@ namespace LinqToDB.Identity
 	}
 
 	/// <summary>
-	/// Base class for the LinqToDB database context used for identity.
+	///     Base class for the LinqToDB database context used for identity.
 	/// </summary>
 	/// <typeparam name="TUser">The type of user objects.</typeparam>
 	/// <typeparam name="TRole">The type of role objects.</typeparam>
@@ -225,112 +228,113 @@ namespace LinqToDB.Identity
 	/// <typeparam name="TUserLogin">The type of the user login object.</typeparam>
 	/// <typeparam name="TRoleClaim">The type of the role claim object.</typeparam>
 	/// <typeparam name="TUserToken">The type of the user token object.</typeparam>
-	public class IdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken> : DataConnection
-        where TUser      : class, IIdentityUser<TKey>
-        where TRole      : class, IIdentityRole<TKey>
-        where TKey       :        IEquatable<TKey>
-        where TUserClaim : class, IIdentityUserClaim<TKey>
-        where TUserRole  : class, IIdentityUserRole<TKey>
-        where TUserLogin : class, IIdentityUserLogin<TKey>
-        where TRoleClaim : class, IIdentityRoleClaim<TKey>
-        where TUserToken : class, IIdentityUserToken<TKey>
-    {
+	public class IdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken> :
+			DataConnection
+		where TUser : class, IIdentityUser<TKey>
+		where TRole : class, IIdentityRole<TKey>
+		where TKey : IEquatable<TKey>
+		where TUserClaim : class, IIdentityUserClaim<TKey>
+		where TUserRole : class, IIdentityUserRole<TKey>
+		where TUserLogin : class, IIdentityUserLogin<TKey>
+		where TRoleClaim : class, IIdentityRoleClaim<TKey>
+		where TUserToken : class, IIdentityUserToken<TKey>
+	{
 		#region Constructors 
 
 		/// <summary>
-		/// Constructor
+		///     Constructor
 		/// </summary>
-		/// <param name="dataProvider">Data provider object, see <see cref="IDataProvider"/></param>
-		/// <param name="connection">Connection object <see cref="IDbConnection"/></param>
+		/// <param name="dataProvider">Data provider object, see <see cref="IDataProvider" /></param>
+		/// <param name="connection">Connection object <see cref="IDbConnection" /></param>
 		public IdentityDbContext(IDataProvider dataProvider, IDbConnection connection)
-		    : base(dataProvider, connection)
-	    {
-	    }
+			: base(dataProvider, connection)
+		{
+		}
 
 		/// <summary>
-		/// Constructor
+		///     Constructor
 		/// </summary>
-		/// <param name="dataProvider">Data provider object, see <see cref="IDataProvider"/></param>
-		/// <param name="transaction">Transdaction object <see cref="IDbTransaction"/></param>
-		public IdentityDbContext(IDataProvider dataProvider, IDbTransaction transaction) 
+		/// <param name="dataProvider">Data provider object, see <see cref="IDataProvider" /></param>
+		/// <param name="transaction">Transdaction object <see cref="IDbTransaction" /></param>
+		public IdentityDbContext(IDataProvider dataProvider, IDbTransaction transaction)
 			: base(dataProvider, transaction)
-	    {
-	    }
+		{
+		}
 
 		/// <summary>
-		/// Constructor
+		///     Constructor
 		/// </summary>
-		/// <param name="dataProvider">Data provider object, see <see cref="IDataProvider"/> </param>
+		/// <param name="dataProvider">Data provider object, see <see cref="IDataProvider" /> </param>
 		/// <param name="connectionString">Connection string</param>
 		public IdentityDbContext(IDataProvider dataProvider, string connectionString)
-		    : base(dataProvider, connectionString)
-	    {
-	    }
+			: base(dataProvider, connectionString)
+		{
+		}
 
-	    /// <summary>
-	    /// Constructor
-	    /// </summary>
-	    /// <param name="providerName">Data provider name</param>
-	    /// <param name="connectionString">Connection string</param>
-	    public IdentityDbContext(string providerName, string connectionString)
-		    : base(providerName, connectionString)
-	    {
-	    }
+		/// <summary>
+		///     Constructor
+		/// </summary>
+		/// <param name="providerName">Data provider name</param>
+		/// <param name="connectionString">Connection string</param>
+		public IdentityDbContext(string providerName, string connectionString)
+			: base(providerName, connectionString)
+		{
+		}
 
-	    /// <summary>
-	    /// Constructor
-	    /// </summary>
-	    /// <param name="configurationString">Connection string</param>
-	    public IdentityDbContext(string configurationString)
+		/// <summary>
+		///     Constructor
+		/// </summary>
+		/// <param name="configurationString">Connection string</param>
+		public IdentityDbContext(string configurationString)
 			: base(configurationString)
-	    {
-	    }
+		{
+		}
 
-	    /// <summary>
-	    /// Default constructor
-	    /// </summary>
-	    public IdentityDbContext()
-	    {
-	    }
+		/// <summary>
+		///     Default constructor
+		/// </summary>
+		public IdentityDbContext()
+		{
+		}
 
 		#endregion
 
-	    #region Tables
+		#region Tables
 
 		/// <summary>
-		/// Gets the <see cref="ITable{TEntity}"/> of Users.
+		///     Gets the <see cref="ITable{TEntity}" /> of Users.
 		/// </summary>
 		public ITable<TUser> Users => GetTable<TUser>();
 
-	    /// <summary>
-	    /// Gets the <see cref="ITable{TEntity}"/> of User claims.
-	    /// </summary>
-	    public ITable<TUserClaim> UserClaims => GetTable<TUserClaim>();
+		/// <summary>
+		///     Gets the <see cref="ITable{TEntity}" /> of User claims.
+		/// </summary>
+		public ITable<TUserClaim> UserClaims => GetTable<TUserClaim>();
 
-	    /// <summary>
-	    /// Gets the <see cref="ITable{TEntity}"/> of User logins.
-	    /// </summary>
-	    public ITable<TUserLogin> UserLogins => GetTable<TUserLogin>();
+		/// <summary>
+		///     Gets the <see cref="ITable{TEntity}" /> of User logins.
+		/// </summary>
+		public ITable<TUserLogin> UserLogins => GetTable<TUserLogin>();
 
-	    /// <summary>
-	    /// Gets the <see cref="ITable{TEntity}"/> of User roles.
-	    /// </summary>
-	    public ITable<TUserRole> UserRoles => GetTable<TUserRole>();
+		/// <summary>
+		///     Gets the <see cref="ITable{TEntity}" /> of User roles.
+		/// </summary>
+		public ITable<TUserRole> UserRoles => GetTable<TUserRole>();
 
-	    /// <summary>
-	    /// Gets the <see cref="ITable{TEntity}"/> of User tokens.
-	    /// </summary>
-	    public ITable<TUserToken> UserTokens => GetTable<TUserToken>();
+		/// <summary>
+		///     Gets the <see cref="ITable{TEntity}" /> of User tokens.
+		/// </summary>
+		public ITable<TUserToken> UserTokens => GetTable<TUserToken>();
 
-	    /// <summary>
-	    /// Gets the <see cref="ITable{TEntity}"/> of roles.
-	    /// </summary>
-	    public ITable<TRole> Roles => GetTable<TRole>();
+		/// <summary>
+		///     Gets the <see cref="ITable{TEntity}" /> of roles.
+		/// </summary>
+		public ITable<TRole> Roles => GetTable<TRole>();
 
-	    /// <summary>
-	    /// Gets the <see cref="ITable{TEntity}"/> of role claims.
-	    /// </summary>
-	    public ITable<TRoleClaim> RoleClaims => GetTable<TRoleClaim>();
+		/// <summary>
+		///     Gets the <see cref="ITable{TEntity}" /> of role claims.
+		/// </summary>
+		public ITable<TRoleClaim> RoleClaims => GetTable<TRoleClaim>();
 
 		#endregion
 	}
