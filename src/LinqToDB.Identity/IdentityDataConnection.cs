@@ -11,7 +11,7 @@ namespace LinqToDB.Identity
 	/// <summary>
 	///     Base class for the LinqToDB database context used for identity.
 	/// </summary>
-	public class IdentityDbContext : IdentityDbContext<IdentityUser, IdentityRole, string>
+	public class IdentityDataConnection : IdentityDataConnection<IdentityUser, IdentityRole, string>
 	{
 		#region Constructors 
 
@@ -20,7 +20,7 @@ namespace LinqToDB.Identity
 		/// </summary>
 		/// <param name="dataProvider">Data provider object, see <see cref="IDataProvider" /></param>
 		/// <param name="connection">Connection object <see cref="IDbConnection" /></param>
-		public IdentityDbContext(IDataProvider dataProvider, IDbConnection connection)
+		public IdentityDataConnection(IDataProvider dataProvider, IDbConnection connection)
 			: base(dataProvider, connection)
 		{
 		}
@@ -30,7 +30,7 @@ namespace LinqToDB.Identity
 		/// </summary>
 		/// <param name="dataProvider">Data provider object, see <see cref="IDataProvider" /></param>
 		/// <param name="transaction">Transdaction object <see cref="IDbTransaction" /></param>
-		public IdentityDbContext(IDataProvider dataProvider, IDbTransaction transaction)
+		public IdentityDataConnection(IDataProvider dataProvider, IDbTransaction transaction)
 			: base(dataProvider, transaction)
 		{
 		}
@@ -40,7 +40,7 @@ namespace LinqToDB.Identity
 		/// </summary>
 		/// <param name="dataProvider">Data provider object, see <see cref="IDataProvider" /> </param>
 		/// <param name="connectionString">Connection string</param>
-		public IdentityDbContext(IDataProvider dataProvider, string connectionString)
+		public IdentityDataConnection(IDataProvider dataProvider, string connectionString)
 			: base(dataProvider, connectionString)
 		{
 		}
@@ -50,7 +50,7 @@ namespace LinqToDB.Identity
 		/// </summary>
 		/// <param name="providerName">Data provider name</param>
 		/// <param name="connectionString">Connection string</param>
-		public IdentityDbContext(string providerName, string connectionString)
+		public IdentityDataConnection(string providerName, string connectionString)
 			: base(providerName, connectionString)
 		{
 		}
@@ -59,7 +59,7 @@ namespace LinqToDB.Identity
 		///     Constructor
 		/// </summary>
 		/// <param name="configurationString">Connection string</param>
-		public IdentityDbContext(string configurationString)
+		public IdentityDataConnection(string configurationString)
 			: base(configurationString)
 		{
 		}
@@ -67,7 +67,7 @@ namespace LinqToDB.Identity
 		/// <summary>
 		///     Default constructor
 		/// </summary>
-		public IdentityDbContext()
+		public IdentityDataConnection()
 		{
 		}
 
@@ -78,7 +78,7 @@ namespace LinqToDB.Identity
 	///     Base class for the LinqToDB database context used for identity.
 	/// </summary>
 	/// <typeparam name="TUser">The type of the user objects.</typeparam>
-	public class IdentityDbContext<TUser> : IdentityDbContext<TUser, IdentityRole, string>
+	public class IdentityDataConnection<TUser> : IdentityDataConnection<TUser, IdentityRole, string>
 		where TUser : IdentityUser
 	{
 		#region Constructors 
@@ -88,7 +88,7 @@ namespace LinqToDB.Identity
 		/// </summary>
 		/// <param name="dataProvider">Data provider object, see <see cref="IDataProvider" /></param>
 		/// <param name="connection">Connection object <see cref="IDbConnection" /></param>
-		public IdentityDbContext(IDataProvider dataProvider, IDbConnection connection)
+		public IdentityDataConnection(IDataProvider dataProvider, IDbConnection connection)
 			: base(dataProvider, connection)
 		{
 		}
@@ -98,7 +98,7 @@ namespace LinqToDB.Identity
 		/// </summary>
 		/// <param name="dataProvider">Data provider object, see <see cref="IDataProvider" /></param>
 		/// <param name="transaction">Transdaction object <see cref="IDbTransaction" /></param>
-		public IdentityDbContext(IDataProvider dataProvider, IDbTransaction transaction)
+		public IdentityDataConnection(IDataProvider dataProvider, IDbTransaction transaction)
 			: base(dataProvider, transaction)
 		{
 		}
@@ -108,7 +108,7 @@ namespace LinqToDB.Identity
 		/// </summary>
 		/// <param name="dataProvider">Data provider object, see <see cref="IDataProvider" /> </param>
 		/// <param name="connectionString">Connection string</param>
-		public IdentityDbContext(IDataProvider dataProvider, string connectionString)
+		public IdentityDataConnection(IDataProvider dataProvider, string connectionString)
 			: base(dataProvider, connectionString)
 		{
 		}
@@ -118,7 +118,7 @@ namespace LinqToDB.Identity
 		/// </summary>
 		/// <param name="providerName">Data provider name</param>
 		/// <param name="connectionString">Connection string</param>
-		public IdentityDbContext(string providerName, string connectionString)
+		public IdentityDataConnection(string providerName, string connectionString)
 			: base(providerName, connectionString)
 		{
 		}
@@ -127,7 +127,7 @@ namespace LinqToDB.Identity
 		///     Constructor
 		/// </summary>
 		/// <param name="configurationString">Connection string</param>
-		public IdentityDbContext(string configurationString)
+		public IdentityDataConnection(string configurationString)
 			: base(configurationString)
 		{
 		}
@@ -135,7 +135,7 @@ namespace LinqToDB.Identity
 		/// <summary>
 		///     Default constructor
 		/// </summary>
-		public IdentityDbContext()
+		public IdentityDataConnection()
 		{
 		}
 
@@ -148,8 +148,8 @@ namespace LinqToDB.Identity
 	/// <typeparam name="TUser">The type of user objects.</typeparam>
 	/// <typeparam name="TRole">The type of role objects.</typeparam>
 	/// <typeparam name="TKey">The type of the primary key for users and roles.</typeparam>
-	public class IdentityDbContext<TUser, TRole, TKey> :
-			IdentityDbContext
+	public class IdentityDataConnection<TUser, TRole, TKey> :
+			IdentityDataConnection
 			<TUser, TRole, TKey, IdentityUserClaim<TKey>, IdentityUserRole<TKey>, IdentityUserLogin<TKey>,
 				IdentityRoleClaim<TKey>, IdentityUserToken<TKey>>
 		where TUser : class, IIdentityUser<TKey>
@@ -163,7 +163,7 @@ namespace LinqToDB.Identity
 		/// </summary>
 		/// <param name="dataProvider">Data provider object, see <see cref="IDataProvider" /></param>
 		/// <param name="connection">Connection object <see cref="IDbConnection" /></param>
-		public IdentityDbContext(IDataProvider dataProvider, IDbConnection connection)
+		public IdentityDataConnection(IDataProvider dataProvider, IDbConnection connection)
 			: base(dataProvider, connection)
 		{
 		}
@@ -173,7 +173,7 @@ namespace LinqToDB.Identity
 		/// </summary>
 		/// <param name="dataProvider">Data provider object, see <see cref="IDataProvider" /></param>
 		/// <param name="transaction">Transdaction object <see cref="IDbTransaction" /></param>
-		public IdentityDbContext(IDataProvider dataProvider, IDbTransaction transaction)
+		public IdentityDataConnection(IDataProvider dataProvider, IDbTransaction transaction)
 			: base(dataProvider, transaction)
 		{
 		}
@@ -183,7 +183,7 @@ namespace LinqToDB.Identity
 		/// </summary>
 		/// <param name="dataProvider">Data provider object, see <see cref="IDataProvider" /> </param>
 		/// <param name="connectionString">Connection string</param>
-		public IdentityDbContext(IDataProvider dataProvider, string connectionString)
+		public IdentityDataConnection(IDataProvider dataProvider, string connectionString)
 			: base(dataProvider, connectionString)
 		{
 		}
@@ -193,7 +193,7 @@ namespace LinqToDB.Identity
 		/// </summary>
 		/// <param name="providerName">Data provider name</param>
 		/// <param name="connectionString">Connection string</param>
-		public IdentityDbContext(string providerName, string connectionString)
+		public IdentityDataConnection(string providerName, string connectionString)
 			: base(providerName, connectionString)
 		{
 		}
@@ -202,7 +202,7 @@ namespace LinqToDB.Identity
 		///     Constructor
 		/// </summary>
 		/// <param name="configurationString">Connection string</param>
-		public IdentityDbContext(string configurationString)
+		public IdentityDataConnection(string configurationString)
 			: base(configurationString)
 		{
 		}
@@ -210,7 +210,7 @@ namespace LinqToDB.Identity
 		/// <summary>
 		///     Default constructor
 		/// </summary>
-		public IdentityDbContext()
+		public IdentityDataConnection()
 		{
 		}
 
@@ -228,7 +228,7 @@ namespace LinqToDB.Identity
 	/// <typeparam name="TUserLogin">The type of the user login object.</typeparam>
 	/// <typeparam name="TRoleClaim">The type of the role claim object.</typeparam>
 	/// <typeparam name="TUserToken">The type of the user token object.</typeparam>
-	public class IdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken> :
+	public class IdentityDataConnection<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken> :
 			DataConnection
 		where TUser : class, IIdentityUser<TKey>
 		where TRole : class, IIdentityRole<TKey>
@@ -246,7 +246,7 @@ namespace LinqToDB.Identity
 		/// </summary>
 		/// <param name="dataProvider">Data provider object, see <see cref="IDataProvider" /></param>
 		/// <param name="connection">Connection object <see cref="IDbConnection" /></param>
-		public IdentityDbContext(IDataProvider dataProvider, IDbConnection connection)
+		public IdentityDataConnection(IDataProvider dataProvider, IDbConnection connection)
 			: base(dataProvider, connection)
 		{
 		}
@@ -256,7 +256,7 @@ namespace LinqToDB.Identity
 		/// </summary>
 		/// <param name="dataProvider">Data provider object, see <see cref="IDataProvider" /></param>
 		/// <param name="transaction">Transdaction object <see cref="IDbTransaction" /></param>
-		public IdentityDbContext(IDataProvider dataProvider, IDbTransaction transaction)
+		public IdentityDataConnection(IDataProvider dataProvider, IDbTransaction transaction)
 			: base(dataProvider, transaction)
 		{
 		}
@@ -266,7 +266,7 @@ namespace LinqToDB.Identity
 		/// </summary>
 		/// <param name="dataProvider">Data provider object, see <see cref="IDataProvider" /> </param>
 		/// <param name="connectionString">Connection string</param>
-		public IdentityDbContext(IDataProvider dataProvider, string connectionString)
+		public IdentityDataConnection(IDataProvider dataProvider, string connectionString)
 			: base(dataProvider, connectionString)
 		{
 		}
@@ -276,7 +276,7 @@ namespace LinqToDB.Identity
 		/// </summary>
 		/// <param name="providerName">Data provider name</param>
 		/// <param name="connectionString">Connection string</param>
-		public IdentityDbContext(string providerName, string connectionString)
+		public IdentityDataConnection(string providerName, string connectionString)
 			: base(providerName, connectionString)
 		{
 		}
@@ -285,7 +285,7 @@ namespace LinqToDB.Identity
 		///     Constructor
 		/// </summary>
 		/// <param name="configurationString">Connection string</param>
-		public IdentityDbContext(string configurationString)
+		public IdentityDataConnection(string configurationString)
 			: base(configurationString)
 		{
 		}
@@ -293,7 +293,7 @@ namespace LinqToDB.Identity
 		/// <summary>
 		///     Default constructor
 		/// </summary>
-		public IdentityDbContext()
+		public IdentityDataConnection()
 		{
 		}
 

@@ -18,7 +18,7 @@
 //    {
 //    }
 
-//    public class InMemoryContext<TUser, TRole, TKey> : IdentityDbContext<TUser, TRole, TKey>
+//    public class InMemoryContext<TUser, TRole, TKey> : IdentityDataConnection<TUser, TRole, TKey>
 //        where TUser : IdentityUser<TKey>
 //        where TRole : IdentityRole<TKey>
 //        where TKey : IEquatable<TKey>
@@ -29,7 +29,7 @@
 //	    }
 //    }
 
-//    public abstract class InMemoryContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken> : IdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
+//    public abstract class InMemoryContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken> : IdentityDataConnection<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
 //        where TUser : IdentityUser<TKey, TUserClaim, TUserRole, TUserLogin>
 //        where TRole : IdentityRole<TKey, TUserRole, TRoleClaim>
 //        where TKey : IEquatable<TKey>

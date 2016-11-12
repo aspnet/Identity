@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
@@ -13,6 +14,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.DataProtection;
 using System.IO;
 using LinqToDB;
+using LinqToDB.Data;
+using LinqToDB.DataProvider.SqlServer;
 using LinqToDB.Identity;
 
 namespace IdentitySample
@@ -42,16 +45,21 @@ namespace IdentitySample
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // Add framework services.
-            //services.AddDbContext<ApplicationDbContext>(options =>
-            //        options.UseSqlServer(Configuration["Data:DefaultConnection:ConnectionString"]));
+            // Set connection configuration
+	        DataConnection
+		        .AddConfiguration(
+			        "Default",
+			        Configuration["Data:DefaultConnection:ConnectionString"],
+			        new SqlServerDataProvider("Default", SqlServerVersion.v2012));
+
+	        DataConnection.DefaultConfiguration = "Default";
 
             services.AddIdentity<ApplicationUser, IdentityRole>(options => {
                 options.Cookies.ApplicationCookie.AuthenticationScheme = "ApplicationCookie";
                 options.Cookies.ApplicationCookie.CookieName = "Interop";
                 options.Cookies.ApplicationCookie.DataProtectionProvider = DataProtectionProvider.Create(new DirectoryInfo("C:\\Github\\Identity\\artifacts"));
             })
-                .AddLinqToDBStores(new DefaultConnectionFactory<DataContext, ApplicationDbContext>())
+                .AddLinqToDBStores(new DefaultConnectionFactory<DataContext, ApplicationDataConnection>())
                 .AddDefaultTokenProviders();
 
             services.AddMvc();
@@ -75,20 +83,43 @@ namespace IdentitySample
             else
             {
                 app.UseExceptionHandler("/Home/Error");
-
-                // For more details on creating database during deployment see http://go.microsoft.com/fwlink/?LinkID=615859
-                try
-                {
-                    using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>()
-                        .CreateScope())
-                    {
-                        //serviceScope.ServiceProvider.GetService<ApplicationDbContext>()
-                        //     .Database.Migrate();
-                    }
-                }
-                catch { }
             }
-            app.UseStaticFiles();
+
+	        var connectionString = new SqlConnectionStringBuilder(Configuration["Data:DefaultConnection:ConnectionString"])
+	        {
+		        InitialCatalog = "master"
+	        }.ConnectionString;
+
+	        using (var db = new DataConnection(SqlServerTools.GetDataProvider(), connectionString))
+	        {
+		        try
+		        {
+			        var sql = "create database [" +
+			                  new SqlConnectionStringBuilder(Configuration["Data:DefaultConnection:ConnectionString"])
+				                  .InitialCatalog + "]";
+			        db.Execute(sql);
+		        }
+		        catch
+		        {
+			        //
+		        }
+
+	        }
+
+			// Try to create tables
+			using (var db = new ApplicationDataConnection())
+			{
+				TryCreateTable<ApplicationUser>(db);
+				TryCreateTable<IdentityRole>(db);
+				TryCreateTable<IdentityUserClaim<string>>(db);
+				TryCreateTable<IdentityRoleClaim<string>>(db);
+				TryCreateTable<IdentityUserLogin<string>>(db);
+				TryCreateTable<IdentityUserRole<string>>(db);
+				TryCreateTable<IdentityUserToken<string>>(db);
+
+			}
+
+			app.UseStaticFiles();
 
             app.UseIdentity();
             // To configure external authentication please see http://go.microsoft.com/fwlink/?LinkID=532715
@@ -100,6 +131,19 @@ namespace IdentitySample
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
         }
+
+	    private void TryCreateTable<T>(ApplicationDataConnection db)
+			where T : class 
+	    {
+		    try
+		    {
+			    db.CreateTable<T>();
+		    }
+		    catch
+		    {
+			    //
+		    }
+	    }
     }
 }
 

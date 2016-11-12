@@ -29,7 +29,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
         protected override bool ShouldSkipDbTests()
             => TestPlatformHelper.IsMono || !TestPlatformHelper.IsWindows;
 
-        //public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+        //public class ApplicationDbContext : IdentityDataConnection<ApplicationUser>
         //{
         //    public ApplicationDbContext() : base()
         //    { }
@@ -125,7 +125,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
         [Fact]
         public async Task UserStorePublicNullCheckTest()
         {
-            Assert.Throws<ArgumentNullException>("factory", () => new UserStore<DataContext, IdentityDbContext, IdentityUser>(null));
+            Assert.Throws<ArgumentNullException>("factory", () => new UserStore<DataContext, IdentityDataConnection, IdentityUser>(null));
             var store = new UserStore<DataContext, DataConnection, IdentityUser>(CreateTestContext());
             await Assert.ThrowsAsync<ArgumentNullException>("user", async () => await store.GetUserIdAsync(null));
             await Assert.ThrowsAsync<ArgumentNullException>("user", async () => await store.GetUserNameAsync(null));

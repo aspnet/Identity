@@ -355,7 +355,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
         public string Context { get; set; }
     }
 
-    //public class ContextWithGenerics : IdentityDbContext<IdentityUserWithGenerics, MyIdentityRole, string, IdentityUserClaimWithIssuer, IdentityUserRoleWithDate, IdentityUserLoginWithContext, IdentityRoleClaimWithIssuer, IdentityUserTokenWithStuff>
+    //public class ContextWithGenerics : IdentityDataConnection<IdentityUserWithGenerics, MyIdentityRole, string, IdentityUserClaimWithIssuer, IdentityUserRoleWithDate, IdentityUserLoginWithContext, IdentityRoleClaimWithIssuer, IdentityUserTokenWithStuff>
     //{
     //    public ContextWithGenerics() : base() { }
     //}

@@ -6,7 +6,7 @@ using LinqToDB.Identity;
 
 namespace IdentitySample.Models
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+    public class ApplicationDataConnection : IdentityDataConnection<ApplicationUser>
     {
     }
 }

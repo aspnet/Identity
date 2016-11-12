@@ -48,7 +48,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
 		        .AddIdentity<IdentityUser, IdentityRole>()
 		        .AddLinqToDBStores(factory);
 
-	        services.AddTransient(_ => new IdentityDbContext(_dataProvider, fixture.ConnectionString));
+	        services.AddTransient(_ => new IdentityDataConnection(_dataProvider, fixture.ConnectionString));
 
             services.AddLogging();
 
@@ -85,7 +85,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
         {
             // Arrange
             var userManager = _builder.ApplicationServices.GetRequiredService<UserManager<IdentityUser>>();
-            var dbContext = _builder.ApplicationServices.GetRequiredService<IdentityDbContext>();
+            var dbContext = _builder.ApplicationServices.GetRequiredService<IdentityDataConnection>();
 
             var username = "user" + new Random().Next();
             var user = new IdentityUser() { UserName = username };
@@ -112,7 +112,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
         {
             // Arrange
             var userManager = _builder.ApplicationServices.GetRequiredService<UserManager<IdentityUser>>();
-            var dbContext = _builder.ApplicationServices.GetRequiredService<IdentityDbContext>();
+            var dbContext = _builder.ApplicationServices.GetRequiredService<IdentityDataConnection>();
 
             var username = "user" + new Random().Next();
             var user = new IdentityUser() { UserName = username };
@@ -140,7 +140,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
             // Arrange
             var userManager = _builder.ApplicationServices.GetRequiredService<UserManager<IdentityUser>>();
             var roleManager = _builder.ApplicationServices.GetRequiredService<RoleManager<IdentityRole>>();
-            var dbContext = _builder.ApplicationServices.GetRequiredService<IdentityDbContext>();
+            var dbContext = _builder.ApplicationServices.GetRequiredService<IdentityDataConnection>();
 
             const string roleName = "Admin";
             for (var i = 0; i < 10; i++)
@@ -180,7 +180,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
         {
             // Arrange
             var roleManager = _builder.ApplicationServices.GetRequiredService<RoleManager<IdentityRole>>();
-            var dbContext = _builder.ApplicationServices.GetRequiredService<IdentityDbContext>();
+            var dbContext = _builder.ApplicationServices.GetRequiredService<IdentityDataConnection>();
 
             var role = new IdentityRole("Admin");
 
