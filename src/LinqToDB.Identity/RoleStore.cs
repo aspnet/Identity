@@ -156,20 +156,17 @@ namespace LinqToDB.Identity
                 throw new ArgumentNullException(nameof(role));
             }
 
-			// TODO 
-			role.ConcurrencyStamp = Guid.NewGuid().ToString();
+			var result = await Task.Run(() => _factory.GetContext().UpdateConcurrent<TRole, TKey>(role), cancellationToken);
+			return result == 1 ? IdentityResult.Success : IdentityResult.Failed(ErrorDescriber.ConcurrencyFailure());
+		}
 
-            await Task.Run(() => Context.Update(role), cancellationToken);
-            return IdentityResult.Success;
-        }
-
-        /// <summary>
-        /// Deletes a role from the store as an asynchronous operation.
-        /// </summary>
-        /// <param name="role">The role to delete from the store.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
-        /// <returns>A <see cref="Task{TResult}"/> that represents the <see cref="IdentityResult"/> of the asynchronous query.</returns>
-        public virtual async Task<IdentityResult> DeleteAsync(TRole role, CancellationToken cancellationToken = default(CancellationToken))
+		/// <summary>
+		/// Deletes a role from the store as an asynchronous operation.
+		/// </summary>
+		/// <param name="role">The role to delete from the store.</param>
+		/// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+		/// <returns>A <see cref="Task{TResult}"/> that represents the <see cref="IdentityResult"/> of the asynchronous query.</returns>
+		public virtual async Task<IdentityResult> DeleteAsync(TRole role, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -178,18 +175,23 @@ namespace LinqToDB.Identity
                 throw new ArgumentNullException(nameof(role));
             }
 
-	        await Task.Run(() => Context.Delete(role), cancellationToken);
+	        var result = await Task.Run(() =>
+		        _factory
+			        .GetContext()
+			        .GetTable<TRole>()
+			        .Where(_ => _.Id.Equals(role.Id) && _.ConcurrencyStamp == role.ConcurrencyStamp)
+			        .Delete(), cancellationToken);
 
-			return IdentityResult.Success;
-        }
+			return result == 1 ? IdentityResult.Success : IdentityResult.Failed(ErrorDescriber.ConcurrencyFailure());
+		}
 
-        /// <summary>
-        /// Gets the ID for a role from the store as an asynchronous operation.
-        /// </summary>
-        /// <param name="role">The role whose ID should be returned.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
-        /// <returns>A <see cref="Task{TResult}"/> that contains the ID of the role.</returns>
-        public Task<string> GetRoleIdAsync(TRole role, CancellationToken cancellationToken = default(CancellationToken))
+		/// <summary>
+		/// Gets the ID for a role from the store as an asynchronous operation.
+		/// </summary>
+		/// <param name="role">The role whose ID should be returned.</param>
+		/// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+		/// <returns>A <see cref="Task{TResult}"/> that contains the ID of the role.</returns>
+		public Task<string> GetRoleIdAsync(TRole role, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();

@@ -394,12 +394,8 @@ namespace LinqToDB.Identity
                 throw new ArgumentNullException(nameof(user));
             }
 
-			//TODO
-			//Context.Attach(user);
-			//user.ConcurrencyStamp = Guid.NewGuid().ToString();
-
-	        await Task.Run(() => _factory.GetContext().Update(user), cancellationToken);
-            return IdentityResult.Success;
+			var result  = await Task.Run(() => _factory.GetContext().UpdateConcurrent<TUser, TKey>(user), cancellationToken);
+	        return result == 1 ? IdentityResult.Success : IdentityResult.Failed(ErrorDescriber.ConcurrencyFailure());
         }
 
         /// <summary>
@@ -417,19 +413,24 @@ namespace LinqToDB.Identity
                 throw new ArgumentNullException(nameof(user));
             }
 
-	        await Task.Run(() => _factory.GetContext().Delete(user), cancellationToken);
-			return IdentityResult.Success;
-        }
+	        var result = await Task.Run(() =>
+		        _factory
+			        .GetContext()
+			        .GetTable<TUser>()
+			        .Where(_ => _.Id.Equals(user.Id) && _.ConcurrencyStamp == user.ConcurrencyStamp)
+			        .Delete(), cancellationToken);
+			return result == 1 ? IdentityResult.Success : IdentityResult.Failed(ErrorDescriber.ConcurrencyFailure());
+		}
 
-        /// <summary>
-        /// Finds and returns a user, if any, who has the specified <paramref name="userId"/>.
-        /// </summary>
-        /// <param name="userId">The user ID to search for.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
-        /// <returns>
-        /// The <see cref="Task"/> that represents the asynchronous operation, containing the user matching the specified <paramref name="userId"/> if it exists.
-        /// </returns>
-        public virtual Task<TUser> FindByIdAsync(string userId, CancellationToken cancellationToken = default(CancellationToken))
+		/// <summary>
+		/// Finds and returns a user, if any, who has the specified <paramref name="userId"/>.
+		/// </summary>
+		/// <param name="userId">The user ID to search for.</param>
+		/// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+		/// <returns>
+		/// The <see cref="Task"/> that represents the asynchronous operation, containing the user matching the specified <paramref name="userId"/> if it exists.
+		/// </returns>
+		public virtual Task<TUser> FindByIdAsync(string userId, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
