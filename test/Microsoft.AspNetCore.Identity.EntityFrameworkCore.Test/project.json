@@ -16,15 +16,15 @@
   },
 	"dependencies": {
 		"dotnet-test-xunit": "2.2.0-*",
-		"Microsoft.AspNetCore.Hosting": "1.1.0-*",
-		"Microsoft.AspNetCore.Http": "1.1.0-*",
-		"Microsoft.AspNetCore.Identity": "1.1.0-*",
-		"LinqToDB.Identity": "1.1.0-*",
-		"Microsoft.AspNetCore.TestHost": "1.1.0-*",
+		"Microsoft.AspNetCore.Hosting": "1.1.0-preview1-final",
+		"Microsoft.AspNetCore.Http": "1.1.0-preview1-final",
+		"Microsoft.AspNetCore.Identity": "1.1.0-preview1-final",
+		"LinqToDB.Identity": "1.1.0",
+		"Microsoft.AspNetCore.TestHost": "1.1.0-preview1-final",
 		"Microsoft.AspNetCore.Testing": "1.1.0-*",
-		"Microsoft.Extensions.Configuration.EnvironmentVariables": "1.1.0-*",
-		"Microsoft.Extensions.Configuration.FileExtensions": "1.1.0-*",
-		"Microsoft.Extensions.Configuration.Json": "1.1.0-*",
+		"Microsoft.Extensions.Configuration.EnvironmentVariables": "1.1.0-preview1-final",
+		"Microsoft.Extensions.Configuration.FileExtensions": "1.1.0-preview1-final",
+		"Microsoft.Extensions.Configuration.Json": "1.1.0-preview1-final",
 		"Moq": "4.6.36-*",
 		"xunit": "2.2.0-*",
 
@@ -37,7 +37,7 @@
           "version": "1.0.0",
           "type": "platform"
         },
-        "System.Diagnostics.TraceSource": "4.3.0-*"
+        "System.Diagnostics.TraceSource": "4.3.0"
       }
     },
     "net451": {}

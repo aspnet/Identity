@@ -30,7 +30,7 @@ build:
   verbosity: minimal
 
 after_build:
-- cmd: dotnet pack --no-build src/LinqToDB.Identity/project.json --version-suffix=beta%APPVEYOR_BUILD_NUMBER% -c=Release
+- cmd: dotnet pack --no-build src/LinqToDB.Identity/project.json --version-suffix=preview1-final -c=Release
 
 before_test:
 - ps: |
@@ -62,3 +62,11 @@ deploy:
   api_key:
     secure: pFvgey1/w68ZvVHFN/GWZdDFjSABpBRfb0XfLnW3wvhlfyEUiSyfr3dAUcbmlpsk
   skip_symbols: true
+
+deploy:
+- provider: NuGet
+  api_key:
+    secure: 9BjFlmIycM3Q3tpwlQRsoC9SPL+BqIoqHKkHihvfR9TvTpYLd9jLcnLnh8eRSmfV
+  skip_symbols: false
+  on:
+    branch: master

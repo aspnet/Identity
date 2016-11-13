@@ -1,12 +1,19 @@
 {
-	"description": "ASP.NET Core Identity provider that uses Entity Framework Core.",
+	"description": "ASP.NET Core Identity provider that uses LinqToDB.",
+	"authors": ["Ilya Chudin"],
 	"version": "1.1.0-*",
 	"buildOptions": {
 		"warningsAsErrors": true,
-		"keyFile": "../../tools/Key.snk",
-		"xmlDoc": true
+		"keyFile": "../../tools/newkey.snk",
+		"xmlDoc": true,
+		"embed": [ "**/*.resx" ]
 	},
 	"packOptions": {
+		"licenseUrl": "https://opensource.org/licenses/MIT",
+		"projectUrl": "https://github.com/ili/LinqToDB.Identity",
+		"iconUrl": "http://www.gravatar.com/avatar/fc2e509b6ed116b9aa29a7988fdb8990?s=320",
+
+		"requireLicenseAcceptance": false,
 		"repository": {
 			"type": "git",
 			"url": "git://github.com/ili/LinqToDB.Identity"
@@ -20,19 +27,19 @@
 		]
 	},
 	"dependencies": {
-		"Microsoft.AspNetCore.Identity": "1.1.0-*",
 		"Microsoft.Extensions.TaskCache.Sources": {
 			"version": "1.1.0-*",
 			"type": "build"
 		},
+		"Microsoft.AspNetCore.Identity": "1.1.0-preview1-final",
 		"NETStandard.Library": "1.6.1-*",
 		"linq2db.core": "1.7.5-*",
-		"Microsoft.Extensions.DependencyInjection": "1.1.0-preview2-22514"
+		"Microsoft.Extensions.DependencyInjection": "1.1.0-preview1-final"
 	},
 	"frameworks": {
 		"netstandard1.6": {
 			"dependencies": {
-				"System.ComponentModel.TypeConverter": "4.3.0-*"
+				"System.ComponentModel.TypeConverter": "4.3.0"
 			}
 		},
 		"net451": {}
