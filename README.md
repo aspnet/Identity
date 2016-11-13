@@ -5,6 +5,11 @@ AppVeyor last build: [![Build status](https://ci.appveyor.com/api/projects/statu
 
 AppVeyor master build: [![Build status](https://ci.appveyor.com/api/projects/status/x15cyc688w9247oj/branch/master?svg=true)](https://ci.appveyor.com/project/ili/linqtodb-identity/branch/master)
 
+## NuGet
+* [NuGet.org](https://www.nuget.org/packages/LinqToDB.Identity/)
+* [MyGet.org](https://www.myget.org/feed/ili/package/nuget/LinqToDB.Identity) feed: https://www.myget.org/F/ili/api/v3/index.json
+
+
 ## Usage
 In general this is the same as for Entity Framework, just call `AddLinqToDBStores` instead of `AddEntityFrameworkStores` in your `Startup.cs` like [here](https://github.com/ili/LinqToDB.Identity/blob/master/samples/IdentitySample.Mvc/Startup.cs#L62)
 
