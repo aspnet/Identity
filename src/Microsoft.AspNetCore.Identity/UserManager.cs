@@ -2160,7 +2160,7 @@ namespace Microsoft.AspNetCore.Identity
             }
         }
 
-        internal async Task<IdentityResult> UpdatePasswordHash(IUserPasswordStore<TUser> passwordStore,
+        protected internal async Task<IdentityResult> UpdatePasswordHash(IUserPasswordStore<TUser> passwordStore,
             TUser user, string newPassword, bool validatePassword = true)
         {
             if (validatePassword)
