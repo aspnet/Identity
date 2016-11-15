@@ -38,20 +38,6 @@ namespace Microsoft.AspNetCore.Identity
         }
 
         /// <summary>
-        /// Returns an <see cref="IdentityError"/> indicating a security stamp was null.
-        /// </summary>
-        /// <returns>An <see cref="IdentityError"/> indicating a security stamp was null.</returns>
-        public virtual IdentityError NullSecurityStamp()
-        {
-            return new IdentityError
-            {
-                Code = nameof(NullSecurityStamp),
-                Description = Resources.NullSecurityStamp
-            };
-        }
-
-
-        /// <summary>
         /// Returns an <see cref="IdentityError"/> indicating a password mismatch.
         /// </summary>
         /// <returns>An <see cref="IdentityError"/> indicating a password mismatch.</returns>
