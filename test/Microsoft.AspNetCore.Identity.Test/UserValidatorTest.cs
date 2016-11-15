@@ -41,26 +41,6 @@ namespace Microsoft.AspNetCore.Identity.Test
             IdentityResultAssert.IsFailure(result, new IdentityErrorDescriber().InvalidUserName(input));
         }
 
-        [Fact]
-        public async Task ValidateFailsWithNullSecurityStamp()
-        {
-            // Setup
-            var store = new Mock<IUserSecurityStampStore<TestUser>>();
-            var manager = MockHelpers.TestUserManager(store.Object);
-            var validator = new UserValidator<TestUser>();
-            var user = new TestUser { UserName = "nulldude" };
-            store.Setup(s => s.GetSecurityStampAsync(user, It.IsAny<CancellationToken>())).ReturnsAsync(null).Verifiable();
-            store.Setup(s => s.GetUserNameAsync(user, It.IsAny<CancellationToken>())).ReturnsAsync(user.UserName).Verifiable();
-
-            // Act
-            var result = await validator.ValidateAsync(manager, user);
-
-            // Assert
-            IdentityResultAssert.IsFailure(result, new IdentityErrorDescriber().NullSecurityStamp());
-
-            store.VerifyAll();
-        }
-
         [Theory]
         [InlineData("test_email@foo.com", true)]
         [InlineData("hao", true)]
