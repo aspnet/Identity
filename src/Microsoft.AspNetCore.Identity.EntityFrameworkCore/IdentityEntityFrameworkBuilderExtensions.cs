@@ -24,7 +24,8 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IdentityBuilder AddEntityFrameworkStores<TContext>(this IdentityBuilder builder)
             where TContext : DbContext
         {
-            AddStores(builder.Services, builder.UserType, builder.RoleType, typeof(TContext), typeof(string));
+            var keyType = InferKeyType(typeof(TContext));
+            AddStores(builder.Services, builder.UserType, builder.RoleType, typeof(TContext), keyType);
             return builder;
         }
 
@@ -61,6 +62,22 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddScoped(
                 typeof(IRoleStore<>).MakeGenericType(roleType),
                 typeof(RoleStore<,,>).MakeGenericType(roleType, contextType, keyType));
+        }
+
+        private static Type InferKeyType(Type contextType)
+        {
+            var type = contextType.GetTypeInfo();
+            while (type.BaseType != null)
+            {
+                type = type.BaseType.GetTypeInfo();
+                var genericType = type.IsGenericType ? type.GetGenericTypeDefinition() : null;
+                if (genericType != null && genericType == typeof(IdentityDbContext<,,>))
+                {
+                    return type.GenericTypeArguments[2];
+                }
+            }
+            // Default is string
+            return typeof(string);
         }
     }
 }
