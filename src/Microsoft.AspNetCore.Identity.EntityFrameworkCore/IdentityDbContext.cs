@@ -162,7 +162,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
                 b.HasMany(u => u.Claims).WithOne().HasForeignKey(uc => uc.UserId).IsRequired();
                 b.HasMany(u => u.Logins).WithOne().HasForeignKey(ul => ul.UserId).IsRequired();
                 b.HasMany(u => u.Roles).WithOne().HasForeignKey(ur => ur.UserId).IsRequired();
-                b.HasMany(u => u.Tokens).WithOne().HasForeignKey(uc => uc.UserId).IsRequired();
+                b.HasMany(u => u.Tokens).WithOne().HasForeignKey(ut => ut.UserId).IsRequired();
             });
 
             builder.Entity<TRole>(b =>
