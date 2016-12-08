@@ -22,7 +22,7 @@ namespace Microsoft.AspNetCore.Identity.Test
     /// </summary>
     /// <typeparam name="TUser">The type of the user.</typeparam>
     /// <typeparam name="TRole">The type of the role.</typeparam>
-    public abstract class UserManagerTestBase<TUser, TRole> : UserManagerTestBase<TUser, TRole, string>
+    public abstract class IdentityApiTestBase<TUser, TRole> : IdentityApiTestBase<TUser, TRole, string>
         where TUser : class
         where TRole : class
     { }
@@ -33,7 +33,7 @@ namespace Microsoft.AspNetCore.Identity.Test
     /// <typeparam name="TUser">The type of the user.</typeparam>
     /// <typeparam name="TRole">The type of the role.</typeparam>
     /// <typeparam name="TKey">The primary key type.</typeparam>
-    public abstract class UserManagerTestBase<TUser, TRole, TKey>
+    public abstract class IdentityApiTestBase<TUser, TRole, TKey>
         where TUser : class
         where TRole : class
         where TKey : IEquatable<TKey>
