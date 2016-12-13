@@ -15,7 +15,6 @@ using Microsoft.AspNetCore.Testing.xunit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Moq;
 using Xunit;
 
 namespace Microsoft.AspNetCore.Identity.Test
@@ -2378,20 +2377,6 @@ namespace Microsoft.AspNetCore.Identity.Test
         /// Test.
         /// </summary>
         /// <returns>Task</returns>
-        private static SignInManager<TUser> SetupSignInManager(UserManager<TUser> manager, HttpContext context, StringBuilder logStore = null, IdentityOptions identityOptions = null)
-        {
-            var contextAccessor = new Mock<IHttpContextAccessor>();
-            contextAccessor.Setup(a => a.HttpContext).Returns(context);
-            var roleManager = MockHelpers.MockRoleManager<TRole>();
-            identityOptions = identityOptions ?? new IdentityOptions();
-            var options = new Mock<IOptions<IdentityOptions>>();
-            options.Setup(a => a.Value).Returns(identityOptions);
-            var claimsFactory = new UserClaimsPrincipalFactory<TUser, TRole>(manager, roleManager.Object, options.Object);
-            var sm = new SignInManager<TUser>(manager, contextAccessor.Object, claimsFactory, options.Object, null);
-            sm.Logger = MockHelpers.MockILogger<SignInManager<TestUser>>(logStore ?? new StringBuilder()).Object;
-            return sm;
-        }
-
         [Fact]
         public async Task CanRedeemRecoveryCodeOnlyOnce()
         {
@@ -2419,6 +2404,10 @@ namespace Microsoft.AspNetCore.Identity.Test
             }
         }
 
+        /// <summary>
+        /// Test.
+        /// </summary>
+        /// <returns>Task</returns>
         [Fact]
         public async Task RecoveryCodesInvalidAfterReplace()
         {
@@ -2447,6 +2436,10 @@ namespace Microsoft.AspNetCore.Identity.Test
             }
         }
 
+        /// <summary>
+        /// Test.
+        /// </summary>
+        /// <returns>Task</returns>
         [Fact]
         public async Task CanGetValidTwoFactor()
         {
