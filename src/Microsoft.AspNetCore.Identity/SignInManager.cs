@@ -186,12 +186,26 @@ namespace Microsoft.AspNetCore.Identity
         /// <returns>The task object representing the asynchronous operation.</returns>
         public virtual async Task SignInAsync(TUser user, AuthenticationProperties authenticationProperties, string authenticationMethod = null)
         {
+            if (Options.User.DisableMultipleLogin && UserManager.SupportsUserSecurityStamp)
+            {
+                await UserManager.UpdateSecurityStampAsync(user);
+            }
             var userPrincipal = await CreateUserPrincipalAsync(user);
             // Review: should we guard against CreateUserPrincipal returning null?
             if (authenticationMethod != null)
             {
                 userPrincipal.Identities.First().AddClaim(new Claim(ClaimTypes.AuthenticationMethod, authenticationMethod));
             }
+
+            if (UserManager.SupportsUserActivity)
+            {
+                await UserManager.SetUserActiveAsync(user);
+                if (Options.User.MaximumSignedIn > 0)
+                {
+                    await UserManager.EnsureMaximumOnlineAsync();
+                }
+            }            
+
             await Context.Authentication.SignInAsync(Options.Cookies.ApplicationCookieAuthenticationScheme,
                 userPrincipal,
                 authenticationProperties ?? new AuthenticationProperties());
@@ -202,6 +216,11 @@ namespace Microsoft.AspNetCore.Identity
         /// </summary>
         public virtual async Task SignOutAsync()
         {
+            if (Options.User.DisableMultipleLogin && UserManager.SupportsUserActivity)
+            {
+                var user = await UserManager.GetUserAsync(Context.User);
+                await UserManager.SetUserActiveAsync(user, false);
+            }
             await Context.Authentication.SignOutAsync(Options.Cookies.ApplicationCookieAuthenticationScheme);
             await Context.Authentication.SignOutAsync(Options.Cookies.ExternalCookieAuthenticationScheme);
             await Context.Authentication.SignOutAsync(Options.Cookies.TwoFactorUserIdCookieAuthenticationScheme);
@@ -666,6 +685,21 @@ namespace Microsoft.AspNetCore.Identity
         /// <returns>Null if the user should be allowed to sign in, otherwise the SignInResult why they should be denied.</returns>
         protected virtual async Task<SignInResult> PreSignInCheck(TUser user)
         {
+            if (Options.User.DisableMultipleLogin && UserManager.SupportsUserActivity)
+            {
+                if (await UserManager.IsUserActiveAsync(user))
+                {
+                    return SignInResult.SignedIn;
+                }
+            }
+            if (Options.User.MaximumSignedIn > 0 && UserManager.SupportsUserActivity)
+            {
+                var usersCount = (await UserManager.GetActiveUsersAsync()).Count();
+                if (usersCount >= Options.User.MaximumSignedIn)
+                {
+                    return SignInResult.SignedIn;
+                }
+            }
             if (!await CanSignInAsync(user))
             {
                 return SignInResult.NotAllowed;

@@ -201,7 +201,8 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
         IUserPhoneNumberStore<TUser>,
         IQueryableUserStore<TUser>,
         IUserTwoFactorStore<TUser>,
-        IUserAuthenticationTokenStore<TUser>
+        IUserAuthenticationTokenStore<TUser>,
+        IUserActivityStore<TUser>
         where TUser : IdentityUser<TKey, TUserClaim, TUserRole, TUserLogin>
         where TRole : IdentityRole<TKey, TUserRole, TRoleClaim>
         where TContext : DbContext
@@ -1446,6 +1447,113 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
             }
             var entry = await FindToken(user, loginProvider, name, cancellationToken);
             return entry?.Value;
+        }
+
+
+        /// <summary>
+        /// Provides list of users that has registered activity in specified time span
+        /// </summary>
+        /// <param name="activitySpan">Time span for activity</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>A <see cref="Task{TResult}"/> that represents the result of the asynchronous query, a list of online users</returns>
+        public Task<IQueryable<TUser>> GetOnlineUsersAsync(TimeSpan activitySpan, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            ThrowIfDisposed();
+            if (activitySpan > TimeSpan.FromDays(10000))
+            {
+                activitySpan = TimeSpan.FromDays(10000);
+            }
+            var margin = DateTimeOffset.UtcNow - activitySpan;
+            var query = Users.Where(u => u.LastActivity.HasValue && u.LastActivity.Value > margin);
+            return Task.FromResult(query);
+        }
+
+       
+        /// <summary>
+        /// Sets user's last activity timestamp
+        /// </summary>
+        /// <param name="user">The user, whose activity is being updated</param>
+        /// <param name="activityTime">Timestamp of last registered activity (null for reset)</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
+        protected virtual Task SetActivityTimeAsync(TUser user, DateTimeOffset? activityTime,
+            CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            ThrowIfDisposed();
+
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            user.LastActivity = activityTime;
+            return TaskCache.CompletedTask;
+        }
+
+        /// <summary>
+        /// Updates user's last activity timestamp
+        /// </summary>
+        /// <param name="user">The user, whose activity is being updated</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
+        public async Task UpdateActivityTimeAsync(TUser user, CancellationToken cancellationToken)
+        {
+            await SetActivityTimeAsync(user, DateTimeOffset.UtcNow, cancellationToken);
+        }
+
+        /// <summary>
+        /// Resets user's last activity timestamp
+        /// </summary>
+        /// <param name="user">The user, whose activity is being reset</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
+        public async Task ResetActivityTimeAsync(TUser user, CancellationToken cancellationToken)
+        {
+            await SetActivityTimeAsync(user, null, cancellationToken);
+        }
+
+
+        /// <summary>
+        /// Checks if user has registered activity in specified time span
+        /// </summary>
+        /// <param name="user">The user, whose activity is being checked</param>
+        /// <param name="activitySpan">Time span for checking activity</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>A <see cref="Task{TResult}"/> that represents the result of the asynchronous query, a flag indicating user's activity</returns>
+        public async Task<bool> IsUserActiveAsync(TUser user, TimeSpan activitySpan, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            ThrowIfDisposed();
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+            if (activitySpan > TimeSpan.FromDays(10000))
+            {
+                activitySpan = TimeSpan.FromDays(10000);
+            }
+            var margin = DateTimeOffset.UtcNow - activitySpan;
+            return await Task.FromResult(user.LastActivity.HasValue && user.LastActivity.Value > margin);
+        }
+
+        /// <summary>
+        /// Gets activity timestamp of the specified user
+        /// </summary>
+        /// <param name="user">The user, whose activity timestamp is being retrived</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>Activity timestamp of the specified user</returns>
+        public Task<DateTimeOffset?> GetUserActivityTimestampAsync(TUser user, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            ThrowIfDisposed();
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+            
+            return Task.FromResult(user.LastActivity);
         }
     }
 }

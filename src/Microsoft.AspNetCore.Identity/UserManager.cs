@@ -170,6 +170,21 @@ namespace Microsoft.AspNetCore.Identity
         }
 
         /// <summary>
+        /// Gets a flag indicating whether the backing user store supports user activity tracking.
+        /// </summary>
+        /// <value>
+        /// true  if the backing user store supports user activity, otherwise false.
+        /// </value>
+        public virtual bool SupportsUserActivity
+        {
+            get
+            {
+                ThrowIfDisposed();
+                return Store is IUserActivityStore<TUser>;
+            }
+        }
+
+        /// <summary>
         /// Gets a flag indicating whether the backing user store supports two factor authentication.
         /// </summary>
         /// <value>
@@ -1449,6 +1464,110 @@ namespace Microsoft.AspNetCore.Identity
             return await UpdateUserAsync(user);
         }
 
+
+        /// <summary>
+        /// Checks if user was active in the time span specified in options
+        /// </summary>
+        /// <param name="user">The user whose activity is being checked</param>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the user's activity flag.</returns>
+        public virtual async Task<bool> IsUserActiveAsync(TUser user)
+        {
+            ThrowIfDisposed();
+            var store = GetActivityStore();
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+            
+            return await store.IsUserActiveAsync(user, Options.User.ActivityTimeout, CancellationToken);
+        }
+
+
+        /// <summary>
+        /// Returns an <see cref="IQueryable{T}"/> collection of currently active users
+        /// </summary>
+        /// <returns>An <see cref="IQueryable{T}"/> collection of currently active users</returns>
+        public virtual async Task<IQueryable<TUser>> GetActiveUsersAsync()
+        {
+            ThrowIfDisposed();
+            var store = GetActivityStore();
+
+            return await store.GetOnlineUsersAsync(Options.User.ActivityTimeout, CancellationToken);
+        }
+
+        /// <summary>
+        /// Ensures that maximum allowed online limit is not exceeded and signs off
+        /// users with most old activity timestamps if necessary
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing asyncronous operation </returns>
+        public virtual async Task EnsureMaximumOnlineAsync()
+        {
+            ThrowIfDisposed();
+            var store = GetActivityStore();
+
+            if (Options.User.MaximumSignedIn <= 0)
+            {
+                return;
+            }
+
+            var everActiveCount = (await store.GetOnlineUsersAsync(TimeSpan.MaxValue, CancellationToken)).Count();
+            if (everActiveCount <= Options.User.MaximumSignedIn)
+            {
+                return;
+            }
+
+            var userTaskList = (await store.GetOnlineUsersAsync(TimeSpan.MaxValue, CancellationToken))
+                            .Select(u => new { User = u, ActivityTask = store.GetUserActivityTimestampAsync(u, CancellationToken) })
+                            .ToList();
+            await Task.WhenAll(userTaskList.Select(x => x.ActivityTask));
+            var signingOffUsers =
+                userTaskList.OrderBy(i => i.ActivityTask.Result)
+                    .Take(everActiveCount - Options.User.MaximumSignedIn)
+                    .Select(i => i.User);
+            foreach (var user in signingOffUsers)
+            {
+                await UpdateSecurityStampAsync(user);
+                await SetUserActiveAsync(user, false);
+                await UpdateUserAsync(user);
+            }
+        }
+
+        /// <summary>
+        /// Depending on provided activity flag updates user's last activity time or resets it
+        /// </summary>
+        /// <param name="user">The user, whose activity is being changed</param>
+        /// <param name="active">The activity flag</param>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation</returns>
+        public virtual async Task<IdentityResult> SetUserActiveAsync(TUser user, bool active = true)
+        {
+            ThrowIfDisposed();
+            var store = GetActivityStore();
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+            //not to bother DB too often
+            var lastActivity = await store.GetUserActivityTimestampAsync(user, CancellationToken);
+            if (active)
+            {
+                if (lastActivity.HasValue && (DateTimeOffset.UtcNow - lastActivity.Value < TimeSpan.FromMinutes(1)))
+                {
+                    return await Task.FromResult(IdentityResult.Success);
+                }
+                await store.UpdateActivityTimeAsync(user, CancellationToken);
+            }
+            else
+            {
+                if (!lastActivity.HasValue)
+                {
+                    return await Task.FromResult(IdentityResult.Success);
+                }
+                await store.ResetActivityTimeAsync(user, CancellationToken);
+            }
+
+            return await UpdateUserAsync(user);
+        }
+
         /// <summary>
         /// Gets the telephone number, if any, for the specified <paramref name="user"/>.
         /// </summary>
@@ -2145,6 +2264,17 @@ namespace Microsoft.AspNetCore.Identity
             }
             return cast;
         }
+
+        internal IUserActivityStore<TUser> GetActivityStore()
+        {
+            var cast = Store as IUserActivityStore<TUser>;
+            if (cast == null)
+            {
+                throw new NotSupportedException(Resources.StoreNotIUserActivityStore);
+            }
+            return cast;
+        }
+
 
         internal async Task<byte[]> CreateSecurityTokenAsync(TUser user)
         {

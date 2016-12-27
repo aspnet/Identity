@@ -152,6 +152,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
                 b.HasKey(u => u.Id);
                 b.HasIndex(u => u.NormalizedUserName).HasName("UserNameIndex").IsUnique();
                 b.HasIndex(u => u.NormalizedEmail).HasName("EmailIndex");
+                b.HasIndex(u => u.LastActivity).HasName("ActivityIndex");
                 b.ToTable("AspNetUsers");
                 b.Property(u => u.ConcurrencyStamp).IsConcurrencyToken();
 

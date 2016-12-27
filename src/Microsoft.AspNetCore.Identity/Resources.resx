@@ -217,6 +217,10 @@
     <value>Store does not implement IQueryableUserStore&lt;TUser&gt;.</value>
     <comment>Error when the store does not implement this interface</comment>
   </data>
+  <data name="StoreNotIUserActivityStore" xml:space="preserve">
+    <value>Store does not implement IUserActivityStore&lt;TUser&gt;.</value>
+    <comment>Error when the store does not implement this interface</comment>
+  </data>
   <data name="StoreNotIRoleClaimStore" xml:space="preserve">
     <value>Store does not implement IRoleClaimStore&lt;TRole&gt;.</value>
     <comment>Error when the store does not implement this interface</comment>
