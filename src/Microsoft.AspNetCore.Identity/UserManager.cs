@@ -545,8 +545,7 @@ namespace Microsoft.AspNetCore.Identity
         /// </returns>
         public virtual async Task<IdentityResult> CreateAsync(TUser user, string password)
         {
-            ThrowIfDisposed();
-            var passwordStore = GetPasswordStore();
+            ThrowIfDisposed();            
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
@@ -555,6 +554,8 @@ namespace Microsoft.AspNetCore.Identity
             {
                 throw new ArgumentNullException(nameof(password));
             }
+
+            var passwordStore = GetPasswordStore();
             var result = await UpdatePasswordHash(passwordStore, user, password);
             if (!result.Succeeded)
             {
@@ -640,13 +641,13 @@ namespace Microsoft.AspNetCore.Identity
         /// otherwise false.</returns>
         public virtual async Task<bool> CheckPasswordAsync(TUser user, string password)
         {
-            ThrowIfDisposed();
-            var passwordStore = GetPasswordStore();
+            ThrowIfDisposed();            
             if (user == null)
             {
                 return false;
             }
 
+            var passwordStore = GetPasswordStore();
             var result = await VerifyPasswordAsync(passwordStore, user, password);
             if (result == PasswordVerificationResult.SuccessRehashNeeded)
             {
@@ -672,13 +673,13 @@ namespace Microsoft.AspNetCore.Identity
         /// </returns>
         public virtual Task<bool> HasPasswordAsync(TUser user)
         {
-            ThrowIfDisposed();
-            var passwordStore = GetPasswordStore();
+            ThrowIfDisposed();            
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
 
+            var passwordStore = GetPasswordStore();
             return passwordStore.HasPasswordAsync(user, CancellationToken);
         }
 
@@ -694,13 +695,13 @@ namespace Microsoft.AspNetCore.Identity
         /// </returns>
         public virtual async Task<IdentityResult> AddPasswordAsync(TUser user, string password)
         {
-            ThrowIfDisposed();
-            var passwordStore = GetPasswordStore();
+            ThrowIfDisposed();            
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
 
+            var passwordStore = GetPasswordStore();
             var hash = await passwordStore.GetPasswordHashAsync(user, CancellationToken);
             if (hash != null)
             {
@@ -728,14 +729,13 @@ namespace Microsoft.AspNetCore.Identity
         /// </returns>
         public virtual async Task<IdentityResult> ChangePasswordAsync(TUser user, string currentPassword, string newPassword)
         {
-            ThrowIfDisposed();
-            var passwordStore = GetPasswordStore();
+            ThrowIfDisposed();           
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
 
-
+            var passwordStore = GetPasswordStore();
             if (await VerifyPasswordAsync(passwordStore, user, currentPassword) != PasswordVerificationResult.Failed)
             {
                 var result = await UpdatePasswordHash(passwordStore, user, newPassword);
@@ -761,13 +761,13 @@ namespace Microsoft.AspNetCore.Identity
         public virtual async Task<IdentityResult> RemovePasswordAsync(TUser user,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            ThrowIfDisposed();
-            var passwordStore = GetPasswordStore();
+            ThrowIfDisposed();           
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
 
+            var passwordStore = GetPasswordStore();
             await UpdatePasswordHash(passwordStore, user, null, validatePassword: false);
             return await UpdateUserAsync(user);
         }
@@ -799,12 +799,13 @@ namespace Microsoft.AspNetCore.Identity
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the security stamp for the specified <paramref name="user"/>.</returns>
         public virtual async Task<string> GetSecurityStampAsync(TUser user)
         {
-            ThrowIfDisposed();
-            var securityStore = GetSecurityStore();
+            ThrowIfDisposed();            
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
+
+            var securityStore = GetSecurityStore();
             return await securityStore.GetSecurityStampAsync(user, CancellationToken);
         }
 
@@ -821,13 +822,12 @@ namespace Microsoft.AspNetCore.Identity
         /// </remarks>
         public virtual async Task<IdentityResult> UpdateSecurityStampAsync(TUser user)
         {
-            ThrowIfDisposed();
-            GetSecurityStore();
+            ThrowIfDisposed();            
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
-
+                        
             await UpdateSecurityStampInternal(user);
             return await UpdateUserAsync(user);
         }
@@ -888,8 +888,7 @@ namespace Microsoft.AspNetCore.Identity
         /// </returns>
         public virtual Task<TUser> FindByLoginAsync(string loginProvider, string providerKey)
         {
-            ThrowIfDisposed();
-            var loginStore = GetLoginStore();
+            ThrowIfDisposed();            
             if (loginProvider == null)
             {
                 throw new ArgumentNullException(nameof(loginProvider));
@@ -898,6 +897,8 @@ namespace Microsoft.AspNetCore.Identity
             {
                 throw new ArgumentNullException(nameof(providerKey));
             }
+
+            var loginStore = GetLoginStore();
             return loginStore.FindByLoginAsync(loginProvider, providerKey, CancellationToken);
         }
 
@@ -914,8 +915,7 @@ namespace Microsoft.AspNetCore.Identity
         /// </returns>
         public virtual async Task<IdentityResult> RemoveLoginAsync(TUser user, string loginProvider, string providerKey)
         {
-            ThrowIfDisposed();
-            var loginStore = GetLoginStore();
+            ThrowIfDisposed();            
             if (loginProvider == null)
             {
                 throw new ArgumentNullException(nameof(loginProvider));
@@ -929,6 +929,7 @@ namespace Microsoft.AspNetCore.Identity
                 throw new ArgumentNullException(nameof(user));
             }
 
+            var loginStore = GetLoginStore();
             await loginStore.RemoveLoginAsync(user, loginProvider, providerKey, CancellationToken);
             await UpdateSecurityStampInternal(user);
             return await UpdateUserAsync(user);
@@ -945,8 +946,7 @@ namespace Microsoft.AspNetCore.Identity
         /// </returns>
         public virtual async Task<IdentityResult> AddLoginAsync(TUser user, UserLoginInfo login)
         {
-            ThrowIfDisposed();
-            var loginStore = GetLoginStore();
+            ThrowIfDisposed();            
             if (login == null)
             {
                 throw new ArgumentNullException(nameof(login));
@@ -955,13 +955,15 @@ namespace Microsoft.AspNetCore.Identity
             {
                 throw new ArgumentNullException(nameof(user));
             }
-
+            
             var existingUser = await FindByLoginAsync(login.LoginProvider, login.ProviderKey);
             if (existingUser != null)
             {
                 Logger.LogWarning(4, "AddLogin for user {userId} failed because it was already assocated with another user.", await GetUserIdAsync(user));
                 return IdentityResult.Failed(ErrorDescriber.LoginAlreadyAssociated());
             }
+
+            var loginStore = GetLoginStore();
             await loginStore.AddLoginAsync(user, login, CancellationToken);
             return await UpdateUserAsync(user);
         }
@@ -975,12 +977,13 @@ namespace Microsoft.AspNetCore.Identity
         /// </returns>
         public virtual async Task<IList<UserLoginInfo>> GetLoginsAsync(TUser user)
         {
-            ThrowIfDisposed();
-            var loginStore = GetLoginStore();
+            ThrowIfDisposed();            
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
+
+            var loginStore = GetLoginStore();
             return await loginStore.GetLoginsAsync(user, CancellationToken);
         }
 
@@ -995,8 +998,7 @@ namespace Microsoft.AspNetCore.Identity
         /// </returns>
         public virtual Task<IdentityResult> AddClaimAsync(TUser user, Claim claim)
         {
-            ThrowIfDisposed();
-            var claimStore = GetClaimStore();
+            ThrowIfDisposed();           
             if (claim == null)
             {
                 throw new ArgumentNullException(nameof(claim));
@@ -1005,6 +1007,7 @@ namespace Microsoft.AspNetCore.Identity
             {
                 throw new ArgumentNullException(nameof(user));
             }
+                        
             return AddClaimsAsync(user, new Claim[] { claim });
         }
 
@@ -1019,8 +1022,7 @@ namespace Microsoft.AspNetCore.Identity
         /// </returns>
         public virtual async Task<IdentityResult> AddClaimsAsync(TUser user, IEnumerable<Claim> claims)
         {
-            ThrowIfDisposed();
-            var claimStore = GetClaimStore();
+            ThrowIfDisposed();            
             if (claims == null)
             {
                 throw new ArgumentNullException(nameof(claims));
@@ -1030,6 +1032,7 @@ namespace Microsoft.AspNetCore.Identity
                 throw new ArgumentNullException(nameof(user));
             }
 
+            var claimStore = GetClaimStore();
             await claimStore.AddClaimsAsync(user, claims, CancellationToken);
             return await UpdateUserAsync(user);
         }
@@ -1046,8 +1049,7 @@ namespace Microsoft.AspNetCore.Identity
         /// </returns>
         public virtual async Task<IdentityResult> ReplaceClaimAsync(TUser user, Claim claim, Claim newClaim)
         {
-            ThrowIfDisposed();
-            var claimStore = GetClaimStore();
+            ThrowIfDisposed();            
             if (claim == null)
             {
                 throw new ArgumentNullException(nameof(claim));
@@ -1061,6 +1063,7 @@ namespace Microsoft.AspNetCore.Identity
                 throw new ArgumentNullException(nameof(user));
             }
 
+            var claimStore = GetClaimStore();
             await claimStore.ReplaceClaimAsync(user, claim, newClaim, CancellationToken);
             return await UpdateUserAsync(user);
         }
@@ -1076,8 +1079,7 @@ namespace Microsoft.AspNetCore.Identity
         /// </returns>
         public virtual Task<IdentityResult> RemoveClaimAsync(TUser user, Claim claim)
         {
-            ThrowIfDisposed();
-            var claimStore = GetClaimStore();
+            ThrowIfDisposed();            
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
@@ -1100,8 +1102,7 @@ namespace Microsoft.AspNetCore.Identity
         /// </returns>
         public virtual async Task<IdentityResult> RemoveClaimsAsync(TUser user, IEnumerable<Claim> claims)
         {
-            ThrowIfDisposed();
-            var claimStore = GetClaimStore();
+            ThrowIfDisposed();            
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
@@ -1111,6 +1112,7 @@ namespace Microsoft.AspNetCore.Identity
                 throw new ArgumentNullException(nameof(claims));
             }
 
+            var claimStore = GetClaimStore();
             await claimStore.RemoveClaimsAsync(user, claims, CancellationToken);
             return await UpdateUserAsync(user);
         }
@@ -1124,12 +1126,13 @@ namespace Microsoft.AspNetCore.Identity
         /// </returns>
         public virtual async Task<IList<Claim>> GetClaimsAsync(TUser user)
         {
-            ThrowIfDisposed();
-            var claimStore = GetClaimStore();
+            ThrowIfDisposed();            
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
+
+            var claimStore = GetClaimStore();
             return await claimStore.GetClaimsAsync(user, CancellationToken);
         }
 
@@ -1144,13 +1147,13 @@ namespace Microsoft.AspNetCore.Identity
         /// </returns>
         public virtual async Task<IdentityResult> AddToRoleAsync(TUser user, string role)
         {
-            ThrowIfDisposed();
-            var userRoleStore = GetUserRoleStore();
+            ThrowIfDisposed();            
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
 
+            var userRoleStore = GetUserRoleStore();
             var normalizedRole = NormalizeKey(role);
             if (await userRoleStore.IsInRoleAsync(user, normalizedRole, CancellationToken))
             {
@@ -1171,8 +1174,7 @@ namespace Microsoft.AspNetCore.Identity
         /// </returns>
         public virtual async Task<IdentityResult> AddToRolesAsync(TUser user, IEnumerable<string> roles)
         {
-            ThrowIfDisposed();
-            var userRoleStore = GetUserRoleStore();
+            ThrowIfDisposed();           
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
@@ -1182,6 +1184,7 @@ namespace Microsoft.AspNetCore.Identity
                 throw new ArgumentNullException(nameof(roles));
             }
 
+            var userRoleStore = GetUserRoleStore();
             foreach (var role in roles.Distinct())
             {
                 var normalizedRole = NormalizeKey(role);
@@ -1205,13 +1208,13 @@ namespace Microsoft.AspNetCore.Identity
         /// </returns>
         public virtual async Task<IdentityResult> RemoveFromRoleAsync(TUser user, string role)
         {
-            ThrowIfDisposed();
-            var userRoleStore = GetUserRoleStore();
+            ThrowIfDisposed();            
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
 
+            var userRoleStore = GetUserRoleStore();
             var normalizedRole = NormalizeKey(role);
             if (!await userRoleStore.IsInRoleAsync(user, normalizedRole, CancellationToken))
             {
@@ -1244,8 +1247,7 @@ namespace Microsoft.AspNetCore.Identity
         /// </returns>
         public virtual async Task<IdentityResult> RemoveFromRolesAsync(TUser user, IEnumerable<string> roles)
         {
-            ThrowIfDisposed();
-            var userRoleStore = GetUserRoleStore();
+            ThrowIfDisposed();            
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
@@ -1255,6 +1257,7 @@ namespace Microsoft.AspNetCore.Identity
                 throw new ArgumentNullException(nameof(roles));
             }
 
+            var userRoleStore = GetUserRoleStore();
             foreach (var role in roles)
             {
                 var normalizedRole = NormalizeKey(role);
@@ -1274,12 +1277,13 @@ namespace Microsoft.AspNetCore.Identity
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing a list of role names.</returns>
         public virtual async Task<IList<string>> GetRolesAsync(TUser user)
         {
-            ThrowIfDisposed();
-            var userRoleStore = GetUserRoleStore();
+            ThrowIfDisposed();            
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
+
+            var userRoleStore = GetUserRoleStore();
             return await userRoleStore.GetRolesAsync(user, CancellationToken);
         }
 
@@ -1294,12 +1298,13 @@ namespace Microsoft.AspNetCore.Identity
         /// </returns>
         public virtual async Task<bool> IsInRoleAsync(TUser user, string role)
         {
-            ThrowIfDisposed();
-            var userRoleStore = GetUserRoleStore();
+            ThrowIfDisposed();            
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
+
+            var userRoleStore = GetUserRoleStore();
             return await userRoleStore.IsInRoleAsync(user, NormalizeKey(role), CancellationToken);
         }
 
@@ -1310,12 +1315,13 @@ namespace Microsoft.AspNetCore.Identity
         /// <returns>The task object containing the results of the asynchronous operation, the email address for the specified <paramref name="user"/>.</returns>
         public virtual async Task<string> GetEmailAsync(TUser user)
         {
-            ThrowIfDisposed();
-            var store = GetEmailStore();
+            ThrowIfDisposed();            
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
+
+            var store = GetEmailStore();
             return await store.GetEmailAsync(user, CancellationToken);
         }
 
@@ -1330,13 +1336,13 @@ namespace Microsoft.AspNetCore.Identity
         /// </returns>
         public virtual async Task<IdentityResult> SetEmailAsync(TUser user, string email)
         {
-            ThrowIfDisposed();
-            var store = GetEmailStore();
+            ThrowIfDisposed();            
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
 
+            var store = GetEmailStore();
             await store.SetEmailAsync(user, email, CancellationToken);
             await store.SetEmailConfirmedAsync(user, false, CancellationToken);
             await UpdateSecurityStampInternal(user);
@@ -1352,12 +1358,13 @@ namespace Microsoft.AspNetCore.Identity
         /// </returns>
         public virtual Task<TUser> FindByEmailAsync(string email)
         {
-            ThrowIfDisposed();
-            var store = GetEmailStore();
+            ThrowIfDisposed();            
             if (email == null)
             {
                 throw new ArgumentNullException(nameof(email));
             }
+
+            var store = GetEmailStore();
             return store.FindByEmailAsync(NormalizeKey(email), CancellationToken);
         }
 
@@ -1400,8 +1407,7 @@ namespace Microsoft.AspNetCore.Identity
         /// </returns>
         public virtual async Task<IdentityResult> ConfirmEmailAsync(TUser user, string token)
         {
-            ThrowIfDisposed();
-            var store = GetEmailStore();
+            ThrowIfDisposed();            
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
@@ -1411,6 +1417,8 @@ namespace Microsoft.AspNetCore.Identity
             {
                 return IdentityResult.Failed(ErrorDescriber.InvalidToken());
             }
+
+            var store = GetEmailStore();
             await store.SetEmailConfirmedAsync(user, true, CancellationToken);
             return await UpdateUserAsync(user);
         }
@@ -1426,12 +1434,13 @@ namespace Microsoft.AspNetCore.Identity
         /// </returns>
         public virtual async Task<bool> IsEmailConfirmedAsync(TUser user)
         {
-            ThrowIfDisposed();
-            var store = GetEmailStore();
+            ThrowIfDisposed();            
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
+
+            var store = GetEmailStore();
             return await store.GetEmailConfirmedAsync(user, CancellationToken);
         }
 
@@ -1472,6 +1481,7 @@ namespace Microsoft.AspNetCore.Identity
             {
                 return IdentityResult.Failed(ErrorDescriber.InvalidToken());
             }
+
             var store = GetEmailStore();
             await store.SetEmailAsync(user, newEmail, CancellationToken);
             await store.SetEmailConfirmedAsync(user, true, CancellationToken);
@@ -1486,12 +1496,13 @@ namespace Microsoft.AspNetCore.Identity
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the user's telephone number, if any.</returns>
         public virtual async Task<string> GetPhoneNumberAsync(TUser user)
         {
-            ThrowIfDisposed();
-            var store = GetPhoneNumberStore();
+            ThrowIfDisposed();            
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
+
+            var store = GetPhoneNumberStore();
             return await store.GetPhoneNumberAsync(user, CancellationToken);
         }
 
@@ -1506,13 +1517,13 @@ namespace Microsoft.AspNetCore.Identity
         /// </returns>
         public virtual async Task<IdentityResult> SetPhoneNumberAsync(TUser user, string phoneNumber)
         {
-            ThrowIfDisposed();
-            var store = GetPhoneNumberStore();
+            ThrowIfDisposed();            
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
 
+            var store = GetPhoneNumberStore();
             await store.SetPhoneNumberAsync(user, phoneNumber, CancellationToken);
             await store.SetPhoneNumberConfirmedAsync(user, false, CancellationToken);
             await UpdateSecurityStampInternal(user);
@@ -1532,8 +1543,7 @@ namespace Microsoft.AspNetCore.Identity
         /// </returns>
         public virtual async Task<IdentityResult> ChangePhoneNumberAsync(TUser user, string phoneNumber, string token)
         {
-            ThrowIfDisposed();
-            var store = GetPhoneNumberStore();
+            ThrowIfDisposed();            
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
@@ -1544,6 +1554,8 @@ namespace Microsoft.AspNetCore.Identity
                 Logger.LogWarning(7, "Change phone number for user {userId} failed with invalid token.", await GetUserIdAsync(user));
                 return IdentityResult.Failed(ErrorDescriber.InvalidToken());
             }
+
+            var store = GetPhoneNumberStore();
             await store.SetPhoneNumberAsync(user, phoneNumber, CancellationToken);
             await store.SetPhoneNumberConfirmedAsync(user, true, CancellationToken);
             await UpdateSecurityStampInternal(user);
@@ -1560,12 +1572,13 @@ namespace Microsoft.AspNetCore.Identity
         /// </returns>
         public virtual Task<bool> IsPhoneNumberConfirmedAsync(TUser user)
         {
-            ThrowIfDisposed();
-            var store = GetPhoneNumberStore();
+            ThrowIfDisposed();            
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
+
+            var store = GetPhoneNumberStore();
             return store.GetPhoneNumberConfirmedAsync(user, CancellationToken);
         }
 
@@ -1790,12 +1803,13 @@ namespace Microsoft.AspNetCore.Identity
         /// </returns>
         public virtual async Task<bool> GetTwoFactorEnabledAsync(TUser user)
         {
-            ThrowIfDisposed();
-            var store = GetUserTwoFactorStore();
+            ThrowIfDisposed();            
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
+
+            var store = GetUserTwoFactorStore();
             return await store.GetTwoFactorEnabledAsync(user, CancellationToken);
         }
 
@@ -1810,13 +1824,13 @@ namespace Microsoft.AspNetCore.Identity
         /// </returns>
         public virtual async Task<IdentityResult> SetTwoFactorEnabledAsync(TUser user, bool enabled)
         {
-            ThrowIfDisposed();
-            var store = GetUserTwoFactorStore();
+            ThrowIfDisposed();            
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
 
+            var store = GetUserTwoFactorStore();
             await store.SetTwoFactorEnabledAsync(user, enabled, CancellationToken);
             await UpdateSecurityStampInternal(user);
             return await UpdateUserAsync(user);
@@ -1833,12 +1847,13 @@ namespace Microsoft.AspNetCore.Identity
         /// </returns>
         public virtual async Task<bool> IsLockedOutAsync(TUser user)
         {
-            ThrowIfDisposed();
-            var store = GetUserLockoutStore();
+            ThrowIfDisposed();            
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
+
+            var store = GetUserLockoutStore();
             if (!await store.GetLockoutEnabledAsync(user, CancellationToken))
             {
                 return false;
@@ -1858,13 +1873,13 @@ namespace Microsoft.AspNetCore.Identity
         /// </returns>
         public virtual async Task<IdentityResult> SetLockoutEnabledAsync(TUser user, bool enabled)
         {
-            ThrowIfDisposed();
-            var store = GetUserLockoutStore();
+            ThrowIfDisposed();           
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
 
+            var store = GetUserLockoutStore();
             await store.SetLockoutEnabledAsync(user, enabled, CancellationToken);
             return await UpdateUserAsync(user);
         }
@@ -1878,12 +1893,13 @@ namespace Microsoft.AspNetCore.Identity
         /// </returns>
         public virtual async Task<bool> GetLockoutEnabledAsync(TUser user)
         {
-            ThrowIfDisposed();
-            var store = GetUserLockoutStore();
+            ThrowIfDisposed();           
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
+
+            var store = GetUserLockoutStore();
             return await store.GetLockoutEnabledAsync(user, CancellationToken);
         }
 
@@ -1897,12 +1913,13 @@ namespace Microsoft.AspNetCore.Identity
         /// </returns>
         public virtual async Task<DateTimeOffset?> GetLockoutEndDateAsync(TUser user)
         {
-            ThrowIfDisposed();
-            var store = GetUserLockoutStore();
+            ThrowIfDisposed();            
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
+
+            var store = GetUserLockoutStore();
             return await store.GetLockoutEndDateAsync(user, CancellationToken);
         }
 
@@ -1914,13 +1931,13 @@ namespace Microsoft.AspNetCore.Identity
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="IdentityResult"/> of the operation.</returns>
         public virtual async Task<IdentityResult> SetLockoutEndDateAsync(TUser user, DateTimeOffset? lockoutEnd)
         {
-            ThrowIfDisposed();
-            var store = GetUserLockoutStore();
+            ThrowIfDisposed();           
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
 
+            var store = GetUserLockoutStore();
             if (!await store.GetLockoutEnabledAsync(user, CancellationToken))
             {
                 Logger.LogWarning(11, "Lockout for user {userId} failed because lockout is not enabled for this user.", await GetUserIdAsync(user));
@@ -1939,12 +1956,13 @@ namespace Microsoft.AspNetCore.Identity
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="IdentityResult"/> of the operation.</returns>
         public virtual async Task<IdentityResult> AccessFailedAsync(TUser user)
         {
-            ThrowIfDisposed();
-            var store = GetUserLockoutStore();
+            ThrowIfDisposed();            
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
+
+            var store = GetUserLockoutStore();
 
             // If this puts the user over the threshold for lockout, lock them out and reset the access failed count
             var count = await store.IncrementAccessFailedCountAsync(user, CancellationToken);
@@ -1966,8 +1984,7 @@ namespace Microsoft.AspNetCore.Identity
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="IdentityResult"/> of the operation.</returns>
         public virtual async Task<IdentityResult> ResetAccessFailedCountAsync(TUser user)
         {
-            ThrowIfDisposed();
-            var store = GetUserLockoutStore();
+            ThrowIfDisposed();            
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
@@ -1977,6 +1994,8 @@ namespace Microsoft.AspNetCore.Identity
             {
                 return IdentityResult.Success;
             }
+
+            var store = GetUserLockoutStore();
             await store.ResetAccessFailedCountAsync(user, CancellationToken);
             return await UpdateUserAsync(user);
         }
@@ -1989,12 +2008,13 @@ namespace Microsoft.AspNetCore.Identity
         /// for the user.</returns>
         public virtual async Task<int> GetAccessFailedCountAsync(TUser user)
         {
-            ThrowIfDisposed();
-            var store = GetUserLockoutStore();
+            ThrowIfDisposed();            
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
+
+            var store = GetUserLockoutStore();
             return await store.GetAccessFailedCountAsync(user, CancellationToken);
         }
 
@@ -2008,12 +2028,13 @@ namespace Microsoft.AspNetCore.Identity
         /// </returns>
         public virtual Task<IList<TUser>> GetUsersForClaimAsync(Claim claim)
         {
-            ThrowIfDisposed();
-            var store = GetClaimStore();
+            ThrowIfDisposed();            
             if (claim == null)
             {
                 throw new ArgumentNullException(nameof(claim));
             }
+
+            var store = GetClaimStore();
             return store.GetUsersForClaimAsync(claim, CancellationToken);
         }
 
@@ -2027,13 +2048,13 @@ namespace Microsoft.AspNetCore.Identity
         /// </returns>
         public virtual Task<IList<TUser>> GetUsersInRoleAsync(string roleName)
         {
-            ThrowIfDisposed();
-            var store = GetUserRoleStore();
+            ThrowIfDisposed();            
             if (roleName == null)
             {
                 throw new ArgumentNullException(nameof(roleName));
             }
 
+            var store = GetUserRoleStore();
             return store.GetUsersInRoleAsync(NormalizeKey(roleName), CancellationToken);
         }
 
@@ -2046,8 +2067,7 @@ namespace Microsoft.AspNetCore.Identity
         /// <returns>The authentication token for a user</returns>
         public virtual Task<string> GetAuthenticationTokenAsync(TUser user, string loginProvider, string tokenName)
         {
-            ThrowIfDisposed();
-            var store = GetAuthenticationTokenStore();
+            ThrowIfDisposed();            
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
@@ -2061,6 +2081,7 @@ namespace Microsoft.AspNetCore.Identity
                 throw new ArgumentNullException(nameof(tokenName));
             }
 
+            var store = GetAuthenticationTokenStore();
             return store.GetTokenAsync(user, loginProvider, tokenName, CancellationToken);
         }
 
@@ -2074,8 +2095,7 @@ namespace Microsoft.AspNetCore.Identity
         /// <returns>Whether the user was successfully updated.</returns>
         public virtual async Task<IdentityResult> SetAuthenticationTokenAsync(TUser user, string loginProvider, string tokenName, string tokenValue)
         {
-            ThrowIfDisposed();
-            var store = GetAuthenticationTokenStore();
+            ThrowIfDisposed();           
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
@@ -2088,6 +2108,8 @@ namespace Microsoft.AspNetCore.Identity
             {
                 throw new ArgumentNullException(nameof(tokenName));
             }
+
+            var store = GetAuthenticationTokenStore();
 
             // REVIEW: should updating any tokens affect the security stamp?
             await store.SetTokenAsync(user, loginProvider, tokenName, tokenValue, CancellationToken);
@@ -2103,8 +2125,7 @@ namespace Microsoft.AspNetCore.Identity
         /// <returns>Whether a token was removed.</returns>
         public virtual async Task<IdentityResult> RemoveAuthenticationTokenAsync(TUser user, string loginProvider, string tokenName)
         {
-            ThrowIfDisposed();
-            var store = GetAuthenticationTokenStore();
+            ThrowIfDisposed();            
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
@@ -2118,6 +2139,7 @@ namespace Microsoft.AspNetCore.Identity
                 throw new ArgumentNullException(nameof(tokenName));
             }
 
+            var store = GetAuthenticationTokenStore();
             await store.RemoveTokenAsync(user, loginProvider, tokenName, CancellationToken);
             return await UpdateUserAsync(user);
         }
@@ -2129,12 +2151,13 @@ namespace Microsoft.AspNetCore.Identity
         /// <returns>The authenticator key</returns>
         public virtual Task<string> GetAuthenticatorKeyAsync(TUser user)
         {
-            ThrowIfDisposed();
-            var store = GetAuthenticatorKeyStore();
+            ThrowIfDisposed();            
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
+
+            var store = GetAuthenticatorKeyStore();
             return store.GetAuthenticatorKeyAsync(user, CancellationToken);
         }
 
@@ -2145,12 +2168,13 @@ namespace Microsoft.AspNetCore.Identity
         /// <returns>Whether the user was successfully updated.</returns>
         public virtual async Task<IdentityResult> ResetAuthenticatorKeyAsync(TUser user)
         {
-            ThrowIfDisposed();
-            var store = GetAuthenticatorKeyStore();
+            ThrowIfDisposed();           
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
+
+            var store = GetAuthenticatorKeyStore();
             await store.SetAuthenticatorKeyAsync(user, GenerateNewAuthenticatorKey(), CancellationToken);
             return await UpdateAsync(user);
         }
@@ -2172,8 +2196,7 @@ namespace Microsoft.AspNetCore.Identity
         /// <returns>The new recovery codes for the user.</returns>
         public virtual async Task<IEnumerable<string>> GenerateNewTwoFactorRecoveryCodesAsync(TUser user, int number)
         {
-            ThrowIfDisposed();
-            var store = GetRecoveryCodeStore();
+            ThrowIfDisposed();            
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
@@ -2185,6 +2208,7 @@ namespace Microsoft.AspNetCore.Identity
                 newCodes.Add(CreateTwoFactorRecoveryCode());
             }
 
+            var store = GetRecoveryCodeStore();
             await store.ReplaceCodesAsync(user, newCodes, CancellationToken);
             var update = await UpdateAsync(user);
             if (update.Succeeded)
@@ -2212,13 +2236,13 @@ namespace Microsoft.AspNetCore.Identity
         /// <returns>True if the recovery code was found for the user.</returns>
         public virtual async Task<IdentityResult> RedeemTwoFactorRecoveryCodeAsync(TUser user, string code)
         {
-            ThrowIfDisposed();
-            var store = GetRecoveryCodeStore();
+            ThrowIfDisposed();            
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
 
+            var store = GetRecoveryCodeStore();
             var success = await store.RedeemCodeAsync(user, code, CancellationToken);
             if (success)
             {
