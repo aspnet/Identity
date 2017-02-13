@@ -5,31 +5,31 @@
   "description": "Identity sample MVC application on ASP.NET Core",
   "version": "1.0.0-*",
   "dependencies": {
-    "Microsoft.AspNetCore.Mvc": "1.0.2",
-    "Microsoft.AspNetCore.Mvc.TagHelpers": "1.0.2",
-    "Microsoft.AspNetCore.DataProtection.Extensions": "1.0.1",
-    "Microsoft.AspNetCore.Diagnostics": "1.0.1",
-    "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore": "1.0.1",
-    "Microsoft.AspNetCore.Identity": "1.0.1",
-    "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "1.0.1",
-    "Microsoft.AspNetCore.Authentication.Cookies": "1.0.1",
-    "Microsoft.AspNetCore.Authentication.Facebook": "1.0.1",
-    "Microsoft.AspNetCore.Authentication.Google": "1.0.1",
-    "Microsoft.AspNetCore.Authentication.Twitter": "1.0.1",
-    "Microsoft.AspNetCore.Authorization": "1.0.1",
-    "Microsoft.AspNetCore.StaticFiles": "1.0.1",
-    "Microsoft.AspNetCore.Server.IISIntegration": "1.0.1",
-    "Microsoft.AspNetCore.Server.Kestrel": "1.0.2",
+    "Microsoft.AspNetCore.Mvc": "1.0.3",
+    "Microsoft.AspNetCore.Mvc.TagHelpers": "1.0.3",
+    "Microsoft.AspNetCore.DataProtection.Extensions": "1.0.2",
+    "Microsoft.AspNetCore.Diagnostics": "1.0.2",
+    "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore": "1.0.2",
+    "Microsoft.AspNetCore.Identity": "1.0.2",
+    "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "1.0.2",
+    "Microsoft.AspNetCore.Authentication.Cookies": "1.0.2",
+    "Microsoft.AspNetCore.Authentication.Facebook": "1.0.2",
+    "Microsoft.AspNetCore.Authentication.Google": "1.0.2",
+    "Microsoft.AspNetCore.Authentication.Twitter": "1.0.2",
+    "Microsoft.AspNetCore.Authorization": "1.0.2",
+    "Microsoft.AspNetCore.StaticFiles": "1.0.2",
+    "Microsoft.AspNetCore.Server.IISIntegration": "1.0.2",
+    "Microsoft.AspNetCore.Server.Kestrel": "1.0.3",
     "Microsoft.EntityFrameworkCore.Tools": {
-      "version": "1.0.0-preview2-final",
+      "version": "1.0.0-preview4-final",
       "type": "build"
     },
-    "Microsoft.EntityFrameworkCore.SqlServer": "1.0.2",
-    "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.1",
-    "Microsoft.Extensions.Configuration.Json": "1.0.1",
-    "Microsoft.Extensions.Configuration.UserSecrets": "1.0.1",
-    "Microsoft.Extensions.Logging.Console": "1.0.1",
-    "Microsoft.Extensions.Logging.Debug": "1.0.1"
+    "Microsoft.EntityFrameworkCore.SqlServer": "1.0.3",
+    "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.2",
+    "Microsoft.Extensions.Configuration.Json": "1.0.2",
+    "Microsoft.Extensions.Configuration.UserSecrets": "1.0.2",
+    "Microsoft.Extensions.Logging.Console": "1.0.2",
+    "Microsoft.Extensions.Logging.Debug": "1.0.2"
   },
   "buildOptions": {
     "emitEntryPoint": true,
@@ -40,15 +40,15 @@
     "netcoreapp1.0": {
       "dependencies": {
         "Microsoft.NETCore.App": {
-          "version": "1.0.3",
+          "version": "1.0.4",
           "type": "platform"
         }
       }
     }
   },
   "tools": {
-    "Microsoft.AspNetCore.Server.IISIntegration.Tools": "1.0.0-*",
-    "Microsoft.EntityFrameworkCore.Tools.Dotnet": "1.0.0-*"
+    "Microsoft.AspNetCore.Server.IISIntegration.Tools": "1.0.0-preview4-final",
+    "Microsoft.EntityFrameworkCore.Tools.Dotnet": "1.0.0-preview4-final"
   },
   "publishOptions": {
     "include": [
