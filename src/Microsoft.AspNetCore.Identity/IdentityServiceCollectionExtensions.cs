@@ -44,10 +44,11 @@ namespace Microsoft.Extensions.DependencyInjection
             where TRole : class
         {
             // Services used by identity
+            // TODO: Need to revisit
             services.AddAuthentication(options =>
             {
                 // This is the Default value for ExternalCookieAuthenticationScheme
-                options.SignInScheme = new IdentityCookieOptions().ExternalCookieAuthenticationScheme;
+                options.DefaultSignInScheme = IdentityCookieOptions.DefaultExternalScheme;
             });
 
             // Hosting doesn't add IHttpContextAccessor by default

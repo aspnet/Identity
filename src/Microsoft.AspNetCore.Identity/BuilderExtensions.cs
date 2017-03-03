@@ -33,10 +33,10 @@ namespace Microsoft.AspNetCore.Builder
             }
 
             var options = app.ApplicationServices.GetRequiredService<IOptions<IdentityOptions>>().Value;
-            app.UseCookieAuthentication(options.Cookies.ExternalCookie);
-            app.UseCookieAuthentication(options.Cookies.TwoFactorRememberMeCookie);
-            app.UseCookieAuthentication(options.Cookies.TwoFactorUserIdCookie);
-            app.UseCookieAuthentication(options.Cookies.ApplicationCookie);
+            //app.UseCookieAuthentication(options.Cookies.ExternalCookie);
+            //app.UseCookieAuthentication(options.Cookies.TwoFactorRememberMeCookie);
+            //app.UseCookieAuthentication(options.Cookies.TwoFactorUserIdCookie);
+            //app.UseCookieAuthentication(options.Cookies.ApplicationCookie);
             return app;
         }
     }

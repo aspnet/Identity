@@ -15,7 +15,7 @@ namespace Microsoft.AspNetCore.Identity
     {
         private static readonly string CookiePrefix = "Identity";
         private static readonly string DefaultApplicationScheme = CookiePrefix + ".Application";
-        private static readonly string DefaultExternalScheme = CookiePrefix + ".External";
+        internal static readonly string DefaultExternalScheme = CookiePrefix + ".External";
         private static readonly string DefaultTwoFactorRememberMeScheme = CookiePrefix + ".TwoFactorRememberMe";
         private static readonly string DefaultTwoFactorUserIdScheme = CookiePrefix + ".TwoFactorUserId";
 
@@ -27,9 +27,6 @@ namespace Microsoft.AspNetCore.Identity
             // Configure all of the cookie middlewares
             ApplicationCookie = new CookieAuthenticationOptions
             {
-                AuthenticationScheme = DefaultApplicationScheme,
-                AutomaticAuthenticate = true,
-                AutomaticChallenge = true,
                 LoginPath = new PathString("/Account/Login"),
                 Events = new CookieAuthenticationEvents
                 {
@@ -39,23 +36,20 @@ namespace Microsoft.AspNetCore.Identity
 
             ExternalCookie = new CookieAuthenticationOptions
             {
-                AutomaticAuthenticate = false,
-                AuthenticationScheme = DefaultExternalScheme,
+                //AuthenticationScheme = DefaultExternalScheme,
                 CookieName = DefaultExternalScheme,
                 ExpireTimeSpan = TimeSpan.FromMinutes(5)
             };
 
             TwoFactorRememberMeCookie = new CookieAuthenticationOptions
             {
-                AutomaticAuthenticate = false,
-                AuthenticationScheme = DefaultTwoFactorRememberMeScheme,
+                //AuthenticationScheme = DefaultTwoFactorRememberMeScheme,
                 CookieName = DefaultTwoFactorRememberMeScheme
             };
 
             TwoFactorUserIdCookie = new CookieAuthenticationOptions
             {
-                AutomaticAuthenticate = false,
-                AuthenticationScheme = DefaultTwoFactorUserIdScheme,
+                //AuthenticationScheme = DefaultTwoFactorUserIdScheme,
                 CookieName = DefaultTwoFactorUserIdScheme,
                 ExpireTimeSpan = TimeSpan.FromMinutes(5)
             };
@@ -85,24 +79,24 @@ namespace Microsoft.AspNetCore.Identity
         /// Gets the scheme used to identify application authentication cookies.
         /// </summary>
         /// <value>The scheme used to identify application authentication cookies.</value>
-        public string ApplicationCookieAuthenticationScheme => ApplicationCookie?.AuthenticationScheme;
+        public string ApplicationCookieAuthenticationScheme { get; set; } = DefaultApplicationScheme;
 
         /// <summary>
         /// Gets the scheme used to identify external authentication cookies.
         /// </summary>
         /// <value>The scheme used to identify external authentication cookies.</value>
-        public string ExternalCookieAuthenticationScheme => ExternalCookie?.AuthenticationScheme;
+        public string ExternalCookieAuthenticationScheme { get; set; } = DefaultExternalScheme;
 
         /// <summary>
         /// Gets the scheme used to identify Two Factor authentication cookies for round tripping user identities.
         /// </summary>
         /// <value>The scheme used to identify user identity 2fa authentication cookies.</value>
-        public string TwoFactorUserIdCookieAuthenticationScheme => TwoFactorUserIdCookie?.AuthenticationScheme;
+        public string TwoFactorUserIdCookieAuthenticationScheme { get; set; } = DefaultTwoFactorUserIdScheme;
 
         /// <summary>
         /// Gets the scheme used to identify Two Factor authentication cookies for saving the Remember Me state.
         /// </summary>
         /// <value>The scheme used to identify remember me application authentication cookies.</value>        
-        public string TwoFactorRememberMeCookieAuthenticationScheme => TwoFactorRememberMeCookie?.AuthenticationScheme;
+        public string TwoFactorRememberMeCookieAuthenticationScheme { get; set; } = DefaultTwoFactorRememberMeScheme;
     }
 }
