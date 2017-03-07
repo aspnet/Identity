@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -26,7 +25,7 @@ namespace Microsoft.AspNetCore.Identity.Test
             httpContext.Setup(c => c.RequestServices).Returns(new ServiceCollection().BuildServiceProvider());
             var id = new ClaimsPrincipal(new ClaimsIdentity(scheme));
             var ticket = new AuthenticationTicket(id, new AuthenticationProperties { IssuedUtc = DateTimeOffset.UtcNow }, scheme);
-            var context = new CookieValidatePrincipalContext(httpContext.Object, ticket, new CookieAuthenticationOptions());
+            var context = new CookieValidatePrincipalContext(httpContext.Object, new AuthenticationSchemeBuilder(scheme).Build(), ticket, new CookieAuthenticationOptions());
             var ex = await Assert.ThrowsAsync<InvalidOperationException>(() => SecurityStampValidator.ValidatePrincipalAsync(context));
         }
 
@@ -56,13 +55,13 @@ namespace Microsoft.AspNetCore.Identity.Test
             var services = new ServiceCollection();
             services.AddSingleton(options.Object);
             services.AddSingleton(signInManager.Object);
-            services.AddSingleton<ISecurityStampValidator>(new SecurityStampValidator<TestUser>(options.Object, signInManager.Object));
+            services.AddSingleton<ISecurityStampValidator>(new SecurityStampValidator<TestUser>(options.Object, signInManager.Object, new SystemClock()));
             httpContext.Setup(c => c.RequestServices).Returns(services.BuildServiceProvider());
 
             var ticket = new AuthenticationTicket(principal, 
                 properties, 
                 identityOptions.Cookies.ApplicationCookieAuthenticationScheme);
-            var context = new CookieValidatePrincipalContext(httpContext.Object, ticket, new CookieAuthenticationOptions());
+            var context = new CookieValidatePrincipalContext(httpContext.Object, new AuthenticationSchemeBuilder(identityOptions.Cookies.ApplicationCookieAuthenticationScheme).Build(), ticket, new CookieAuthenticationOptions());
             Assert.NotNull(context.Properties);
             Assert.NotNull(context.Options);
             Assert.NotNull(context.Principal);
@@ -90,7 +89,7 @@ namespace Microsoft.AspNetCore.Identity.Test
             var services = new ServiceCollection();
             services.AddSingleton(options.Object);
             services.AddSingleton(signInManager.Object);
-            services.AddSingleton<ISecurityStampValidator>(new SecurityStampValidator<TestUser>(options.Object, signInManager.Object));
+            services.AddSingleton<ISecurityStampValidator>(new SecurityStampValidator<TestUser>(options.Object, signInManager.Object, new SystemClock()));
             httpContext.Setup(c => c.RequestServices).Returns(services.BuildServiceProvider());
             var id = new ClaimsIdentity(identityOptions.Cookies.ApplicationCookieAuthenticationScheme);
             id.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id));
@@ -98,7 +97,7 @@ namespace Microsoft.AspNetCore.Identity.Test
             var ticket = new AuthenticationTicket(new ClaimsPrincipal(id),
                 new AuthenticationProperties { IssuedUtc = DateTimeOffset.UtcNow.AddSeconds(-1) },
                 identityOptions.Cookies.ApplicationCookieAuthenticationScheme);
-            var context = new CookieValidatePrincipalContext(httpContext.Object, ticket, new CookieAuthenticationOptions());
+            var context = new CookieValidatePrincipalContext(httpContext.Object, new AuthenticationSchemeBuilder(identityOptions.Cookies.ApplicationCookieAuthenticationScheme).Build(), ticket, new CookieAuthenticationOptions());
             Assert.NotNull(context.Properties);
             Assert.NotNull(context.Options);
             Assert.NotNull(context.Principal);
@@ -125,7 +124,7 @@ namespace Microsoft.AspNetCore.Identity.Test
             var services = new ServiceCollection();
             services.AddSingleton(options.Object);
             services.AddSingleton(signInManager.Object);
-            services.AddSingleton<ISecurityStampValidator>(new SecurityStampValidator<TestUser>(options.Object, signInManager.Object));
+            services.AddSingleton<ISecurityStampValidator>(new SecurityStampValidator<TestUser>(options.Object, signInManager.Object, new SystemClock()));
             httpContext.Setup(c => c.RequestServices).Returns(services.BuildServiceProvider());
             var id = new ClaimsIdentity(identityOptions.Cookies.ApplicationCookieAuthenticationScheme);
             id.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id));
@@ -133,7 +132,7 @@ namespace Microsoft.AspNetCore.Identity.Test
             var ticket = new AuthenticationTicket(new ClaimsPrincipal(id),
                 new AuthenticationProperties(),
                 identityOptions.Cookies.ApplicationCookieAuthenticationScheme);
-            var context = new CookieValidatePrincipalContext(httpContext.Object, ticket, new CookieAuthenticationOptions());
+            var context = new CookieValidatePrincipalContext(httpContext.Object, new AuthenticationSchemeBuilder(identityOptions.Cookies.ApplicationCookieAuthenticationScheme).Build(), ticket, new CookieAuthenticationOptions());
             Assert.NotNull(context.Properties);
             Assert.NotNull(context.Options);
             Assert.NotNull(context.Principal);
@@ -161,7 +160,7 @@ namespace Microsoft.AspNetCore.Identity.Test
             var services = new ServiceCollection();
             services.AddSingleton(options.Object);
             services.AddSingleton(signInManager.Object);
-            services.AddSingleton<ISecurityStampValidator>(new SecurityStampValidator<TestUser>(options.Object, signInManager.Object));
+            services.AddSingleton<ISecurityStampValidator>(new SecurityStampValidator<TestUser>(options.Object, signInManager.Object, new SystemClock()));
             httpContext.Setup(c => c.RequestServices).Returns(services.BuildServiceProvider());
             var id = new ClaimsIdentity(identityOptions.Cookies.ApplicationCookieAuthenticationScheme);
             id.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id));
@@ -169,7 +168,7 @@ namespace Microsoft.AspNetCore.Identity.Test
             var ticket = new AuthenticationTicket(new ClaimsPrincipal(id),
                 new AuthenticationProperties { IssuedUtc = DateTimeOffset.UtcNow },
                 identityOptions.Cookies.ApplicationCookieAuthenticationScheme);
-            var context = new CookieValidatePrincipalContext(httpContext.Object, ticket, new CookieAuthenticationOptions());
+            var context = new CookieValidatePrincipalContext(httpContext.Object, new AuthenticationSchemeBuilder(identityOptions.Cookies.ApplicationCookieAuthenticationScheme).Build(), ticket, new CookieAuthenticationOptions());
             Assert.NotNull(context.Properties);
             Assert.NotNull(context.Options);
             Assert.NotNull(context.Principal);

@@ -2,7 +2,6 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -536,10 +535,10 @@ namespace Microsoft.AspNetCore.Identity
             return await SignInOrTwoFactorAsync(user, isPersistent, loginProvider, bypassTwoFactor);
         }
 
-        /// <summary>
-        /// Gets a collection of <see cref="AuthenticationDescription"/>s for the known external login providers.
-        /// </summary>
-        /// <returns>A collection of <see cref="AuthenticationDescription"/>s for the known external login providers.</returns>
+        ///// <summary>
+        ///// Gets a collection of <see cref="AuthenticationDescription"/>s for the known external login providers.
+        ///// </summary>
+        ///// <returns>A collection of <see cref="AuthenticationDescription"/>s for the known external login providers.</returns>
         //public virtual IEnumerable<AuthenticationDescription> GetExternalAuthenticationSchemes()
         //{
         //    //return Context.GetAuthenticationSchemes().Where(d => !string.IsNullOrEmpty(d.DisplayName));
