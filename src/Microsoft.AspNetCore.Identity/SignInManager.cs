@@ -329,8 +329,8 @@ namespace Microsoft.AspNetCore.Identity
         public virtual async Task<bool> IsTwoFactorClientRememberedAsync(TUser user)
         {
             var userId = await UserManager.GetUserIdAsync(user);
-            var result = await Context.Authentication.AuthenticateAsync(Options.Cookies.TwoFactorRememberMeCookieAuthenticationScheme);
-            return (result != null && result.FindFirstValue(ClaimTypes.Name) == userId);
+            var result = await Context.AuthenticateAsync(Options.Cookies.TwoFactorRememberMeCookieAuthenticationScheme);
+            return (result?.Principal != null && result.Principal.FindFirstValue(ClaimTypes.Name) == userId);
         }
 
         /// <summary>
@@ -681,14 +681,14 @@ namespace Microsoft.AspNetCore.Identity
                 {
                     // Store the userId for use after two factor check
                     var userId = await UserManager.GetUserIdAsync(user);
-                    await Context.Authentication.SignInAsync(Options.Cookies.TwoFactorUserIdCookieAuthenticationScheme, StoreTwoFactorInfo(userId, loginProvider));
+                    await Context.SignInAsync(Options.Cookies.TwoFactorUserIdCookieAuthenticationScheme, StoreTwoFactorInfo(userId, loginProvider));
                     return SignInResult.TwoFactorRequired;
                 }
             }
             // Cleanup external cookie
             if (loginProvider != null)
             {
-                await Context.Authentication.SignOutAsync(Options.Cookies.ExternalCookieAuthenticationScheme);
+                await Context.SignOutAsync(Options.Cookies.ExternalCookieAuthenticationScheme);
             }
             await SignInAsync(user, isPersistent, loginProvider);
             return SignInResult.Success;
@@ -696,13 +696,13 @@ namespace Microsoft.AspNetCore.Identity
 
         private async Task<TwoFactorAuthenticationInfo> RetrieveTwoFactorInfoAsync()
         {
-            var result = await Context.Authentication.AuthenticateAsync(Options.Cookies.TwoFactorUserIdCookieAuthenticationScheme);
-            if (result != null)
+            var result = await Context.AuthenticateAsync(Options.Cookies.TwoFactorUserIdCookieAuthenticationScheme);
+            if (result?.Principal != null)
             {
                 return new TwoFactorAuthenticationInfo
                 {
-                    UserId = result.FindFirstValue(ClaimTypes.Name),
-                    LoginProvider = result.FindFirstValue(ClaimTypes.AuthenticationMethod)
+                    UserId = result.Principal.FindFirstValue(ClaimTypes.Name),
+                    LoginProvider = result.Principal.FindFirstValue(ClaimTypes.AuthenticationMethod)
                 };
             }
             return null;

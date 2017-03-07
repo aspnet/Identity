@@ -498,7 +498,7 @@ namespace Microsoft.AspNetCore.Identity.Test
             // Setup
             var user = new TestUser { UserName = "Foo" };
             var context = new DefaultHttpContext();
-            var auth = new Mock<IAuthenticationService>();
+            var auth = MockAuth(context);
             var loginProvider = "loginprovider";
             var id = new ClaimsIdentity();
             if (externalLogin)

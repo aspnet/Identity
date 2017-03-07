@@ -17,6 +17,39 @@ namespace Microsoft.AspNetCore.Identity.Test
 {
     public class SecurityStampTest
     {
+        private class NoopHandler : IAuthenticationHandler
+        {
+            public Task<AuthenticateResult> AuthenticateAsync(AuthenticateContext context)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task ChallengeAsync(ChallengeContext context)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<bool> HandleRequestAsync()
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task InitializeAsync(AuthenticationScheme scheme, HttpContext context)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task SignInAsync(SignInContext context)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task SignOutAsync(SignOutContext context)
+            {
+                throw new NotImplementedException();
+            }
+        }
+
         [Fact]
         public async Task OnValidatePrincipalThrowsWithEmptyServiceCollection()
         {
@@ -25,7 +58,7 @@ namespace Microsoft.AspNetCore.Identity.Test
             httpContext.Setup(c => c.RequestServices).Returns(new ServiceCollection().BuildServiceProvider());
             var id = new ClaimsPrincipal(new ClaimsIdentity(scheme));
             var ticket = new AuthenticationTicket(id, new AuthenticationProperties { IssuedUtc = DateTimeOffset.UtcNow }, scheme);
-            var context = new CookieValidatePrincipalContext(httpContext.Object, new AuthenticationSchemeBuilder(scheme).Build(), ticket, new CookieAuthenticationOptions());
+            var context = new CookieValidatePrincipalContext(httpContext.Object, new AuthenticationSchemeBuilder(scheme) { HandlerType = typeof(NoopHandler) }.Build(), ticket, new CookieAuthenticationOptions());
             var ex = await Assert.ThrowsAsync<InvalidOperationException>(() => SecurityStampValidator.ValidatePrincipalAsync(context));
         }
 
@@ -61,7 +94,7 @@ namespace Microsoft.AspNetCore.Identity.Test
             var ticket = new AuthenticationTicket(principal, 
                 properties, 
                 identityOptions.Cookies.ApplicationCookieAuthenticationScheme);
-            var context = new CookieValidatePrincipalContext(httpContext.Object, new AuthenticationSchemeBuilder(identityOptions.Cookies.ApplicationCookieAuthenticationScheme).Build(), ticket, new CookieAuthenticationOptions());
+            var context = new CookieValidatePrincipalContext(httpContext.Object, new AuthenticationSchemeBuilder(identityOptions.Cookies.ApplicationCookieAuthenticationScheme) { HandlerType = typeof(NoopHandler) }.Build(), ticket, new CookieAuthenticationOptions());
             Assert.NotNull(context.Properties);
             Assert.NotNull(context.Options);
             Assert.NotNull(context.Principal);
@@ -97,7 +130,7 @@ namespace Microsoft.AspNetCore.Identity.Test
             var ticket = new AuthenticationTicket(new ClaimsPrincipal(id),
                 new AuthenticationProperties { IssuedUtc = DateTimeOffset.UtcNow.AddSeconds(-1) },
                 identityOptions.Cookies.ApplicationCookieAuthenticationScheme);
-            var context = new CookieValidatePrincipalContext(httpContext.Object, new AuthenticationSchemeBuilder(identityOptions.Cookies.ApplicationCookieAuthenticationScheme).Build(), ticket, new CookieAuthenticationOptions());
+            var context = new CookieValidatePrincipalContext(httpContext.Object, new AuthenticationSchemeBuilder(identityOptions.Cookies.ApplicationCookieAuthenticationScheme) { HandlerType = typeof(NoopHandler) }.Build(), ticket, new CookieAuthenticationOptions());
             Assert.NotNull(context.Properties);
             Assert.NotNull(context.Options);
             Assert.NotNull(context.Principal);
@@ -132,7 +165,7 @@ namespace Microsoft.AspNetCore.Identity.Test
             var ticket = new AuthenticationTicket(new ClaimsPrincipal(id),
                 new AuthenticationProperties(),
                 identityOptions.Cookies.ApplicationCookieAuthenticationScheme);
-            var context = new CookieValidatePrincipalContext(httpContext.Object, new AuthenticationSchemeBuilder(identityOptions.Cookies.ApplicationCookieAuthenticationScheme).Build(), ticket, new CookieAuthenticationOptions());
+            var context = new CookieValidatePrincipalContext(httpContext.Object, new AuthenticationSchemeBuilder(identityOptions.Cookies.ApplicationCookieAuthenticationScheme) { HandlerType = typeof(NoopHandler) }.Build(), ticket, new CookieAuthenticationOptions());
             Assert.NotNull(context.Properties);
             Assert.NotNull(context.Options);
             Assert.NotNull(context.Principal);
@@ -168,7 +201,7 @@ namespace Microsoft.AspNetCore.Identity.Test
             var ticket = new AuthenticationTicket(new ClaimsPrincipal(id),
                 new AuthenticationProperties { IssuedUtc = DateTimeOffset.UtcNow },
                 identityOptions.Cookies.ApplicationCookieAuthenticationScheme);
-            var context = new CookieValidatePrincipalContext(httpContext.Object, new AuthenticationSchemeBuilder(identityOptions.Cookies.ApplicationCookieAuthenticationScheme).Build(), ticket, new CookieAuthenticationOptions());
+            var context = new CookieValidatePrincipalContext(httpContext.Object, new AuthenticationSchemeBuilder(identityOptions.Cookies.ApplicationCookieAuthenticationScheme) { HandlerType = typeof(NoopHandler) }.Build(), ticket, new CookieAuthenticationOptions());
             Assert.NotNull(context.Properties);
             Assert.NotNull(context.Options);
             Assert.NotNull(context.Principal);
