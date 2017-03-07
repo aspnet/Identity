@@ -158,8 +158,8 @@ namespace Microsoft.AspNetCore.Identity
         public virtual async Task RefreshSignInAsync(TUser user)
         {
             var auth = await Context.AuthenticateAsync(Options.Cookies.ApplicationCookieAuthenticationScheme);
-            var authenticationMethod = auth?.Ticket?.Principal?.FindFirstValue(ClaimTypes.AuthenticationMethod);
-            await SignInAsync(user, auth?.Ticket.Properties, authenticationMethod);
+            var authenticationMethod = auth?.Principal?.FindFirstValue(ClaimTypes.AuthenticationMethod);
+            await SignInAsync(user, auth?.Properties, authenticationMethod);
         }
 
         /// <summary>
@@ -556,34 +556,35 @@ namespace Microsoft.AspNetCore.Identity
         public virtual async Task<ExternalLoginInfo> GetExternalLoginInfoAsync(string expectedXsrf = null)
         {
             var auth = await Context.AuthenticateAsync(Options.Cookies.ExternalCookieAuthenticationScheme);
-            if (auth?.Ticket.Principal == null || auth?.Ticket.Properties == null || !auth.Ticket.Properties.Items.ContainsKey(LoginProviderKey))
+            var items = auth?.Properties?.Items;
+            if (auth?.Principal == null || items == null || !items.ContainsKey(LoginProviderKey))
             {
                 return null;
             }
 
             if (expectedXsrf != null)
             {
-                if (!auth.Ticket.Properties.Items.ContainsKey(XsrfKey))
+                if (!items.ContainsKey(XsrfKey))
                 {
                     return null;
                 }
-                var userId = auth.Ticket.Properties.Items[XsrfKey] as string;
+                var userId = items[XsrfKey] as string;
                 if (userId != expectedXsrf)
                 {
                     return null;
                 }
             }
 
-            var providerKey = auth.Ticket.Principal.FindFirstValue(ClaimTypes.NameIdentifier);
-            var provider = auth.Ticket.Properties.Items[LoginProviderKey] as string;
+            var providerKey = auth.Principal.FindFirstValue(ClaimTypes.NameIdentifier);
+            var provider = items[LoginProviderKey] as string;
             if (providerKey == null || provider == null)
             {
                 return null;
             }
             // TODO: display name gone?.  Add [] indexer for Authproperties
-            return new ExternalLoginInfo(auth.Ticket.Principal, provider, providerKey, provider)
+            return new ExternalLoginInfo(auth.Principal, provider, providerKey, provider)
             {
-                AuthenticationTokens = auth.Ticket.Properties.GetTokens()
+                AuthenticationTokens = auth.Properties.GetTokens()
             };
         }
 
