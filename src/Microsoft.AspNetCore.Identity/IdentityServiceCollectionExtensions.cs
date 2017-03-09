@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -44,17 +45,40 @@ namespace Microsoft.Extensions.DependencyInjection
             where TRole : class
         {
             // Services used by identity
-            // TODO: Need to revisit
+            // TODO: Need to revisit how to configure the identity cookies
             services.AddAuthentication(options =>
             {
                 // This is the Default value for ExternalCookieAuthenticationScheme
                 options.DefaultSignInScheme = IdentityCookieOptions.DefaultExternalScheme;
             });
 
+            services.AddCookieAuthentication(IdentityCookieOptions.DefaultApplicationScheme, o =>
+            {
+                o.LoginPath = new PathString("/Account/Login");
+                o.Events = new CookieAuthenticationEvents
+                {
+                    OnValidatePrincipal = SecurityStampValidator.ValidatePrincipalAsync
+                };
+            });
+
+            services.AddCookieAuthentication(IdentityCookieOptions.DefaultExternalScheme, o =>
+            {
+                o.CookieName = IdentityCookieOptions.DefaultExternalScheme;
+                o.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+            });
+
+            services.AddCookieAuthentication(IdentityCookieOptions.DefaultTwoFactorRememberMeScheme, 
+                o => o.CookieName = IdentityCookieOptions.DefaultTwoFactorRememberMeScheme);
+
+            services.AddCookieAuthentication(IdentityCookieOptions.DefaultTwoFactorUserIdScheme, o =>
+            {
+                o.CookieName = IdentityCookieOptions.DefaultTwoFactorUserIdScheme;
+                o.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+            });
+
             // Hosting doesn't add IHttpContextAccessor by default
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             // Identity services
-            services.TryAddSingleton<IdentityMarkerService>();
             services.TryAddScoped<IUserValidator<TUser>, UserValidator<TUser>>();
             services.TryAddScoped<IPasswordValidator<TUser>, PasswordValidator<TUser>>();
             services.TryAddScoped<IPasswordHasher<TUser>, PasswordHasher<TUser>>();

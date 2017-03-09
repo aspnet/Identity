@@ -14,10 +14,10 @@ namespace Microsoft.AspNetCore.Identity
     public class IdentityCookieOptions
     {
         private static readonly string CookiePrefix = "Identity";
-        private static readonly string DefaultApplicationScheme = CookiePrefix + ".Application";
+        internal static readonly string DefaultApplicationScheme = CookiePrefix + ".Application";
         internal static readonly string DefaultExternalScheme = CookiePrefix + ".External";
-        private static readonly string DefaultTwoFactorRememberMeScheme = CookiePrefix + ".TwoFactorRememberMe";
-        private static readonly string DefaultTwoFactorUserIdScheme = CookiePrefix + ".TwoFactorUserId";
+        internal static readonly string DefaultTwoFactorRememberMeScheme = CookiePrefix + ".TwoFactorRememberMe";
+        internal static readonly string DefaultTwoFactorUserIdScheme = CookiePrefix + ".TwoFactorUserId";
 
         /// <summary>
         /// Constructs a new instance of <see cref="IdentityCookieOptions"/>.
