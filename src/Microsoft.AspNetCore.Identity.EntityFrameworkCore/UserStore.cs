@@ -146,12 +146,12 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
         /// </summary>
         public IdentityErrorDescriber ErrorDescriber { get; set; }
 
-        private DbSet<TUser> UsersSet { get { return Context.Set<TUser>(); } }
-        private DbSet<TRole> Roles { get { return Context.Set<TRole>(); } }
-        private DbSet<TUserClaim> UserClaims { get { return Context.Set<TUserClaim>(); } }
-        private DbSet<TUserRole> UserRoles { get { return Context.Set<TUserRole>(); } }
-        private DbSet<TUserLogin> UserLogins { get { return Context.Set<TUserLogin>(); } }
-        private DbSet<TUserToken> UserTokens { get { return Context.Set<TUserToken>(); } }
+        protected DbSet<TUser> UsersSet { get { return Context.Set<TUser>(); } }
+        protected DbSet<TRole> Roles { get { return Context.Set<TRole>(); } }
+        protected DbSet<TUserClaim> UserClaims { get { return Context.Set<TUserClaim>(); } }
+        protected DbSet<TUserRole> UserRoles { get { return Context.Set<TUserRole>(); } }
+        protected DbSet<TUserLogin> UserLogins { get { return Context.Set<TUserLogin>(); } }
+        protected DbSet<TUserToken> UserTokens { get { return Context.Set<TUserToken>(); } }
 
         /// <summary>
         /// Called to create a new instance of a <see cref="IdentityUserRole{TKey}"/>.
