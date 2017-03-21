@@ -272,7 +272,7 @@ namespace Microsoft.AspNetCore.Identity
         /// <param name="password">The password to attempt to sign in with.</param>
         /// <param name="isPersistent">Flag indicating whether the sign-in cookie should persist after the browser is closed.</param>
         /// <param name="lockoutOnFailure">Flag indicating if the user account should be locked if the sign in fails.</param>
-        /// <returns>The task object representing the asynchronous operation containing the <see name="SignInResult"/>
+        /// <returns>The task object representing the asynchronous operation containing the <see cref="SignInResult"/>
         /// for the sign-in attempt.</returns>
         public virtual async Task<SignInResult> PasswordSignInAsync(string userName, string password,
             bool isPersistent, bool lockoutOnFailure)
@@ -335,7 +335,7 @@ namespace Microsoft.AspNetCore.Identity
         /// <param name="isPersistent">Flag indicating whether the sign-in cookie should persist after the browser is closed.</param>
         /// <param name="rememberClient">Flag indicating whether the current browser should be remember, suppressing all further 
         /// two factor authentication prompts.</param>
-        /// <returns>The task object representing the asynchronous operation containing the <see name="SignInResult"/>
+        /// <returns>The task object representing the asynchronous operation containing the <see cref="SignInResult"/>
         /// for the sign-in attempt.</returns>
         public virtual async Task<SignInResult> TwoFactorSignInAsync(string provider, string code, bool isPersistent,
             bool rememberClient)
@@ -402,7 +402,7 @@ namespace Microsoft.AspNetCore.Identity
         /// <param name="loginProvider">The login provider to use.</param>
         /// <param name="providerKey">The unique provider identifier for the user.</param>
         /// <param name="isPersistent">Flag indicating whether the sign-in cookie should persist after the browser is closed.</param>
-        /// <returns>The task object representing the asynchronous operation containing the <see name="SignInResult"/>
+        /// <returns>The task object representing the asynchronous operation containing the <see cref="SignInResult"/>
         /// for the sign-in attempt.</returns>
         public virtual async Task<SignInResult> ExternalLoginSignInAsync(string loginProvider, string providerKey, bool isPersistent)
         {
