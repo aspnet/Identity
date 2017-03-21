@@ -138,7 +138,7 @@ namespace Microsoft.AspNetCore.Identity
 
         /// <summary>
         /// Regenerates the user's application cookie, whilst preserving the existing
-        /// AuthenticationProperties like rememberMe, as an asynchronous operation.
+        /// <see cref="AuthenticationProperties"/> like <paramref name="rememberMe"/>, as an asynchronous operation.
         /// </summary>
         /// <param name="user">The user whose sign-in cookie should be refreshed.</param>
         /// <returns>The task object representing the asynchronous operation.</returns>
