@@ -20,59 +20,27 @@ namespace Microsoft.AspNetCore.Identity
         internal static readonly string DefaultTwoFactorUserIdScheme = CookiePrefix + ".TwoFactorUserId";
 
         /// <summary>
-        /// Constructs a new instance of <see cref="IdentityCookieOptions"/>.
-        /// </summary>
-        public IdentityCookieOptions()
-        {
-            // Configure all of the cookie middlewares
-            ApplicationCookie = new CookieAuthenticationOptions
-            {
-                LoginPath = new PathString("/Account/Login"),
-                Events = new CookieAuthenticationEvents
-                {
-                    OnValidatePrincipal = SecurityStampValidator.ValidatePrincipalAsync
-                }
-            };
-
-            ExternalCookie = new CookieAuthenticationOptions
-            {
-                //AuthenticationScheme = DefaultExternalScheme,
-                CookieName = DefaultExternalScheme,
-                ExpireTimeSpan = TimeSpan.FromMinutes(5)
-            };
-
-            TwoFactorRememberMeCookie = new CookieAuthenticationOptions
-            {
-                //AuthenticationScheme = DefaultTwoFactorRememberMeScheme,
-                CookieName = DefaultTwoFactorRememberMeScheme
-            };
-
-            TwoFactorUserIdCookie = new CookieAuthenticationOptions
-            {
-                //AuthenticationScheme = DefaultTwoFactorUserIdScheme,
-                CookieName = DefaultTwoFactorUserIdScheme,
-                ExpireTimeSpan = TimeSpan.FromMinutes(5)
-            };
-        }
-
-        /// <summary>
         /// The options for the application cookie.
         /// </summary>
+        [Obsolete("See https://go.microsoft.com/fwlink/?linkid=845470", error: true)]
         public CookieAuthenticationOptions ApplicationCookie { get; set; }
 
         /// <summary>
         /// The options for the external cookie.
         /// </summary>
+        [Obsolete("See https://go.microsoft.com/fwlink/?linkid=845470", error: true)]
         public CookieAuthenticationOptions ExternalCookie { get; set; }
 
         /// <summary>
         /// The options for the two factor remember me cookie.
         /// </summary>
+        [Obsolete("See https://go.microsoft.com/fwlink/?linkid=845470", error: true)]
         public CookieAuthenticationOptions TwoFactorRememberMeCookie { get; set; }
 
         /// <summary>
         /// The options for the two factor user id cookie.
         /// </summary>
+        [Obsolete("See https://go.microsoft.com/fwlink/?linkid=845470", error: true)]
         public CookieAuthenticationOptions TwoFactorUserIdCookie { get; set; }
 
         /// <summary>
