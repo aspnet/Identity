@@ -45,14 +45,13 @@ namespace Microsoft.Extensions.DependencyInjection
             where TRole : class
         {
             // Services used by identity
-            // TODO: Need to revisit how to configure the identity cookies
             services.AddAuthentication(options =>
             {
                 // This is the Default value for ExternalCookieAuthenticationScheme
-                options.DefaultSignInScheme = IdentityCookieOptions.DefaultExternalScheme;
+                options.DefaultSignInScheme = IdentityCookieOptions.ExternalScheme;
             });
 
-            services.AddCookieAuthentication(IdentityCookieOptions.DefaultApplicationScheme, o =>
+            services.AddCookieAuthentication(IdentityCookieOptions.ApplicationScheme, o =>
             {
                 o.LoginPath = new PathString("/Account/Login");
                 o.Events = new CookieAuthenticationEvents
@@ -61,18 +60,18 @@ namespace Microsoft.Extensions.DependencyInjection
                 };
             });
 
-            services.AddCookieAuthentication(IdentityCookieOptions.DefaultExternalScheme, o =>
+            services.AddCookieAuthentication(IdentityCookieOptions.ExternalScheme, o =>
             {
-                o.CookieName = IdentityCookieOptions.DefaultExternalScheme;
+                o.CookieName = IdentityCookieOptions.ExternalScheme;
                 o.ExpireTimeSpan = TimeSpan.FromMinutes(5);
             });
 
-            services.AddCookieAuthentication(IdentityCookieOptions.DefaultTwoFactorRememberMeScheme, 
-                o => o.CookieName = IdentityCookieOptions.DefaultTwoFactorRememberMeScheme);
+            services.AddCookieAuthentication(IdentityCookieOptions.TwoFactorRememberMeScheme, 
+                o => o.CookieName = IdentityCookieOptions.TwoFactorRememberMeScheme);
 
-            services.AddCookieAuthentication(IdentityCookieOptions.DefaultTwoFactorUserIdScheme, o =>
+            services.AddCookieAuthentication(IdentityCookieOptions.TwoFactorUserIdScheme, o =>
             {
-                o.CookieName = IdentityCookieOptions.DefaultTwoFactorUserIdScheme;
+                o.CookieName = IdentityCookieOptions.TwoFactorUserIdScheme;
                 o.ExpireTimeSpan = TimeSpan.FromMinutes(5);
             });
 

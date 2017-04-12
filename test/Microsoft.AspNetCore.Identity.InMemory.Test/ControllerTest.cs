@@ -38,7 +38,6 @@ namespace Microsoft.AspNetCore.Identity.InMemory.Test
             services.AddSingleton<IRoleStore<TestRole>, InMemoryStore<TestUser, TestRole>>();
             
             var app = new ApplicationBuilder(services.BuildServiceProvider());
-            app.UseCookieAuthentication();
 
             // Act
             var user = new TestUser
@@ -89,7 +88,6 @@ namespace Microsoft.AspNetCore.Identity.InMemory.Test
             services.AddSingleton<IRoleStore<TestRole>, InMemoryStore<TestUser, TestRole>>();
 
             var app = new ApplicationBuilder(services.BuildServiceProvider());
-            app.UseCookieAuthentication();
 
             // Act
             var user = new TestUser

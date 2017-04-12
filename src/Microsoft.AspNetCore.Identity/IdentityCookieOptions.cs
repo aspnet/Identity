@@ -14,10 +14,25 @@ namespace Microsoft.AspNetCore.Identity
     public class IdentityCookieOptions
     {
         private static readonly string CookiePrefix = "Identity";
-        internal static readonly string DefaultApplicationScheme = CookiePrefix + ".Application";
-        internal static readonly string DefaultExternalScheme = CookiePrefix + ".External";
-        internal static readonly string DefaultTwoFactorRememberMeScheme = CookiePrefix + ".TwoFactorRememberMe";
-        internal static readonly string DefaultTwoFactorUserIdScheme = CookiePrefix + ".TwoFactorUserId";
+        /// <summary>
+        /// The scheme used to identify application authentication cookies.
+        /// </summary>
+        public static readonly string ApplicationScheme = CookiePrefix + ".Application";
+
+        /// <summary>
+        /// The scheme used to identify external authentication cookies.
+        /// </summary>
+        public static readonly string ExternalScheme = CookiePrefix + ".External";
+
+        /// <summary>
+        /// The scheme used to identify Two Factor authentication cookies for saving the Remember Me state.
+        /// </summary>
+        public static readonly string TwoFactorRememberMeScheme = CookiePrefix + ".TwoFactorRememberMe";
+
+        /// <summary>
+        /// The scheme used to identify Two Factor authentication cookies for round tripping user identities.
+        /// </summary>
+        public static readonly string TwoFactorUserIdScheme = CookiePrefix + ".TwoFactorUserId";
 
         /// <summary>
         /// The options for the application cookie.
@@ -47,24 +62,24 @@ namespace Microsoft.AspNetCore.Identity
         /// Gets the scheme used to identify application authentication cookies.
         /// </summary>
         /// <value>The scheme used to identify application authentication cookies.</value>
-        public string ApplicationCookieAuthenticationScheme { get; set; } = DefaultApplicationScheme;
+        public string ApplicationCookieAuthenticationScheme { get; set; } = ApplicationScheme;
 
         /// <summary>
         /// Gets the scheme used to identify external authentication cookies.
         /// </summary>
         /// <value>The scheme used to identify external authentication cookies.</value>
-        public string ExternalCookieAuthenticationScheme { get; set; } = DefaultExternalScheme;
+        public string ExternalCookieAuthenticationScheme { get; set; } = ExternalScheme;
 
         /// <summary>
         /// Gets the scheme used to identify Two Factor authentication cookies for round tripping user identities.
         /// </summary>
         /// <value>The scheme used to identify user identity 2fa authentication cookies.</value>
-        public string TwoFactorUserIdCookieAuthenticationScheme { get; set; } = DefaultTwoFactorUserIdScheme;
+        public string TwoFactorUserIdCookieAuthenticationScheme { get; set; } = TwoFactorUserIdScheme;
 
         /// <summary>
         /// Gets the scheme used to identify Two Factor authentication cookies for saving the Remember Me state.
         /// </summary>
         /// <value>The scheme used to identify remember me application authentication cookies.</value>        
-        public string TwoFactorRememberMeCookieAuthenticationScheme { get; set; } = DefaultTwoFactorRememberMeScheme;
+        public string TwoFactorRememberMeCookieAuthenticationScheme { get; set; } = TwoFactorRememberMeScheme;
     }
 }

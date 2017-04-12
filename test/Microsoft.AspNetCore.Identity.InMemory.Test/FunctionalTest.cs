@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -25,14 +26,6 @@ namespace Microsoft.AspNetCore.Identity.InMemory
     public class FunctionalTest
     {
         const string TestPassword = "1qaz!QAZ";
-
-        [Fact]
-        public void UseIdentityThrowsWithoutAddIdentity()
-        {
-            var builder = new WebHostBuilder()
-                .Configure(app => app.UseIdentity());
-            Assert.Throws<InvalidOperationException>(() => new TestServer(builder));
-        }
 
         [Fact]
         public async Task CanChangePasswordOptions()
@@ -58,10 +51,10 @@ namespace Microsoft.AspNetCore.Identity.InMemory
             var clock = new TestClock();
             var server = CreateServer(services =>
             {
-                services.Configure<IdentityOptions>(options =>
+                services.Configure<CookieAuthenticationOptions>(IdentityCookieOptions.ApplicationScheme, options =>
                 {
-                    options.Cookies.ApplicationCookie.ExpireTimeSpan = TimeSpan.FromMinutes(10);
-                    options.Cookies.ApplicationCookie.SlidingExpiration = false;
+                    options.ExpireTimeSpan = TimeSpan.FromMinutes(10);
+                    options.SlidingExpiration = false;
                 });
                 services.AddSingleton<ISystemClock>(clock);
             });
@@ -236,7 +229,6 @@ namespace Microsoft.AspNetCore.Identity.InMemory
                 .Configure(app =>
                 {
                     app.UseAuthentication();
-                    app.UseIdentity();
                     app.Use(async (context, next) =>
                     {
                         var req = context.Request;
@@ -325,7 +317,7 @@ namespace Microsoft.AspNetCore.Identity.InMemory
             }
             if (result != null && result.Properties != null)
             {
-                xml.Add(result.Properties.Select(extra => new XElement("extra", new XAttribute("type", extra.Key), new XAttribute("value", extra.Value))));
+                xml.Add(result.Properties.Items.Select(extra => new XElement("extra", new XAttribute("type", extra.Key), new XAttribute("value", extra.Value))));
             }
             using (var memory = new MemoryStream())
             {
