@@ -8,12 +8,12 @@
   },
   "dependencies": {
     "dotnet-test-xunit": "2.2.0-*",
-    "Microsoft.AspNetCore.Hosting": "1.1.1",
-    "Microsoft.AspNetCore.Http": "1.1.1",
-    "Microsoft.AspNetCore.Identity": "1.1.1",
-    "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "1.1.1",
-    "Microsoft.AspNetCore.Testing": "1.1.0-rtm-22752",
-    "Microsoft.EntityFrameworkCore.InMemory": "1.1.1",
+    "Microsoft.AspNetCore.Hosting": "1.1.2",
+    "Microsoft.AspNetCore.Http": "1.1.2",
+    "Microsoft.AspNetCore.Identity": "1.1.2",
+    "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "1.1.2",
+    "Microsoft.AspNetCore.Testing": "1.1.1",
+    "Microsoft.EntityFrameworkCore.InMemory": "1.1.2",
     "Moq": "4.6.36-*",
     "xunit": "2.2.0-*"
   },
