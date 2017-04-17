@@ -6,7 +6,9 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -15,6 +17,13 @@ namespace Microsoft.Extensions.DependencyInjection
     /// </summary>
     public static class IdentityServiceCollectionExtensions
     {
+        internal class IdentityConfigureOptions : ConfigureOptions<IdentityOptions>
+        {
+            public IdentityConfigureOptions(IConfiguration config) :
+                base(options => config.GetSection("Identity").Bind(options))
+            { }
+        }
+
         /// <summary>
         /// Adds the default identity system configuration for the specified User and Role types.
         /// </summary>
@@ -91,6 +100,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddScoped<SignInManager<TUser>, SignInManager<TUser>>();
             services.TryAddScoped<RoleManager<TRole>, RoleManager<TRole>>();
 
+            services.AddSingleton<IConfigureOptions<IdentityOptions>, IdentityConfigureOptions>();
             if (setupAction != null)
             {
                 services.Configure(setupAction);
