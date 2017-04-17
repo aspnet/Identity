@@ -4,10 +4,10 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Builder.Internal;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity.Test;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
@@ -30,9 +30,11 @@ namespace Microsoft.AspNetCore.Identity.InMemory.Test
             //It.Is<AuthenticationProperties>(v => v.IsPersistent == isPersistent))).Returns(Task.FromResult(0)).Verifiable();
             var contextAccessor = new Mock<IHttpContextAccessor>();
             contextAccessor.Setup(a => a.HttpContext).Returns(context);
-            var services = new ServiceCollection();
-            services.AddLogging();
-            services.AddSingleton(contextAccessor.Object);
+            var services = new ServiceCollection()
+                .AddSingleton<IConfiguration>(new ConfigurationBuilder().Build())
+                .AddLogging()
+                .AddSingleton(contextAccessor.Object);
+
             services.AddIdentity<TestUser, TestRole>();
             services.AddSingleton<IUserStore<TestUser>, InMemoryStore<TestUser, TestRole>>();
             services.AddSingleton<IRoleStore<TestRole>, InMemoryStore<TestUser, TestRole>>();
@@ -80,9 +82,10 @@ namespace Microsoft.AspNetCore.Identity.InMemory.Test
             auth.Setup(a => a.AuthenticateAsync(context, It.IsAny<string>())).Returns(Task.FromResult(AuthenticateResult.None()));
             var contextAccessor = new Mock<IHttpContextAccessor>();
             contextAccessor.Setup(a => a.HttpContext).Returns(context);
-            var services = new ServiceCollection();
-            services.AddLogging();
-            services.AddSingleton(contextAccessor.Object);
+            var services = new ServiceCollection()
+                .AddSingleton<IConfiguration>(new ConfigurationBuilder().Build())
+                .AddLogging()
+                .AddSingleton(contextAccessor.Object);
             services.AddIdentity<TestUser, TestRole>();
             services.AddSingleton<IUserStore<TestUser>, InMemoryStore<TestUser, TestRole>>();
             services.AddSingleton<IRoleStore<TestRole>, InMemoryStore<TestUser, TestRole>>();

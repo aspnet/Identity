@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Testing;
 using Microsoft.AspNetCore.Testing.xunit;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -60,6 +61,7 @@ namespace Microsoft.AspNetCore.Identity.Test
         /// <param name="context"></param>
         protected virtual void SetupIdentityServices(IServiceCollection services, object context = null)
         {
+            services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddIdentity<TUser, TRole>(options =>
             {
