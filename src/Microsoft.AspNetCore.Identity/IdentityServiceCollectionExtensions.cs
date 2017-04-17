@@ -47,7 +47,7 @@ namespace Microsoft.Extensions.DependencyInjection
             // Services used by identity
             services.AddAuthentication(options =>
             {
-                options.DefaultAuthenticationScheme = IdentityCookieOptions.ApplicationScheme;
+                options.DefaultAuthenticateScheme = IdentityCookieOptions.ApplicationScheme;
                 options.DefaultSignInScheme = IdentityCookieOptions.ExternalScheme;
             });
 
