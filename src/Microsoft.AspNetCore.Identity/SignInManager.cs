@@ -535,17 +535,6 @@ namespace Microsoft.AspNetCore.Identity
             return await SignInOrTwoFactorAsync(user, isPersistent, loginProvider, bypassTwoFactor);
         }
 
-        ///// <summary>
-        ///// Gets a collection of <see cref="AuthenticationDescription"/>s for the known external login providers.
-        ///// </summary>
-        ///// <returns>A collection of <see cref="AuthenticationDescription"/>s for the known external login providers.</returns>
-        //public virtual IEnumerable<AuthenticationDescription> GetExternalAuthenticationSchemes()
-        //{
-        //    //return Context.GetAuthenticationSchemes().Where(d => !string.IsNullOrEmpty(d.DisplayName));
-        //    // TODO;
-        //    return null;
-        //}
-
         /// <summary>
         /// Gets the external login information for the current login, as an asynchronous operation.
         /// </summary>
