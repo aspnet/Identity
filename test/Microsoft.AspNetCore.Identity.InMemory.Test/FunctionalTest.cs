@@ -51,7 +51,7 @@ namespace Microsoft.AspNetCore.Identity.InMemory
             var clock = new TestClock();
             var server = CreateServer(services =>
             {
-                services.Configure<CookieAuthenticationOptions>(IdentityCookieOptions.ApplicationScheme, options =>
+                services.ConfigureApplicationCookie(options =>
                 {
                     options.ExpireTimeSpan = TimeSpan.FromMinutes(10);
                     options.SlidingExpiration = false;

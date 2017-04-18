@@ -53,10 +53,9 @@ namespace Microsoft.AspNetCore.Identity.Test
         [Fact]
         public async Task OnValidatePrincipalThrowsWithEmptyServiceCollection()
         {
-            var scheme = new IdentityOptions().Cookies.ApplicationCookieAuthenticationScheme;
             var httpContext = new Mock<HttpContext>();
             httpContext.Setup(c => c.RequestServices).Returns(new ServiceCollection().BuildServiceProvider());
-            var id = new ClaimsPrincipal(new ClaimsIdentity(scheme));
+            var id = new ClaimsPrincipal(new ClaimsIdentity(IdentityCookieOptions.ApplicationScheme));
             var ticket = new AuthenticationTicket(id, new AuthenticationProperties { IssuedUtc = DateTimeOffset.UtcNow }, scheme);
             var context = new CookieValidatePrincipalContext(httpContext.Object, new AuthenticationSchemeBuilder(scheme) { HandlerType = typeof(NoopHandler) }.Build(), ticket, new CookieAuthenticationOptions());
             var ex = await Assert.ThrowsAsync<InvalidOperationException>(() => SecurityStampValidator.ValidatePrincipalAsync(context));

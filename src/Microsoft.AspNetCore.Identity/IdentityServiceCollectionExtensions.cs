@@ -40,6 +40,24 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
+        /// Configures the application cookie.
+        /// </summary>
+        /// <param name="services">The services available in the application.</param>
+        /// <param name="configure">An action to configure the <see cref="CookieAuthenticationOptions"/>.</param>
+        /// <returns>The services.</returns>
+        public static IServiceCollection ConfigureApplicationCookie(this IServiceCollection services, Action<CookieAuthenticationOptions> configure)
+            => services.Configure(IdentityCookieOptions.ApplicationScheme, configure);
+
+        /// <summary>
+        /// Configure the external cookie.
+        /// </summary>
+        /// <param name="services">The services available in the application.</param>
+        /// <param name="configure">An action to configure the <see cref="CookieAuthenticationOptions"/>.</param>
+        /// <returns>The services.</returns>
+        public static IServiceCollection ConfigureExternalCookie(this IServiceCollection services, Action<CookieAuthenticationOptions> configure)
+            => services.Configure(IdentityCookieOptions.ExternalScheme, configure);
+
+        /// <summary>
         /// Adds and configures the identity system for the specified User and Role types.
         /// </summary>
         /// <typeparam name="TUser">The type representing a User in the system.</typeparam>
@@ -54,9 +72,10 @@ namespace Microsoft.Extensions.DependencyInjection
             where TRole : class
         {
             // Services used by identity
-            services.AddAuthentication(options =>
+            services.AddAuthenticationCore(options =>
             {
                 options.DefaultAuthenticateScheme = IdentityCookieOptions.ApplicationScheme;
+                options.DefaultChallengeScheme = IdentityCookieOptions.ApplicationScheme;
                 options.DefaultSignInScheme = IdentityCookieOptions.ExternalScheme;
             });
 
