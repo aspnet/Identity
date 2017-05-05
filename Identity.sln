@@ -1,6 +1,10 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
+<<<<<<< HEAD
 VisualStudioVersion = 15.0.26507.0
+=======
+VisualStudioVersion = 15.0.26228.0
+>>>>>>> Abstractions
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{0F647068-6602-4E24-B1DC-8ED91481A50A}"
 EndProject
@@ -26,6 +30,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.AspNet.Identity.A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.AspNetCore.Identity.Specification.Tests", "src\Microsoft.AspNetCore.Identity.Specification.Tests\Microsoft.AspNetCore.Identity.Specification.Tests.csproj", "{5608E828-DD54-4E2A-B73C-FC22268BE797}"
 EndProject
+<<<<<<< HEAD
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.AspNetCore.Diagnostics.Identity.Service", "src\Microsoft.AspNetCore.Diagnostics.Identity.Service\Microsoft.AspNetCore.Diagnostics.Identity.Service.csproj", "{CD787C9A-58B7-4CBC-B8E3-66698EE58C11}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.AspNetCore.Identity.Service", "src\Microsoft.AspNetCore.Identity.Service\Microsoft.AspNetCore.Identity.Service.csproj", "{B44C2A7F-EA9E-4A9F-9698-1C9F9BB40E0C}"
@@ -53,6 +58,11 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.AspNetCore.Identity.Service.EntityFrameworkCore.Test", "test\Microsoft.AspNetCore.Identity.Service.EntityFrameworkCore.Test\Microsoft.AspNetCore.Identity.Service.EntityFrameworkCore.Test.csproj", "{4F5D777E-3CFA-4EDF-BA89-4FE04BBF7A66}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.AspNetCore.Identity.Service.InMemory.Test", "test\Microsoft.AspNetCore.Identity.Service.InMemory.Test\Microsoft.AspNetCore.Identity.Service.InMemory.Test.csproj", "{94EC586A-2AE6-4AF2-894A-B0973C65BD68}"
+=======
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Extensions.Identity.Abstractions", "src\Microsoft.Extensions.Identity.Abstractions\Microsoft.Extensions.Identity.Abstractions.csproj", "{D5905D78-A32E-44B8-8F21-EDAEDC95D9B8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Extensions.Identity.Stores", "src\Microsoft.Extensions.Identity.Stores\Microsoft.Extensions.Identity.Stores.csproj", "{FADA11FC-DC06-4832-A569-7B2374A6CD42}"
+>>>>>>> Abstractions
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -158,6 +168,7 @@ Global
 		{5608E828-DD54-4E2A-B73C-FC22268BE797}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{5608E828-DD54-4E2A-B73C-FC22268BE797}.Release|x86.ActiveCfg = Release|Any CPU
 		{5608E828-DD54-4E2A-B73C-FC22268BE797}.Release|x86.Build.0 = Release|Any CPU
+<<<<<<< HEAD
 		{CD787C9A-58B7-4CBC-B8E3-66698EE58C11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CD787C9A-58B7-4CBC-B8E3-66698EE58C11}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CD787C9A-58B7-4CBC-B8E3-66698EE58C11}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -326,6 +337,32 @@ Global
 		{94EC586A-2AE6-4AF2-894A-B0973C65BD68}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{94EC586A-2AE6-4AF2-894A-B0973C65BD68}.Release|x86.ActiveCfg = Release|Any CPU
 		{94EC586A-2AE6-4AF2-894A-B0973C65BD68}.Release|x86.Build.0 = Release|Any CPU
+=======
+		{D5905D78-A32E-44B8-8F21-EDAEDC95D9B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5905D78-A32E-44B8-8F21-EDAEDC95D9B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5905D78-A32E-44B8-8F21-EDAEDC95D9B8}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{D5905D78-A32E-44B8-8F21-EDAEDC95D9B8}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{D5905D78-A32E-44B8-8F21-EDAEDC95D9B8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D5905D78-A32E-44B8-8F21-EDAEDC95D9B8}.Debug|x86.Build.0 = Debug|Any CPU
+		{D5905D78-A32E-44B8-8F21-EDAEDC95D9B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5905D78-A32E-44B8-8F21-EDAEDC95D9B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D5905D78-A32E-44B8-8F21-EDAEDC95D9B8}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{D5905D78-A32E-44B8-8F21-EDAEDC95D9B8}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{D5905D78-A32E-44B8-8F21-EDAEDC95D9B8}.Release|x86.ActiveCfg = Release|Any CPU
+		{D5905D78-A32E-44B8-8F21-EDAEDC95D9B8}.Release|x86.Build.0 = Release|Any CPU
+		{FADA11FC-DC06-4832-A569-7B2374A6CD42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FADA11FC-DC06-4832-A569-7B2374A6CD42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FADA11FC-DC06-4832-A569-7B2374A6CD42}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{FADA11FC-DC06-4832-A569-7B2374A6CD42}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{FADA11FC-DC06-4832-A569-7B2374A6CD42}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FADA11FC-DC06-4832-A569-7B2374A6CD42}.Debug|x86.Build.0 = Debug|Any CPU
+		{FADA11FC-DC06-4832-A569-7B2374A6CD42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FADA11FC-DC06-4832-A569-7B2374A6CD42}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FADA11FC-DC06-4832-A569-7B2374A6CD42}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{FADA11FC-DC06-4832-A569-7B2374A6CD42}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{FADA11FC-DC06-4832-A569-7B2374A6CD42}.Release|x86.ActiveCfg = Release|Any CPU
+		{FADA11FC-DC06-4832-A569-7B2374A6CD42}.Release|x86.Build.0 = Release|Any CPU
+>>>>>>> Abstractions
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -340,6 +377,7 @@ Global
 		{4490894C-3572-4E63-86F1-EE5105CE8A06} = {0F647068-6602-4E24-B1DC-8ED91481A50A}
 		{6A74C6EA-B241-4D6B-BCE4-BF89EC1D2475} = {0F647068-6602-4E24-B1DC-8ED91481A50A}
 		{5608E828-DD54-4E2A-B73C-FC22268BE797} = {0F647068-6602-4E24-B1DC-8ED91481A50A}
+<<<<<<< HEAD
 		{CD787C9A-58B7-4CBC-B8E3-66698EE58C11} = {0F647068-6602-4E24-B1DC-8ED91481A50A}
 		{B44C2A7F-EA9E-4A9F-9698-1C9F9BB40E0C} = {0F647068-6602-4E24-B1DC-8ED91481A50A}
 		{F34C3ED8-D4A9-47CE-BE0F-1F234A33AC81} = {0F647068-6602-4E24-B1DC-8ED91481A50A}
@@ -354,5 +392,9 @@ Global
 		{7423EB30-FFE9-4707-A44B-571E89A7CA15} = {52D59F18-62D2-4D17-8CF2-BE192445AF8E}
 		{4F5D777E-3CFA-4EDF-BA89-4FE04BBF7A66} = {52D59F18-62D2-4D17-8CF2-BE192445AF8E}
 		{94EC586A-2AE6-4AF2-894A-B0973C65BD68} = {52D59F18-62D2-4D17-8CF2-BE192445AF8E}
+=======
+		{D5905D78-A32E-44B8-8F21-EDAEDC95D9B8} = {0F647068-6602-4E24-B1DC-8ED91481A50A}
+		{FADA11FC-DC06-4832-A569-7B2374A6CD42} = {0F647068-6602-4E24-B1DC-8ED91481A50A}
+>>>>>>> Abstractions
 	EndGlobalSection
 EndGlobal
