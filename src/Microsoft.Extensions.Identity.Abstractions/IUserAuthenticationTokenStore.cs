@@ -4,7 +4,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.AspNetCore.Identity
+namespace Microsoft.Extensions.Identity
 {
     /// <summary>
     /// Provides an abstraction to store a user's authentication tokens.

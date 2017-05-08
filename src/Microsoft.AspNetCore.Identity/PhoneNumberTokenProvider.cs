@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Identity;
 
 namespace Microsoft.AspNetCore.Identity
 {

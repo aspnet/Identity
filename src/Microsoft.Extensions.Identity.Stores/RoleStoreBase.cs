@@ -8,6 +8,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Identity;
 using Microsoft.Extensions.Internal;
 
 namespace Microsoft.AspNetCore.Identity.Stores

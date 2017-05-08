@@ -3,6 +3,7 @@
 
 using System.Linq;
 using System.Text;
+using Microsoft.Extensions.Identity;
 using Xunit;
 
 namespace Microsoft.AspNetCore.Identity.Test

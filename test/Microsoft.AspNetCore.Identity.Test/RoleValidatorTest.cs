@@ -3,6 +3,7 @@
 
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Identity;
 using Xunit;
 
 namespace Microsoft.AspNetCore.Identity.Test

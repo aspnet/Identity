@@ -3,7 +3,7 @@
 
 using Microsoft.Extensions.Logging;
 
-namespace Microsoft.AspNetCore.Identity
+namespace Microsoft.Extensions.Identity
 {
     /// <summary>
     /// Represents the result of a sign-in operation.

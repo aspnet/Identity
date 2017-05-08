@@ -1,7 +1,7 @@
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-namespace Microsoft.AspNetCore.Identity
+namespace Microsoft.Extensions.Identity
 {
     /// <summary>
     /// Service to enable localization for application facing identity errors.
@@ -189,7 +189,7 @@ namespace Microsoft.AspNetCore.Identity
         /// <summary>
         /// Returns an <see cref="IdentityError"/> indicating user lockout is not enabled.
         /// </summary>
-        /// <returns>An <see cref="IdentityError"/> indicating user lockout is not enabled..</returns>
+        /// <returns>An <see cref="IdentityError"/> indicating user lockout is not enabled.</returns>
         public virtual IdentityError UserLockoutNotEnabled()
         {
             return new IdentityError

@@ -5,6 +5,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using Microsoft.Extensions.Identity;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.AspNetCore.Identity

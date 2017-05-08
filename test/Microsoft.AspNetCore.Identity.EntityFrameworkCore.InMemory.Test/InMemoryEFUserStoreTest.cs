@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 using Microsoft.AspNetCore.Identity.Test;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Identity;
 
 namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.InMemory.Test
 {

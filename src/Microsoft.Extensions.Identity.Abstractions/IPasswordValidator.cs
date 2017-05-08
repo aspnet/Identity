@@ -4,7 +4,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.AspNetCore.Identity
+namespace Microsoft.Extensions.Identity
 {
     /// <summary>
     /// Provides an abstraction for validating passwords.
@@ -15,10 +15,10 @@ namespace Microsoft.AspNetCore.Identity
         /// <summary>
         /// Validates a password as an asynchronous operation.
         /// </summary>
-        /// <param name="manager">The <see cref="UserManagerBase{TUser}"/> to retrieve the <paramref name="user"/> properties from.</param>
+        /// <param name="manager">The <see cref="UserManager{TUser}"/> to retrieve the <paramref name="user"/> properties from.</param>
         /// <param name="user">The user whose password should be validated.</param>
         /// <param name="password">The password supplied for validation</param>
         /// <returns>The task object representing the asynchronous operation.</returns>
-        Task<IdentityResult> ValidateAsync(UserManagerBase<TUser> manager, TUser user, string password);
+        Task<IdentityResult> ValidateAsync(UserManager<TUser> manager, TUser user, string password);
     }
 }

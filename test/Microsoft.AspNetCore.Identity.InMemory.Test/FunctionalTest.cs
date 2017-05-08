@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity.Test;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Identity;
 using Xunit;
 
 namespace Microsoft.AspNetCore.Identity.InMemory
@@ -137,9 +138,9 @@ namespace Microsoft.AspNetCore.Identity.InMemory
             var clock = new TestClock();
             var server = CreateServer(services =>
             {
-                services.Configure<IdentityOptions>(options =>
+                services.Configure<SecurityStampValidatorOptions>(options =>
                 {
-                    options.OnSecurityStampRefreshingPrincipal = c =>
+                    options.OnRefreshingPrincipal = c =>
                     {
                         var newId = new ClaimsIdentity();
                         newId.AddClaim(new Claim("PreviousName", c.CurrentPrincipal.Identity.Name));
@@ -195,7 +196,7 @@ namespace Microsoft.AspNetCore.Identity.InMemory
             Assert.Equal(HttpStatusCode.OK, transaction2.Response.StatusCode);
 
             var setCookie = transaction2.SetCookie;
-            Assert.Contains(new IdentityCookieOptions().TwoFactorRememberMeCookieAuthenticationScheme + "=", setCookie);
+            Assert.Contains(IdentityConstants.TwoFactorRememberMeScheme + "=", setCookie);
             Assert.Contains("; expires=", setCookie);
 
             var transaction3 = await SendAsync(server, "http://example.com/isTwoFactorRememebered", transaction2.CookieNameValue);

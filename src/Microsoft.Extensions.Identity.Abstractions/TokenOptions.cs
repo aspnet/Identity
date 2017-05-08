@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Microsoft.AspNetCore.Identity
+namespace Microsoft.Extensions.Identity
 {
     /// <summary>
     /// Options for user tokens.
@@ -15,6 +15,16 @@ namespace Microsoft.AspNetCore.Identity
         /// Default token provider name used by email confirmation, password reset, and change email.
         /// </summary>
         public static readonly string DefaultProvider = "Default";
+
+        /// <summary>
+        /// Default token provider name used by the email provider. />.
+        /// </summary>
+        public static readonly string DefaultEmailProvider = "Email";
+
+        /// <summary>
+        /// Default token provider name used by the phone provider. />.
+        /// </summary>
+        public static readonly string DefaultPhoneProvider = "Phone";
 
         /// <summary>
         /// Default token provider name used by the <see cref="AuthenticatorTokenProvider"/>.
@@ -49,6 +59,14 @@ namespace Microsoft.AspNetCore.Identity
         /// The <see cref="ChangeEmailTokenProvider"/> used to generate tokens used in email change confirmation emails.
         /// </value>
         public string ChangeEmailTokenProvider { get; set; } = DefaultProvider;
+
+        /// <summary>
+        /// Gets or sets the <see cref="ChangePhoneNumberTokenProvider"/> used to generate tokens used when changing phone numbers.
+        /// </summary>
+        /// <value>
+        /// The <see cref="ChangePhoneNumberTokenProvider"/> used to generate tokens used when changing phone numbers.
+        /// </value>
+        public string ChangePhoneNumberTokenProvider { get; set; } = DefaultProvider;
 
         /// <summary>
         /// Gets or sets the <see cref="AuthenticatorTokenProvider"/> used to validate two factor sign ins with an authenticator.

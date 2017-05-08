@@ -4,7 +4,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.AspNetCore.Identity
+namespace Microsoft.Extensions.Identity
 {
     /// <summary>
     /// Provides an abstraction for a store containing users' telephone numbers.
@@ -41,7 +41,7 @@ namespace Microsoft.AspNetCore.Identity
         Task<bool> GetPhoneNumberConfirmedAsync(TUser user, CancellationToken cancellationToken);
 
         /// <summary>
-        /// Sets a flag indicating if the specified <paramref name="user"/>'s phone number has been confirmed..
+        /// Sets a flag indicating if the specified <paramref name="user"/>'s phone number has been confirmed.
         /// </summary>
         /// <param name="user">The user whose telephone number confirmation status should be set.</param>
         /// <param name="confirmed">A flag indicating whether the user's telephone number has been confirmed.</param>

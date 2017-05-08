@@ -4,10 +4,10 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.AspNetCore.Identity
+namespace Microsoft.Extensions.Identity
 {
     /// <summary>
-    /// Provides an abstraction for a store containing users' password hashes..
+    /// Provides an abstraction for a store containing users' password hashes.
     /// </summary>
     /// <typeparam name="TUser">The type encapsulating a user.</typeparam>
     public interface IUserPasswordStore<TUser> : IUserStore<TUser> where TUser : class

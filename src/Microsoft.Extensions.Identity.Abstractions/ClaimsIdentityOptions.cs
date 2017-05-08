@@ -3,7 +3,7 @@
 
 using System.Security.Claims;
 
-namespace Microsoft.AspNetCore.Identity
+namespace Microsoft.Extensions.Identity
 {
     /// <summary>
     /// Options used to configure the claim types used for well known claims.
@@ -35,7 +35,7 @@ namespace Microsoft.AspNetCore.Identity
         public string UserIdClaimType { get; set; } = ClaimTypes.NameIdentifier;
 
         /// <summary>
-        /// Gets or sets the ClaimType used for the security stamp claim..
+        /// Gets or sets the ClaimType used for the security stamp claim.
         /// </summary>
         /// <remarks>
         /// This defaults to "AspNet.Identity.SecurityStamp".

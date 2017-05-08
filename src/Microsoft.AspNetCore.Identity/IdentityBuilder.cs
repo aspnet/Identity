@@ -5,6 +5,7 @@ using System;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Identity;
 
 namespace Microsoft.AspNetCore.Identity
 {

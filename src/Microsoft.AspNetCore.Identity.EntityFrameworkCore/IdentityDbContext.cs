@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using Microsoft.AspNetCore.Identity.Stores;
 using Microsoft.EntityFrameworkCore;
 
 namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
@@ -159,6 +160,9 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
                 b.Property(u => u.NormalizedUserName).HasMaxLength(256);
                 b.Property(u => u.Email).HasMaxLength(256);
                 b.Property(u => u.NormalizedEmail).HasMaxLength(256);
+
+                // Replace with b.HasMany<IdentityUserClaim>().
+                b.HasMany<TUserClaim>().WithOne().HasForeignKey(uc => uc.UserId).IsRequired();
                 b.HasMany(u => u.Claims).WithOne().HasForeignKey(uc => uc.UserId).IsRequired();
                 b.HasMany(u => u.Logins).WithOne().HasForeignKey(ul => ul.UserId).IsRequired();
                 b.HasMany(u => u.Roles).WithOne().HasForeignKey(ur => ur.UserId).IsRequired();

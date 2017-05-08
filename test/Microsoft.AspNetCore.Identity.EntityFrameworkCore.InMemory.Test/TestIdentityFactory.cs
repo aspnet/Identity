@@ -4,6 +4,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Identity;
 
 namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.InMemory.Test
 {

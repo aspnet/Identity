@@ -5,6 +5,7 @@ using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Identity;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.AspNetCore.Identity
@@ -83,7 +84,7 @@ namespace Microsoft.AspNetCore.Identity
             }
             var userId = await UserManager.GetUserIdAsync(user);
             var userName = await UserManager.GetUserNameAsync(user);
-            var id = new ClaimsIdentity(Options.Cookies.ApplicationCookieAuthenticationScheme,
+            var id = new ClaimsIdentity(IdentityConstants.ApplicationScheme,
                 Options.ClaimsIdentity.UserNameClaimType,
                 Options.ClaimsIdentity.RoleClaimType);
             id.AddClaim(new Claim(Options.ClaimsIdentity.UserIdClaimType, userId));

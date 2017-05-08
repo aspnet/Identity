@@ -3,7 +3,7 @@
 
 using System.Threading.Tasks;
 
-namespace Microsoft.AspNetCore.Identity
+namespace Microsoft.Extensions.Identity
 {
     /// <summary>
     /// Provides an abstraction for a validating a role.
@@ -14,9 +14,9 @@ namespace Microsoft.AspNetCore.Identity
         /// <summary>
         /// Validates a role as an asynchronous operation.
         /// </summary>
-        /// <param name="manager">The <see cref="RoleManagerBase{TRole}"/> managing the role store.</param>
+        /// <param name="manager">The <see cref="RoleManager{TRole}"/> managing the role store.</param>
         /// <param name="role">The role to validate.</param>
         /// <returns>A <see cref="Task{TResult}"/> that represents the <see cref="IdentityResult"/> of the asynchronous validation.</returns>
-        Task<IdentityResult> ValidateAsync(RoleManagerBase<TRole> manager, TRole role);
+        Task<IdentityResult> ValidateAsync(RoleManager<TRole> manager, TRole role);
     }
 }

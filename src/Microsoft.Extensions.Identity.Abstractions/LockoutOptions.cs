@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.AspNetCore.Identity
+namespace Microsoft.Extensions.Identity
 {
     /// <summary>
     /// Options for configuring user lockout.

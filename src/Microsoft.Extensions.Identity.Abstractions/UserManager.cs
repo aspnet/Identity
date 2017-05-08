@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,18 +15,23 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Microsoft.AspNetCore.Identity
+namespace Microsoft.Extensions.Identity
 {
     /// <summary>
     /// Provides the APIs for managing user in a persistence store.
     /// </summary>
     /// <typeparam name="TUser">The type encapsulating a user.</typeparam>
-    public class UserManagerBase<TUser> : IDisposable where TUser : class
+    public class UserManager<TUser> : IDisposable where TUser : class
     {
         /// <summary>
         /// The data protection purpose used for the reset password related methods.
         /// </summary>
         protected const string ResetPasswordTokenPurpose = "ResetPassword";
+
+        /// <summary>
+        /// The data protection purpose used for the change phone number methods.
+        /// </summary>
+        protected const string ChangePhoneNumberTokenPurpose = "ChangePhoneNumber";
 
         /// <summary>
         /// The data protection purpose used for the email confirmation related methods.
@@ -37,16 +43,16 @@ namespace Microsoft.AspNetCore.Identity
 
         private TimeSpan _defaultLockout = TimeSpan.Zero;
         private bool _disposed;
+        private static readonly RandomNumberGenerator _rng = RandomNumberGenerator.Create();
 
 
-// TODO: restore
         /// <summary>
-        /// The cancellation token assocated with the current HttpContext.RequestAborted or CancellationToken.None if unavailable.
+        /// The cancellation token used to cancel operations.
         /// </summary>
-        protected CancellationToken CancellationToken => CancellationToken.None;
+        protected virtual CancellationToken CancellationToken => CancellationToken.None;
 
         /// <summary>
-        /// Constructs a new instance of <see cref="UserManagerBase{TUser}"/>.
+        /// Constructs a new instance of <see cref="UserManager{TUser}"/>.
         /// </summary>
         /// <param name="store">The persistence store the manager will operate over.</param>
         /// <param name="optionsAccessor">The accessor used to access the <see cref="IdentityOptions"/>.</param>
@@ -57,7 +63,7 @@ namespace Microsoft.AspNetCore.Identity
         /// <param name="errors">The <see cref="IdentityErrorDescriber"/> used to provider error messages.</param>
         /// <param name="services">The <see cref="IServiceProvider"/> used to resolve services.</param>
         /// <param name="logger">The logger used to log messages, warnings and errors.</param>
-        public UserManagerBase(IUserStore<TUser> store,
+        public UserManager(IUserStore<TUser> store,
             IOptions<IdentityOptions> optionsAccessor,
             IPasswordHasher<TUser> passwordHasher,
             IEnumerable<IUserValidator<TUser>> userValidators,
@@ -65,7 +71,7 @@ namespace Microsoft.AspNetCore.Identity
             ILookupNormalizer keyNormalizer,
             IdentityErrorDescriber errors,
             IServiceProvider services,
-            ILogger<UserManagerBase<TUser>> logger)
+            ILogger<UserManager<TUser>> logger)
         {
             if (store == null)
             {
@@ -876,7 +882,7 @@ namespace Microsoft.AspNetCore.Identity
         }
 
         /// <summary>
-        /// Retrieves the user associated with the specified external login provider and login provider key..
+        /// Retrieves the user associated with the specified external login provider and login provider key.
         /// </summary>
         /// <param name="loginProvider">The login provider who provided the <paramref name="providerKey"/>.</param>
         /// <param name="providerKey">The key provided by the <paramref name="loginProvider"/> to identify a user.</param>
@@ -1576,7 +1582,8 @@ namespace Microsoft.AspNetCore.Identity
         /// </returns>
         public virtual Task<string> GenerateChangePhoneNumberTokenAsync(TUser user, string phoneNumber)
         {
-            throw new NotImplementedException();
+            ThrowIfDisposed();
+            return GenerateUserTokenAsync(user, Options.Tokens.ChangePhoneNumberTokenProvider, ChangePhoneNumberTokenPurpose + ":" + phoneNumber);
         }
 
         /// <summary>
@@ -1592,7 +1599,14 @@ namespace Microsoft.AspNetCore.Identity
         /// </returns>
         public virtual Task<bool> VerifyChangePhoneNumberTokenAsync(TUser user, string token, string phoneNumber)
         {
-            throw new NotImplementedException();
+            ThrowIfDisposed();
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            // Make sure the token is valid and the stamp matches
+            return VerifyUserTokenAsync(user, Options.Tokens.ChangePhoneNumberTokenProvider, ChangePhoneNumberTokenPurpose+":"+ phoneNumber, token);
         }
 
         /// <summary>
@@ -2143,7 +2157,9 @@ namespace Microsoft.AspNetCore.Identity
         /// <returns>The new security secret.</returns>
         public virtual string GenerateNewAuthenticatorKey()
         {
-            throw new NotImplementedException();
+            byte[] bytes = new byte[20];
+            _rng.GetBytes(bytes);
+            return Base32.ToBase32(bytes);
         }
 
         /// <summary>
@@ -2262,7 +2278,12 @@ namespace Microsoft.AspNetCore.Identity
             return cast;
         }
 
-        internal async Task<byte[]> CreateSecurityTokenAsync(TUser user)
+        /// <summary>
+        /// Creates bytes to use as a security token from the user's security stamp.
+        /// </summary>
+        /// <param name="user">The user.</param>
+        /// <returns>The security token bytes.</returns>
+        public virtual async Task<byte[]> CreateSecurityTokenAsync(TUser user)
         {
             return Encoding.Unicode.GetBytes(await GetSecurityStampAsync(user));
         }

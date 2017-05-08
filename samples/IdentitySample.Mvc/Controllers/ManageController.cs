@@ -6,6 +6,7 @@ using IdentitySample.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Identity;
 using Microsoft.Extensions.Logging;
 
 namespace IdentitySamples.Controllers

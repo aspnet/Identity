@@ -5,6 +5,7 @@ using System;
 using System.Linq.Expressions;
 using Microsoft.AspNetCore.Identity.Test;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Identity;
 
 namespace Microsoft.AspNetCore.Identity.InMemory.Test
 {

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Identity;
 
 namespace IdentitySample.Models.ManageViewModels
 {

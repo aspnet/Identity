@@ -3,9 +3,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -30,7 +31,8 @@ namespace Microsoft.AspNetCore.Identity.Test
             store = store ?? new Mock<IRoleStore<TRole>>().Object;
             var roles = new List<IRoleValidator<TRole>>();
             roles.Add(new RoleValidator<TRole>());
-            return new Mock<RoleManager<TRole>>(store, roles, null, null, null, null);
+            return new Mock<RoleManager<TRole>>(store, roles, new UpperInvariantLookupNormalizer(),
+                new IdentityErrorDescriber(), null);
         }
 
         public static Mock<ILogger<T>> MockILogger<T>(StringBuilder logStore = null) where T : class
@@ -88,7 +90,7 @@ namespace Microsoft.AspNetCore.Identity.Test
             store = store ?? new Mock<IRoleStore<TRole>>().Object;
             var roles = new List<IRoleValidator<TRole>>();
             roles.Add(new RoleValidator<TRole>());
-            return new RoleManager<TRole>(store, roles,
+            return new AspNetRoleManager<TRole>(store, roles,
                 new UpperInvariantLookupNormalizer(),
                 new IdentityErrorDescriber(),
                 null,

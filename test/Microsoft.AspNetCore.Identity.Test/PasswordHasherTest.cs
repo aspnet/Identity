@@ -3,6 +3,7 @@
 
 using System;
 using System.Security.Cryptography;
+using Microsoft.Extensions.Identity;
 using Microsoft.Extensions.Options;
 using Xunit;
 

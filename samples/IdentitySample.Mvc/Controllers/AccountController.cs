@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using IdentitySample.Models;
 using IdentitySample.Models.AccountViewModels;
 using IdentitySample.Services;
+using Microsoft.Extensions.Identity;
 
 namespace IdentitySample.Controllers
 {

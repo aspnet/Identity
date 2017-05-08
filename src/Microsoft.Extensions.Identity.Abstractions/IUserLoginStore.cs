@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.AspNetCore.Identity
+namespace Microsoft.Extensions.Identity
 {
     /// <summary>
     /// Provides an abstraction for storing information that maps external login information provided
@@ -45,7 +45,7 @@ namespace Microsoft.AspNetCore.Identity
         Task<IList<UserLoginInfo>> GetLoginsAsync(TUser user, CancellationToken cancellationToken);
 
         /// <summary>
-        /// Retrieves the user associated with the specified login provider and login provider key..
+        /// Retrieves the user associated with the specified login provider and login provider key.
         /// </summary>
         /// <param name="loginProvider">The login provider who provided the <paramref name="providerKey"/>.</param>
         /// <param name="providerKey">The key provided by the <paramref name="loginProvider"/> to identify a user.</param>

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity.Test;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Identity;
 using Moq;
 using Xunit;
 
@@ -23,7 +24,7 @@ namespace Microsoft.AspNetCore.Identity.InMemory.Test
         {
             var context = new DefaultHttpContext();
             var auth = MockAuth(context);
-            auth.Setup(a => a.SignInAsync(context, new IdentityCookieOptions().ApplicationCookieAuthenticationScheme,
+            auth.Setup(a => a.SignInAsync(context, IdentityConstants.ApplicationScheme,
                 It.IsAny<ClaimsPrincipal>(),
                 It.IsAny<AuthenticationProperties>())).Returns(Task.FromResult(0)).Verifiable();
             // REVIEW: is persistant mocking broken
