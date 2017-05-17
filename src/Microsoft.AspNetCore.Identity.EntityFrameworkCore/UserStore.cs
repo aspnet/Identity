@@ -145,13 +145,36 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
         /// Gets or sets the <see cref="IdentityErrorDescriber"/> for any error that occurred with the current operation.
         /// </summary>
         public IdentityErrorDescriber ErrorDescriber { get; set; }
-
-        private DbSet<TUser> UsersSet { get { return Context.Set<TUser>(); } }
-        private DbSet<TRole> Roles { get { return Context.Set<TRole>(); } }
-        private DbSet<TUserClaim> UserClaims { get { return Context.Set<TUserClaim>(); } }
-        private DbSet<TUserRole> UserRoles { get { return Context.Set<TUserRole>(); } }
-        private DbSet<TUserLogin> UserLogins { get { return Context.Set<TUserLogin>(); } }
-        private DbSet<TUserToken> UserTokens { get { return Context.Set<TUserToken>(); } }
+            
+        /// <summary>
+        /// Gets the Users DbSet.
+        /// </summary>
+        protected DbSet<TUser> UsersSet { get { return Context.Set<TUser>(); } }
+            
+        /// <summary>
+        /// Gets the Roles DbSet.
+        /// </summary>  
+        protected DbSet<TRole> Roles { get { return Context.Set<TRole>(); } }
+            
+        /// <summary>
+        /// Gets the UserClaims DbSet.
+        /// </summary>
+        protected DbSet<TUserClaim> UserClaims { get { return Context.Set<TUserClaim>(); } }
+            
+        /// <summary>
+        /// Gets the UserRoles DbSet.
+        /// </summary>
+        protected DbSet<TUserRole> UserRoles { get { return Context.Set<TUserRole>(); } }
+            
+        /// <summary>
+        /// Gets the UserLogins DbSet.
+        /// </summary>   
+        protected DbSet<TUserLogin> UserLogins { get { return Context.Set<TUserLogin>(); } }
+            
+        /// <summary>
+        /// Gets the UserTokens DbSet.
+        /// </summary>
+        protected DbSet<TUserToken> UserTokens { get { return Context.Set<TUserToken>(); } }
 
         /// <summary>
         /// Called to create a new instance of a <see cref="IdentityUserRole{TKey}"/>.

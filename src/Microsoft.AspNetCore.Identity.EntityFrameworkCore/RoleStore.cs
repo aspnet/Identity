@@ -439,7 +439,10 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
             get { return Context.Set<TRole>(); }
         }
 
-        private DbSet<TRoleClaim> RoleClaims { get { return Context.Set<TRoleClaim>(); } }
+        /// <summary>
+        /// Gets the RoleClaims DbSet.
+        /// </summary>
+        protected DbSet<TRoleClaim> RoleClaims { get { return Context.Set<TRoleClaim>(); } }
 
         /// <summary>
         /// Creates a entity representing a role claim.
