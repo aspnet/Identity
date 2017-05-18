@@ -11,7 +11,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Microsoft.AspNetCore.Identity\Microsoft.AspNetCore.Identity.csproj" />
     <ProjectReference Include="..\..\src\Microsoft.AspNetCore.Identity.EntityFrameworkCore\Microsoft.AspNetCore.Identity.EntityFrameworkCore.csproj" />
-    <ProjectReference Include="..\..\src\Microsoft.Extensions.Identity.Abstractions\Microsoft.Extensions.Identity.Abstractions.csproj" />
+    <ProjectReference Include="..\..\src\Microsoft.Extensions.Identity.Abstractions\Microsoft.Extensions.Identity.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.AspNetCore.Identity.Stores
+namespace Microsoft.Extensions.Identity
 {
     /// <summary>
     /// Represents a login and its associated provider for a user.

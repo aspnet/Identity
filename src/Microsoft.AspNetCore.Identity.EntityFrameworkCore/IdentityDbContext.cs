@@ -2,7 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
-using Microsoft.AspNetCore.Identity.Stores;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
@@ -10,27 +10,29 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
     /// <summary>
     /// Base class for the Entity Framework database context used for identity.
     /// </summary>
-    public class IdentityDbContext : IdentityDbContext<IdentityUser, IdentityRole, string>
+    public class IdentityDbContext : IdentityDbContext<Extensions.Identity.IdentityUser, Extensions.Identity.IdentityRole, string>
     {
         /// <summary>
         /// Initializes a new instance of <see cref="IdentityDbContext"/>.
         /// </summary>
         /// <param name="options">The options to be used by a <see cref="DbContext"/>.</param>
         public IdentityDbContext(DbContextOptions options) : base(options)
-        { }
+        {
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IdentityDbContext" /> class.
         /// </summary>
         protected IdentityDbContext()
-        { }
+        {
+        }
     }
 
     /// <summary>
     /// Base class for the Entity Framework database context used for identity.
     /// </summary>
     /// <typeparam name="TUser">The type of the user objects.</typeparam>
-    public class IdentityDbContext<TUser> : IdentityDbContext<TUser, IdentityRole, string> where TUser : IdentityUser
+    public class IdentityDbContext<TUser> : IdentityDbContext<TUser, Extensions.Identity.IdentityRole, string> where TUser : Extensions.Identity.IdentityUser
     {
         /// <summary>
         /// Initializes a new instance of <see cref="IdentityDbContext"/>.
@@ -52,20 +54,20 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
     /// <typeparam name="TUser">The type of user objects.</typeparam>
     /// <typeparam name="TRole">The type of role objects.</typeparam>
     /// <typeparam name="TKey">The type of the primary key for users and roles.</typeparam>
-    public class IdentityDbContext<TUser, TRole, TKey> : IdentityDbContext<TUser, TRole, TKey, IdentityUserClaim<TKey>, IdentityUserRole<TKey>, IdentityUserLogin<TKey>, IdentityRoleClaim<TKey>, IdentityUserToken<TKey>>
-        where TUser : IdentityUser<TKey>
-        where TRole : IdentityRole<TKey>
+    public class IdentityDbContext<TUser, TRole, TKey> : IdentityDbContext<TUser, TRole, TKey, Extensions.Identity.IdentityUserClaim<TKey>, Extensions.Identity.IdentityUserRole<TKey>, Extensions.Identity.IdentityUserLogin<TKey>, Extensions.Identity.IdentityRoleClaim<TKey>, Extensions.Identity.IdentityUserToken<TKey>>
+        where TUser : Extensions.Identity.IdentityUser<TKey>
+        where TRole : Extensions.Identity.IdentityRole<TKey>
         where TKey : IEquatable<TKey>
     {
         /// <summary>
-        /// Initializes a new instance of <see cref="IdentityDbContext"/>.
+        /// Initializes a new instance of the db context.
         /// </summary>
         /// <param name="options">The options to be used by a <see cref="DbContext"/>.</param>
         public IdentityDbContext(DbContextOptions options) : base(options)
         { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="IdentityDbContext" /> class.
+        /// Initializes a new instance of the class.
         /// </summary>
         protected IdentityDbContext()
         { }
@@ -83,24 +85,24 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
     /// <typeparam name="TRoleClaim">The type of the role claim object.</typeparam>
     /// <typeparam name="TUserToken">The type of the user token object.</typeparam>
     public abstract class IdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken> : DbContext
-        where TUser : IdentityUser<TKey, TUserClaim, TUserRole, TUserLogin, TUserToken>
-        where TRole : IdentityRole<TKey, TUserRole, TRoleClaim>
+        where TUser : Extensions.Identity.IdentityUser<TKey, TUserClaim, TUserRole, TUserLogin, TUserToken>
+        where TRole : Extensions.Identity.IdentityRole<TKey, TUserRole, TRoleClaim>
         where TKey : IEquatable<TKey>
-        where TUserClaim : IdentityUserClaim<TKey>
-        where TUserRole : IdentityUserRole<TKey>
-        where TUserLogin : IdentityUserLogin<TKey>
-        where TRoleClaim : IdentityRoleClaim<TKey>
-        where TUserToken : IdentityUserToken<TKey>
+        where TUserClaim : Extensions.Identity.IdentityUserClaim<TKey>
+        where TUserRole : Extensions.Identity.IdentityUserRole<TKey>
+        where TUserLogin : Extensions.Identity.IdentityUserLogin<TKey>
+        where TRoleClaim : Extensions.Identity.IdentityRoleClaim<TKey>
+        where TUserToken : Extensions.Identity.IdentityUserToken<TKey>
     {
         /// <summary>
-        /// Initializes a new instance of <see cref="IdentityDbContext"/>.
+        /// Initializes a new instance of the class.
         /// </summary>
         /// <param name="options">The options to be used by a <see cref="DbContext"/>.</param>
         public IdentityDbContext(DbContextOptions options) : base(options)
         { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="IdentityDbContext" /> class.
+        /// Initializes a new instance of the class.
         /// </summary>
         protected IdentityDbContext()
         { }

@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.AspNetCore.Identity.Stores
+namespace Microsoft.Extensions.Identity
 {
     /// <summary>
     /// Represents the link between a user and a role.

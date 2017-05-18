@@ -16,24 +16,10 @@ using Microsoft.Extensions.Internal;
 namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
 {
     /// <summary>
-    /// Represents a new instance of a persistence store for users, using the default implementation
-    /// of <see cref="IdentityUser{TKey}"/> with a string as a primary key.
-    /// </summary>
-    public class UserStore : UserStore<IdentityUser<string>>
-    {
-        /// <summary>
-        /// Constructs a new instance of <see cref="UserStore"/>.
-        /// </summary>
-        /// <param name="context">The <see cref="DbContext"/>.</param>
-        /// <param name="describer">The <see cref="IdentityErrorDescriber"/>.</param>
-        public UserStore(DbContext context, IdentityErrorDescriber describer = null) : base(context, describer) { }
-    }
-
-    /// <summary>
     /// Creates a new instance of a persistence store for the specified user type.
     /// </summary>
     /// <typeparam name="TUser">The type representing a user.</typeparam>
-    public class UserStore<TUser> : UserStore<TUser, IdentityRole, DbContext, string>
+    public class UserStore<TUser> : UserStore<TUser, IdentityRole<string>, DbContext, string>
         where TUser : IdentityUser<string>, new()
     {
         /// <summary>
@@ -110,18 +96,18 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
         IUserAuthenticationTokenStore<TUser>,
         IUserAuthenticatorKeyStore<TUser>,
         IUserTwoFactorRecoveryCodeStore<TUser>
-        where TUser : IdentityUser<TKey, TUserClaim, TUserRole, TUserLogin, TUserToken>
-        where TRole : IdentityRole<TKey, TUserRole, TRoleClaim>
+        where TUser : Extensions.Identity.IdentityUser<TKey, TUserClaim, TUserRole, TUserLogin, TUserToken>
+        where TRole : Extensions.Identity.IdentityRole<TKey, TUserRole, TRoleClaim>
         where TContext : DbContext
         where TKey : IEquatable<TKey>
-        where TUserClaim : IdentityUserClaim<TKey>, new()
-        where TUserRole : IdentityUserRole<TKey>, new()
-        where TUserLogin : IdentityUserLogin<TKey>, new()
-        where TUserToken : IdentityUserToken<TKey>, new()
-        where TRoleClaim : IdentityRoleClaim<TKey>, new()
+        where TUserClaim : Extensions.Identity.IdentityUserClaim<TKey>, new()
+        where TUserRole : Extensions.Identity.IdentityUserRole<TKey>, new()
+        where TUserLogin : Extensions.Identity.IdentityUserLogin<TKey>, new()
+        where TUserToken : Extensions.Identity.IdentityUserToken<TKey>, new()
+        where TRoleClaim : Extensions.Identity.IdentityRoleClaim<TKey>, new()
     {
         /// <summary>
-        /// Creates a new instance of <see cref="UserStore"/>.
+        /// Creates a new instance of the store.
         /// </summary>
         /// <param name="context">The context used to access the store.</param>
         /// <param name="describer">The <see cref="IdentityErrorDescriber"/> used to describe store errors.</param>

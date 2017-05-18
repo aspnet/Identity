@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.AspNetCore.Identity.Stores
+namespace Microsoft.Extensions.Identity
 {
     /// <summary>
     /// Represents an authentication token for a user.

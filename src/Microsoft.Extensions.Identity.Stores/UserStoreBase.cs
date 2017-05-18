@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Identity;
 using Microsoft.Extensions.Internal;
 
-namespace Microsoft.AspNetCore.Identity.Stores
+namespace Microsoft.Extensions.Identity
 {
     /// <summary>
     /// Represents a new instance of a persistence store for the specified user and role types.

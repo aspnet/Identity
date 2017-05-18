@@ -78,11 +78,11 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
     public class RoleStore<TRole, TContext, TKey, TUserRole, TRoleClaim> :
         IQueryableRoleStore<TRole>,
         IRoleClaimStore<TRole>
-        where TRole : IdentityRole<TKey, TUserRole, TRoleClaim>
+        where TRole : Microsoft.Extensions.Identity.IdentityRole<TKey, TUserRole, TRoleClaim>
         where TKey : IEquatable<TKey>
         where TContext : DbContext
-        where TUserRole : IdentityUserRole<TKey>, new()
-        where TRoleClaim : IdentityRoleClaim<TKey>, new()
+        where TUserRole : Microsoft.Extensions.Identity.IdentityUserRole<TKey>, new()
+        where TRoleClaim : Microsoft.Extensions.Identity.IdentityRoleClaim<TKey>, new()
     {
         /// <summary>
         /// Constructs a new instance of <see cref="RoleStore{TRole, TContext, TKey, TUserRole, TRoleClaim}"/>.

@@ -31,12 +31,12 @@ namespace Microsoft.Extensions.DependencyInjection
 
         private static void AddStores(IServiceCollection services, Type userType, Type roleType, Type contextType)
         {
-            var identityUserType = FindGenericBaseType(userType, typeof(IdentityUser<,,,,>));
+            var identityUserType = FindGenericBaseType(userType, typeof(Identity.IdentityUser<,,,,>));
             if (identityUserType == null)
             {
                 throw new InvalidOperationException(Resources.NotIdentityUser);
             }
-            var identityRoleType = FindGenericBaseType(roleType, typeof(IdentityRole<,,>));
+            var identityRoleType = FindGenericBaseType(roleType, typeof(Identity.IdentityRole<,,>));
             if (identityRoleType == null)
             {
                 throw new InvalidOperationException(Resources.NotIdentityRole);
