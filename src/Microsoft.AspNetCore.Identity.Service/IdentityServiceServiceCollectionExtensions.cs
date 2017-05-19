@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Identity.Service.Core;
 using Microsoft.AspNetCore.Identity.Service.Metadata;
 using Microsoft.AspNetCore.Identity.Service.Serialization;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Identity;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -64,8 +65,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 options.CookiePath = $"/tfp/IdentityService";
             });
             services.ConfigureApplicationCookie(options => options.CookiePath = $"/tfp/IdentityService");
-            services.Configure<CookieAuthenticationOptions>(IdentityCookieOptions.TwoFactorRememberMeScheme, options => options.CookiePath = $"/tfp/IdentityService");
-            services.Configure<CookieAuthenticationOptions>(IdentityCookieOptions.TwoFactorUserIdScheme, options => options.CookiePath = $"/tfp/IdentityService");
+            services.Configure<CookieAuthenticationOptions>(IdentityConstants.TwoFactorRememberMeScheme, options => options.CookiePath = $"/tfp/IdentityService");
+            services.Configure<CookieAuthenticationOptions>(IdentityConstants.TwoFactorUserIdScheme, options => options.CookiePath = $"/tfp/IdentityService");
 
             services.AddTransient<IConfigureOptions<AuthorizationOptions>, IdentityServiceAuthorizationOptionsSetup>();
 
