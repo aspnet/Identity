@@ -87,7 +87,6 @@
       "TypeId": "public class Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUser<T0, T1, T2, T3> where T0 : System.IEquatable<T0>",
       "Kind": "Removal"
     },
-  Successfully created package 'C:\Github\Identity/artifacts\build\Microsoft.AspNetCore.Identity.Service.IntegratedWebClient.2.0.0-preview2-t0047adeff.nupkg'.
     {
       "TypeId": "public class Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUser<T0> : Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUser<T0, Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserClaim<T0>, Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserRole<T0>, Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserLogin<T0>> where T0 : System.IEquatable<T0>",
       "Kind": "Removal"
