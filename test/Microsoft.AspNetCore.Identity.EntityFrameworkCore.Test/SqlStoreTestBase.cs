@@ -91,10 +91,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
             user.PasswordHash = hashedPassword;
         }
 
-        [ConditionalFact]
-        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
-        [OSSkipCondition(OperatingSystems.Linux)]
-        [OSSkipCondition(OperatingSystems.MacOSX)]
+        [Fact]
         public void EnsureDefaultSchema()
         {
             VerifyDefaultSchema(CreateContext());
