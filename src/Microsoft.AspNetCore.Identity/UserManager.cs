@@ -840,7 +840,31 @@ namespace Microsoft.AspNetCore.Identity
         public virtual Task<string> GeneratePasswordResetTokenAsync(TUser user)
         {
             ThrowIfDisposed();
-            return GenerateUserTokenAsync(user, Options.Tokens.PasswordResetTokenProvider, ResetPasswordTokenPurpose);
+            return GeneratePasswordResetTokenAsync(user, Options.Tokens.PasswordResetTokenProvider);
+        }
+
+        /// <summary>
+        /// Generates a password reset token for the specified <paramref name="user"/>, using
+        /// the configured password reset token provider.
+        /// </summary>
+        /// <param name="user">The user to generate a password reset token for.</param>
+        /// <param name="tokenProvider">The token provider used to generate the token.</param>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation,
+        /// containing a password reset token for the specified <paramref name="user"/>.</returns>
+        public virtual Task<string> GeneratePasswordResetTokenAsync(TUser user, string tokenProvider)
+        {
+            ThrowIfDisposed();
+            if (tokenProvider == null)
+            {
+                throw new ArgumentNullException(nameof(tokenProvider));
+            }
+
+            if (!_tokenProviders.ContainsKey(tokenProvider))
+            {
+                throw new NotSupportedException(string.Format(CultureInfo.CurrentCulture, Resources.NoTokenProvider, tokenProvider));
+            }
+
+            return GenerateUserTokenAsync(user, tokenProvider, ResetPasswordTokenPurpose);
         }
 
         /// <summary>
@@ -857,13 +881,41 @@ namespace Microsoft.AspNetCore.Identity
         public virtual async Task<IdentityResult> ResetPasswordAsync(TUser user, string token, string newPassword)
         {
             ThrowIfDisposed();
+            return await ResetPasswordAsync(user, Options.Tokens.PasswordResetTokenProvider, token, newPassword);
+        }
+
+        /// <summary>
+        /// Resets the <paramref name="user"/>'s password to the specified <paramref name="newPassword"/> after
+        /// validating the given password reset <paramref name="token"/>.
+        /// </summary>
+        /// <param name="user">The user whose password should be reset.</param>
+        /// <param name="tokenProvider">The token provider used to generate the token.</param>
+        /// <param name="token">The password reset token to verify.</param>
+        /// <param name="newPassword">The new password to set if reset token verification fails.</param>
+        /// <returns>
+        /// The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="IdentityResult"/>
+        /// of the operation.
+        /// </returns>
+        public virtual async Task<IdentityResult> ResetPasswordAsync(TUser user, string tokenProvider, string token, string newPassword)
+        {
+            ThrowIfDisposed();
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
 
+            if (tokenProvider == null)
+            {
+                throw new ArgumentNullException(nameof(tokenProvider));
+            }
+
+            if (!_tokenProviders.ContainsKey(tokenProvider))
+            {
+                throw new NotSupportedException(string.Format(CultureInfo.CurrentCulture, Resources.NoTokenProvider, tokenProvider));
+            }
+
             // Make sure the token is valid and the stamp matches
-            if (!await VerifyUserTokenAsync(user, Options.Tokens.PasswordResetTokenProvider, ResetPasswordTokenPurpose, token))
+            if (!await VerifyUserTokenAsync(user, tokenProvider, ResetPasswordTokenPurpose, token))
             {
                 return IdentityResult.Failed(ErrorDescriber.InvalidToken());
             }
@@ -1384,7 +1436,31 @@ namespace Microsoft.AspNetCore.Identity
         public virtual Task<string> GenerateEmailConfirmationTokenAsync(TUser user)
         {
             ThrowIfDisposed();
-            return GenerateUserTokenAsync(user, Options.Tokens.EmailConfirmationTokenProvider, ConfirmEmailTokenPurpose);
+            return GenerateEmailConfirmationTokenAsync(user, Options.Tokens.EmailConfirmationTokenProvider);
+        }
+
+        /// <summary>
+        /// Generates an email confirmation token for the specified user.
+        /// </summary>
+        /// <param name="user">The user to generate an email confirmation token for.</param>
+        /// <param name="tokenProvider">The token provider used to generate the token.</param>
+        /// <returns>
+        /// The <see cref="Task"/> that represents the asynchronous operation, an email confirmation token.
+        /// </returns>
+        public virtual Task<string> GenerateEmailConfirmationTokenAsync(TUser user, string tokenProvider)
+        {
+            ThrowIfDisposed();
+            if (tokenProvider == null)
+            {
+                throw new ArgumentNullException(nameof(tokenProvider));
+            }
+
+            if (!_tokenProviders.ContainsKey(tokenProvider))
+            {
+                throw new NotSupportedException(string.Format(CultureInfo.CurrentCulture, Resources.NoTokenProvider, tokenProvider));
+            }
+
+            return GenerateUserTokenAsync(user, tokenProvider, ConfirmEmailTokenPurpose);
         }
 
         /// <summary>
@@ -1398,6 +1474,21 @@ namespace Microsoft.AspNetCore.Identity
         /// </returns>
         public virtual async Task<IdentityResult> ConfirmEmailAsync(TUser user, string token)
         {
+            return await ConfirmEmailAsync(user, Options.Tokens.EmailConfirmationTokenProvider, token);
+        }
+
+        /// <summary>
+        /// Validates that an email confirmation token matches the specified <paramref name="user"/>.
+        /// </summary>
+        /// <param name="user">The user to validate the token against.</param>
+        /// <param name="tokenProvider">The token provider used to generate the token.</param>
+        /// <param name="token">The email confirmation token to validate.</param>
+        /// <returns>
+        /// The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="IdentityResult"/>
+        /// of the operation.
+        /// </returns>
+        public virtual async Task<IdentityResult> ConfirmEmailAsync(TUser user, string tokenProvider, string token)
+        {
             ThrowIfDisposed();
             var store = GetEmailStore();
             if (user == null)
@@ -1405,7 +1496,17 @@ namespace Microsoft.AspNetCore.Identity
                 throw new ArgumentNullException(nameof(user));
             }
 
-            if (!await VerifyUserTokenAsync(user, Options.Tokens.EmailConfirmationTokenProvider, ConfirmEmailTokenPurpose, token))
+            if (tokenProvider == null)
+            {
+                throw new ArgumentNullException(nameof(tokenProvider));
+            }
+
+            if (!_tokenProviders.ContainsKey(tokenProvider))
+            {
+                throw new NotSupportedException(string.Format(CultureInfo.CurrentCulture, Resources.NoTokenProvider, tokenProvider));
+            }
+
+            if (!await VerifyUserTokenAsync(user, tokenProvider, ConfirmEmailTokenPurpose, token))
             {
                 return IdentityResult.Failed(ErrorDescriber.InvalidToken());
             }
@@ -1444,7 +1545,33 @@ namespace Microsoft.AspNetCore.Identity
         public virtual Task<string> GenerateChangeEmailTokenAsync(TUser user, string newEmail)
         {
             ThrowIfDisposed();
-            return GenerateUserTokenAsync(user, Options.Tokens.ChangeEmailTokenProvider, GetChangeEmailTokenPurpose(newEmail));
+            return GenerateChangeEmailTokenAsync(user, Options.Tokens.ChangeEmailTokenProvider, newEmail);
+        }
+
+        /// <summary>
+        /// Generates an email change token for the specified user.
+        /// </summary>
+        /// <param name="user">The user to generate an email change token for.</param>
+        /// <param name="tokenProvider">The token provider used to generate the token.</param>
+        /// <param name="newEmail">The new email address.</param>
+        /// <returns>
+        /// The <see cref="Task"/> that represents the asynchronous operation, an email change token.
+        /// </returns>
+        public virtual Task<string> GenerateChangeEmailTokenAsync(TUser user, string tokenProvider, string newEmail)
+        {
+            ThrowIfDisposed();
+
+            if (tokenProvider == null)
+            {
+                throw new ArgumentNullException(nameof(tokenProvider));
+            }
+
+            if (!_tokenProviders.ContainsKey(tokenProvider))
+            {
+                throw new NotSupportedException(string.Format(CultureInfo.CurrentCulture, Resources.NoTokenProvider, tokenProvider));
+            }
+
+            return GenerateUserTokenAsync(user, tokenProvider, GetChangeEmailTokenPurpose(newEmail));
         }
 
         /// <summary>
@@ -1459,10 +1586,36 @@ namespace Microsoft.AspNetCore.Identity
         /// </returns>
         public virtual async Task<IdentityResult> ChangeEmailAsync(TUser user, string newEmail, string token)
         {
+            return await ChangeEmailAsync(user, newEmail, Options.Tokens.ChangeEmailTokenProvider, token);
+        }
+
+        /// <summary>
+        /// Updates a users emails if the specified email change <paramref name="token"/> is valid for the user.
+        /// </summary>
+        /// <param name="user">The user whose email should be updated.</param>
+        /// <param name="newEmail">The new email address.</param>
+        /// <param name="tokenProvider">The token provider used to generate the token.</param>
+        /// <param name="token">The change email token to be verified.</param>
+        /// <returns>
+        /// The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="IdentityResult"/>
+        /// of the operation.
+        /// </returns>
+        public virtual async Task<IdentityResult> ChangeEmailAsync(TUser user, string newEmail, string tokenProvider, string token)
+        {
             ThrowIfDisposed();
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
+            }
+
+            if (tokenProvider == null)
+            {
+                throw new ArgumentNullException(nameof(tokenProvider));
+            }
+
+            if (!_tokenProviders.ContainsKey(tokenProvider))
+            {
+                throw new NotSupportedException(string.Format(CultureInfo.CurrentCulture, Resources.NoTokenProvider, tokenProvider));
             }
 
             // Make sure the token is valid and the stamp matches
