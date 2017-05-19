@@ -32,5 +32,35 @@
     "TypeId": "public static class Microsoft.Extensions.DependencyInjection.IdentityEntityFrameworkBuilderExtensions",
     "MemberId": "public static new Microsoft.AspNetCore.Identity.IdentityBuilder AddEntityFrameworkStores<T0, T1>(this Microsoft.AspNetCore.Identity.IdentityBuilder builder) where T0 : Microsoft.EntityFrameworkCore.DbContext where T1 : System.IEquatable<T1>",
     "Kind": "Removal"
+  },
+  {
+    "TypeId": "public class Microsoft.AspNetCore.Identity.EntityFrameworkCore.RoleStore<T0> : Microsoft.AspNetCore.Identity.EntityFrameworkCore.RoleStore<T0, Microsoft.EntityFrameworkCore.DbContext, System.String> where T0 : Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRole<System.String>",
+    "MemberId": "public .ctor(Microsoft.EntityFrameworkCore.DbContext context, Microsoft.AspNetCore.Identity.IdentityErrorDescriber describer = null)",
+    "Kind": "Removal"
+  },
+  {
+    "TypeId": "public class Microsoft.AspNetCore.Identity.EntityFrameworkCore.UserStore : Microsoft.AspNetCore.Identity.EntityFrameworkCore.UserStore<Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUser<System.String>>",
+    "MemberId": "public .ctor(Microsoft.EntityFrameworkCore.DbContext context, Microsoft.AspNetCore.Identity.IdentityErrorDescriber describer = null)",
+    "Kind": "Removal"
+  },
+  {
+    "TypeId": "public class Microsoft.AspNetCore.Identity.EntityFrameworkCore.UserStore<T0> : Microsoft.AspNetCore.Identity.EntityFrameworkCore.UserStore<T0, Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRole, Microsoft.EntityFrameworkCore.DbContext, System.String> where T0 : Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUser<System.String>, new()",
+    "MemberId": "public .ctor(Microsoft.EntityFrameworkCore.DbContext context, Microsoft.AspNetCore.Identity.IdentityErrorDescriber describer = null)",
+    "Kind": "Removal"
+  },
+  {
+    "TypeId": "public class Microsoft.AspNetCore.Identity.EntityFrameworkCore.RoleStore<T0, T1> : Microsoft.AspNetCore.Identity.EntityFrameworkCore.RoleStore<T0, T1, System.String> where T0 : Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRole<System.String> where T1 : Microsoft.EntityFrameworkCore.DbContext",
+    "MemberId": "public .ctor(T1 context, Microsoft.AspNetCore.Identity.IdentityErrorDescriber describer = null)",
+    "Kind": "Removal"
+  },
+  {
+    "TypeId": "public class Microsoft.AspNetCore.Identity.EntityFrameworkCore.RoleStore<T0, T1, T2> : Microsoft.AspNetCore.Identity.EntityFrameworkCore.RoleStore<T0, T1, T2, Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserRole<T2>, Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRoleClaim<T2>> where T0 : Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRole<T2> where T1 : Microsoft.EntityFrameworkCore.DbContext where T2 : System.IEquatable<T2>",
+    "MemberId": "public .ctor(T1 context, Microsoft.AspNetCore.Identity.IdentityErrorDescriber describer = null)",
+    "Kind": "Removal"
+  },
+  {
+    "TypeId": "public class Microsoft.AspNetCore.Identity.EntityFrameworkCore.UserStore<T0, T1, T2> : Microsoft.AspNetCore.Identity.EntityFrameworkCore.UserStore<T0, T1, T2, System.String> where T0 : Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUser<System.String> where T1 : Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRole<System.String> where T2 : Microsoft.EntityFrameworkCore.DbContext",
+    "MemberId": "public .ctor(T2 context, Microsoft.AspNetCore.Identity.IdentityErrorDescriber describer = null)",
+    "Kind": "Removal"
   }
 ]
