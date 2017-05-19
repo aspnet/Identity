@@ -12,7 +12,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
-using Resources = Microsoft.Extensions.Identity.Core.Resources;
 
 namespace Microsoft.AspNetCore.Identity.Test
 {

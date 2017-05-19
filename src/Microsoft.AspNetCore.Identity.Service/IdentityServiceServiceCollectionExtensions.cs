@@ -17,7 +17,6 @@ using Microsoft.AspNetCore.Identity.Service.Core;
 using Microsoft.AspNetCore.Identity.Service.Metadata;
 using Microsoft.AspNetCore.Identity.Service.Serialization;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Identity;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Extensions.DependencyInjection

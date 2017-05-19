@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Microsoft.Extensions.Identity;
+using Microsoft.AspNetCore.Identity;
 
 namespace IdentitySample.Models.ManageViewModels
 {

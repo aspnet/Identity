@@ -19,7 +19,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity.Test;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Identity;
 using Xunit;
 
 namespace Microsoft.AspNetCore.Identity.InMemory

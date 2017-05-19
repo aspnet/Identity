@@ -8,7 +8,6 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.Test;
-using Microsoft.Extensions.Identity;
 
 namespace Microsoft.AspNetCore.Identity.InMemory
 {

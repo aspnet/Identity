@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Identity.Test;
 using Microsoft.AspNetCore.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Identity;
 using Xunit;
 
 namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
