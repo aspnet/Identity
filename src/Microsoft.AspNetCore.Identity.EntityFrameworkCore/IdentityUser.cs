@@ -51,7 +51,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
     /// <typeparam name="TUserRole">The type representing a user role.</typeparam>
     /// <typeparam name="TUserLogin">The type representing a user external login.</typeparam>
     /// <typeparam name="TUserToken">The type representing a user external login.</typeparam>
-    public class IdentityUser<TKey, TUserClaim, TUserRole, TUserLogin, TUserToken> : Microsoft.Extensions.Identity.IdentityUser<TKey, TUserClaim, TUserRole, TUserLogin, TUserToken> where TKey : IEquatable<TKey>
+    public class IdentityUser<TKey, TUserClaim, TUserRole, TUserLogin, TUserToken> : Extensions.Identity.IdentityUser<TKey, TUserClaim, TUserRole, TUserLogin, TUserToken> where TKey : IEquatable<TKey>
     {
         /// <summary>
         /// Initializes a new instance of <see cref="IdentityUser{TKey}"/>.

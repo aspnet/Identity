@@ -8,7 +8,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
     /// <summary>
     /// The default implementation of <see cref="IdentityRole{TKey}"/> which uses a string as the primary key.
     /// </summary>
-    public class IdentityRole : Extensions.Identity.IdentityRole<string>
+    public class IdentityRole : IdentityRole<string>
     {
         /// <summary>
         /// Initializes a new instance of <see cref="IdentityRole"/>.
@@ -38,7 +38,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
     /// Represents a role in the identity system
     /// </summary>
     /// <typeparam name="TKey">The type used for the primary key for the role.</typeparam>
-    public class IdentityRole<TKey> : Extensions.Identity.IdentityRole<TKey, IdentityUserRole<TKey>, IdentityRoleClaim<TKey>>
+    public class IdentityRole<TKey> : IdentityRole<TKey, IdentityUserRole<TKey>, IdentityRoleClaim<TKey>>
         where TKey : IEquatable<TKey>
     {
         /// <summary>

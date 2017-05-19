@@ -8,7 +8,7 @@ namespace Microsoft.Extensions.Identity
     internal static class Resources
     {
         private static readonly ResourceManager _resourceManager
-            = new ResourceManager("Microsoft.Extensions.Identity.Abstractions.Resources", typeof(Resources).GetTypeInfo().Assembly);
+            = new ResourceManager("Microsoft.Extensions.Identity.Core.Resources", typeof(Resources).GetTypeInfo().Assembly);
 
         /// <summary>
         /// Optimistic concurrency failure, object has been modified.
