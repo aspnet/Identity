@@ -83,16 +83,6 @@ namespace Microsoft.AspNetCore.Identity
         }
 
         /// <summary>
-        /// Navigation property for the users in this role.
-        /// </summary>
-        public virtual ICollection<TUserRole> Users { get; } = new List<TUserRole>();
-
-        /// <summary>
-        /// Navigation property for claims in this role.
-        /// </summary>
-        public virtual ICollection<TRoleClaim> Claims { get; } = new List<TRoleClaim>();
-
-        /// <summary>
         /// Gets or sets the primary key for this role.
         /// </summary>
         public virtual TKey Id { get; set; }

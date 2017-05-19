@@ -150,26 +150,6 @@ namespace Microsoft.AspNetCore.Identity
         public virtual int AccessFailedCount { get; set; }
 
         /// <summary>
-        /// Navigation property for the roles this user belongs to.
-        /// </summary>
-        public virtual ICollection<TUserRole> Roles { get; } = new List<TUserRole>();
-
-        /// <summary>
-        /// Navigation property for the claims this user possesses.
-        /// </summary>
-        public virtual ICollection<TUserClaim> Claims { get; } = new List<TUserClaim>();
-
-        /// <summary>
-        /// Navigation property for this users login accounts.
-        /// </summary>
-        public virtual ICollection<TUserLogin> Logins { get; } = new List<TUserLogin>();
-
-        /// <summary>
-        /// Navigation property for this users tokens.
-        /// </summary>
-        public virtual ICollection<TUserToken> Tokens { get; } = new List<TUserToken>();
-
-        /// <summary>
         /// Returns the username for this user.
         /// </summary>
         public override string ToString()
