@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.Extensions.Identity
+namespace Microsoft.AspNetCore.Identity
 {
     /// <summary>
     /// Used to represents a token provider in <see cref="TokenOptions"/>'s TokenMap.

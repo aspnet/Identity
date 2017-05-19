@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Microsoft.Extensions.Identity
+namespace Microsoft.AspNetCore.Identity
 {
     /// <summary>
     /// Options for user tokens.

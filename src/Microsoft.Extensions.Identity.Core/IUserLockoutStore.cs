@@ -5,7 +5,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.Extensions.Identity
+namespace Microsoft.AspNetCore.Identity
 {
     /// <summary>
     /// Provides an abstraction for a storing information which can be used to implement account lockout, 

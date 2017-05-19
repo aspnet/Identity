@@ -6,7 +6,7 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.Extensions.Identity
+namespace Microsoft.AspNetCore.Identity
 {
     /// <summary>
     /// Provides an abstraction for a store of claims for a user.

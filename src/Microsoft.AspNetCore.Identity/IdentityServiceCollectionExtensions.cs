@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Identity;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Extensions.DependencyInjection

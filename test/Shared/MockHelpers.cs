@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;

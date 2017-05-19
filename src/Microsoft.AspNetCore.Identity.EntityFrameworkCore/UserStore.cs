@@ -9,7 +9,6 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Identity;
 using Microsoft.Extensions.Internal;
 
 namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
@@ -110,15 +109,15 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
         IUserAuthenticationTokenStore<TUser>,
         IUserAuthenticatorKeyStore<TUser>,
         IUserTwoFactorRecoveryCodeStore<TUser>
-        where TUser : Extensions.Identity.IdentityUser<TKey, TUserClaim, TUserRole, TUserLogin, TUserToken>
-        where TRole : Extensions.Identity.IdentityRole<TKey, TUserRole, TRoleClaim>
+        where TUser : IdentityUser<TKey, TUserClaim, TUserRole, TUserLogin, TUserToken>
+        where TRole : IdentityRole<TKey, TUserRole, TRoleClaim>
         where TContext : DbContext
         where TKey : IEquatable<TKey>
-        where TUserClaim : Extensions.Identity.IdentityUserClaim<TKey>, new()
-        where TUserRole : Extensions.Identity.IdentityUserRole<TKey>, new()
-        where TUserLogin : Extensions.Identity.IdentityUserLogin<TKey>, new()
-        where TUserToken : Extensions.Identity.IdentityUserToken<TKey>, new()
-        where TRoleClaim : Extensions.Identity.IdentityRoleClaim<TKey>, new()
+        where TUserClaim : IdentityUserClaim<TKey>, new()
+        where TUserRole : IdentityUserRole<TKey>, new()
+        where TUserLogin : IdentityUserLogin<TKey>, new()
+        where TUserToken : IdentityUserToken<TKey>, new()
+        where TRoleClaim : IdentityRoleClaim<TKey>, new()
     {
         /// <summary>
         /// Creates a new instance of the store.

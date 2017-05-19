@@ -5,16 +5,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Identity;
 using Moq;
 using Xunit;
+using Resources = Microsoft.Extensions.Identity.Core.Resources;
 
 namespace Microsoft.AspNetCore.Identity.Test
 {

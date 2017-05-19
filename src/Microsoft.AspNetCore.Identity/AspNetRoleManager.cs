@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Identity;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.AspNetCore.Identity

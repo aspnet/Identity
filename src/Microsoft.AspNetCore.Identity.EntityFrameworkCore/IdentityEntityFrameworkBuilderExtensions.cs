@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Identity;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -31,12 +30,12 @@ namespace Microsoft.Extensions.DependencyInjection
 
         private static void AddStores(IServiceCollection services, Type userType, Type roleType, Type contextType)
         {
-            var identityUserType = FindGenericBaseType(userType, typeof(AspNetCore.Identity.EntityFrameworkCore.IdentityUser<,,,,>));
+            var identityUserType = FindGenericBaseType(userType, typeof(IdentityUser<,,,,>));
             if (identityUserType == null)
             {
                 throw new InvalidOperationException(Resources.NotIdentityUser);
             }
-            var identityRoleType = FindGenericBaseType(roleType, typeof(AspNetCore.Identity.EntityFrameworkCore.IdentityRole<,,>));
+            var identityRoleType = FindGenericBaseType(roleType, typeof(IdentityRole<,,>));
             if (identityRoleType == null)
             {
                 throw new InvalidOperationException(Resources.NotIdentityRole);

@@ -4,7 +4,7 @@
 using System;
 using System.Security.Claims;
 
-namespace Microsoft.Extensions.Identity
+namespace Microsoft.AspNetCore.Identity
 {
     /// <summary>
     /// Represents a claim that a user possesses. 

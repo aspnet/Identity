@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Identity;
 using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;

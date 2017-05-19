@@ -10,7 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Internal;
 
-namespace Microsoft.Extensions.Identity
+namespace Microsoft.AspNetCore.Identity
 {
     /// <summary>
     /// Creates a new instance of a persistence store for roles.

@@ -3,7 +3,7 @@
 
 using System.Security.Claims;
 
-namespace Microsoft.Extensions.Identity
+namespace Microsoft.AspNetCore.Identity
 {
     /// <summary>
     /// Options used to configure the claim types used for well known claims.
