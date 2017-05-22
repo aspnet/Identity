@@ -2292,7 +2292,18 @@ namespace Microsoft.AspNetCore.Identity
             }
         }
 
-        internal async Task<IdentityResult> UpdatePasswordHash(IUserPasswordStore<TUser> passwordStore,
+        /// <summary>
+        /// Updates password hash of the specified user
+        /// </summary>
+        /// <param name="passwordStore">Implementation of the password store to be used </param>
+        /// <param name="user">User whose password hash should be updated</param>
+        /// <param name="newPassword">Plain text password which will be hashed and assignd to user</param>
+        /// <param name="validatePassword">Flag indicating that new password shoud be validated</param>
+        /// <returns>
+        /// The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="IdentityResult"/>
+        /// of the operation.
+        /// </returns>
+        protected internal async Task<IdentityResult> UpdatePasswordHash(IUserPasswordStore<TUser> passwordStore,
             TUser user, string newPassword, bool validatePassword = true)
         {
             if (validatePassword)
