@@ -82,7 +82,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             var rsaSecurityKey = credentials.Key as RsaSecurityKey;
             // Check that the key has either an Asymetric Algorithm assigned or that at least
             // one of the RSA parameters are initialized to consider the key "valid".
-            if (rsaSecurityKey != null && 
+            if (rsaSecurityKey != null &&
                 (rsaSecurityKey.Rsa != null || rsaSecurityKey.Parameters.Modulus != null))
             {
                 return JsonWebAlgorithmsKeyTypes.RSA;
