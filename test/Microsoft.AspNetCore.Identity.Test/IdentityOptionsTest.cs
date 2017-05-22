@@ -115,10 +115,7 @@ namespace Microsoft.AspNetCore.Identity.Test
         [Fact]
         public void CanCustomizeIdentityOptions()
         {
-            var services = new ServiceCollection()
-                .AddSingleton<IConfiguration>(new ConfigurationBuilder().Build())
-                .AddSingleton<ConfigureDefaults<IdentityOptions>>()
-                .Configure<IdentityOptions>(options => options.Password.RequiredLength = -1);
+            var services = new ServiceCollection().Configure<IdentityOptions>(options => options.Password.RequiredLength = -1);
             services.AddIdentity<TestUser,TestRole>();
             var serviceProvider = services.BuildServiceProvider();
 
