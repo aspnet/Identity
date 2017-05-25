@@ -131,13 +131,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
         /// </summary>
         public DbSet<TRoleClaim> RoleClaims { get; set; }
 
-        /// <summary>
-        /// Configures the schema needed for the identity framework.
-        /// </summary>
-        /// <param name="builder">
-        /// The builder being used to construct the model for this context.
-        /// </param>
-        protected override void OnModelCreating(ModelBuilder builder)
+        private void OnModelCreatingCore(ModelBuilder builder)
         {
             builder.Entity<TUser>(b =>
             {
@@ -151,6 +145,10 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
                 b.Property(u => u.NormalizedUserName).HasMaxLength(256);
                 b.Property(u => u.Email).HasMaxLength(256);
                 b.Property(u => u.NormalizedEmail).HasMaxLength(256);
+
+                b.Ignore(u => u.LastPasswordChangeDate);
+                b.Ignore(u => u.LastSignInDate);
+                b.Ignore(u => u.CreateDate);
 
                 // Replace with b.HasMany<IdentityUserClaim>().
                 b.HasMany<TUserClaim>().WithOne().HasForeignKey(uc => uc.UserId).IsRequired();
@@ -173,19 +171,19 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
                 b.HasMany<TRoleClaim>().WithOne().HasForeignKey(rc => rc.RoleId).IsRequired();
             });
 
-            builder.Entity<TUserClaim>(b => 
+            builder.Entity<TUserClaim>(b =>
             {
                 b.HasKey(uc => uc.Id);
                 b.ToTable("AspNetUserClaims");
             });
 
-            builder.Entity<TRoleClaim>(b => 
+            builder.Entity<TRoleClaim>(b =>
             {
                 b.HasKey(rc => rc.Id);
                 b.ToTable("AspNetRoleClaims");
             });
 
-            builder.Entity<TUserRole>(b => 
+            builder.Entity<TUserRole>(b =>
             {
                 b.HasKey(r => new { r.UserId, r.RoleId });
                 b.ToTable("AspNetUserRoles");
@@ -197,11 +195,41 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
                 b.ToTable("AspNetUserLogins");
             });
 
-            builder.Entity<TUserToken>(b => 
+            builder.Entity<TUserToken>(b =>
             {
                 b.HasKey(l => new { l.UserId, l.LoginProvider, l.Name });
                 b.ToTable("AspNetUserTokens");
             });
+        }
+
+        /// <summary>
+        /// Configures the schema needed for the identity framework version <see cref="IdentityStoreOptions.Version1_0"/>.
+        /// </summary>
+        /// <param name="builder">
+        /// The builder being used to construct the model for this context.
+        /// </param>
+        protected void OnModelCreatingV1(ModelBuilder builder)
+        {
+            OnModelCreatingCore(builder);
+
+            // Ignore the additional 2.0 properties that were added
+            builder.Entity<TUser>(b =>
+            {
+                b.Ignore(u => u.LastPasswordChangeDate);
+                b.Ignore(u => u.LastSignInDate);
+                b.Ignore(u => u.CreateDate);
+            });
+        }
+
+        /// <summary>
+        /// Configures the schema needed for the identity framework.
+        /// </summary>
+        /// <param name="builder">
+        /// The builder being used to construct the model for this context.
+        /// </param>
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            OnModelCreatingV1(builder);
         }
     }
 }

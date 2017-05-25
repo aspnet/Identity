@@ -32,14 +32,14 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
         {
         }
 
-        public class ApplicationUserStore : UserStore<GuidUser, GuidRole, TestDbContext, Guid>
+        public class ApplicationUserStore : UserStore<GuidUser, GuidRole, TestDbContext, Guid, IdentityUserClaim<Guid>, IdentityUserRole<Guid>, IdentityUserLogin<Guid>, IdentityUserToken<Guid>, IdentityRoleClaim<Guid>>
         {
-            public ApplicationUserStore(TestDbContext context) : base(context) { }
+            public ApplicationUserStore(TestDbContext context) : base(context, new IdentityErrorDescriber()) { }
         }
 
-        public class ApplicationRoleStore : RoleStore<GuidRole, TestDbContext, Guid>
+        public class ApplicationRoleStore : RoleStore<GuidRole, TestDbContext, Guid, IdentityUserRole<Guid>, IdentityRoleClaim<Guid>>
         {
-            public ApplicationRoleStore(TestDbContext context) : base(context) { }
+            public ApplicationRoleStore(TestDbContext context) : base(context, new IdentityErrorDescriber()) { }
         }
 
         protected override void AddUserStore(IServiceCollection services, object context = null)

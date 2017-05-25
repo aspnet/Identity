@@ -16,6 +16,20 @@ namespace Microsoft.Extensions.DependencyInjection
     public static class IdentityEntityFrameworkBuilderExtensions
     {
         /// <summary>
+        /// Adds an Entity Framework implementation of identity information stores with the schema/features in
+        /// <see cref="IdentityStoreOptions.Version1_0"/>.
+        /// </summary>
+        /// <typeparam name="TContext">The Entity Framework database context to use.</typeparam>
+        /// <param name="builder">The <see cref="IdentityBuilder"/> instance this method extends.</param>
+        /// <returns>The <see cref="IdentityBuilder"/> instance this method extends.</returns>
+        public static IdentityBuilder AddEntityFrameworkStoresV1<TContext>(this IdentityBuilder builder)
+            where TContext : DbContext
+        {
+            AddStores(builder.Services, typeof(UserStoreV1<,,,,,,,,>), typeof(RoleStoreV1<,,,,>), builder.UserType, builder.RoleType, typeof(TContext));
+            return builder;
+        }
+
+        /// <summary>
         /// Adds an Entity Framework implementation of identity information stores.
         /// </summary>
         /// <typeparam name="TContext">The Entity Framework database context to use.</typeparam>
@@ -23,12 +37,9 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns>The <see cref="IdentityBuilder"/> instance this method extends.</returns>
         public static IdentityBuilder AddEntityFrameworkStores<TContext>(this IdentityBuilder builder)
             where TContext : DbContext
-        {
-            AddStores(builder.Services, builder.UserType, builder.RoleType, typeof(TContext));
-            return builder;
-        }
+            => builder.AddEntityFrameworkStoresV1<TContext>();
 
-        private static void AddStores(IServiceCollection services, Type userType, Type roleType, Type contextType)
+        private static void AddStores(IServiceCollection services, Type userStore, Type roleStore, Type userType, Type roleType, Type contextType)
         {
             var identityUserType = FindGenericBaseType(userType, typeof(IdentityUser<,,,,>));
             if (identityUserType == null)
@@ -43,7 +54,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.TryAddScoped(
                 typeof(IUserStore<>).MakeGenericType(userType),
-                typeof(UserStore<,,,,,,,,>).MakeGenericType(userType, roleType, contextType,
+                userStore.MakeGenericType(userType, roleType, contextType,
                     identityUserType.GenericTypeArguments[0],
                     identityUserType.GenericTypeArguments[1],
                     identityUserType.GenericTypeArguments[2],
@@ -52,7 +63,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     identityRoleType.GenericTypeArguments[2]));
             services.TryAddScoped(
                 typeof(IRoleStore<>).MakeGenericType(roleType),
-                typeof(RoleStore<,,,,>).MakeGenericType(roleType, contextType,
+                roleStore.MakeGenericType(roleType, contextType,
                     identityRoleType.GenericTypeArguments[0],
                     identityRoleType.GenericTypeArguments[1],
                     identityRoleType.GenericTypeArguments[2]));

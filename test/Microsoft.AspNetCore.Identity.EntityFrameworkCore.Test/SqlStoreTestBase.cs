@@ -78,12 +78,12 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
 
         protected override void AddUserStore(IServiceCollection services, object context = null)
         {
-            services.AddSingleton<IUserStore<TUser>>(new UserStore<TUser, TRole, TestDbContext, TKey>((TestDbContext)context));
+            services.AddSingleton<IUserStore<TUser>>(new UserStore<TUser, TRole, TestDbContext, TKey, IdentityUserClaim<TKey>, IdentityUserRole<TKey>, IdentityUserLogin<TKey>, IdentityUserToken<TKey>, IdentityRoleClaim<TKey>>((TestDbContext)context, new IdentityErrorDescriber()));
         }
 
         protected override void AddRoleStore(IServiceCollection services, object context = null)
         {
-            services.AddSingleton<IRoleStore<TRole>>(new RoleStore<TRole, TestDbContext, TKey>((TestDbContext)context));
+            services.AddSingleton<IRoleStore<TRole>>(new RoleStore<TRole, TestDbContext, TKey, IdentityUserRole<TKey>, IdentityRoleClaim<TKey>>((TestDbContext)context));
         }
 
         protected override void SetUserPasswordHash(TUser user, string hashedPassword)
