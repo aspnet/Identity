@@ -21,7 +21,7 @@ namespace Microsoft.AspNetCore.Identity
         /// <summary>
         /// Used to represent the most current version.
         /// </summary>
-        public const string Version_Latest = "latests";
+        public const string Version_Latest = "latest";
 
         /// <summary>
         /// Used to determine what features/schema are supported in the store.

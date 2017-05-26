@@ -3,15 +3,10 @@
 
 using System;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity.Test;
-using Microsoft.AspNetCore.Testing;
 using Microsoft.AspNetCore.Testing.xunit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Xunit;
 
 namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
@@ -21,12 +16,8 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
         where TRole : IdentityRole<TKey>, new()
         where TKey : IEquatable<TKey>
     {
-        private readonly ScratchDatabaseFixture _fixture;
-
         protected SqlStoreTestBaseV1(ScratchDatabaseFixture fixture) : base(fixture)
-        {
-            _fixture = fixture;
-        }
+        { }
 
         public override TestDbContext CreateContext()
         {
@@ -51,24 +42,32 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
         [OSSkipCondition(OperatingSystems.MacOSX)]
         public override void EnsureDefaultSchema()
         {
-            VerifyDefaultSchema(CreateContext());
+            var db = DbUtil.Create<TestDbContext>(_fixture.ConnectionString);
+            var services = new ServiceCollection().AddSingleton(db);
+            services.AddIdentity<TUser, TRole>().AddEntityFrameworkStoresLatest<TestDbContext>();
+            var sp = services.BuildServiceProvider();
+            var version = sp.GetRequiredService<IOptions<IdentityStoreOptions>>().Value.Version;
+            Assert.Equal(IdentityStoreOptions.Version_Latest, version);
+            db.Version = version;
+            db.Database.EnsureCreated();
+            VerifyDefaultSchema(db);
         }
 
-        private static void VerifyDefaultSchema(TestDbContext dbContext)
+        protected override void VerifyDefaultSchema(TestDbContext dbContext)
         {
             var sqlConn = dbContext.Database.GetDbConnection();
 
             using (var db = new SqlConnection(sqlConn.ConnectionString))
             {
                 db.Open();
-                Assert.True(VerifyColumns(db, "AspNetUsers", "Id", "UserName", "Email", "PasswordHash", "SecurityStamp",
+                VerifyColumns(db, "AspNetUsers", "Id", "UserName", "Email", "PasswordHash", "SecurityStamp",
                     "EmailConfirmed", "PhoneNumber", "PhoneNumberConfirmed", "TwoFactorEnabled", "LockoutEnabled",
-                    "LockoutEnd", "AccessFailedCount", "ConcurrencyStamp", "NormalizedUserName", "NormalizedEmail"));
-                Assert.True(VerifyColumns(db, "AspNetRoles", "Id", "Name", "NormalizedName", "ConcurrencyStamp"));
-                Assert.True(VerifyColumns(db, "AspNetUserRoles", "UserId", "RoleId"));
-                Assert.True(VerifyColumns(db, "AspNetUserClaims", "Id", "UserId", "ClaimType", "ClaimValue"));
-                Assert.True(VerifyColumns(db, "AspNetUserLogins", "UserId", "ProviderKey", "LoginProvider", "ProviderDisplayName"));
-                Assert.True(VerifyColumns(db, "AspNetUserTokens", "UserId", "LoginProvider", "Name", "Value"));
+                    "LockoutEnd", "AccessFailedCount", "ConcurrencyStamp", "NormalizedUserName", "NormalizedEmail");
+                VerifyColumns(db, "AspNetRoles", "Id", "Name", "NormalizedName", "ConcurrencyStamp");
+                VerifyColumns(db, "AspNetUserRoles", "UserId", "RoleId");
+                VerifyColumns(db, "AspNetUserClaims", "Id", "UserId", "ClaimType", "ClaimValue");
+                VerifyColumns(db, "AspNetUserLogins", "UserId", "ProviderKey", "LoginProvider", "ProviderDisplayName");
+                VerifyColumns(db, "AspNetUserTokens", "UserId", "LoginProvider", "Name", "Value");
 
                 VerifyIndex(db, "AspNetRoles", "RoleNameIndex", isUnique: true);
                 VerifyIndex(db, "AspNetUsers", "UserNameIndex", isUnique: true);

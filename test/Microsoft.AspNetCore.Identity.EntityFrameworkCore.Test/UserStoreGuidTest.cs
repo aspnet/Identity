@@ -27,7 +27,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
 
     public class UserStoreGuidV1Test : SqlStoreTestBaseV1<GuidUser, GuidRole, Guid>
     {
-        public UserStoreGuidTest(ScratchDatabaseFixture fixture)
+        public UserStoreGuidV1Test(ScratchDatabaseFixture fixture)
             : base(fixture)
         { }
 

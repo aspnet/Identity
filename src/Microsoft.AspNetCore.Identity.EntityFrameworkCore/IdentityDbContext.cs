@@ -178,10 +178,6 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
                 b.Property(u => u.Email).HasMaxLength(256);
                 b.Property(u => u.NormalizedEmail).HasMaxLength(256);
 
-                b.Ignore(u => u.LastPasswordChangeDate);
-                b.Ignore(u => u.LastSignInDate);
-                b.Ignore(u => u.CreateDate);
-
                 b.HasMany<TUserClaim>().WithOne().HasForeignKey(uc => uc.UserId).IsRequired();
                 b.HasMany<TUserLogin>().WithOne().HasForeignKey(ul => ul.UserId).IsRequired();
                 b.HasMany<TUserRole>().WithOne().HasForeignKey(ur => ur.UserId).IsRequired();
@@ -242,7 +238,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
         protected void OnModelCreatingV1(ModelBuilder builder)
         {
 
-            OnModelCreatingLatest(builder);
+            OnModelCreatingV2(builder);
 
             // Ignore the additional 2.0 properties that were added
             builder.Entity<TUser>(b =>

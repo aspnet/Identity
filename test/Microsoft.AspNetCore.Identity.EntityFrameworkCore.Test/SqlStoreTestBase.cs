@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Testing;
 using Microsoft.AspNetCore.Testing.xunit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Xunit;
 
 namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
@@ -21,7 +22,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
         where TRole : IdentityRole<TKey>, new()
         where TKey : IEquatable<TKey>
     {
-        private readonly ScratchDatabaseFixture _fixture;
+        protected readonly ScratchDatabaseFixture _fixture;
 
         protected SqlStoreTestBase(ScratchDatabaseFixture fixture)
         {
@@ -97,25 +98,33 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
         [OSSkipCondition(OperatingSystems.MacOSX)]
         public virtual void EnsureDefaultSchema()
         {
-            VerifyDefaultSchema(CreateContext());
+            var db = DbUtil.Create<TestDbContext>(_fixture.ConnectionString);
+            var services = new ServiceCollection().AddSingleton(db);
+            services.AddIdentity<TUser, TRole>().AddEntityFrameworkStoresLatest<TestDbContext>();
+            var sp = services.BuildServiceProvider();
+            var version = sp.GetRequiredService<IOptions<IdentityStoreOptions>>().Value.Version;
+            Assert.Equal(IdentityStoreOptions.Version_Latest, version);
+            db.Version = version;
+            db.Database.EnsureCreated();
+            VerifyDefaultSchema(db);
         }
 
-        private static void VerifyDefaultSchema(TestDbContext dbContext)
+        protected virtual void VerifyDefaultSchema(TestDbContext dbContext)
         {
             var sqlConn = dbContext.Database.GetDbConnection();
 
             using (var db = new SqlConnection(sqlConn.ConnectionString))
             {
                 db.Open();
-                Assert.True(VerifyColumns(db, "AspNetUsers", "Id", "UserName", "Email", "PasswordHash", "SecurityStamp",
+                VerifyColumns(db, "AspNetUsers", "Id", "UserName", "Email", "PasswordHash", "SecurityStamp",
                     "EmailConfirmed", "PhoneNumber", "PhoneNumberConfirmed", "TwoFactorEnabled", "LockoutEnabled",
                     "LockoutEnd", "AccessFailedCount", "ConcurrencyStamp", "NormalizedUserName", "NormalizedEmail", 
-                    "CreateDate", "LastSignInDate", "LastPasswordChangeDate"));
-                Assert.True(VerifyColumns(db, "AspNetRoles", "Id", "Name", "NormalizedName", "ConcurrencyStamp"));
-                Assert.True(VerifyColumns(db, "AspNetUserRoles", "UserId", "RoleId"));
-                Assert.True(VerifyColumns(db, "AspNetUserClaims", "Id", "UserId", "ClaimType", "ClaimValue"));
-                Assert.True(VerifyColumns(db, "AspNetUserLogins", "UserId", "ProviderKey", "LoginProvider", "ProviderDisplayName"));
-                Assert.True(VerifyColumns(db, "AspNetUserTokens", "UserId", "LoginProvider", "Name", "Value"));
+                    "CreateDate", "LastSignInDate", "LastPasswordChangeDate");
+                VerifyColumns(db, "AspNetRoles", "Id", "Name", "NormalizedName", "ConcurrencyStamp");
+                VerifyColumns(db, "AspNetUserRoles", "UserId", "RoleId");
+                VerifyColumns(db, "AspNetUserClaims", "Id", "UserId", "ClaimType", "ClaimValue");
+                VerifyColumns(db, "AspNetUserLogins", "UserId", "ProviderKey", "LoginProvider", "ProviderDisplayName");
+                VerifyColumns(db, "AspNetUserTokens", "UserId", "LoginProvider", "Name", "Value");
 
                 VerifyIndex(db, "AspNetRoles", "RoleNameIndex", isUnique: true);
                 VerifyIndex(db, "AspNetUsers", "UserNameIndex", isUnique: true);
@@ -124,7 +133,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
             }
         }
 
-        internal static bool VerifyColumns(SqlConnection conn, string table, params string[] columns)
+        internal static void VerifyColumns(SqlConnection conn, string table, params string[] columns)
         {
             var count = 0;
             using (
@@ -137,12 +146,10 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
                     while (reader.Read())
                     {
                         count++;
-                        if (!columns.Contains(reader.GetString(0)))
-                        {
-                            return false;
-                        }
+                        Assert.True(columns.Contains(reader.GetString(0)), 
+                            "Unexpected column: " + reader.GetString(0));
                     }
-                    return count == columns.Length;
+                    Assert.Equal(count, columns.Length);
                 }
             }
         }
