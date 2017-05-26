@@ -25,7 +25,39 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IdentityBuilder AddEntityFrameworkStoresV1<TContext>(this IdentityBuilder builder)
             where TContext : DbContext
         {
+            builder.Services.Configure<IdentityStoreOptions>(o => o.Version = IdentityStoreOptions.Version1_0);
             AddStores(builder.Services, typeof(UserStoreV1<,,,,,,,,>), typeof(RoleStoreV1<,,,,>), builder.UserType, builder.RoleType, typeof(TContext));
+            return builder;
+        }
+
+        /// <summary>
+        /// Adds an Entity Framework implementation of identity information stores with the schema/features in
+        /// <see cref="IdentityStoreOptions.Version2_0"/>.
+        /// </summary>
+        /// <typeparam name="TContext">The Entity Framework database context to use.</typeparam>
+        /// <param name="builder">The <see cref="IdentityBuilder"/> instance this method extends.</param>
+        /// <returns>The <see cref="IdentityBuilder"/> instance this method extends.</returns>
+        public static IdentityBuilder AddEntityFrameworkStoresV2<TContext>(this IdentityBuilder builder)
+            where TContext : DbContext
+        {
+            builder.Services.Configure<IdentityStoreOptions>(o => o.Version = IdentityStoreOptions.Version2_0);
+            // Note: RoleStore was not changed for V2.
+            AddStores(builder.Services, typeof(UserStoreV2<,,,,,,,,>), typeof(RoleStoreV1<,,,,>), builder.UserType, builder.RoleType, typeof(TContext));
+            return builder;
+        }
+
+        /// <summary>
+        /// Adds an Entity Framework implementation of identity information stores with the latest schema/features in
+        /// <see cref="IdentityStoreOptions.Version"/>.
+        /// </summary>
+        /// <typeparam name="TContext">The Entity Framework database context to use.</typeparam>
+        /// <param name="builder">The <see cref="IdentityBuilder"/> instance this method extends.</param>
+        /// <returns>The <see cref="IdentityBuilder"/> instance this method extends.</returns>
+        public static IdentityBuilder AddEntityFrameworkStoresLatest<TContext>(this IdentityBuilder builder)
+            where TContext : DbContext
+        {
+            builder.Services.Configure<IdentityStoreOptions>(o => o.Version = IdentityStoreOptions.Version_Latest);
+            AddStores(builder.Services, typeof(UserStore<,,,,,,,,>), typeof(RoleStore<,,,,>), builder.UserType, builder.RoleType, typeof(TContext));
             return builder;
         }
 

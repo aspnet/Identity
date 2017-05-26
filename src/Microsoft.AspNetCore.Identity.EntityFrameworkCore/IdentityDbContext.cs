@@ -2,7 +2,11 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
 {
@@ -131,7 +135,35 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
         /// </summary>
         public DbSet<TRoleClaim> RoleClaims { get; set; }
 
-        private void OnModelCreatingCore(ModelBuilder builder)
+        private string _version;
+        /// <summary>
+        /// Gets or sets the version to use during <see cref="OnModelCreating(ModelBuilder)"/>.
+        /// If not set, defaults to the value in the <see cref="IdentityStoreOptions.Version"/>
+        /// </summary>
+        public string Version {
+            get => _version ?? 
+                this.GetService<IDbContextOptions>()
+                .Extensions.OfType<CoreOptionsExtension>()
+                .FirstOrDefault()?.ApplicationServiceProvider
+                ?.GetService<IOptions<IdentityStoreOptions>>()
+                ?.Value?.Version;
+            set => _version = value;
+        }
+
+        /// <summary>
+        /// Creates the latest identity model.
+        /// </summary>
+        /// <param name="builder"></param>
+        protected void OnModelCreatingLatest(ModelBuilder builder)
+            => OnModelCreatingV2(builder);
+
+        /// <summary>
+        /// Configures the schema needed for the identity framework version <see cref="IdentityStoreOptions.Version2_0"/>.
+        /// </summary>
+        /// <param name="builder">
+        /// The builder being used to construct the model for this context.
+        /// </param>
+        protected void OnModelCreatingV2(ModelBuilder builder)
         {
             builder.Entity<TUser>(b =>
             {
@@ -150,7 +182,6 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
                 b.Ignore(u => u.LastSignInDate);
                 b.Ignore(u => u.CreateDate);
 
-                // Replace with b.HasMany<IdentityUserClaim>().
                 b.HasMany<TUserClaim>().WithOne().HasForeignKey(uc => uc.UserId).IsRequired();
                 b.HasMany<TUserLogin>().WithOne().HasForeignKey(ul => ul.UserId).IsRequired();
                 b.HasMany<TUserRole>().WithOne().HasForeignKey(ur => ur.UserId).IsRequired();
@@ -210,7 +241,8 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
         /// </param>
         protected void OnModelCreatingV1(ModelBuilder builder)
         {
-            OnModelCreatingCore(builder);
+
+            OnModelCreatingLatest(builder);
 
             // Ignore the additional 2.0 properties that were added
             builder.Entity<TUser>(b =>
@@ -229,7 +261,18 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
         /// </param>
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            OnModelCreatingV1(builder);
+            if (Version == IdentityStoreOptions.Version_Latest)
+            {
+                OnModelCreatingLatest(builder);
+            }
+            else if (Version == IdentityStoreOptions.Version2_0)
+            {
+                OnModelCreatingV2(builder);
+            }
+            else // Default is always the v1 schema
+            {
+                OnModelCreatingV1(builder);
+            }
         }
     }
 }

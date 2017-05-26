@@ -64,7 +64,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
 
         protected override Expression<Func<TUser, bool>> UserNameStartsWithPredicate(string userName) => u => u.UserName.StartsWith(userName);
 
-        public TestDbContext CreateContext()
+        public virtual TestDbContext CreateContext()
         {
             var db = DbUtil.Create<TestDbContext>(_fixture.ConnectionString);
             db.Database.EnsureCreated();
@@ -95,12 +95,12 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
         [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         [OSSkipCondition(OperatingSystems.Linux)]
         [OSSkipCondition(OperatingSystems.MacOSX)]
-        public void EnsureDefaultSchema()
+        public virtual void EnsureDefaultSchema()
         {
             VerifyDefaultSchema(CreateContext());
         }
 
-        internal static void VerifyDefaultSchema(TestDbContext dbContext)
+        private static void VerifyDefaultSchema(TestDbContext dbContext)
         {
             var sqlConn = dbContext.Database.GetDbConnection();
 
