@@ -10,9 +10,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Areas\IdentityService\**" />
     <Compile Remove="Extensions\IdentityService\**" />
+    <Content Remove="Areas\IdentityService\**" />
     <Content Remove="Extensions\IdentityService\**" />
+    <EmbeddedResource Remove="Areas\IdentityService\**" />
     <EmbeddedResource Remove="Extensions\IdentityService\**" />
+    <None Remove="Areas\IdentityService\**" />
     <None Remove="Extensions\IdentityService\**" />
   </ItemGroup>
 
@@ -52,10 +56,6 @@
     <ProjectReference Include="..\..\src\Microsoft.AspNetCore.Identity.Service.EntityFrameworkCore\Microsoft.AspNetCore.Identity.Service.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Microsoft.AspNetCore.Identity.Service.IntegratedWebClient\Microsoft.AspNetCore.Identity.Service.IntegratedWebClient.csproj" />
     <ProjectReference Include="..\..\src\Microsoft.AspNetCore.Identity.Service.AzureKeyVault\Microsoft.AspNetCore.Identity.Service.AzureKeyVault.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Areas\IdentityService\Views\Shared\" />
   </ItemGroup>
 
 </Project>

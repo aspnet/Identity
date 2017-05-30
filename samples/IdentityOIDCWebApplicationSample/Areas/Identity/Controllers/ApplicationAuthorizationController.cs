@@ -11,7 +11,7 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 namespace IdentityOIDCWebApplicationSample.Identity.Controllers
 {
     [Area("Identity")]
-    public class IdentityServiceController : Controller
+    public class ApplicationAuthorizationController : Controller
     {
         private readonly IOptions<IdentityServiceOptions> _options;
         private readonly ITokenManager _tokenManager;
@@ -19,7 +19,7 @@ namespace IdentityOIDCWebApplicationSample.Identity.Controllers
         private readonly IAuthorizationResponseFactory _authorizationResponseFactory;
         private readonly ITokenResponseFactory _tokenResponseFactory;
 
-        public IdentityServiceController(
+        public ApplicationAuthorizationController(
             IOptions<IdentityServiceOptions> options,
             ITokenManager tokenManager,
             SessionManager<ApplicationUser, IdentityServiceApplication> sessionManager,
@@ -119,7 +119,7 @@ namespace IdentityOIDCWebApplicationSample.Identity.Controllers
 
             var parameters = new
             {
-                ReturnUrl = Url.Action("Authorize", "Identity", messageCopy.Parameters)
+                ReturnUrl = Url.Action("Authorize", "ApplicationAuthorization", messageCopy.Parameters)
             };
 
             return RedirectToAction(action, controller, parameters);

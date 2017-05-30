@@ -5,12 +5,12 @@ using Microsoft.AspNetCore.Mvc;
 namespace IdentityOIDCWebApplicationSample.Identity.Controllers
 {
     [Area("Identity")]
-    public class IdentityServiceConfigurationController : Controller
+    public class ConfigurationMetadataController : Controller
     {
         private readonly IConfigurationManager _configurationProvider;
         private readonly IKeySetMetadataProvider _keySetProvider;
 
-        public IdentityServiceConfigurationController(
+        public ConfigurationMetadataController(
             IConfigurationManager configurationProvider,
             IKeySetMetadataProvider keySetProvider)
         {
@@ -26,10 +26,10 @@ namespace IdentityOIDCWebApplicationSample.Identity.Controllers
             {
                 Id = "Identity:signinsignup",
                 HttpContext = HttpContext,
-                AuthorizationEndpoint = EndpointLink("Authorize", "Identity"),
-                TokenEndpoint = EndpointLink("Token", "Identity"),
-                JwksUriEndpoint = EndpointLink("Keys", "IdentityServiceConfiguration"),
-                EndSessionEndpoint = EndpointLink("Logout", "Identity"),
+                AuthorizationEndpoint = EndpointLink("Authorize", "ApplicationAuthorization"),
+                TokenEndpoint = EndpointLink("Token", "ApplicationAuthorization"),
+                JwksUriEndpoint = EndpointLink("Keys", "ConfigurationMetadata"),
+                EndSessionEndpoint = EndpointLink("Logout", "ApplicationAuthorization"),
             };
 
             return Ok(await _configurationProvider.GetConfigurationAsync(configurationContext));
