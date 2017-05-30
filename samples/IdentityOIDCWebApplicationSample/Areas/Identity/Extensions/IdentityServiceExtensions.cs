@@ -22,12 +22,10 @@ namespace Microsoft.AspNetCore.Identity.Service.Extensions
             return builder;
         }
 
-        public static IIdentityServiceBuilder AddApplications<TUser, TApplication>(this IdentityBuilder builder)
-            where TUser : class
-            where TApplication : class
+        public static IIdentityServiceBuilder AddApplications(this IdentityBuilder builder)
         {
             builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<IdentityServiceOptions>, DefaultSetup>());
-            return builder.AddApplications<TUser, TApplication>(options =>
+            return builder.AddApplications<IdentityServiceApplication>(options =>
                         {
                             options.IdTokenOptions.ContextClaims.AddSingle("tfp", "policy");
                             options.IdTokenOptions.ContextClaims.AddSingle("ver", "version");

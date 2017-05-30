@@ -36,7 +36,7 @@ namespace IdentityOIDCWebApplicationSample
 
             var builder = services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddDefaultTokenProviders()
-                .AddApplications<ApplicationUser, IdentityServiceApplication>()
+                .AddApplications()
                 .AddEntityFrameworkStores<IdentityServiceDbContext>()
                 .AddClientInfoBinding();
 

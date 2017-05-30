@@ -24,10 +24,9 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class IdentityServiceServiceCollectionExtensions
     {
-        public static IIdentityServiceBuilder AddApplications<TUser, TApplication>(
+        public static IIdentityServiceBuilder AddApplications<TApplication>(
             this IdentityBuilder builder,
             Action<IdentityServiceOptions> configure)
-            where TUser : class
             where TApplication : class
         {
             if (builder == null)
@@ -47,7 +46,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddDataProtection();
             services.AddAuthentication();
 
-            services.TryAdd(CreateServices<TUser, TApplication>());
+            services.TryAdd(CreateServices<TApplication>());
 
             // Configuration
             services.AddTransient<IConfigureOptions<IdentityServiceOptions>, IdentityServiceOptionsDefaultSetup>();
@@ -97,8 +96,8 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<ApplicationErrorDescriber>();
 
             // Session
-            services.AddTransient<SessionManager, SessionManager<TUser, TApplication>>();
-            services.AddTransient<SessionManager<TUser, TApplication>>();
+            services.AddTransient(typeof(SessionManager), typeof(SessionManager<,>).MakeGenericType(builder.UserType, typeof(TApplication)));
+            services.AddTransient(typeof(SessionManager<,>).MakeGenericType(builder.UserType, typeof(TApplication)));
             services.AddTransient<IRedirectUriResolver, ClientApplicationValidator<TApplication>>();
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
@@ -107,8 +106,7 @@ namespace Microsoft.Extensions.DependencyInjection
             return new IdentityServiceBuilder<TApplication>(builder);
         }
 
-        private static IEnumerable<ServiceDescriptor> CreateServices<TUser, TApplication>()
-            where TUser : class
+        private static IEnumerable<ServiceDescriptor> CreateServices<TApplication>()
             where TApplication : class
         {
             yield return ServiceDescriptor.Scoped<ApplicationManager<TApplication>, ApplicationManager<TApplication>>();
