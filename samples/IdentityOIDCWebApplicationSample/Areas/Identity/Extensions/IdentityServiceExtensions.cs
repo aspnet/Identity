@@ -13,7 +13,7 @@ using Newtonsoft.Json;
 
 namespace Microsoft.AspNetCore.Identity.Service.Extensions
 {
-    public static class IdentityServiceExtensions
+    public static class IdentityApplicationExtensions
     {
         public static IIdentityServiceBuilder AddClientInfoBinding(this IIdentityServiceBuilder builder)
         {

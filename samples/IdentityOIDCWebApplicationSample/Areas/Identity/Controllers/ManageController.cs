@@ -13,8 +13,8 @@ using Microsoft.Extensions.Logging;
 namespace IdentityOIDCWebApplicationSample.Identity.Controllers
 {
     [Authorize(IdentityServiceOptions.LoginPolicyName)]
-    [Area("IdentityService")]
-    [Route("tfp/IdentityService/[controller]/[action]")]
+    [Area("Identity")]
+    [Route("tfp/Identity/[controller]/[action]")]
     public class ManageController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
