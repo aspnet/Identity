@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity.Service.Internal;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Xunit;
 
@@ -43,7 +44,7 @@ namespace Microsoft.AspNetCore.Identity.Service.Claims
             // Act
             await claimsProvider.OnGeneratingClaims(context);
             var granted = context.CurrentClaims
-                .Where(c => c.Type.Equals(IdentityServiceClaimTypes.GrantedToken))
+                .Where(c => c.Type.Equals(TokenClaimTypes.GrantedToken))
                 .OrderBy(c => c.Value)
                 .Select(c => c.Value)
                 .ToArray();
@@ -84,7 +85,7 @@ namespace Microsoft.AspNetCore.Identity.Service.Claims
             // Act
             await claimsProvider.OnGeneratingClaims(context);
             var granted = context.CurrentClaims
-                .Where(c => c.Type.Equals(IdentityServiceClaimTypes.GrantedToken))
+                .Where(c => c.Type.Equals(TokenClaimTypes.GrantedToken))
                 .OrderBy(c => c.Value)
                 .Select(c => c.Value)
                 .ToArray();

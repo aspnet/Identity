@@ -9,10 +9,10 @@ namespace Microsoft.AspNetCore.Identity.Service
     public interface IApplicationValidator<TApplication>
         where TApplication : class
     {
-        Task<IdentityServiceResult> ValidateAsync(ApplicationManager<TApplication> manager, TApplication application);
-        Task<IdentityServiceResult> ValidateScopeAsync(ApplicationManager<TApplication> manager, TApplication application, string scope);
-        Task<IdentityServiceResult> ValidateRedirectUriAsync(ApplicationManager<TApplication> manager, TApplication application, string redirectUri);
-        Task<IdentityServiceResult> ValidateLogoutUriAsync(ApplicationManager<TApplication> manager, TApplication application, string logoutUri);
-        Task<IdentityServiceResult> ValidateClaimAsync(ApplicationManager<TApplication> manager, TApplication application, Claim claim);
+        Task<IdentityResult> ValidateAsync(ApplicationManager<TApplication> manager, TApplication application);
+        Task<IdentityResult> ValidateScopeAsync(ApplicationManager<TApplication> manager, TApplication application, string scope);
+        Task<IdentityResult> ValidateRedirectUriAsync(ApplicationManager<TApplication> manager, TApplication application, string redirectUri);
+        Task<IdentityResult> ValidateLogoutUriAsync(ApplicationManager<TApplication> manager, TApplication application, string logoutUri);
+        Task<IdentityResult> ValidateClaimAsync(ApplicationManager<TApplication> manager, TApplication application, Claim claim);
     }
 }

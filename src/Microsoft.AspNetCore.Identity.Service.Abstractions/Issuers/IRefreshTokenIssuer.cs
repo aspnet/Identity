@@ -4,7 +4,7 @@
 using System.Threading.Tasks;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
-namespace Microsoft.AspNetCore.Identity.Service
+namespace Microsoft.AspNetCore.Identity.Service.Issuers
 {
     public interface IRefreshTokenIssuer
     {

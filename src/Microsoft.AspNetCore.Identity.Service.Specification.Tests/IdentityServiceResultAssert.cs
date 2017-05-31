@@ -10,13 +10,13 @@ namespace Microsoft.AspNetCore.Identity.Test
     /// <summary>
     /// Helper for tests to validate identity results.
     /// </summary>
-    public static class IdentityServiceResultAssert
+    public static class IdentityResultAssert
     {
         /// <summary>
         /// Asserts that the result has Succeeded.
         /// </summary>
         /// <param name="result"></param>
-        public static void IsSuccess(IdentityServiceResult result)
+        public static void IsSuccess(IdentityResult result)
         {
             Assert.NotNull(result);
             Assert.True(result.Succeeded);
@@ -25,7 +25,7 @@ namespace Microsoft.AspNetCore.Identity.Test
         /// <summary>
         /// Asserts that the result has not Succeeded.
         /// </summary>
-        public static void IsFailure(IdentityServiceResult result)
+        public static void IsFailure(IdentityResult result)
         {
             Assert.NotNull(result);
             Assert.False(result.Succeeded);
@@ -34,7 +34,7 @@ namespace Microsoft.AspNetCore.Identity.Test
         /// <summary>
         /// Asserts that the result has not Succeeded and that error is the first Error's Description.
         /// </summary>
-        public static void IsFailure(IdentityServiceResult result, string error)
+        public static void IsFailure(IdentityResult result, string error)
         {
             Assert.NotNull(result);
             Assert.False(result.Succeeded);
@@ -44,7 +44,7 @@ namespace Microsoft.AspNetCore.Identity.Test
         /// <summary>
         /// Asserts that the result has not Succeeded and that first error matches error's code and Description.
         /// </summary>
-        public static void IsFailure(IdentityServiceResult result, IdentityServiceError error)
+        public static void IsFailure(IdentityResult result, IdentityError error)
         {
             Assert.NotNull(result);
             Assert.False(result.Succeeded);

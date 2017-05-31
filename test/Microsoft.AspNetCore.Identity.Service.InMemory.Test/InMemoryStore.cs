@@ -31,22 +31,22 @@ namespace Microsoft.AspNetCore.Identity.Service.InMemory.Test
             return Task.CompletedTask;
         }
 
-        public Task<IdentityServiceResult> AddScopeAsync(TApplication application, string scope, CancellationToken cancellationToken)
+        public Task<IdentityResult> AddScopeAsync(TApplication application, string scope, CancellationToken cancellationToken)
         {
             application.Scopes.Add(new TestApplicationScope { Value = scope });
-            return Task.FromResult(IdentityServiceResult.Success);
+            return Task.FromResult(IdentityResult.Success);
         }
 
-        public Task<IdentityServiceResult> CreateAsync(TApplication application, CancellationToken cancellationToken)
+        public Task<IdentityResult> CreateAsync(TApplication application, CancellationToken cancellationToken)
         {
             _applications.Add(application.Id, application);
-            return Task.FromResult(IdentityServiceResult.Success);
+            return Task.FromResult(IdentityResult.Success);
         }
 
-        public Task<IdentityServiceResult> DeleteAsync(TApplication application, CancellationToken cancellationToken)
+        public Task<IdentityResult> DeleteAsync(TApplication application, CancellationToken cancellationToken)
         {
             _applications.Remove(application.Id);
-            return Task.FromResult(IdentityServiceResult.Success);
+            return Task.FromResult(IdentityResult.Success);
         }
 
         public void Dispose()
@@ -123,16 +123,16 @@ namespace Microsoft.AspNetCore.Identity.Service.InMemory.Test
             return Task.FromResult(application.ClientSecretHash != null);
         }
 
-        public Task<IdentityServiceResult> RegisterLogoutRedirectUriAsync(TApplication app, string redirectUri, CancellationToken cancellationToken)
+        public Task<IdentityResult> RegisterLogoutRedirectUriAsync(TApplication app, string redirectUri, CancellationToken cancellationToken)
         {
             app.RedirectUris.Add(new TestApplicationRedirectUri { IsLogout = true, Value = redirectUri });
-            return Task.FromResult(IdentityServiceResult.Success);
+            return Task.FromResult(IdentityResult.Success);
         }
 
-        public Task<IdentityServiceResult> RegisterRedirectUriAsync(TApplication app, string redirectUri, CancellationToken cancellationToken)
+        public Task<IdentityResult> RegisterRedirectUriAsync(TApplication app, string redirectUri, CancellationToken cancellationToken)
         {
             app.RedirectUris.Add(new TestApplicationRedirectUri { IsLogout = false, Value = redirectUri });
-            return Task.FromResult(IdentityServiceResult.Success);
+            return Task.FromResult(IdentityResult.Success);
         }
 
         public Task RemoveClaimsAsync(TApplication application, IEnumerable<Claim> claims, CancellationToken cancellationToken)
@@ -149,7 +149,7 @@ namespace Microsoft.AspNetCore.Identity.Service.InMemory.Test
             return Task.CompletedTask;
         }
 
-        public Task<IdentityServiceResult> RemoveScopeAsync(TApplication application, string scope, CancellationToken cancellationToken)
+        public Task<IdentityResult> RemoveScopeAsync(TApplication application, string scope, CancellationToken cancellationToken)
         {
             var foundScope = application.Scopes.FirstOrDefault(s => s.Value == scope);
             if (foundScope != null)
@@ -157,7 +157,7 @@ namespace Microsoft.AspNetCore.Identity.Service.InMemory.Test
                 application.Scopes.Remove(foundScope);
             }
 
-            return Task.FromResult(IdentityServiceResult.Success);
+            return Task.FromResult(IdentityResult.Success);
         }
 
         public Task ReplaceClaimAsync(TApplication application, Claim claim, Claim newClaim, CancellationToken cancellationToken)
@@ -184,7 +184,7 @@ namespace Microsoft.AspNetCore.Identity.Service.InMemory.Test
             return Task.CompletedTask;
         }
 
-        public Task<IdentityServiceResult> UnregisterLogoutRedirectUriAsync(TApplication app, string redirectUri, CancellationToken cancellationToken)
+        public Task<IdentityResult> UnregisterLogoutRedirectUriAsync(TApplication app, string redirectUri, CancellationToken cancellationToken)
         {
             var logoutUri = app.RedirectUris.FirstOrDefault(ru => ru.IsLogout && ru.Value == redirectUri);
             if (logoutUri != null)
@@ -192,10 +192,10 @@ namespace Microsoft.AspNetCore.Identity.Service.InMemory.Test
                 app.RedirectUris.Remove(logoutUri);
             }
 
-            return Task.FromResult(IdentityServiceResult.Success);
+            return Task.FromResult(IdentityResult.Success);
         }
 
-        public Task<IdentityServiceResult> UnregisterRedirectUriAsync(TApplication app, string redirectUri, CancellationToken cancellationToken)
+        public Task<IdentityResult> UnregisterRedirectUriAsync(TApplication app, string redirectUri, CancellationToken cancellationToken)
         {
             var logoutUri = app.RedirectUris.FirstOrDefault(ru => !ru.IsLogout && ru.Value == redirectUri);
             if (logoutUri != null)
@@ -203,34 +203,34 @@ namespace Microsoft.AspNetCore.Identity.Service.InMemory.Test
                 app.RedirectUris.Remove(logoutUri);
             }
 
-            return Task.FromResult(IdentityServiceResult.Success);
+            return Task.FromResult(IdentityResult.Success);
         }
 
-        public Task<IdentityServiceResult> UpdateAsync(TApplication application, CancellationToken cancellationToken)
+        public Task<IdentityResult> UpdateAsync(TApplication application, CancellationToken cancellationToken)
         {
             _applications[application.Id] = application;
-            return Task.FromResult(IdentityServiceResult.Success);
+            return Task.FromResult(IdentityResult.Success);
         }
 
-        public Task<IdentityServiceResult> UpdateLogoutRedirectUriAsync(TApplication app, string oldRedirectUri, string newRedirectUri, CancellationToken cancellationToken)
+        public Task<IdentityResult> UpdateLogoutRedirectUriAsync(TApplication app, string oldRedirectUri, string newRedirectUri, CancellationToken cancellationToken)
         {
             var old = app.RedirectUris.Single(ru => ru.IsLogout && ru.Value == oldRedirectUri);
             old.Value = newRedirectUri;
-            return Task.FromResult(IdentityServiceResult.Success);
+            return Task.FromResult(IdentityResult.Success);
         }
 
-        public Task<IdentityServiceResult> UpdateRedirectUriAsync(TApplication app, string oldRedirectUri, string newRedirectUri, CancellationToken cancellationToken)
+        public Task<IdentityResult> UpdateRedirectUriAsync(TApplication app, string oldRedirectUri, string newRedirectUri, CancellationToken cancellationToken)
         {
             var old = app.RedirectUris.Single(ru => !ru.IsLogout && ru.Value == oldRedirectUri);
             old.Value = newRedirectUri;
-            return Task.FromResult(IdentityServiceResult.Success);
+            return Task.FromResult(IdentityResult.Success);
         }
 
-        public Task<IdentityServiceResult> UpdateScopeAsync(TApplication application, string oldScope, string newScope, CancellationToken cancellationToken)
+        public Task<IdentityResult> UpdateScopeAsync(TApplication application, string oldScope, string newScope, CancellationToken cancellationToken)
         {
             var old = application.Scopes.Single(s => s.Value == oldScope);
             old.Value = newScope;
-            return Task.FromResult(IdentityServiceResult.Success);
+            return Task.FromResult(IdentityResult.Success);
         }
     }
 }

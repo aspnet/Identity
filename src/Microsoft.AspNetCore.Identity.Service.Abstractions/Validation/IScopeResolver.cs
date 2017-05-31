@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Microsoft.AspNetCore.Identity.Service
+namespace Microsoft.AspNetCore.Identity.Service.Validation
 {
     public interface IScopeResolver
     {

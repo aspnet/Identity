@@ -4,6 +4,8 @@
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity.Service.Internal;
+using Microsoft.AspNetCore.Identity.Service.Issuers;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Xunit;
 
@@ -102,10 +104,10 @@ namespace Microsoft.AspNetCore.Identity.Service
             public TestToken(string kind)
                 : base(new List<Claim>
                 {
-                    new Claim(IdentityServiceClaimTypes.TokenUniqueId,"tuid"),
-                    new Claim(IdentityServiceClaimTypes.Expires,"946688400"),
-                    new Claim(IdentityServiceClaimTypes.IssuedAt,"946684800"),
-                    new Claim(IdentityServiceClaimTypes.NotBefore,"946684800"),
+                    new Claim(TokenClaimTypes.TokenUniqueId,"tuid"),
+                    new Claim(TokenClaimTypes.Expires,"946688400"),
+                    new Claim(TokenClaimTypes.IssuedAt,"946684800"),
+                    new Claim(TokenClaimTypes.NotBefore,"946684800"),
                 })
             {
                 _kind = kind;

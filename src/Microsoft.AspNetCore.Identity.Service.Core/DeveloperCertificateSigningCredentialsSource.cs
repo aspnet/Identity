@@ -5,35 +5,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity.Service.Signing;
+using Microsoft.AspNetCore.Identity.Service.Validation;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Microsoft.AspNetCore.Identity.Service
+namespace Microsoft.AspNetCore.Identity.Service.Internal
 {
     public class DeveloperCertificateSigningCredentialsSource : ISigningCredentialsSource
     {
-        private readonly IHostingEnvironment _environment;
         private readonly ITimeStampManager _timeStampManager;
 
         public DeveloperCertificateSigningCredentialsSource(
-            IHostingEnvironment environment,
             ITimeStampManager timeStampManager)
         {
-            _environment = environment;
             _timeStampManager = timeStampManager;
         }
 
         public Task<IEnumerable<SigningCredentialsDescriptor>> GetCredentials()
         {
-            if (!_environment.IsDevelopment())
-            {
-                return Task.FromResult(Enumerable.Empty<SigningCredentialsDescriptor>());
-            }
-
             using (var store = new X509Store(StoreName.My, StoreLocation.CurrentUser))
             {
                 store.Open(OpenFlags.ReadOnly);
-                var cert = store.Certificates.Find(X509FindType.FindBySubjectDistinguishedName, "CN=IdentityService.Development", validOnly: false);
+                var cert = store.Certificates.Find(X509FindType.FindBySubjectDistinguishedName, "CN=Identity.Development", validOnly: false);
                 var valid = cert.OfType<X509Certificate2>().FirstOrDefault(c => _timeStampManager.IsValidPeriod(c.NotBefore, c.NotAfter));
                 store.Close();
 

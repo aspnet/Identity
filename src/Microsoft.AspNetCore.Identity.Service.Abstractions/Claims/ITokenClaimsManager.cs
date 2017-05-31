@@ -3,7 +3,7 @@
 
 using System.Threading.Tasks;
 
-namespace Microsoft.AspNetCore.Identity.Service
+namespace Microsoft.AspNetCore.Identity.Service.Claims
 {
     public interface ITokenClaimsManager
     {

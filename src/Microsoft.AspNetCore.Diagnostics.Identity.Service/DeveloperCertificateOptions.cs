@@ -7,6 +7,6 @@ namespace Microsoft.AspNetCore.Diagnostics.Identity.Service
 {
     public class DeveloperCertificateOptions
     {
-        public PathString ListeningEndpoint { get; set; } = "/tfp/IdentityService/signinsignup/oauth2/v2.0/authorize";
+        public PathString ListeningEndpoint { get; set; } = "/tfp/Identity/signinsignup/oauth2/v2.0/authorize";
     }
 }

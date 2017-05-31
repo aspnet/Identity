@@ -45,7 +45,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             get
             {
                 ThrowIfDisposed();
-                return Store is IQueryableUserStore<TApplication>;
+                return Store is IQueryableApplicationStore<TApplication>;
             }
         }
 
@@ -100,7 +100,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             return Store.GetApplicationNameAsync(application, CancellationToken);
         }
 
-        public async Task<IdentityServiceResult> SetApplicationNameAsync(TApplication application, string name)
+        public async Task<IdentityResult> SetApplicationNameAsync(TApplication application, string name)
         {
             ThrowIfDisposed();
             if (name == null)
@@ -112,7 +112,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             return await UpdateAsync(application);
         }
 
-        public virtual async Task<IdentityServiceResult> CreateAsync(TApplication application)
+        public virtual async Task<IdentityResult> CreateAsync(TApplication application)
         {
             ThrowIfDisposed();
             if (application == null)
@@ -129,7 +129,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             return await Store.CreateAsync(application, CancellationToken);
         }
 
-        public virtual async Task<IdentityServiceResult> DeleteAsync(TApplication application)
+        public virtual async Task<IdentityResult> DeleteAsync(TApplication application)
         {
             ThrowIfDisposed();
             if (application == null)
@@ -140,7 +140,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             return await Store.DeleteAsync(application, CancellationToken);
         }
 
-        public virtual async Task<IdentityServiceResult> UpdateAsync(TApplication application)
+        public virtual async Task<IdentityResult> UpdateAsync(TApplication application)
         {
             ThrowIfDisposed();
             if (application == null)
@@ -174,7 +174,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             return store.HasClientSecretAsync(application, CancellationToken);
         }
 
-        public async Task<IdentityServiceResult> AddClientSecretAsync(TApplication application, string clientSecret)
+        public async Task<IdentityResult> AddClientSecretAsync(TApplication application, string clientSecret)
         {
             ThrowIfDisposed();
             var store = GetClientSecretStore();
@@ -186,7 +186,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             var hash = await store.GetClientSecretHashAsync(application, CancellationToken);
             if (hash != null)
             {
-                return IdentityServiceResult.Failed(ErrorDescriber.ApplicationAlreadyHasClientSecret());
+                return IdentityResult.Failed(ErrorDescriber.ApplicationAlreadyHasClientSecret());
             }
 
             var result = await UpdateClientSecretHashAsync(store, application, clientSecret);
@@ -198,7 +198,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             return await UpdateAsync(application);
         }
 
-        public async Task<IdentityServiceResult> ChangeClientSecretAsync(TApplication application, string newClientSecret)
+        public async Task<IdentityResult> ChangeClientSecretAsync(TApplication application, string newClientSecret)
         {
             ThrowIfDisposed();
             var store = GetClientSecretStore();
@@ -216,7 +216,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             return await UpdateAsync(application);
         }
 
-        public async Task<IdentityServiceResult> RemoveClientSecretAsync(TApplication application)
+        public async Task<IdentityResult> RemoveClientSecretAsync(TApplication application)
         {
             ThrowIfDisposed();
             var store = GetClientSecretStore();
@@ -265,14 +265,14 @@ namespace Microsoft.AspNetCore.Identity.Service
             return result == PasswordVerificationResult.Success;
         }
 
-        private async Task<IdentityServiceResult> UpdateClientSecretHashAsync(
+        private async Task<IdentityResult> UpdateClientSecretHashAsync(
             IApplicationClientSecretStore<TApplication> clientSecretStore,
             TApplication application,
             string clientSecret)
         {
             var hash = clientSecret == null ? null : PasswordHasher.HashPassword(application, clientSecret);
             await clientSecretStore.SetClientSecretHashAsync(application, hash, CancellationToken);
-            return IdentityServiceResult.Success;
+            return IdentityResult.Success;
         }
 
         protected virtual async Task<PasswordVerificationResult> VerifyClientSecretAsync(
@@ -309,7 +309,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             return null;
         }
 
-        public async Task<IdentityServiceResult> RegisterRedirectUriAsync(TApplication application, string redirectUri)
+        public async Task<IdentityResult> RegisterRedirectUriAsync(TApplication application, string redirectUri)
         {
             ThrowIfDisposed();
             var redirectStore = GetRedirectUriStore();
@@ -329,14 +329,14 @@ namespace Microsoft.AspNetCore.Identity.Service
             return await redirectStore.UpdateAsync(application, CancellationToken);
         }
 
-        public async Task<IdentityServiceResult> UpdateRedirectUriAsync(TApplication application, string oldRedirectUri, string newRedirectUri)
+        public async Task<IdentityResult> UpdateRedirectUriAsync(TApplication application, string oldRedirectUri, string newRedirectUri)
         {
             var redirectStore = GetRedirectUriStore();
 
             var registeredUri = await FindRegisteredUriAsync(application, oldRedirectUri);
             if (registeredUri == null)
             {
-                return IdentityServiceResult.Failed(ErrorDescriber.RedirectUriNotFound(oldRedirectUri));
+                return IdentityResult.Failed(ErrorDescriber.RedirectUriNotFound(oldRedirectUri));
             }
 
             var validation = await ValidateRedirectUriAsync(application, newRedirectUri);
@@ -354,7 +354,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             return await redirectStore.UpdateAsync(application, CancellationToken);
         }
 
-        public async Task<IdentityServiceResult> UnregisterRedirectUriAsync(TApplication application, string redirectUri)
+        public async Task<IdentityResult> UnregisterRedirectUriAsync(TApplication application, string redirectUri)
         {
             ThrowIfDisposed();
             if (application == null)
@@ -370,7 +370,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             var registeredUri = await FindRegisteredUriAsync(application, redirectUri);
             if (registeredUri == null)
             {
-                return IdentityServiceResult.Failed(ErrorDescriber.RedirectUriNotFound(redirectUri));
+                return IdentityResult.Failed(ErrorDescriber.RedirectUriNotFound(redirectUri));
             }
 
             var redirectStore = GetRedirectUriStore();
@@ -383,9 +383,9 @@ namespace Microsoft.AspNetCore.Identity.Service
             return await redirectStore.UpdateAsync(application, CancellationToken);
         }
 
-        private async Task<IdentityServiceResult> ValidateRedirectUriAsync(TApplication application, string redirectUri)
+        private async Task<IdentityResult> ValidateRedirectUriAsync(TApplication application, string redirectUri)
         {
-            var errors = new List<IdentityServiceError>();
+            var errors = new List<IdentityError>();
             foreach (var v in ApplicationValidators)
             {
                 var result = await v.ValidateRedirectUriAsync(this, application, redirectUri);
@@ -397,10 +397,10 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             if (errors.Count > 0)
             {
-                return IdentityServiceResult.Failed(errors.ToArray());
+                return IdentityResult.Failed(errors.ToArray());
             }
 
-            return IdentityServiceResult.Success;
+            return IdentityResult.Success;
         }
 
         public Task<IEnumerable<string>> FindRegisteredLogoutUrisAsync(TApplication application)
@@ -423,7 +423,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             return null;
         }
 
-        public async Task<IdentityServiceResult> RegisterLogoutUriAsync(TApplication application, string logoutUri)
+        public async Task<IdentityResult> RegisterLogoutUriAsync(TApplication application, string logoutUri)
         {
             ThrowIfDisposed();
             var redirectStore = GetRedirectUriStore();
@@ -443,7 +443,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             return await redirectStore.UpdateAsync(application, CancellationToken);
         }
 
-        public async Task<IdentityServiceResult> UpdateLogoutUriAsync(TApplication application, string oldLogoutUri, string newLogoutUri)
+        public async Task<IdentityResult> UpdateLogoutUriAsync(TApplication application, string oldLogoutUri, string newLogoutUri)
         {
             ThrowIfDisposed();
             if (application == null)
@@ -466,7 +466,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             var registeredUri = await FindRegisteredLogoutUriAsync(application, oldLogoutUri);
             if (registeredUri == null)
             {
-                return IdentityServiceResult.Failed(ErrorDescriber.LogoutUriNotFound(oldLogoutUri));
+                return IdentityResult.Failed(ErrorDescriber.LogoutUriNotFound(oldLogoutUri));
             }
 
             var validation = await ValidateLogoutUriAsync(application, newLogoutUri);
@@ -484,7 +484,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             return await UpdateAsync(application);
         }
 
-        public async Task<IdentityServiceResult> UnregisterLogoutUriAsync(TApplication application, string logoutUri)
+        public async Task<IdentityResult> UnregisterLogoutUriAsync(TApplication application, string logoutUri)
         {
             ThrowIfDisposed();
             if (application == null)
@@ -501,7 +501,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             var registeredUri = await FindRegisteredLogoutUriAsync(application, logoutUri);
             if (registeredUri == null)
             {
-                return IdentityServiceResult.Failed(ErrorDescriber.LogoutUriNotFound(logoutUri));
+                return IdentityResult.Failed(ErrorDescriber.LogoutUriNotFound(logoutUri));
             }
 
             var result = await redirectStore.UnregisterLogoutRedirectUriAsync(application, logoutUri, CancellationToken);
@@ -513,9 +513,9 @@ namespace Microsoft.AspNetCore.Identity.Service
             return await redirectStore.UpdateAsync(application, CancellationToken);
         }
 
-        private async Task<IdentityServiceResult> ValidateLogoutUriAsync(TApplication application, string redirectUri)
+        private async Task<IdentityResult> ValidateLogoutUriAsync(TApplication application, string redirectUri)
         {
-            var errors = new List<IdentityServiceError>();
+            var errors = new List<IdentityError>();
             foreach (var v in ApplicationValidators)
             {
                 var result = await v.ValidateLogoutUriAsync(this, application, redirectUri);
@@ -527,10 +527,10 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             if (errors.Count > 0)
             {
-                return IdentityServiceResult.Failed(errors.ToArray());
+                return IdentityResult.Failed(errors.ToArray());
             }
 
-            return IdentityServiceResult.Success;
+            return IdentityResult.Success;
         }
 
         public Task<IEnumerable<string>> FindScopesAsync(TApplication application)
@@ -553,7 +553,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             return null;
         }
 
-        public async Task<IdentityServiceResult> AddScopeAsync(TApplication application, string scope)
+        public async Task<IdentityResult> AddScopeAsync(TApplication application, string scope)
         {
             var scopeStore = GetScopeStore();
 
@@ -572,13 +572,13 @@ namespace Microsoft.AspNetCore.Identity.Service
             return await scopeStore.UpdateAsync(application, CancellationToken);
         }
 
-        public async Task<IdentityServiceResult> UpdateScopeAsync(TApplication application, string oldScope, string newScope)
+        public async Task<IdentityResult> UpdateScopeAsync(TApplication application, string oldScope, string newScope)
         {
             var scopeStore = GetScopeStore();
             var scope = await FindScopeAsync(application, oldScope);
             if (scope == null)
             {
-                return IdentityServiceResult.Failed(ErrorDescriber.ScopeNotFound(oldScope));
+                return IdentityResult.Failed(ErrorDescriber.ScopeNotFound(oldScope));
             }
 
             var validation = await ValidateScopeAsync(application, newScope);
@@ -596,13 +596,13 @@ namespace Microsoft.AspNetCore.Identity.Service
             return await scopeStore.UpdateAsync(application, CancellationToken);
         }
 
-        public async Task<IdentityServiceResult> RemoveScopeAsync(TApplication application, string scope)
+        public async Task<IdentityResult> RemoveScopeAsync(TApplication application, string scope)
         {
             var scopeStore = GetScopeStore();
             var foundScope = await FindScopeAsync(application, scope);
             if (foundScope == null)
             {
-                return IdentityServiceResult.Failed(ErrorDescriber.ScopeNotFound(scope));
+                return IdentityResult.Failed(ErrorDescriber.ScopeNotFound(scope));
             }
 
             var result = await scopeStore.RemoveScopeAsync(application, scope, CancellationToken);
@@ -614,9 +614,9 @@ namespace Microsoft.AspNetCore.Identity.Service
             return await scopeStore.UpdateAsync(application, CancellationToken);
         }
 
-        private async Task<IdentityServiceResult> ValidateScopeAsync(TApplication application, string scope)
+        private async Task<IdentityResult> ValidateScopeAsync(TApplication application, string scope)
         {
-            var errors = new List<IdentityServiceError>();
+            var errors = new List<IdentityError>();
             foreach (var v in ApplicationValidators)
             {
                 var result = await v.ValidateScopeAsync(this, application, scope);
@@ -628,13 +628,13 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             if (errors.Count > 0)
             {
-                return IdentityServiceResult.Failed(errors.ToArray());
+                return IdentityResult.Failed(errors.ToArray());
             }
 
-            return IdentityServiceResult.Success;
+            return IdentityResult.Success;
         }
 
-        public virtual Task<IdentityServiceResult> AddClaimAsync(TApplication application, Claim claim)
+        public virtual Task<IdentityResult> AddClaimAsync(TApplication application, Claim claim)
         {
             ThrowIfDisposed();
             var claimStore = GetApplicationClaimStore();
@@ -649,7 +649,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             return AddClaimsAsync(application, new Claim[] { claim });
         }
 
-        public virtual async Task<IdentityServiceResult> AddClaimsAsync(TApplication application, IEnumerable<Claim> claims)
+        public virtual async Task<IdentityResult> AddClaimsAsync(TApplication application, IEnumerable<Claim> claims)
         {
             ThrowIfDisposed();
             var claimStore = GetApplicationClaimStore();
@@ -675,7 +675,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             return await UpdateAsync(application);
         }
 
-        public virtual async Task<IdentityServiceResult> ReplaceClaimAsync(TApplication application, Claim claim, Claim newClaim)
+        public virtual async Task<IdentityResult> ReplaceClaimAsync(TApplication application, Claim claim, Claim newClaim)
         {
             ThrowIfDisposed();
             var claimStore = GetApplicationClaimStore();
@@ -702,7 +702,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             return await UpdateAsync(application);
         }
 
-        public virtual Task<IdentityServiceResult> RemoveClaimAsync(TApplication application, Claim claim)
+        public virtual Task<IdentityResult> RemoveClaimAsync(TApplication application, Claim claim)
         {
             ThrowIfDisposed();
             var claimStore = GetApplicationClaimStore();
@@ -717,7 +717,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             return RemoveClaimsAsync(application, new Claim[] { claim });
         }
 
-        public virtual async Task<IdentityServiceResult> RemoveClaimsAsync(TApplication application, IEnumerable<Claim> claims)
+        public virtual async Task<IdentityResult> RemoveClaimsAsync(TApplication application, IEnumerable<Claim> claims)
         {
             ThrowIfDisposed();
             var claimStore = GetApplicationClaimStore();
@@ -734,9 +734,9 @@ namespace Microsoft.AspNetCore.Identity.Service
             return await UpdateAsync(application);
         }
 
-        private async Task<IdentityServiceResult> ValidateClaimAsync(TApplication application, Claim claim)
+        private async Task<IdentityResult> ValidateClaimAsync(TApplication application, Claim claim)
         {
-            var errors = new List<IdentityServiceError>();
+            var errors = new List<IdentityError>();
             foreach (var v in ApplicationValidators)
             {
                 var result = await v.ValidateClaimAsync(this, application, claim);
@@ -748,10 +748,10 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             if (errors.Count > 0)
             {
-                return IdentityServiceResult.Failed(errors.ToArray());
+                return IdentityResult.Failed(errors.ToArray());
             }
 
-            return IdentityServiceResult.Success;
+            return IdentityResult.Success;
         }
 
         public virtual async Task<IList<Claim>> GetClaimsAsync(TApplication application)
@@ -813,9 +813,9 @@ namespace Microsoft.AspNetCore.Identity.Service
             }
         }
 
-        private async Task<IdentityServiceResult> ValidateApplicationAsync(TApplication application)
+        private async Task<IdentityResult> ValidateApplicationAsync(TApplication application)
         {
-            var errors = new List<IdentityServiceError>();
+            var errors = new List<IdentityError>();
             foreach (var v in ApplicationValidators)
             {
                 var result = await v.ValidateAsync(this, application);
@@ -827,10 +827,10 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             if (errors.Count > 0)
             {
-                return IdentityServiceResult.Failed(errors.ToArray());
+                return IdentityResult.Failed(errors.ToArray());
             }
 
-            return IdentityServiceResult.Success;
+            return IdentityResult.Success;
         }
 
         public void Dispose()

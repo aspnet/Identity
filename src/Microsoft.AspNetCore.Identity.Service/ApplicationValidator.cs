@@ -19,21 +19,21 @@ namespace Microsoft.AspNetCore.Identity.Service
 
         public ApplicationErrorDescriber ErrorDescriber { get; }
 
-        public async Task<IdentityServiceResult> ValidateAsync(
+        public async Task<IdentityResult> ValidateAsync(
             ApplicationManager<TApplication> manager,
             TApplication application)
         {
-            var errors = new List<IdentityServiceError>();
+            var errors = new List<IdentityError>();
             await ValidateNameAsync(manager, application, errors);
             await ValidateClientIdAsync(manager, application, errors);
 
-            return errors.Count > 0 ? IdentityServiceResult.Failed(errors.ToArray()) : IdentityServiceResult.Success;
+            return errors.Count > 0 ? IdentityResult.Failed(errors.ToArray()) : IdentityResult.Success;
         }
 
         private async Task ValidateNameAsync(
             ApplicationManager<TApplication> manager,
             TApplication application,
-            IList<IdentityServiceError> errors)
+            IList<IdentityError> errors)
         {
             var applicationName = await manager.GetApplicationNameAsync(application);
             if (string.IsNullOrWhiteSpace(applicationName))
@@ -67,7 +67,7 @@ namespace Microsoft.AspNetCore.Identity.Service
         private async Task ValidateClientIdAsync(
             ApplicationManager<TApplication> manager,
             TApplication application,
-            IList<IdentityServiceError> errors)
+            IList<IdentityError> errors)
         {
             var clientId = await manager.GetApplicationClientIdAsync(application);
             if (string.IsNullOrWhiteSpace(clientId))
@@ -98,12 +98,12 @@ namespace Microsoft.AspNetCore.Identity.Service
             }
         }
 
-        public async Task<IdentityServiceResult> ValidateLogoutUriAsync(
+        public async Task<IdentityResult> ValidateLogoutUriAsync(
             ApplicationManager<TApplication> manager,
             TApplication application,
             string logoutUri)
         {
-            var errors = new List<IdentityServiceError>();
+            var errors = new List<IdentityError>();
 
             var logoutUris = await manager.FindRegisteredLogoutUrisAsync(application);
             if (logoutUris.Contains(logoutUri, StringComparer.OrdinalIgnoreCase))
@@ -113,17 +113,13 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             if (!manager.Options.AllowedLogoutUris.Contains(logoutUri, StringComparer.OrdinalIgnoreCase))
             {
-                if (!Uri.TryCreate(logoutUri, UriKind.Absolute, out var parsedUri))
+                if (!Uri.TryCreate(logoutUri, UriKind.Absolute, out var parsedUri) ||
+                    !string.Equals(parsedUri.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase))
                 {
                     errors.Add(ErrorDescriber.InvalidLogoutUri(logoutUri));
                 }
                 else
                 {
-                    if (!parsedUri.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase))
-                    {
-                        errors.Add(ErrorDescriber.NoHttpsUri(logoutUri));
-                    }
-
                     var redirectUris = await manager.FindRegisteredUrisAsync(application);
                     var regularRedirectUris = redirectUris.Except(manager.Options.AllowedRedirectUris, StringComparer.Ordinal);
                     var regularLogoutUris = logoutUris.Except(manager.Options.AllowedLogoutUris, StringComparer.Ordinal);
@@ -142,15 +138,15 @@ namespace Microsoft.AspNetCore.Identity.Service
                 }
             }
 
-            return errors.Count > 0 ? IdentityServiceResult.Failed(errors.ToArray()) : IdentityServiceResult.Success;
+            return errors.Count > 0 ? IdentityResult.Failed(errors.ToArray()) : IdentityResult.Success;
         }
 
-        public async Task<IdentityServiceResult> ValidateRedirectUriAsync(
+        public async Task<IdentityResult> ValidateRedirectUriAsync(
             ApplicationManager<TApplication> manager,
             TApplication application,
             string redirectUri)
         {
-            var errors = new List<IdentityServiceError>();
+            var errors = new List<IdentityError>();
 
             var redirectUris = await manager.FindRegisteredUrisAsync(application);
             if (redirectUris.Contains(redirectUri, StringComparer.OrdinalIgnoreCase))
@@ -160,17 +156,13 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             if (!manager.Options.AllowedRedirectUris.Contains(redirectUri, StringComparer.OrdinalIgnoreCase))
             {
-                if (!Uri.TryCreate(redirectUri, UriKind.Absolute, out var parsedUri))
+                if (!Uri.TryCreate(redirectUri, UriKind.Absolute, out var parsedUri) ||
+                    !string.Equals(parsedUri.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase))
                 {
                     errors.Add(ErrorDescriber.InvalidRedirectUri(redirectUri));
                 }
                 else
                 {
-                    if (!parsedUri.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase))
-                    {
-                        errors.Add(ErrorDescriber.NoHttpsUri(redirectUri));
-                    }
-
                     var logoutUris = await manager.FindRegisteredUrisAsync(application);
                     var regularLogoutUris = logoutUris.Except(manager.Options.AllowedLogoutUris, StringComparer.Ordinal);
                     var regularRedirectUris = redirectUris.Except(manager.Options.AllowedRedirectUris, StringComparer.Ordinal);
@@ -189,15 +181,15 @@ namespace Microsoft.AspNetCore.Identity.Service
                 }
             }
 
-            return errors.Count > 0 ? IdentityServiceResult.Failed(errors.ToArray()) : IdentityServiceResult.Success;
+            return errors.Count > 0 ? IdentityResult.Failed(errors.ToArray()) : IdentityResult.Success;
         }
 
-        public async Task<IdentityServiceResult> ValidateScopeAsync(
+        public async Task<IdentityResult> ValidateScopeAsync(
             ApplicationManager<TApplication> manager,
             TApplication application,
             string scope)
         {
-            var errors = new List<IdentityServiceError>();
+            var errors = new List<IdentityError>();
             if (string.IsNullOrWhiteSpace(scope))
             {
                 errors.Add(ErrorDescriber.InvalidScope(scope));
@@ -221,12 +213,12 @@ namespace Microsoft.AspNetCore.Identity.Service
                 }
             }
 
-            return errors.Count > 0 ? IdentityServiceResult.Failed(errors.ToArray()) : IdentityServiceResult.Success;
+            return errors.Count > 0 ? IdentityResult.Failed(errors.ToArray()) : IdentityResult.Success;
         }
 
-        public Task<IdentityServiceResult> ValidateClaimAsync(ApplicationManager<TApplication> manager, TApplication application, Claim claim)
+        public Task<IdentityResult> ValidateClaimAsync(ApplicationManager<TApplication> manager, TApplication application, Claim claim)
         {
-            return Task.FromResult(IdentityServiceResult.Success);
+            return Task.FromResult(IdentityResult.Success);
         }
     }
 }

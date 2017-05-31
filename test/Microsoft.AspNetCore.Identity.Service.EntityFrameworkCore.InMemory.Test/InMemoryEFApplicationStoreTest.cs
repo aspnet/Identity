@@ -9,17 +9,17 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.AspNetCore.Identity.Service.EntityFrameworkCore.InMemory.Test
 {
-    public class InMemoryEFApplicationStoreTest : IdentityServiceSpecificationTestBase<IdentityUser, IdentityServiceApplication, string, string>
+    public class InMemoryEFApplicationStoreTest : IdentityServiceSpecificationTestBase<IdentityUser, IdentityClientApplication, string, string>
     {
         protected override void AddApplicationStore(IServiceCollection services, object context = null)
         {
-            services.AddSingleton<IApplicationStore<IdentityServiceApplication>>(
-                new ApplicationStore<IdentityServiceApplication, IdentityServiceScope<string>, IdentityServiceApplicationClaim<string>, IdentityServiceRedirectUri<string>, InMemoryContext, string, string>((InMemoryContext)context, new ApplicationErrorDescriber()));
+            services.AddSingleton<IApplicationStore<IdentityClientApplication>>(
+                new ApplicationStore<IdentityClientApplication, IdentityClientApplicationScope<string>, IdentityClientApplicationClaim<string>, IdentityClientApplicationRedirectUri<string>, InMemoryContext, string, string>((InMemoryContext)context, new ApplicationErrorDescriber()));
         }
 
-        protected override IdentityServiceApplication CreateTestApplication()
+        protected override IdentityClientApplication CreateTestApplication()
         {
-            return new IdentityServiceApplication
+            return new IdentityClientApplication
             {
                 Id = Guid.NewGuid().ToString(),
                 ClientId = Guid.NewGuid().ToString(),

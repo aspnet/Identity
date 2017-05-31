@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.AspNetCore.Identity.Service.Claims;
 using Microsoft.AspNetCore.Identity.Service.Core;
+using Microsoft.AspNetCore.Identity.Service.Internal;
+using Microsoft.AspNetCore.Identity.Service.Signing;
+using Microsoft.AspNetCore.Identity.Service.Validation;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
@@ -66,7 +69,7 @@ namespace Microsoft.AspNetCore.Identity.Service
                 new JwtSecurityTokenHandler(), options);
             var context = GetTokenGenerationContext(
                 new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, "user") })),
-                new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(IdentityServiceClaimTypes.ClientId, "clientId") })));
+                new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(TokenClaimTypes.ClientId, "clientId") })));
 
             context.InitializeForToken(TokenTypes.AccessToken);
 
@@ -94,7 +97,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             Assert.Equal(expectedDateTime.UtcDateTime, jwtToken.ValidFrom);
 
             var tokenScopes = jwtToken.Claims
-                .Where(c => c.Type == IdentityServiceClaimTypes.Scope)
+                .Where(c => c.Type == TokenClaimTypes.Scope)
                 .Select(c => c.Value).OrderBy(c => c)
                 .ToArray();
 
@@ -115,7 +118,7 @@ namespace Microsoft.AspNetCore.Identity.Service
                 new JwtSecurityTokenHandler(), options);
             var context = GetTokenGenerationContext(
                 new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, "user") })),
-                new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(IdentityServiceClaimTypes.ClientId, "clientId") })));
+                new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(TokenClaimTypes.ClientId, "clientId") })));
 
             context.InitializeForToken(TokenTypes.AccessToken);
 
@@ -181,18 +184,18 @@ namespace Microsoft.AspNetCore.Identity.Service
             return manager.Object;
         }
 
-        private IOptions<IdentityServiceOptions> GetOptions()
+        private IOptions<ApplicationTokenOptions> GetOptions()
         {
-            var IdentityServiceOptions = new IdentityServiceOptions()
+            var IdentityServiceOptions = new ApplicationTokenOptions()
             {
                 Issuer = "http://www.example.com/issuer"
             };
             IdentityServiceOptions.SigningKeys.Add(new SigningCredentials(CryptoUtilities.CreateTestKey(), "RS256"));
 
-            var optionsSetup = new IdentityServiceOptionsDefaultSetup();
+            var optionsSetup = new IdentityTokensOptionsDefaultSetup();
             optionsSetup.Configure(IdentityServiceOptions);
 
-            var mock = new Mock<IOptions<IdentityServiceOptions>>();
+            var mock = new Mock<IOptions<ApplicationTokenOptions>>();
             mock.Setup(m => m.Value).Returns(IdentityServiceOptions);
 
             return mock.Object;
@@ -214,10 +217,10 @@ namespace Microsoft.AspNetCore.Identity.Service
         }
 
         private ISigningCredentialsPolicyProvider GetSigningPolicy(
-            IOptions<IdentityServiceOptions> options,
+            IOptions<ApplicationTokenOptions> options,
             ITimeStampManager timeStampManager)
         {
-            var mock = new Mock<IOptionsSnapshot<IdentityServiceOptions>>();
+            var mock = new Mock<IOptionsSnapshot<ApplicationTokenOptions>>();
             mock.Setup(m => m.Value).Returns(options.Value);
             mock.Setup(m => m.Get(It.IsAny<string>())).Returns(options.Value);
 
@@ -225,8 +228,7 @@ namespace Microsoft.AspNetCore.Identity.Service
                 new List<ISigningCredentialsSource> {
                             new DefaultSigningCredentialsSource(mock.Object, timeStampManager)
                 },
-                timeStampManager,
-                new HostingEnvironment());
+                timeStampManager);
         }
     }
 }

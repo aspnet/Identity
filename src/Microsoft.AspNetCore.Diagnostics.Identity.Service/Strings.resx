@@ -136,7 +136,7 @@
     <value>Creating developer certificate...</value>
   </data>
   <data name="ManualCertificateGenerationInfo" xml:space="preserve">
-    <value>Identity requires a certificate to sign tokens. You can create a developer certificate by clicking the Create Certificate button to generate a developer certificate for you automatically. This will create a self-signed certificate with subject IdentityService.Development and will add it to your current user personal store.
+    <value>Identity requires a certificate to sign tokens. You can create a developer certificate by clicking the Create Certificate button to generate a developer certificate for you automatically. This will create a self-signed certificate with subject Identity.Development and will add it to your current user personal store.
     Alternatively, you can create this certificate manually with the instructions given in the following link:
     </value>
   </data>

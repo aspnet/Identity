@@ -10,6 +10,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.AspNetCore.Identity.Service.Claims;
 using Microsoft.AspNetCore.Identity.Service.Core;
+using Microsoft.AspNetCore.Identity.Service.Internal;
+using Microsoft.AspNetCore.Identity.Service.Issuers;
+using Microsoft.AspNetCore.Identity.Service.Signing;
+using Microsoft.AspNetCore.Identity.Service.Validation;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
@@ -60,7 +64,7 @@ namespace Microsoft.AspNetCore.Identity.Service
                 () => issuer.IssueIdTokenAsync(context));
 
             // Assert
-            Assert.Equal($"Missing '{IdentityServiceClaimTypes.ClientId}' claim from the application.", exception.Message);
+            Assert.Equal($"Missing '{TokenClaimTypes.ClientId}' claim from the application.", exception.Message);
         }
 
         [Fact]
@@ -87,7 +91,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             var issuer = new JwtIdTokenIssuer(GetClaimsManager(timeManager), GetSigningPolicy(options, timeManager), new JwtSecurityTokenHandler(), options);
             var context = GetTokenGenerationContext(
                 new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, "user") })),
-                new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(IdentityServiceClaimTypes.ClientId, "clientId") })));
+                new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(TokenClaimTypes.ClientId, "clientId") })));
 
             context.InitializeForToken(TokenTypes.IdToken);
 
@@ -143,7 +147,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             var issuer = new JwtIdTokenIssuer(GetClaimsManager(timeManager), GetSigningPolicy(options, timeManager), new JwtSecurityTokenHandler(), options);
             var context = GetTokenGenerationContext(
                 new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, "user") })),
-                new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(IdentityServiceClaimTypes.ClientId, "clientId") })),
+                new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(TokenClaimTypes.ClientId, "clientId") })),
                 nonce);
 
             if (code != null)
@@ -184,29 +188,29 @@ namespace Microsoft.AspNetCore.Identity.Service
         private IEnumerable<Claim> GetAccessTokenClaims() =>
             new[]
             {
-                new Claim(IdentityServiceClaimTypes.TokenUniqueId,"tokenId"),
-                new Claim(IdentityServiceClaimTypes.IssuedAt,"1000"),
-                new Claim(IdentityServiceClaimTypes.NotBefore,"1000"),
-                new Claim(IdentityServiceClaimTypes.Expires,"1000"),
-                new Claim(IdentityServiceClaimTypes.Issuer,"issuer"),
-                new Claim(IdentityServiceClaimTypes.Subject,"subject"),
-                new Claim(IdentityServiceClaimTypes.Audience,"audience"),
-                new Claim(IdentityServiceClaimTypes.AuthorizedParty,"authorizedparty"),
-                new Claim(IdentityServiceClaimTypes.Scope,"openid")
+                new Claim(TokenClaimTypes.TokenUniqueId,"tokenId"),
+                new Claim(TokenClaimTypes.IssuedAt,"1000"),
+                new Claim(TokenClaimTypes.NotBefore,"1000"),
+                new Claim(TokenClaimTypes.Expires,"1000"),
+                new Claim(TokenClaimTypes.Issuer,"issuer"),
+                new Claim(TokenClaimTypes.Subject,"subject"),
+                new Claim(TokenClaimTypes.Audience,"audience"),
+                new Claim(TokenClaimTypes.AuthorizedParty,"authorizedparty"),
+                new Claim(TokenClaimTypes.Scope,"openid")
             };
 
         private IEnumerable<Claim> GetAuthorizationCodeClaims() =>
             new[]
             {
-                new Claim(IdentityServiceClaimTypes.TokenUniqueId,"tokenId"),
-                new Claim(IdentityServiceClaimTypes.IssuedAt,"1000"),
-                new Claim(IdentityServiceClaimTypes.NotBefore,"1000"),
-                new Claim(IdentityServiceClaimTypes.Expires,"1000"),
-                new Claim(IdentityServiceClaimTypes.UserId,"subject"),
-                new Claim(IdentityServiceClaimTypes.ClientId,"audience"),
-                new Claim(IdentityServiceClaimTypes.Scope,"openid"),
-                new Claim(IdentityServiceClaimTypes.GrantedToken,"accesstoken"),
-                new Claim(IdentityServiceClaimTypes.RedirectUri,"redirectUri"),
+                new Claim(TokenClaimTypes.TokenUniqueId,"tokenId"),
+                new Claim(TokenClaimTypes.IssuedAt,"1000"),
+                new Claim(TokenClaimTypes.NotBefore,"1000"),
+                new Claim(TokenClaimTypes.Expires,"1000"),
+                new Claim(TokenClaimTypes.UserId,"subject"),
+                new Claim(TokenClaimTypes.ClientId,"audience"),
+                new Claim(TokenClaimTypes.Scope,"openid"),
+                new Claim(TokenClaimTypes.GrantedToken,"accesstoken"),
+                new Claim(TokenClaimTypes.RedirectUri,"redirectUri"),
             };
 
         [Fact]
@@ -220,7 +224,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             var issuer = new JwtIdTokenIssuer(GetClaimsManager(timeManager), GetSigningPolicy(options, timeManager), new JwtSecurityTokenHandler(), options);
             var context = GetTokenGenerationContext(
                 new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, "user") })),
-                new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(IdentityServiceClaimTypes.ClientId, "clientId") })));
+                new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(TokenClaimTypes.ClientId, "clientId") })));
 
             context.InitializeForToken(TokenTypes.IdToken);
 
@@ -297,19 +301,19 @@ namespace Microsoft.AspNetCore.Identity.Service
             return manager.Object;
         }
 
-        private IOptions<IdentityServiceOptions> GetOptions()
+        private IOptions<ApplicationTokenOptions> GetOptions()
         {
-            var identityServiceOptions = new IdentityServiceOptions()
+            var identityServiceOptions = new ApplicationTokenOptions()
             {
                 Issuer = "http://www.example.com/issuer"
             };
-            var optionsSetup = new IdentityServiceOptionsDefaultSetup();
+            var optionsSetup = new IdentityTokensOptionsDefaultSetup();
             optionsSetup.Configure(identityServiceOptions);
 
             identityServiceOptions.SigningKeys.Add(new SigningCredentials(CryptoUtilities.CreateTestKey(), "RS256"));
             identityServiceOptions.IdTokenOptions.UserClaims.AddSingle("sub", ClaimTypes.NameIdentifier);
 
-            var mock = new Mock<IOptions<IdentityServiceOptions>>();
+            var mock = new Mock<IOptions<ApplicationTokenOptions>>();
             mock.Setup(m => m.Value).Returns(identityServiceOptions);
 
             return mock.Object;
@@ -331,18 +335,17 @@ namespace Microsoft.AspNetCore.Identity.Service
         }
 
         private ISigningCredentialsPolicyProvider GetSigningPolicy(
-            IOptions<IdentityServiceOptions> options,
+            IOptions<ApplicationTokenOptions> options,
             ITimeStampManager timeManager)
         {
-            var mock = new Mock<IOptionsSnapshot<IdentityServiceOptions>>();
+            var mock = new Mock<IOptionsSnapshot<ApplicationTokenOptions>>();
             mock.Setup(m => m.Value).Returns(options.Value);
             mock.Setup(m => m.Get(It.IsAny<string>())).Returns(options.Value);
             return new DefaultSigningCredentialsPolicyProvider(
                 new List<ISigningCredentialsSource> {
                             new DefaultSigningCredentialsSource(mock.Object, timeManager)
                 },
-                timeManager,
-                new HostingEnvironment());
+                timeManager);
         }
     }
 }

@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26510.0
+VisualStudioVersion = 15.0.26526.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{0F647068-6602-4E24-B1DC-8ED91481A50A}"
 EndProject
@@ -61,6 +61,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.AspNetCore.Identity.Service.AzureKeyVault", "src\Microsoft.AspNetCore.Identity.Service.AzureKeyVault\Microsoft.AspNetCore.Identity.Service.AzureKeyVault.csproj", "{174180AE-00AD-4C2D-9F96-2EE2C5E60457}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityOIDCWebApplicationSample", "samples\IdentityOIDCWebApplicationSample\IdentityOIDCWebApplicationSample.csproj", "{D7CE9BDF-84E5-405D-8A4E-12E41DAC6935}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.AspNetCore.Applications.Authentication", "src\Microsoft.AspNetCore.Applications.Authentication\Microsoft.AspNetCore.Applications.Authentication.csproj", "{8588FB1C-0E6D-403F-BD75-87663E0922E7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.AspNetCore.Applications.Authentication.Test", "test\Microsoft.AspNetCore.Applications.Authentication.Test\Microsoft.AspNetCore.Applications.Authentication.Test.csproj", "{64108092-EA19-48A6-B2FA-477FC16DBFF1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -492,6 +496,38 @@ Global
 		{D7CE9BDF-84E5-405D-8A4E-12E41DAC6935}.Release|x64.Build.0 = Release|Any CPU
 		{D7CE9BDF-84E5-405D-8A4E-12E41DAC6935}.Release|x86.ActiveCfg = Release|Any CPU
 		{D7CE9BDF-84E5-405D-8A4E-12E41DAC6935}.Release|x86.Build.0 = Release|Any CPU
+		{8588FB1C-0E6D-403F-BD75-87663E0922E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8588FB1C-0E6D-403F-BD75-87663E0922E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8588FB1C-0E6D-403F-BD75-87663E0922E7}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{8588FB1C-0E6D-403F-BD75-87663E0922E7}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{8588FB1C-0E6D-403F-BD75-87663E0922E7}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8588FB1C-0E6D-403F-BD75-87663E0922E7}.Debug|x64.Build.0 = Debug|Any CPU
+		{8588FB1C-0E6D-403F-BD75-87663E0922E7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8588FB1C-0E6D-403F-BD75-87663E0922E7}.Debug|x86.Build.0 = Debug|Any CPU
+		{8588FB1C-0E6D-403F-BD75-87663E0922E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8588FB1C-0E6D-403F-BD75-87663E0922E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8588FB1C-0E6D-403F-BD75-87663E0922E7}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{8588FB1C-0E6D-403F-BD75-87663E0922E7}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{8588FB1C-0E6D-403F-BD75-87663E0922E7}.Release|x64.ActiveCfg = Release|Any CPU
+		{8588FB1C-0E6D-403F-BD75-87663E0922E7}.Release|x64.Build.0 = Release|Any CPU
+		{8588FB1C-0E6D-403F-BD75-87663E0922E7}.Release|x86.ActiveCfg = Release|Any CPU
+		{8588FB1C-0E6D-403F-BD75-87663E0922E7}.Release|x86.Build.0 = Release|Any CPU
+		{64108092-EA19-48A6-B2FA-477FC16DBFF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64108092-EA19-48A6-B2FA-477FC16DBFF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64108092-EA19-48A6-B2FA-477FC16DBFF1}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{64108092-EA19-48A6-B2FA-477FC16DBFF1}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{64108092-EA19-48A6-B2FA-477FC16DBFF1}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{64108092-EA19-48A6-B2FA-477FC16DBFF1}.Debug|x64.Build.0 = Debug|Any CPU
+		{64108092-EA19-48A6-B2FA-477FC16DBFF1}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{64108092-EA19-48A6-B2FA-477FC16DBFF1}.Debug|x86.Build.0 = Debug|Any CPU
+		{64108092-EA19-48A6-B2FA-477FC16DBFF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64108092-EA19-48A6-B2FA-477FC16DBFF1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{64108092-EA19-48A6-B2FA-477FC16DBFF1}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{64108092-EA19-48A6-B2FA-477FC16DBFF1}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{64108092-EA19-48A6-B2FA-477FC16DBFF1}.Release|x64.ActiveCfg = Release|Any CPU
+		{64108092-EA19-48A6-B2FA-477FC16DBFF1}.Release|x64.Build.0 = Release|Any CPU
+		{64108092-EA19-48A6-B2FA-477FC16DBFF1}.Release|x86.ActiveCfg = Release|Any CPU
+		{64108092-EA19-48A6-B2FA-477FC16DBFF1}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -524,5 +560,7 @@ Global
 		{FADA11FC-DC06-4832-A569-7B2374A6CD42} = {0F647068-6602-4E24-B1DC-8ED91481A50A}
 		{174180AE-00AD-4C2D-9F96-2EE2C5E60457} = {0F647068-6602-4E24-B1DC-8ED91481A50A}
 		{D7CE9BDF-84E5-405D-8A4E-12E41DAC6935} = {58D94A0E-C2B7-43A7-8826-99ECBB1E0A50}
+		{8588FB1C-0E6D-403F-BD75-87663E0922E7} = {0F647068-6602-4E24-B1DC-8ED91481A50A}
+		{64108092-EA19-48A6-B2FA-477FC16DBFF1} = {52D59F18-62D2-4D17-8CF2-BE192445AF8E}
 	EndGlobalSection
 EndGlobal

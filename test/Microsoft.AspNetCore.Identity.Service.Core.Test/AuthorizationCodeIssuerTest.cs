@@ -4,8 +4,10 @@
 using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity.Service.Claims;
+using Microsoft.AspNetCore.Identity.Service.Core;
+using Microsoft.AspNetCore.Identity.Service.Internal;
+using Microsoft.AspNetCore.Identity.Service.Validation;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Moq;
@@ -51,7 +53,7 @@ namespace Microsoft.AspNetCore.Identity.Service
                 () => issuer.CreateAuthorizationCodeAsync(context));
 
             // Assert
-            Assert.Equal($"Missing '{IdentityServiceClaimTypes.ClientId}' claim from the application.", exception.Message);
+            Assert.Equal($"Missing '{TokenClaimTypes.ClientId}' claim from the application.", exception.Message);
         }
 
         [Fact]
@@ -64,7 +66,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             var issuer = new AuthorizationCodeIssuer(GetClaimsManager(), dataFormat, new ProtocolErrorProvider());
             var context = GetTokenGenerationContext(
                 new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, "user") })),
-                new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(IdentityServiceClaimTypes.ClientId, "clientId") })));
+                new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(TokenClaimTypes.ClientId, "clientId") })));
 
             context.InitializeForToken(TokenTypes.AuthorizationCode);
 
@@ -86,7 +88,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             var issuer = new AuthorizationCodeIssuer(GetClaimsManager(), dataFormat, new ProtocolErrorProvider());
             var context = GetTokenGenerationContext(
                 new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, "user") })),
-                new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(IdentityServiceClaimTypes.ClientId, "clientId") })));
+                new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(TokenClaimTypes.ClientId, "clientId") })));
 
             context.InitializeForToken(TokenTypes.AuthorizationCode);
 
@@ -108,7 +110,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             var issuer = new AuthorizationCodeIssuer(GetClaimsManager(), dataFormat, new ProtocolErrorProvider());
             var context = GetTokenGenerationContext(
                 new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, "user") })),
-                new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(IdentityServiceClaimTypes.ClientId, "clientId") })),
+                new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(TokenClaimTypes.ClientId, "clientId") })),
                 nonce: null);
 
             context.InitializeForToken(TokenTypes.AuthorizationCode);
@@ -134,7 +136,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             var issuer = new AuthorizationCodeIssuer(GetClaimsManager(timeManager), dataFormat, new ProtocolErrorProvider());
             var context = GetTokenGenerationContext(
                 new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, "user") })),
-                new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(IdentityServiceClaimTypes.ClientId, "clientId") })));
+                new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(TokenClaimTypes.ClientId, "clientId") })));
 
             context.InitializeForToken(TokenTypes.AuthorizationCode);
 
@@ -198,22 +200,22 @@ namespace Microsoft.AspNetCore.Identity.Service
             return manager.Object;
         }
 
-        private IOptions<IdentityServiceOptions> GetOptions()
+        private IOptions<ApplicationTokenOptions> GetOptions()
         {
-            var IdentityServiceOptions = new IdentityServiceOptions();
+            var IdentityServiceOptions = new ApplicationTokenOptions();
 
-            var optionsSetup = new IdentityServiceOptionsDefaultSetup();
+            var optionsSetup = new IdentityTokensOptionsDefaultSetup();
             optionsSetup.Configure(IdentityServiceOptions);
 
-            var mock = new Mock<IOptions<IdentityServiceOptions>>();
+            var mock = new Mock<IOptions<ApplicationTokenOptions>>();
             mock.Setup(m => m.Value).Returns(IdentityServiceOptions);
 
             return mock.Object;
         }
 
-        private ISecureDataFormat<AuthorizationCode> GetDataFormat()
+        private ITokenProtector<AuthorizationCode> GetDataFormat()
         {
-            var mock = new Mock<ISecureDataFormat<AuthorizationCode>>();
+            var mock = new Mock<ITokenProtector<AuthorizationCode>>();
             mock.Setup(s => s.Protect(It.IsAny<AuthorizationCode>()))
                 .Returns("protected authorization code");
 

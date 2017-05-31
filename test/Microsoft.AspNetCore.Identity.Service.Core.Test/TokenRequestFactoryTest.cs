@@ -6,6 +6,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity.Service.Internal;
+using Microsoft.AspNetCore.Identity.Service.Issuers;
+using Microsoft.AspNetCore.Identity.Service.Tokens;
+using Microsoft.AspNetCore.Identity.Service.Validation;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using Moq;
@@ -43,7 +47,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             // Assert
             Assert.NotNull(tokenRequest);
             Assert.False(tokenRequest.IsValid);
-            Assert.Equal(expectedError, tokenRequest.Error, IdentityServiceErrorComparer.Instance);
+            Assert.Equal(expectedError, tokenRequest.Error, IdentityErrorComparer.Instance);
         }
 
         [Fact]
@@ -71,7 +75,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             // Assert
             Assert.NotNull(tokenRequest);
             Assert.False(tokenRequest.IsValid);
-            Assert.Equal(expectedError, tokenRequest.Error, IdentityServiceErrorComparer.Instance);
+            Assert.Equal(expectedError, tokenRequest.Error, IdentityErrorComparer.Instance);
         }
 
         [Fact]
@@ -100,7 +104,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             // Assert
             Assert.NotNull(tokenRequest);
             Assert.False(tokenRequest.IsValid);
-            Assert.Equal(expectedError, tokenRequest.Error, IdentityServiceErrorComparer.Instance);
+            Assert.Equal(expectedError, tokenRequest.Error, IdentityErrorComparer.Instance);
         }
 
         [Fact]
@@ -129,7 +133,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             // Assert
             Assert.NotNull(tokenRequest);
             Assert.False(tokenRequest.IsValid);
-            Assert.Equal(expectedError, tokenRequest.Error, IdentityServiceErrorComparer.Instance);
+            Assert.Equal(expectedError, tokenRequest.Error, IdentityErrorComparer.Instance);
         }
 
         [Fact]
@@ -155,7 +159,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             // Assert
             Assert.NotNull(tokenRequest);
             Assert.False(tokenRequest.IsValid);
-            Assert.Equal(expectedError, tokenRequest.Error, IdentityServiceErrorComparer.Instance);
+            Assert.Equal(expectedError, tokenRequest.Error, IdentityErrorComparer.Instance);
         }
 
         [Fact]
@@ -184,7 +188,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             // Assert
             Assert.NotNull(tokenRequest);
             Assert.False(tokenRequest.IsValid);
-            Assert.Equal(expectedError, tokenRequest.Error, IdentityServiceErrorComparer.Instance);
+            Assert.Equal(expectedError, tokenRequest.Error, IdentityErrorComparer.Instance);
         }
 
         [Fact]
@@ -211,7 +215,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             // Assert
             Assert.NotNull(tokenRequest);
             Assert.False(tokenRequest.IsValid);
-            Assert.Equal(expectedError, tokenRequest.Error, IdentityServiceErrorComparer.Instance);
+            Assert.Equal(expectedError, tokenRequest.Error, IdentityErrorComparer.Instance);
         }
 
         [Fact]
@@ -238,7 +242,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             // Assert
             Assert.NotNull(tokenRequest);
             Assert.False(tokenRequest.IsValid);
-            Assert.Equal(expectedError, tokenRequest.Error, IdentityServiceErrorComparer.Instance);
+            Assert.Equal(expectedError, tokenRequest.Error, IdentityErrorComparer.Instance);
         }
 
         [Fact]
@@ -269,7 +273,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             // Assert
             Assert.NotNull(tokenRequest);
             Assert.False(tokenRequest.IsValid);
-            Assert.Equal(expectedError, tokenRequest.Error, IdentityServiceErrorComparer.Instance);
+            Assert.Equal(expectedError, tokenRequest.Error, IdentityErrorComparer.Instance);
         }
 
         [Fact]
@@ -300,7 +304,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             // Assert
             Assert.NotNull(tokenRequest);
             Assert.False(tokenRequest.IsValid);
-            Assert.Equal(expectedError, tokenRequest.Error, IdentityServiceErrorComparer.Instance);
+            Assert.Equal(expectedError, tokenRequest.Error, IdentityErrorComparer.Instance);
         }
 
         [Fact]
@@ -331,7 +335,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             // Assert
             Assert.NotNull(tokenRequest);
             Assert.False(tokenRequest.IsValid);
-            Assert.Equal(expectedError, tokenRequest.Error, IdentityServiceErrorComparer.Instance);
+            Assert.Equal(expectedError, tokenRequest.Error, IdentityErrorComparer.Instance);
         }
 
         [Fact]
@@ -361,7 +365,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             // Assert
             Assert.NotNull(tokenRequest);
             Assert.False(tokenRequest.IsValid);
-            Assert.Equal(expectedError, tokenRequest.Error, IdentityServiceErrorComparer.Instance);
+            Assert.Equal(expectedError, tokenRequest.Error, IdentityErrorComparer.Instance);
         }
 
         [Fact]
@@ -382,8 +386,8 @@ namespace Microsoft.AspNetCore.Identity.Service
                 Mock.Of<IScopeResolver>(),
                 Enumerable.Empty<ITokenRequestValidator>(),
                 GetTestTokenManager(GetValidAuthorizationCode(new[] {
-                    new Claim(IdentityServiceClaimTypes.CodeChallenge,"challenge"),
-                    new Claim(IdentityServiceClaimTypes.CodeChallengeMethod, ProofOfKeyForCodeExchangeChallengeMethods.SHA256),
+                    new Claim(TokenClaimTypes.CodeChallenge,"challenge"),
+                    new Claim(TokenClaimTypes.CodeChallengeMethod, ProofOfKeyForCodeExchangeChallengeMethods.SHA256),
                 })),
                 new TimeStampManager(), new ProtocolErrorProvider());
 
@@ -395,7 +399,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             // Assert
             Assert.NotNull(tokenRequest);
             Assert.False(tokenRequest.IsValid);
-            Assert.Equal(expectedError, tokenRequest.Error, IdentityServiceErrorComparer.Instance);
+            Assert.Equal(expectedError, tokenRequest.Error, IdentityErrorComparer.Instance);
         }
 
         [Fact]
@@ -417,8 +421,8 @@ namespace Microsoft.AspNetCore.Identity.Service
                 Mock.Of<IScopeResolver>(),
                 Enumerable.Empty<ITokenRequestValidator>(),
                 GetTestTokenManager(GetValidAuthorizationCode(new[] {
-                    new Claim(IdentityServiceClaimTypes.CodeChallenge,"challenge"),
-                    new Claim(IdentityServiceClaimTypes.CodeChallengeMethod, ProofOfKeyForCodeExchangeChallengeMethods.SHA256),
+                    new Claim(TokenClaimTypes.CodeChallenge,"challenge"),
+                    new Claim(TokenClaimTypes.CodeChallengeMethod, ProofOfKeyForCodeExchangeChallengeMethods.SHA256),
                 })),
                 new TimeStampManager(), new ProtocolErrorProvider());
 
@@ -430,7 +434,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             // Assert
             Assert.NotNull(tokenRequest);
             Assert.False(tokenRequest.IsValid);
-            Assert.Equal(expectedError, tokenRequest.Error, IdentityServiceErrorComparer.Instance);
+            Assert.Equal(expectedError, tokenRequest.Error, IdentityErrorComparer.Instance);
         }
 
         [Fact]
@@ -452,8 +456,8 @@ namespace Microsoft.AspNetCore.Identity.Service
                 Mock.Of<IScopeResolver>(),
                 Enumerable.Empty<ITokenRequestValidator>(),
                 GetTestTokenManager(GetValidAuthorizationCode(new[] {
-                    new Claim(IdentityServiceClaimTypes.CodeChallenge,"challenge"),
-                    new Claim(IdentityServiceClaimTypes.CodeChallengeMethod, ProofOfKeyForCodeExchangeChallengeMethods.SHA256),
+                    new Claim(TokenClaimTypes.CodeChallenge,"challenge"),
+                    new Claim(TokenClaimTypes.CodeChallengeMethod, ProofOfKeyForCodeExchangeChallengeMethods.SHA256),
                 })),
                 new TimeStampManager(), new ProtocolErrorProvider());
 
@@ -465,7 +469,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             // Assert
             Assert.NotNull(tokenRequest);
             Assert.False(tokenRequest.IsValid);
-            Assert.Equal(expectedError, tokenRequest.Error, IdentityServiceErrorComparer.Instance);
+            Assert.Equal(expectedError, tokenRequest.Error, IdentityErrorComparer.Instance);
         }
 
         [Theory]
@@ -489,8 +493,8 @@ namespace Microsoft.AspNetCore.Identity.Service
                 Mock.Of<IScopeResolver>(),
                 Enumerable.Empty<ITokenRequestValidator>(),
                 GetTestTokenManager(GetValidAuthorizationCode(new[] {
-                    new Claim(IdentityServiceClaimTypes.CodeChallenge,"challenge"),
-                    new Claim(IdentityServiceClaimTypes.CodeChallengeMethod, ProofOfKeyForCodeExchangeChallengeMethods.SHA256),
+                    new Claim(TokenClaimTypes.CodeChallenge,"challenge"),
+                    new Claim(TokenClaimTypes.CodeChallengeMethod, ProofOfKeyForCodeExchangeChallengeMethods.SHA256),
                 })),
                 new TimeStampManager(), new ProtocolErrorProvider());
 
@@ -502,7 +506,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             // Assert
             Assert.NotNull(tokenRequest);
             Assert.False(tokenRequest.IsValid);
-            Assert.Equal(expectedError, tokenRequest.Error, IdentityServiceErrorComparer.Instance);
+            Assert.Equal(expectedError, tokenRequest.Error, IdentityErrorComparer.Instance);
         }
 
         [Fact]
@@ -524,8 +528,8 @@ namespace Microsoft.AspNetCore.Identity.Service
                 Mock.Of<IScopeResolver>(),
                 Enumerable.Empty<ITokenRequestValidator>(),
                 GetTestTokenManager(GetValidAuthorizationCode(new[] {
-                    new Claim(IdentityServiceClaimTypes.CodeChallenge,"challenge"),
-                    new Claim(IdentityServiceClaimTypes.CodeChallengeMethod, ProofOfKeyForCodeExchangeChallengeMethods.SHA256),
+                    new Claim(TokenClaimTypes.CodeChallenge,"challenge"),
+                    new Claim(TokenClaimTypes.CodeChallengeMethod, ProofOfKeyForCodeExchangeChallengeMethods.SHA256),
                 })),
                 new TimeStampManager(), new ProtocolErrorProvider());
 
@@ -537,7 +541,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             // Assert
             Assert.NotNull(tokenRequest);
             Assert.False(tokenRequest.IsValid);
-            Assert.Equal(expectedError, tokenRequest.Error, IdentityServiceErrorComparer.Instance);
+            Assert.Equal(expectedError, tokenRequest.Error, IdentityErrorComparer.Instance);
         }
 
         [Fact]
@@ -559,8 +563,8 @@ namespace Microsoft.AspNetCore.Identity.Service
                 Mock.Of<IScopeResolver>(),
                 Enumerable.Empty<ITokenRequestValidator>(),
                 GetTestTokenManager(GetValidAuthorizationCode(new[] {
-                    new Claim(IdentityServiceClaimTypes.CodeChallenge,"_RpfHqw8pAZIomzVUE7sjRmHSM543WVdC4o-Kc4_3C0"),
-                    new Claim(IdentityServiceClaimTypes.CodeChallengeMethod, ProofOfKeyForCodeExchangeChallengeMethods.SHA256),
+                    new Claim(TokenClaimTypes.CodeChallenge,"_RpfHqw8pAZIomzVUE7sjRmHSM543WVdC4o-Kc4_3C0"),
+                    new Claim(TokenClaimTypes.CodeChallengeMethod, ProofOfKeyForCodeExchangeChallengeMethods.SHA256),
                 })),
                 new TimeStampManager(), new ProtocolErrorProvider());
 
@@ -609,7 +613,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             // Assert
             Assert.NotNull(tokenRequest);
             Assert.False(tokenRequest.IsValid);
-            Assert.Equal(expectedError, tokenRequest.Error, IdentityServiceErrorComparer.Instance);
+            Assert.Equal(expectedError, tokenRequest.Error, IdentityErrorComparer.Instance);
         }
 
         private IClientIdValidator GetClientIdValidator(bool isClientIdValid = false, bool areClientCredentialsValid = false)
@@ -635,15 +639,15 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             return new AuthorizationCode(new Claim[]
             {
-                new Claim(IdentityServiceClaimTypes.TokenUniqueId, Guid.NewGuid().ToString()),
-                new Claim(IdentityServiceClaimTypes.NotBefore,notBefore),
-                new Claim(IdentityServiceClaimTypes.Expires,expires),
-                new Claim(IdentityServiceClaimTypes.IssuedAt,issuedAt),
-                new Claim(IdentityServiceClaimTypes.UserId,"userId"),
-                new Claim(IdentityServiceClaimTypes.ClientId,"clientId"),
-                new Claim(IdentityServiceClaimTypes.RedirectUri, "https://www.example.com"),
-                new Claim(IdentityServiceClaimTypes.Scope, "openid"),
-                new Claim(IdentityServiceClaimTypes.GrantedToken, "id_token")
+                new Claim(TokenClaimTypes.TokenUniqueId, Guid.NewGuid().ToString()),
+                new Claim(TokenClaimTypes.NotBefore,notBefore),
+                new Claim(TokenClaimTypes.Expires,expires),
+                new Claim(TokenClaimTypes.IssuedAt,issuedAt),
+                new Claim(TokenClaimTypes.UserId,"userId"),
+                new Claim(TokenClaimTypes.ClientId,"clientId"),
+                new Claim(TokenClaimTypes.RedirectUri, "https://www.example.com"),
+                new Claim(TokenClaimTypes.Scope, "openid"),
+                new Claim(TokenClaimTypes.GrantedToken, "id_token")
             }
             .Concat(additionalClaims ?? Enumerable.Empty<Claim>()));
         }
@@ -688,10 +692,10 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             return new TestToken(new Claim[]
             {
-                new Claim(IdentityServiceClaimTypes.TokenUniqueId,Guid.NewGuid().ToString()),
-                new Claim(IdentityServiceClaimTypes.IssuedAt,"946684800"), // 01/01/2000
-                new Claim(IdentityServiceClaimTypes.NotBefore,notBefore),
-                new Claim(IdentityServiceClaimTypes.Expires,expires)
+                new Claim(TokenClaimTypes.TokenUniqueId,Guid.NewGuid().ToString()),
+                new Claim(TokenClaimTypes.IssuedAt,"946684800"), // 01/01/2000
+                new Claim(TokenClaimTypes.NotBefore,notBefore),
+                new Claim(TokenClaimTypes.Expires,expires)
             });
         }
 

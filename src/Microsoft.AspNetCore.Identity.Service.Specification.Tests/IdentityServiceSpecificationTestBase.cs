@@ -52,7 +52,7 @@ namespace Microsoft.AspNetCore.Identity.Service.Specification.Tests
         {
             services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
             new IdentityBuilder(typeof(TestUser), typeof(TestRole), services)
-                .AddApplications<TUser, TApplication>(options => { });
+                .AddApplicationsCore<TApplication>(options => { });
 
             services.AddSingleton<IApplicationValidator<TApplication>, ClaimValidator>();
 
@@ -115,9 +115,9 @@ namespace Microsoft.AspNetCore.Identity.Service.Specification.Tests
             }
             var manager = CreateManager();
             var application = CreateTestApplication();
-            IdentityServiceResultAssert.IsSuccess(await manager.CreateAsync(application));
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(application));
             var applicationId = await manager.GetApplicationIdAsync(application);
-            IdentityServiceResultAssert.IsSuccess(await manager.DeleteAsync(application));
+            IdentityResultAssert.IsSuccess(await manager.DeleteAsync(application));
             Assert.Null(await manager.FindByIdAsync(applicationId));
         }
 
@@ -134,7 +134,7 @@ namespace Microsoft.AspNetCore.Identity.Service.Specification.Tests
             }
             var manager = CreateManager();
             var application = CreateTestApplication();
-            IdentityServiceResultAssert.IsSuccess(await manager.CreateAsync(application));
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(application));
             Assert.NotNull(await manager.FindByIdAsync(await manager.GetApplicationIdAsync(application)));
         }
 
@@ -151,7 +151,7 @@ namespace Microsoft.AspNetCore.Identity.Service.Specification.Tests
             }
             var manager = CreateManager();
             var application = CreateTestApplication();
-            IdentityServiceResultAssert.IsSuccess(await manager.CreateAsync(application));
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(application));
             Assert.NotNull(await manager.FindByNameAsync(await manager.GetApplicationNameAsync(application)));
         }
 
@@ -169,10 +169,10 @@ namespace Microsoft.AspNetCore.Identity.Service.Specification.Tests
             var manager = CreateManager();
             var application = CreateTestApplication();
             var name = await manager.GetApplicationNameAsync(application);
-            IdentityServiceResultAssert.IsSuccess(await manager.CreateAsync(application));
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(application));
             var newName = Guid.NewGuid().ToString();
             Assert.Null(await manager.FindByNameAsync(newName));
-            IdentityServiceResultAssert.IsSuccess(await manager.SetApplicationNameAsync(application, newName));
+            IdentityResultAssert.IsSuccess(await manager.SetApplicationNameAsync(application, newName));
             Assert.Null(await manager.FindByNameAsync(name));
             Assert.NotNull(await manager.FindByNameAsync(newName));
         }
@@ -191,10 +191,10 @@ namespace Microsoft.AspNetCore.Identity.Service.Specification.Tests
             var manager = CreateManager();
             var application = CreateTestApplication();
             var name = await manager.GetApplicationNameAsync(application);
-            IdentityServiceResultAssert.IsSuccess(await manager.CreateAsync(application));
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(application));
             var newName = "";
             Assert.Null(await manager.FindByNameAsync(newName));
-            IdentityServiceResultAssert.IsFailure(await manager.SetApplicationNameAsync(application, newName));
+            IdentityResultAssert.IsFailure(await manager.SetApplicationNameAsync(application, newName));
         }
 
         /// <summary>
@@ -210,7 +210,7 @@ namespace Microsoft.AspNetCore.Identity.Service.Specification.Tests
             }
             var manager = CreateManager();
             var application = CreateTestApplication();
-            IdentityServiceResultAssert.IsSuccess(await manager.CreateAsync(application));
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(application));
             Assert.NotNull(await manager.FindByClientIdAsync(await manager.GetApplicationClientIdAsync(application)));
         }
 
@@ -230,7 +230,7 @@ namespace Microsoft.AspNetCore.Identity.Service.Specification.Tests
             var application = CreateTestApplication();
             var redirectUris = GenerateRedirectUris(nameof(CanGetRedirectUrisForApplication), 2);
 
-            IdentityServiceResultAssert.IsSuccess(await manager.CreateAsync(application));
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(application));
             foreach (var redirect in redirectUris)
             {
                 await manager.RegisterRedirectUriAsync(application, redirect);
@@ -259,9 +259,9 @@ namespace Microsoft.AspNetCore.Identity.Service.Specification.Tests
             var application = CreateTestApplication();
             var redirect = "";
 
-            IdentityServiceResultAssert.IsSuccess(await manager.CreateAsync(application));
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(application));
             Assert.Empty(await manager.FindRegisteredUrisAsync(application));
-            IdentityServiceResultAssert.IsFailure(await manager.RegisterRedirectUriAsync(application, redirect));
+            IdentityResultAssert.IsFailure(await manager.RegisterRedirectUriAsync(application, redirect));
             Assert.Empty(await manager.FindRegisteredUrisAsync(application));
         }
 
@@ -281,11 +281,11 @@ namespace Microsoft.AspNetCore.Identity.Service.Specification.Tests
             var application = CreateTestApplication();
             var redirect = GenerateRedirectUris("login", 2).ToArray();
 
-            IdentityServiceResultAssert.IsSuccess(await manager.CreateAsync(application));
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(application));
             Assert.Empty(await manager.FindRegisteredUrisAsync(application));
-            IdentityServiceResultAssert.IsSuccess(await manager.RegisterRedirectUriAsync(application, redirect[0]));
+            IdentityResultAssert.IsSuccess(await manager.RegisterRedirectUriAsync(application, redirect[0]));
             Assert.Equal(redirect[0], (await manager.FindRegisteredUrisAsync(application)).First());
-            IdentityServiceResultAssert.IsSuccess(await manager.UpdateRedirectUriAsync(application, redirect[0], redirect[1]));
+            IdentityResultAssert.IsSuccess(await manager.UpdateRedirectUriAsync(application, redirect[0], redirect[1]));
             Assert.Equal(redirect[1], (await manager.FindRegisteredUrisAsync(application)).First());
         }
 
@@ -305,11 +305,11 @@ namespace Microsoft.AspNetCore.Identity.Service.Specification.Tests
             var application = CreateTestApplication();
             var redirect = GenerateRedirectUris("login", 1).ToArray();
 
-            IdentityServiceResultAssert.IsSuccess(await manager.CreateAsync(application));
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(application));
             Assert.Empty(await manager.FindRegisteredUrisAsync(application));
-            IdentityServiceResultAssert.IsSuccess(await manager.RegisterRedirectUriAsync(application, redirect[0]));
+            IdentityResultAssert.IsSuccess(await manager.RegisterRedirectUriAsync(application, redirect[0]));
             Assert.Equal(redirect[0], (await manager.FindRegisteredUrisAsync(application)).First());
-            IdentityServiceResultAssert.IsFailure(await manager.UpdateRedirectUriAsync(application, redirect[0], ""));
+            IdentityResultAssert.IsFailure(await manager.UpdateRedirectUriAsync(application, redirect[0], ""));
         }
 
         /// <summary>
@@ -328,9 +328,9 @@ namespace Microsoft.AspNetCore.Identity.Service.Specification.Tests
             var application = CreateTestApplication();
             var redirect = GenerateRedirectUris("login", 2).ToArray();
 
-            IdentityServiceResultAssert.IsSuccess(await manager.CreateAsync(application));
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(application));
             Assert.Empty(await manager.FindRegisteredUrisAsync(application));
-            IdentityServiceResultAssert.IsFailure(await manager.UpdateRedirectUriAsync(application, redirect[0], redirect[1]));
+            IdentityResultAssert.IsFailure(await manager.UpdateRedirectUriAsync(application, redirect[0], redirect[1]));
         }
 
         /// <summary>
@@ -349,11 +349,11 @@ namespace Microsoft.AspNetCore.Identity.Service.Specification.Tests
             var application = CreateTestApplication();
             var redirect = GenerateRedirectUris("login", 1).Single();
 
-            IdentityServiceResultAssert.IsSuccess(await manager.CreateAsync(application));
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(application));
             Assert.Empty(await manager.FindRegisteredUrisAsync(application));
-            IdentityServiceResultAssert.IsSuccess(await manager.RegisterRedirectUriAsync(application, redirect));
+            IdentityResultAssert.IsSuccess(await manager.RegisterRedirectUriAsync(application, redirect));
             Assert.Equal(redirect, (await manager.FindRegisteredUrisAsync(application)).Single());
-            IdentityServiceResultAssert.IsSuccess(await manager.UnregisterRedirectUriAsync(application, redirect));
+            IdentityResultAssert.IsSuccess(await manager.UnregisterRedirectUriAsync(application, redirect));
             Assert.Empty(await manager.FindRegisteredUrisAsync(application));
         }
 
@@ -373,9 +373,9 @@ namespace Microsoft.AspNetCore.Identity.Service.Specification.Tests
             var application = CreateTestApplication();
             var redirect = GenerateRedirectUris("login", 1).ToArray();
 
-            IdentityServiceResultAssert.IsSuccess(await manager.CreateAsync(application));
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(application));
             Assert.Empty(await manager.FindRegisteredUrisAsync(application));
-            IdentityServiceResultAssert.IsFailure(await manager.UnregisterRedirectUriAsync(application, redirect[0]));
+            IdentityResultAssert.IsFailure(await manager.UnregisterRedirectUriAsync(application, redirect[0]));
         }
 
         /// <summary>
@@ -394,7 +394,7 @@ namespace Microsoft.AspNetCore.Identity.Service.Specification.Tests
             var application = CreateTestApplication();
             var logoutUris = GenerateRedirectUris(nameof(CanGetLogoutUrisForApplication), 2);
 
-            IdentityServiceResultAssert.IsSuccess(await manager.CreateAsync(application));
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(application));
             foreach (var logout in logoutUris)
             {
                 await manager.RegisterLogoutUriAsync(application, logout);
@@ -423,9 +423,9 @@ namespace Microsoft.AspNetCore.Identity.Service.Specification.Tests
             var application = CreateTestApplication();
             var redirect = "";
 
-            IdentityServiceResultAssert.IsSuccess(await manager.CreateAsync(application));
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(application));
             Assert.Empty(await manager.FindRegisteredLogoutUrisAsync(application));
-            IdentityServiceResultAssert.IsFailure(await manager.RegisterLogoutUriAsync(application, redirect));
+            IdentityResultAssert.IsFailure(await manager.RegisterLogoutUriAsync(application, redirect));
             Assert.Empty(await manager.FindRegisteredLogoutUrisAsync(application));
         }
 
@@ -445,11 +445,11 @@ namespace Microsoft.AspNetCore.Identity.Service.Specification.Tests
             var application = CreateTestApplication();
             var redirect = GenerateRedirectUris("logout", 2).ToArray();
 
-            IdentityServiceResultAssert.IsSuccess(await manager.CreateAsync(application));
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(application));
             Assert.Empty(await manager.FindRegisteredLogoutUrisAsync(application));
-            IdentityServiceResultAssert.IsSuccess(await manager.RegisterLogoutUriAsync(application, redirect[0]));
+            IdentityResultAssert.IsSuccess(await manager.RegisterLogoutUriAsync(application, redirect[0]));
             Assert.Equal(redirect[0], (await manager.FindRegisteredLogoutUrisAsync(application)).First());
-            IdentityServiceResultAssert.IsSuccess(await manager.UpdateLogoutUriAsync(application, redirect[0], redirect[1]));
+            IdentityResultAssert.IsSuccess(await manager.UpdateLogoutUriAsync(application, redirect[0], redirect[1]));
             Assert.Equal(redirect[1], (await manager.FindRegisteredLogoutUrisAsync(application)).First());
         }
 
@@ -469,11 +469,11 @@ namespace Microsoft.AspNetCore.Identity.Service.Specification.Tests
             var application = CreateTestApplication();
             var redirect = GenerateRedirectUris("logout", 1).ToArray();
 
-            IdentityServiceResultAssert.IsSuccess(await manager.CreateAsync(application));
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(application));
             Assert.Empty(await manager.FindRegisteredLogoutUrisAsync(application));
-            IdentityServiceResultAssert.IsSuccess(await manager.RegisterLogoutUriAsync(application, redirect[0]));
+            IdentityResultAssert.IsSuccess(await manager.RegisterLogoutUriAsync(application, redirect[0]));
             Assert.Equal(redirect[0], (await manager.FindRegisteredLogoutUrisAsync(application)).First());
-            IdentityServiceResultAssert.IsFailure(await manager.UpdateLogoutUriAsync(application, redirect[0], ""));
+            IdentityResultAssert.IsFailure(await manager.UpdateLogoutUriAsync(application, redirect[0], ""));
         }
 
         /// <summary>
@@ -492,9 +492,9 @@ namespace Microsoft.AspNetCore.Identity.Service.Specification.Tests
             var application = CreateTestApplication();
             var redirect = GenerateRedirectUris("logout", 2).ToArray();
 
-            IdentityServiceResultAssert.IsSuccess(await manager.CreateAsync(application));
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(application));
             Assert.Empty(await manager.FindRegisteredLogoutUrisAsync(application));
-            IdentityServiceResultAssert.IsFailure(await manager.UpdateLogoutUriAsync(application, redirect[0], redirect[1]));
+            IdentityResultAssert.IsFailure(await manager.UpdateLogoutUriAsync(application, redirect[0], redirect[1]));
         }
 
         /// <summary>
@@ -513,11 +513,11 @@ namespace Microsoft.AspNetCore.Identity.Service.Specification.Tests
             var application = CreateTestApplication();
             var redirect = GenerateRedirectUris("logout", 1).Single();
 
-            IdentityServiceResultAssert.IsSuccess(await manager.CreateAsync(application));
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(application));
             Assert.Empty(await manager.FindRegisteredLogoutUrisAsync(application));
-            IdentityServiceResultAssert.IsSuccess(await manager.RegisterLogoutUriAsync(application, redirect));
+            IdentityResultAssert.IsSuccess(await manager.RegisterLogoutUriAsync(application, redirect));
             Assert.Equal(redirect, (await manager.FindRegisteredLogoutUrisAsync(application)).Single());
-            IdentityServiceResultAssert.IsSuccess(await manager.UnregisterLogoutUriAsync(application, redirect));
+            IdentityResultAssert.IsSuccess(await manager.UnregisterLogoutUriAsync(application, redirect));
             Assert.Empty(await manager.FindRegisteredLogoutUrisAsync(application));
         }
 
@@ -537,9 +537,9 @@ namespace Microsoft.AspNetCore.Identity.Service.Specification.Tests
             var application = CreateTestApplication();
             var redirect = GenerateRedirectUris("logout", 1).ToArray();
 
-            IdentityServiceResultAssert.IsSuccess(await manager.CreateAsync(application));
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(application));
             Assert.Empty(await manager.FindRegisteredLogoutUrisAsync(application));
-            IdentityServiceResultAssert.IsFailure(await manager.UnregisterLogoutUriAsync(application, redirect[0]));
+            IdentityResultAssert.IsFailure(await manager.UnregisterLogoutUriAsync(application, redirect[0]));
         }
 
         /// <summary>
@@ -558,7 +558,7 @@ namespace Microsoft.AspNetCore.Identity.Service.Specification.Tests
             var application = CreateTestApplication();
             var scopes = GenerateScopes(nameof(CanGetScopes), 2);
 
-            IdentityServiceResultAssert.IsSuccess(await manager.CreateAsync(application));
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(application));
             foreach (var scope in scopes)
             {
                 await manager.AddScopeAsync(application, scope);
@@ -587,9 +587,9 @@ namespace Microsoft.AspNetCore.Identity.Service.Specification.Tests
             var application = CreateTestApplication();
             var scope = "offline_access";
 
-            IdentityServiceResultAssert.IsSuccess(await manager.CreateAsync(application));
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(application));
             Assert.Empty(await manager.FindScopesAsync(application));
-            IdentityServiceResultAssert.IsSuccess(await manager.AddScopeAsync(application, scope));
+            IdentityResultAssert.IsSuccess(await manager.AddScopeAsync(application, scope));
             Assert.NotEmpty(await manager.FindScopesAsync(application));
         }
 
@@ -609,9 +609,9 @@ namespace Microsoft.AspNetCore.Identity.Service.Specification.Tests
             var application = CreateTestApplication();
             var scope = "";
 
-            IdentityServiceResultAssert.IsSuccess(await manager.CreateAsync(application));
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(application));
             Assert.Empty(await manager.FindScopesAsync(application));
-            IdentityServiceResultAssert.IsFailure(await manager.AddScopeAsync(application, scope));
+            IdentityResultAssert.IsFailure(await manager.AddScopeAsync(application, scope));
             Assert.Empty(await manager.FindScopesAsync(application));
         }
 
@@ -631,11 +631,11 @@ namespace Microsoft.AspNetCore.Identity.Service.Specification.Tests
             var application = CreateTestApplication();
             var scopes = GenerateScopes("UpdateScopes", 2).ToArray();
 
-            IdentityServiceResultAssert.IsSuccess(await manager.CreateAsync(application));
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(application));
             Assert.Empty(await manager.FindScopesAsync(application));
-            IdentityServiceResultAssert.IsSuccess(await manager.AddScopeAsync(application, scopes[0]));
+            IdentityResultAssert.IsSuccess(await manager.AddScopeAsync(application, scopes[0]));
             Assert.Equal(scopes[0], (await manager.FindScopesAsync(application)).First());
-            IdentityServiceResultAssert.IsSuccess(await manager.UpdateScopeAsync(application, scopes[0], scopes[1]));
+            IdentityResultAssert.IsSuccess(await manager.UpdateScopeAsync(application, scopes[0], scopes[1]));
             Assert.Equal(scopes[1], (await manager.FindScopesAsync(application)).First());
         }
 
@@ -655,11 +655,11 @@ namespace Microsoft.AspNetCore.Identity.Service.Specification.Tests
             var application = CreateTestApplication();
             var scopes = GenerateScopes("ValidateScope", 1).ToArray();
 
-            IdentityServiceResultAssert.IsSuccess(await manager.CreateAsync(application));
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(application));
             Assert.Empty(await manager.FindScopesAsync(application));
-            IdentityServiceResultAssert.IsSuccess(await manager.AddScopeAsync(application, scopes[0]));
+            IdentityResultAssert.IsSuccess(await manager.AddScopeAsync(application, scopes[0]));
             Assert.Equal(scopes[0], (await manager.FindScopesAsync(application)).First());
-            IdentityServiceResultAssert.IsFailure(await manager.UpdateScopeAsync(application, scopes[0], ""));
+            IdentityResultAssert.IsFailure(await manager.UpdateScopeAsync(application, scopes[0], ""));
         }
 
         /// <summary>
@@ -678,9 +678,9 @@ namespace Microsoft.AspNetCore.Identity.Service.Specification.Tests
             var application = CreateTestApplication();
             var scope = GenerateScopes("UpdateScopeNoScope", 2).ToArray();
 
-            IdentityServiceResultAssert.IsSuccess(await manager.CreateAsync(application));
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(application));
             Assert.Empty(await manager.FindScopesAsync(application));
-            IdentityServiceResultAssert.IsFailure(await manager.UpdateScopeAsync(application, scope[0], scope[1]));
+            IdentityResultAssert.IsFailure(await manager.UpdateScopeAsync(application, scope[0], scope[1]));
         }
 
         /// <summary>
@@ -699,11 +699,11 @@ namespace Microsoft.AspNetCore.Identity.Service.Specification.Tests
             var application = CreateTestApplication();
             var scope = GenerateScopes(nameof(CanRemoveScope), 1).Single();
 
-            IdentityServiceResultAssert.IsSuccess(await manager.CreateAsync(application));
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(application));
             Assert.Empty(await manager.FindScopesAsync(application));
-            IdentityServiceResultAssert.IsSuccess(await manager.AddScopeAsync(application, scope));
+            IdentityResultAssert.IsSuccess(await manager.AddScopeAsync(application, scope));
             Assert.Equal(scope, (await manager.FindScopesAsync(application)).Single());
-            IdentityServiceResultAssert.IsSuccess(await manager.RemoveScopeAsync(application, scope));
+            IdentityResultAssert.IsSuccess(await manager.RemoveScopeAsync(application, scope));
             Assert.Empty(await manager.FindScopesAsync(application));
         }
 
@@ -723,9 +723,9 @@ namespace Microsoft.AspNetCore.Identity.Service.Specification.Tests
             var application = CreateTestApplication();
             var scope = GenerateScopes("RemoveScopeValidates", 1).ToArray();
 
-            IdentityServiceResultAssert.IsSuccess(await manager.CreateAsync(application));
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(application));
             Assert.Empty(await manager.FindScopesAsync(application));
-            IdentityServiceResultAssert.IsFailure(await manager.RemoveScopeAsync(application, scope[0]));
+            IdentityResultAssert.IsFailure(await manager.RemoveScopeAsync(application, scope[0]));
         }
 
         /// <summary>
@@ -744,7 +744,7 @@ namespace Microsoft.AspNetCore.Identity.Service.Specification.Tests
             var application = CreateTestApplication();
             var claims = GenerateClaims(nameof(CanGetClaimsForApplication), 2);
 
-            IdentityServiceResultAssert.IsSuccess(await manager.CreateAsync(application));
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(application));
             foreach (var claim in claims)
             {
                 await manager.AddClaimAsync(application, claim);
@@ -773,9 +773,9 @@ namespace Microsoft.AspNetCore.Identity.Service.Specification.Tests
             var application = CreateTestApplication();
             var claim = new Claim("type", "value");
 
-            IdentityServiceResultAssert.IsSuccess(await manager.CreateAsync(application));
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(application));
             Assert.Empty(await manager.GetClaimsAsync(application));
-            IdentityServiceResultAssert.IsSuccess(await manager.AddClaimAsync(application, claim));
+            IdentityResultAssert.IsSuccess(await manager.AddClaimAsync(application, claim));
             Assert.NotEmpty(await manager.GetClaimsAsync(application));
         }
 
@@ -795,9 +795,9 @@ namespace Microsoft.AspNetCore.Identity.Service.Specification.Tests
             var application = CreateTestApplication();
             var scope = new Claim("fail", "fail");
 
-            IdentityServiceResultAssert.IsSuccess(await manager.CreateAsync(application));
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(application));
             Assert.Empty(await manager.GetClaimsAsync(application));
-            IdentityServiceResultAssert.IsFailure(await manager.AddClaimAsync(application, scope));
+            IdentityResultAssert.IsFailure(await manager.AddClaimAsync(application, scope));
             Assert.Empty(await manager.GetClaimsAsync(application));
         }
 
@@ -817,11 +817,11 @@ namespace Microsoft.AspNetCore.Identity.Service.Specification.Tests
             var application = CreateTestApplication();
             var claims = GenerateClaims("UpdateClaims", 2).ToArray();
 
-            IdentityServiceResultAssert.IsSuccess(await manager.CreateAsync(application));
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(application));
             Assert.Empty(await manager.GetClaimsAsync(application));
-            IdentityServiceResultAssert.IsSuccess(await manager.AddClaimAsync(application, claims[0]));
+            IdentityResultAssert.IsSuccess(await manager.AddClaimAsync(application, claims[0]));
             Assert.Equal(claims[0], (await manager.GetClaimsAsync(application)).First(), ClaimComparer.Instance);
-            IdentityServiceResultAssert.IsSuccess(await manager.ReplaceClaimAsync(application, claims[0], claims[1]));
+            IdentityResultAssert.IsSuccess(await manager.ReplaceClaimAsync(application, claims[0], claims[1]));
             Assert.Equal(claims[1], (await manager.GetClaimsAsync(application)).First(), ClaimComparer.Instance);
         }
 
@@ -841,11 +841,11 @@ namespace Microsoft.AspNetCore.Identity.Service.Specification.Tests
             var application = CreateTestApplication();
             var claims = GenerateClaims("ValidateClaim", 1).ToArray();
 
-            IdentityServiceResultAssert.IsSuccess(await manager.CreateAsync(application));
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(application));
             Assert.Empty(await manager.GetClaimsAsync(application));
-            IdentityServiceResultAssert.IsSuccess(await manager.AddClaimAsync(application, claims[0]));
+            IdentityResultAssert.IsSuccess(await manager.AddClaimAsync(application, claims[0]));
             Assert.Equal(claims[0], (await manager.GetClaimsAsync(application)).First(), ClaimComparer.Instance);
-            IdentityServiceResultAssert.IsFailure(await manager.ReplaceClaimAsync(application, claims[0], new Claim("fail", "fail")));
+            IdentityResultAssert.IsFailure(await manager.ReplaceClaimAsync(application, claims[0], new Claim("fail", "fail")));
         }
 
         /// <summary>
@@ -864,11 +864,11 @@ namespace Microsoft.AspNetCore.Identity.Service.Specification.Tests
             var application = CreateTestApplication();
             var claim = GenerateClaims(nameof(CanRemoveClaim), 1).Single();
 
-            IdentityServiceResultAssert.IsSuccess(await manager.CreateAsync(application));
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(application));
             Assert.Empty(await manager.GetClaimsAsync(application));
-            IdentityServiceResultAssert.IsSuccess(await manager.AddClaimAsync(application, claim));
+            IdentityResultAssert.IsSuccess(await manager.AddClaimAsync(application, claim));
             Assert.Equal(claim, (await manager.GetClaimsAsync(application)).Single(),ClaimComparer.Instance);
-            IdentityServiceResultAssert.IsSuccess(await manager.RemoveClaimAsync(application, claim));
+            IdentityResultAssert.IsSuccess(await manager.RemoveClaimAsync(application, claim));
             Assert.Empty(await manager.GetClaimsAsync(application));
         }
 
@@ -895,29 +895,29 @@ namespace Microsoft.AspNetCore.Identity.Service.Specification.Tests
 
         private class ClaimValidator : IApplicationValidator<TApplication>
         {
-            public Task<IdentityServiceResult> ValidateAsync(ApplicationManager<TApplication> manager, TApplication application)
+            public Task<IdentityResult> ValidateAsync(ApplicationManager<TApplication> manager, TApplication application)
             {
-                return Task.FromResult(IdentityServiceResult.Success);
+                return Task.FromResult(IdentityResult.Success);
             }
 
-            public Task<IdentityServiceResult> ValidateClaimAsync(ApplicationManager<TApplication> manager, TApplication application, Claim claim)
+            public Task<IdentityResult> ValidateClaimAsync(ApplicationManager<TApplication> manager, TApplication application, Claim claim)
             {
-                return Task.FromResult(claim.Type.Equals("fail") ? IdentityServiceResult.Failed(new IdentityServiceError()) : IdentityServiceResult.Success);
+                return Task.FromResult(claim.Type.Equals("fail") ? IdentityResult.Failed(new IdentityError()) : IdentityResult.Success);
             }
 
-            public Task<IdentityServiceResult> ValidateLogoutUriAsync(ApplicationManager<TApplication> manager, TApplication application, string logoutUri)
+            public Task<IdentityResult> ValidateLogoutUriAsync(ApplicationManager<TApplication> manager, TApplication application, string logoutUri)
             {
-                return Task.FromResult(IdentityServiceResult.Success);
+                return Task.FromResult(IdentityResult.Success);
             }
 
-            public Task<IdentityServiceResult> ValidateRedirectUriAsync(ApplicationManager<TApplication> manager, TApplication application, string redirectUri)
+            public Task<IdentityResult> ValidateRedirectUriAsync(ApplicationManager<TApplication> manager, TApplication application, string redirectUri)
             {
-                return Task.FromResult(IdentityServiceResult.Success);
+                return Task.FromResult(IdentityResult.Success);
             }
 
-            public Task<IdentityServiceResult> ValidateScopeAsync(ApplicationManager<TApplication> manager, TApplication application, string scope)
+            public Task<IdentityResult> ValidateScopeAsync(ApplicationManager<TApplication> manager, TApplication application, string scope)
             {
-                return Task.FromResult(IdentityServiceResult.Success);
+                return Task.FromResult(IdentityResult.Success);
             }
         }
 

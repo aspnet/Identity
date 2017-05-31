@@ -15,6 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../Microsoft.AspNetCore.Identity.Service/Microsoft.AspNetCore.Identity.Service.csproj" />
+    <ProjectReference Include="../Microsoft.AspNetCore.Applications.Authentication/Microsoft.AspNetCore.Applications.Authentication.csproj" />
   </ItemGroup>
 </Project>

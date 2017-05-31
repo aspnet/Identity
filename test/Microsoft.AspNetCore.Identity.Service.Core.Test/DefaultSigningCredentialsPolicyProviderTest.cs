@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting.Internal;
+using Microsoft.AspNetCore.Identity.Service.Internal;
+using Microsoft.AspNetCore.Identity.Service.Signing;
 using Microsoft.IdentityModel.Tokens;
 using Moq;
 using Xunit;
@@ -46,7 +48,7 @@ namespace Microsoft.AspNetCore.Identity.Service
                 mockSource.Object
             };
 
-            var policyProvider = new DefaultSigningCredentialsPolicyProvider(sources, new TimeStampManager(), new HostingEnvironment());
+            var policyProvider = new DefaultSigningCredentialsPolicyProvider(sources, new TimeStampManager());
 
             // Act
             var credentials = await policyProvider.GetAllCredentialsAsync();
@@ -97,7 +99,7 @@ namespace Microsoft.AspNetCore.Identity.Service
                 mockSource.Object
             };
 
-            var policyProvider = new DefaultSigningCredentialsPolicyProvider(sources, new TimeStampManager(), new HostingEnvironment());
+            var policyProvider = new DefaultSigningCredentialsPolicyProvider(sources, new TimeStampManager());
 
             // Act
             var credentials = await policyProvider.GetAllCredentialsAsync();
@@ -153,7 +155,7 @@ namespace Microsoft.AspNetCore.Identity.Service
                 mockSource.Object
             };
 
-            var policyProvider = new DefaultSigningCredentialsPolicyProvider(sources, new TimeStampManager(), new HostingEnvironment());
+            var policyProvider = new DefaultSigningCredentialsPolicyProvider(sources, new TimeStampManager());
 
             // Act
             var credentials = await policyProvider.GetAllCredentialsAsync();
@@ -206,7 +208,7 @@ namespace Microsoft.AspNetCore.Identity.Service
                 mockSource.Object
             };
 
-            var policyProvider = new DefaultSigningCredentialsPolicyProvider(sources, new TimeStampManager(), new HostingEnvironment());
+            var policyProvider = new DefaultSigningCredentialsPolicyProvider(sources, new TimeStampManager());
 
             // Act
             var signingCredential = await policyProvider.GetSigningCredentialsAsync();
@@ -262,7 +264,7 @@ namespace Microsoft.AspNetCore.Identity.Service
                 mockSource.Object
             };
 
-            var policyProvider = new DefaultSigningCredentialsPolicyProvider(sources, new TimeStampManager(), new HostingEnvironment());
+            var policyProvider = new DefaultSigningCredentialsPolicyProvider(sources, new TimeStampManager());
 
             // Act
             var signingCredential = await policyProvider.GetSigningCredentialsAsync();

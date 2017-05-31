@@ -12,11 +12,11 @@ namespace Microsoft.AspNetCore.Identity.Service
     {
         Task<IEnumerable<string>> FindRegisteredUrisAsync(TApplication app, CancellationToken cancellationToken);
         Task<IEnumerable<string>> FindRegisteredLogoutUrisAsync(TApplication app, CancellationToken cancellationToken);
-        Task<IdentityServiceResult> RegisterRedirectUriAsync(TApplication app, string redirectUri, CancellationToken cancellationToken);
-        Task<IdentityServiceResult> RegisterLogoutRedirectUriAsync(TApplication app, string redirectUri, CancellationToken cancellationToken);
-        Task<IdentityServiceResult> UnregisterRedirectUriAsync(TApplication app, string redirectUri, CancellationToken cancellationToken);
-        Task<IdentityServiceResult> UnregisterLogoutRedirectUriAsync(TApplication app, string redirectUri, CancellationToken cancellationToken);
-        Task<IdentityServiceResult> UpdateRedirectUriAsync(TApplication app, string oldRedirectUri, string newRedirectUri, CancellationToken cancellationToken);
-        Task<IdentityServiceResult> UpdateLogoutRedirectUriAsync(TApplication app, string oldRedirectUri, string newRedirectUri, CancellationToken cancellationToken);
+        Task<IdentityResult> RegisterRedirectUriAsync(TApplication app, string redirectUri, CancellationToken cancellationToken);
+        Task<IdentityResult> RegisterLogoutRedirectUriAsync(TApplication app, string redirectUri, CancellationToken cancellationToken);
+        Task<IdentityResult> UnregisterRedirectUriAsync(TApplication app, string redirectUri, CancellationToken cancellationToken);
+        Task<IdentityResult> UnregisterLogoutRedirectUriAsync(TApplication app, string redirectUri, CancellationToken cancellationToken);
+        Task<IdentityResult> UpdateRedirectUriAsync(TApplication app, string oldRedirectUri, string newRedirectUri, CancellationToken cancellationToken);
+        Task<IdentityResult> UpdateLogoutRedirectUriAsync(TApplication app, string oldRedirectUri, string newRedirectUri, CancellationToken cancellationToken);
     }
 }

@@ -26,8 +26,8 @@ namespace Microsoft.AspNetCore.Identity.Service
             // Arrange
             var claims = new List<Claim>()
             {
-                new Claim(IdentityServiceClaimTypes.Issuer,"issuer"),
-                new Claim(IdentityServiceClaimTypes.Issuer,"issuer"),
+                new Claim(TokenClaimTypes.Issuer,"issuer"),
+                new Claim(TokenClaimTypes.Issuer,"issuer"),
             };
 
             // Act & Assert
@@ -40,7 +40,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             // Arrange
             var claims = new List<Claim>()
             {
-                new Claim(IdentityServiceClaimTypes.Subject, "subject")
+                new Claim(TokenClaimTypes.Subject, "subject")
             };
 
             // Act & Assert
@@ -53,9 +53,9 @@ namespace Microsoft.AspNetCore.Identity.Service
             // Arrange
             var claims = new List<Claim>()
             {
-                new Claim(IdentityServiceClaimTypes.Issuer, "issuer"),
-                new Claim(IdentityServiceClaimTypes.Subject, "subject"),
-                new Claim(IdentityServiceClaimTypes.Subject, "subject")
+                new Claim(TokenClaimTypes.Issuer, "issuer"),
+                new Claim(TokenClaimTypes.Subject, "subject"),
+                new Claim(TokenClaimTypes.Subject, "subject")
             };
 
             // Act & Assert
@@ -68,8 +68,8 @@ namespace Microsoft.AspNetCore.Identity.Service
             // Arrange
             var claims = new List<Claim>()
             {
-                new Claim(IdentityServiceClaimTypes.Issuer, "issuer"),
-                new Claim(IdentityServiceClaimTypes.Subject, "subject"),
+                new Claim(TokenClaimTypes.Issuer, "issuer"),
+                new Claim(TokenClaimTypes.Subject, "subject"),
             };
 
             // Act & Assert
@@ -82,10 +82,10 @@ namespace Microsoft.AspNetCore.Identity.Service
             // Arrange
             var claims = new List<Claim>()
             {
-                new Claim(IdentityServiceClaimTypes.Issuer, "issuer"),
-                new Claim(IdentityServiceClaimTypes.Subject, "subject"),
-                new Claim(IdentityServiceClaimTypes.Audience, "audience1"),
-                new Claim(IdentityServiceClaimTypes.Audience, "audience2"),
+                new Claim(TokenClaimTypes.Issuer, "issuer"),
+                new Claim(TokenClaimTypes.Subject, "subject"),
+                new Claim(TokenClaimTypes.Audience, "audience1"),
+                new Claim(TokenClaimTypes.Audience, "audience2"),
             };
 
             // Act & Assert
@@ -98,11 +98,11 @@ namespace Microsoft.AspNetCore.Identity.Service
             // Arrange
             var claims = new List<Claim>()
             {
-                new Claim(IdentityServiceClaimTypes.Issuer, "issuer"),
-                new Claim(IdentityServiceClaimTypes.Subject, "subject"),
-                new Claim(IdentityServiceClaimTypes.Audience, "audience1"),
-                new Claim(IdentityServiceClaimTypes.Nonce, "nonce1"),
-                new Claim(IdentityServiceClaimTypes.Nonce, "nonce2"),
+                new Claim(TokenClaimTypes.Issuer, "issuer"),
+                new Claim(TokenClaimTypes.Subject, "subject"),
+                new Claim(TokenClaimTypes.Audience, "audience1"),
+                new Claim(TokenClaimTypes.Nonce, "nonce1"),
+                new Claim(TokenClaimTypes.Nonce, "nonce2"),
             };
 
             // Act & Assert
@@ -115,12 +115,12 @@ namespace Microsoft.AspNetCore.Identity.Service
             // Arrange
             var claims = new List<Claim>()
             {
-                new Claim(IdentityServiceClaimTypes.Issuer, "issuer"),
-                new Claim(IdentityServiceClaimTypes.Subject, "subject"),
-                new Claim(IdentityServiceClaimTypes.Audience, "audience1"),
-                new Claim(IdentityServiceClaimTypes.Nonce, "nonce1"),
-                new Claim(IdentityServiceClaimTypes.CodeHash, "chash1"),
-                new Claim(IdentityServiceClaimTypes.CodeHash, "chash2"),
+                new Claim(TokenClaimTypes.Issuer, "issuer"),
+                new Claim(TokenClaimTypes.Subject, "subject"),
+                new Claim(TokenClaimTypes.Audience, "audience1"),
+                new Claim(TokenClaimTypes.Nonce, "nonce1"),
+                new Claim(TokenClaimTypes.CodeHash, "chash1"),
+                new Claim(TokenClaimTypes.CodeHash, "chash2"),
             };
 
             // Act & Assert
@@ -133,13 +133,13 @@ namespace Microsoft.AspNetCore.Identity.Service
             // Arrange
             var claims = new List<Claim>()
             {
-                new Claim(IdentityServiceClaimTypes.Issuer, "issuer"),
-                new Claim(IdentityServiceClaimTypes.Subject, "subject"),
-                new Claim(IdentityServiceClaimTypes.Audience, "audience1"),
-                new Claim(IdentityServiceClaimTypes.Nonce, "nonce1"),
-                new Claim(IdentityServiceClaimTypes.CodeHash, "chash1"),
-                new Claim(IdentityServiceClaimTypes.AccessTokenHash, "athash2"),
-                new Claim(IdentityServiceClaimTypes.AccessTokenHash, "athash2"),
+                new Claim(TokenClaimTypes.Issuer, "issuer"),
+                new Claim(TokenClaimTypes.Subject, "subject"),
+                new Claim(TokenClaimTypes.Audience, "audience1"),
+                new Claim(TokenClaimTypes.Nonce, "nonce1"),
+                new Claim(TokenClaimTypes.CodeHash, "chash1"),
+                new Claim(TokenClaimTypes.AccessTokenHash, "athash2"),
+                new Claim(TokenClaimTypes.AccessTokenHash, "athash2"),
             };
 
             // Act & Assert
@@ -152,12 +152,12 @@ namespace Microsoft.AspNetCore.Identity.Service
             // Arrange
             var claims = new List<Claim>()
             {
-                new Claim(IdentityServiceClaimTypes.Issuer, "issuer"),
-                new Claim(IdentityServiceClaimTypes.Subject, "subject"),
-                new Claim(IdentityServiceClaimTypes.Audience, "audience1"),
-                new Claim(IdentityServiceClaimTypes.Nonce, "nonce1"),
-                new Claim(IdentityServiceClaimTypes.CodeHash, "chash1"),
-                new Claim(IdentityServiceClaimTypes.AccessTokenHash, "athash2"),
+                new Claim(TokenClaimTypes.Issuer, "issuer"),
+                new Claim(TokenClaimTypes.Subject, "subject"),
+                new Claim(TokenClaimTypes.Audience, "audience1"),
+                new Claim(TokenClaimTypes.Nonce, "nonce1"),
+                new Claim(TokenClaimTypes.CodeHash, "chash1"),
+                new Claim(TokenClaimTypes.AccessTokenHash, "athash2"),
             };
 
             // Act & Assert
@@ -170,14 +170,14 @@ namespace Microsoft.AspNetCore.Identity.Service
             // Arrange
             var claims = new List<Claim>()
             {
-                new Claim(IdentityServiceClaimTypes.Issuer, "issuer"),
-                new Claim(IdentityServiceClaimTypes.Subject, "subject"),
-                new Claim(IdentityServiceClaimTypes.Audience, "audience1"),
-                new Claim(IdentityServiceClaimTypes.Nonce, "nonce1"),
-                new Claim(IdentityServiceClaimTypes.CodeHash, "chash1"),
-                new Claim(IdentityServiceClaimTypes.AccessTokenHash, "athash2"),
-                new Claim(IdentityServiceClaimTypes.TokenUniqueId, "id1"),
-                new Claim(IdentityServiceClaimTypes.TokenUniqueId, "id2"),
+                new Claim(TokenClaimTypes.Issuer, "issuer"),
+                new Claim(TokenClaimTypes.Subject, "subject"),
+                new Claim(TokenClaimTypes.Audience, "audience1"),
+                new Claim(TokenClaimTypes.Nonce, "nonce1"),
+                new Claim(TokenClaimTypes.CodeHash, "chash1"),
+                new Claim(TokenClaimTypes.AccessTokenHash, "athash2"),
+                new Claim(TokenClaimTypes.TokenUniqueId, "id1"),
+                new Claim(TokenClaimTypes.TokenUniqueId, "id2"),
             };
 
             // Act & Assert
@@ -190,13 +190,13 @@ namespace Microsoft.AspNetCore.Identity.Service
             // Arrange
             var claims = new List<Claim>()
             {
-                new Claim(IdentityServiceClaimTypes.Issuer, "issuer"),
-                new Claim(IdentityServiceClaimTypes.Subject, "subject"),
-                new Claim(IdentityServiceClaimTypes.Audience, "audience1"),
-                new Claim(IdentityServiceClaimTypes.Nonce, "nonce1"),
-                new Claim(IdentityServiceClaimTypes.CodeHash, "chash1"),
-                new Claim(IdentityServiceClaimTypes.AccessTokenHash, "athash2"),
-                new Claim(IdentityServiceClaimTypes.TokenUniqueId, "tuid"),
+                new Claim(TokenClaimTypes.Issuer, "issuer"),
+                new Claim(TokenClaimTypes.Subject, "subject"),
+                new Claim(TokenClaimTypes.Audience, "audience1"),
+                new Claim(TokenClaimTypes.Nonce, "nonce1"),
+                new Claim(TokenClaimTypes.CodeHash, "chash1"),
+                new Claim(TokenClaimTypes.AccessTokenHash, "athash2"),
+                new Claim(TokenClaimTypes.TokenUniqueId, "tuid"),
             };
 
             // Act & Assert
@@ -209,15 +209,15 @@ namespace Microsoft.AspNetCore.Identity.Service
             // Arrange
             var claims = new List<Claim>()
             {
-                new Claim(IdentityServiceClaimTypes.Issuer, "issuer"),
-                new Claim(IdentityServiceClaimTypes.Subject, "subject"),
-                new Claim(IdentityServiceClaimTypes.Audience, "audience1"),
-                new Claim(IdentityServiceClaimTypes.Nonce, "nonce1"),
-                new Claim(IdentityServiceClaimTypes.CodeHash, "chash1"),
-                new Claim(IdentityServiceClaimTypes.AccessTokenHash, "athash2"),
-                new Claim(IdentityServiceClaimTypes.TokenUniqueId, "tuid"),
-                new Claim(IdentityServiceClaimTypes.IssuedAt, "issuedAt1"),
-                new Claim(IdentityServiceClaimTypes.IssuedAt, "issuedAt2"),
+                new Claim(TokenClaimTypes.Issuer, "issuer"),
+                new Claim(TokenClaimTypes.Subject, "subject"),
+                new Claim(TokenClaimTypes.Audience, "audience1"),
+                new Claim(TokenClaimTypes.Nonce, "nonce1"),
+                new Claim(TokenClaimTypes.CodeHash, "chash1"),
+                new Claim(TokenClaimTypes.AccessTokenHash, "athash2"),
+                new Claim(TokenClaimTypes.TokenUniqueId, "tuid"),
+                new Claim(TokenClaimTypes.IssuedAt, "issuedAt1"),
+                new Claim(TokenClaimTypes.IssuedAt, "issuedAt2"),
             };
 
             // Act & Assert
@@ -230,14 +230,14 @@ namespace Microsoft.AspNetCore.Identity.Service
             // Arrange
             var claims = new List<Claim>()
             {
-                new Claim(IdentityServiceClaimTypes.Issuer, "issuer"),
-                new Claim(IdentityServiceClaimTypes.Subject, "subject"),
-                new Claim(IdentityServiceClaimTypes.Audience, "audience1"),
-                new Claim(IdentityServiceClaimTypes.Nonce, "nonce1"),
-                new Claim(IdentityServiceClaimTypes.CodeHash, "chash1"),
-                new Claim(IdentityServiceClaimTypes.AccessTokenHash, "athash2"),
-                new Claim(IdentityServiceClaimTypes.TokenUniqueId, "tuid"),
-                new Claim(IdentityServiceClaimTypes.IssuedAt, "issuedAt"),
+                new Claim(TokenClaimTypes.Issuer, "issuer"),
+                new Claim(TokenClaimTypes.Subject, "subject"),
+                new Claim(TokenClaimTypes.Audience, "audience1"),
+                new Claim(TokenClaimTypes.Nonce, "nonce1"),
+                new Claim(TokenClaimTypes.CodeHash, "chash1"),
+                new Claim(TokenClaimTypes.AccessTokenHash, "athash2"),
+                new Claim(TokenClaimTypes.TokenUniqueId, "tuid"),
+                new Claim(TokenClaimTypes.IssuedAt, "issuedAt"),
             };
 
             // Act & Assert
@@ -250,16 +250,16 @@ namespace Microsoft.AspNetCore.Identity.Service
             // Arrange
             var claims = new List<Claim>()
             {
-                new Claim(IdentityServiceClaimTypes.Issuer, "issuer"),
-                new Claim(IdentityServiceClaimTypes.Subject, "subject"),
-                new Claim(IdentityServiceClaimTypes.Audience, "audience1"),
-                new Claim(IdentityServiceClaimTypes.Nonce, "nonce1"),
-                new Claim(IdentityServiceClaimTypes.CodeHash, "chash1"),
-                new Claim(IdentityServiceClaimTypes.AccessTokenHash, "athash2"),
-                new Claim(IdentityServiceClaimTypes.TokenUniqueId, "tuid"),
-                new Claim(IdentityServiceClaimTypes.IssuedAt, "issuedAt"),
-                new Claim(IdentityServiceClaimTypes.Expires, "expires"),
-                new Claim(IdentityServiceClaimTypes.Expires, "expires"),
+                new Claim(TokenClaimTypes.Issuer, "issuer"),
+                new Claim(TokenClaimTypes.Subject, "subject"),
+                new Claim(TokenClaimTypes.Audience, "audience1"),
+                new Claim(TokenClaimTypes.Nonce, "nonce1"),
+                new Claim(TokenClaimTypes.CodeHash, "chash1"),
+                new Claim(TokenClaimTypes.AccessTokenHash, "athash2"),
+                new Claim(TokenClaimTypes.TokenUniqueId, "tuid"),
+                new Claim(TokenClaimTypes.IssuedAt, "issuedAt"),
+                new Claim(TokenClaimTypes.Expires, "expires"),
+                new Claim(TokenClaimTypes.Expires, "expires"),
             };
 
             // Act & Assert
@@ -272,15 +272,15 @@ namespace Microsoft.AspNetCore.Identity.Service
             // Arrange
             var claims = new List<Claim>()
             {
-                new Claim(IdentityServiceClaimTypes.Issuer, "issuer"),
-                new Claim(IdentityServiceClaimTypes.Subject, "subject"),
-                new Claim(IdentityServiceClaimTypes.Audience, "audience1"),
-                new Claim(IdentityServiceClaimTypes.Nonce, "nonce1"),
-                new Claim(IdentityServiceClaimTypes.CodeHash, "chash1"),
-                new Claim(IdentityServiceClaimTypes.AccessTokenHash, "athash2"),
-                new Claim(IdentityServiceClaimTypes.TokenUniqueId, "tuid"),
-                new Claim(IdentityServiceClaimTypes.IssuedAt, "issuedAt"),
-                new Claim(IdentityServiceClaimTypes.Expires, "expires"),
+                new Claim(TokenClaimTypes.Issuer, "issuer"),
+                new Claim(TokenClaimTypes.Subject, "subject"),
+                new Claim(TokenClaimTypes.Audience, "audience1"),
+                new Claim(TokenClaimTypes.Nonce, "nonce1"),
+                new Claim(TokenClaimTypes.CodeHash, "chash1"),
+                new Claim(TokenClaimTypes.AccessTokenHash, "athash2"),
+                new Claim(TokenClaimTypes.TokenUniqueId, "tuid"),
+                new Claim(TokenClaimTypes.IssuedAt, "issuedAt"),
+                new Claim(TokenClaimTypes.Expires, "expires"),
             };
 
             // Act & Assert
@@ -293,17 +293,17 @@ namespace Microsoft.AspNetCore.Identity.Service
             // Arrange
             var claims = new List<Claim>()
             {
-                new Claim(IdentityServiceClaimTypes.Issuer, "issuer"),
-                new Claim(IdentityServiceClaimTypes.Subject, "subject"),
-                new Claim(IdentityServiceClaimTypes.Audience, "audience1"),
-                new Claim(IdentityServiceClaimTypes.Nonce, "nonce1"),
-                new Claim(IdentityServiceClaimTypes.CodeHash, "chash1"),
-                new Claim(IdentityServiceClaimTypes.AccessTokenHash, "athash2"),
-                new Claim(IdentityServiceClaimTypes.TokenUniqueId, "tuid"),
-                new Claim(IdentityServiceClaimTypes.IssuedAt, "issuedAt"),
-                new Claim(IdentityServiceClaimTypes.Expires, "expires"),
-                new Claim(IdentityServiceClaimTypes.NotBefore, "notBefore"),
-                new Claim(IdentityServiceClaimTypes.NotBefore, "notBefore"),
+                new Claim(TokenClaimTypes.Issuer, "issuer"),
+                new Claim(TokenClaimTypes.Subject, "subject"),
+                new Claim(TokenClaimTypes.Audience, "audience1"),
+                new Claim(TokenClaimTypes.Nonce, "nonce1"),
+                new Claim(TokenClaimTypes.CodeHash, "chash1"),
+                new Claim(TokenClaimTypes.AccessTokenHash, "athash2"),
+                new Claim(TokenClaimTypes.TokenUniqueId, "tuid"),
+                new Claim(TokenClaimTypes.IssuedAt, "issuedAt"),
+                new Claim(TokenClaimTypes.Expires, "expires"),
+                new Claim(TokenClaimTypes.NotBefore, "notBefore"),
+                new Claim(TokenClaimTypes.NotBefore, "notBefore"),
             };
 
             // Act & Assert

@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.Service;
 using Microsoft.AspNetCore.Identity.Service.Claims;
+using Microsoft.AspNetCore.Identity.Service.Internal;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Xunit;
@@ -42,7 +43,7 @@ namespace Microsoft.AspNetCore.Identity.Claims
             var reference = new DateTimeOffset(2000, 01, 01, 0, 0, 0, TimeSpan.Zero);
 
             var timestampManager = new TestTimeStampManager(reference);
-            var options = new IdentityServiceOptions();
+            var options = new ApplicationTokenOptions();
             SetTimeStampOptions(options.AuthorizationCodeOptions, 1);
             SetTimeStampOptions(options.AccessTokenOptions, 2);
             SetTimeStampOptions(options.IdTokenOptions, 3);
@@ -56,12 +57,12 @@ namespace Microsoft.AspNetCore.Identity.Claims
             var claims = context.CurrentClaims;
 
             // Assert
-            Assert.Single(claims, c => c.Type.Equals(IdentityServiceClaimTypes.IssuedAt) && c.Value.Equals(issuedAt));
-            Assert.Single(claims, c => c.Type.Equals(IdentityServiceClaimTypes.NotBefore) && c.Value.Equals(notBefore));
-            Assert.Single(claims, c => c.Type.Equals(IdentityServiceClaimTypes.Expires) && c.Value.Equals(expires));
+            Assert.Single(claims, c => c.Type.Equals(TokenClaimTypes.IssuedAt) && c.Value.Equals(issuedAt));
+            Assert.Single(claims, c => c.Type.Equals(TokenClaimTypes.NotBefore) && c.Value.Equals(notBefore));
+            Assert.Single(claims, c => c.Type.Equals(TokenClaimTypes.Expires) && c.Value.Equals(expires));
         }
 
-        private void SetTimeStampOptions(TokenOptions tokenOptions, int hours)
+        private void SetTimeStampOptions(TokenClaimsOptions tokenOptions, int hours)
         {
             tokenOptions.NotValidAfter = TimeSpan.FromHours(hours);
             tokenOptions.NotValidBefore = TimeSpan.FromHours(-hours);

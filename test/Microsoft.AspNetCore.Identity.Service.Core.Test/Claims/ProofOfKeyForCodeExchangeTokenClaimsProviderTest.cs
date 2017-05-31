@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity.Service.Internal;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Xunit;
 
@@ -33,8 +34,8 @@ namespace Microsoft.AspNetCore.Identity.Service.Core.Claims
             await provider.OnGeneratingClaims(context);
 
             // Assert
-            Assert.Contains(context.CurrentClaims, c => c.Type == IdentityServiceClaimTypes.CodeChallenge && c.Value == "challenge");
-            Assert.Contains(context.CurrentClaims, c => c.Type == IdentityServiceClaimTypes.CodeChallengeMethod && c.Value == "S256");
+            Assert.Contains(context.CurrentClaims, c => c.Type == TokenClaimTypes.CodeChallenge && c.Value == "challenge");
+            Assert.Contains(context.CurrentClaims, c => c.Type == TokenClaimTypes.CodeChallengeMethod && c.Value == "S256");
         }
 
         [Theory]

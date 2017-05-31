@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity.Service.Internal;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Xunit;
@@ -28,7 +29,7 @@ namespace Microsoft.AspNetCore.Identity.Service.Claims
                 new OpenIdConnectMessage(),
                 new RequestGrants());
 
-            var options = new IdentityServiceOptions()
+            var options = new ApplicationTokenOptions()
             {
                 Issuer = "http://www.example.com/Identity"
             };
@@ -42,7 +43,7 @@ namespace Microsoft.AspNetCore.Identity.Service.Claims
             // Assert
             Assert.Single(
                 context.CurrentClaims,
-                c => c.Type.Equals(IdentityServiceClaimTypes.TokenUniqueId, StringComparison.Ordinal));
+                c => c.Type.Equals(TokenClaimTypes.TokenUniqueId, StringComparison.Ordinal));
         }
 
         [Theory]
@@ -57,7 +58,7 @@ namespace Microsoft.AspNetCore.Identity.Service.Claims
                 new OpenIdConnectMessage(),
                 new RequestGrants());
 
-            var options = new IdentityServiceOptions()
+            var options = new ApplicationTokenOptions()
             {
                 Issuer = "http://www.example.com/Identity"
             };
@@ -71,7 +72,7 @@ namespace Microsoft.AspNetCore.Identity.Service.Claims
             // Assert
             Assert.Single(
                 context.CurrentClaims,
-                c => c.Type.Equals(IdentityServiceClaimTypes.Issuer, StringComparison.Ordinal));
+                c => c.Type.Equals(TokenClaimTypes.Issuer, StringComparison.Ordinal));
         }
 
         [Fact]
@@ -85,7 +86,7 @@ namespace Microsoft.AspNetCore.Identity.Service.Claims
                 new OpenIdConnectMessage() { RedirectUri = expectedRedirectUri },
                 new RequestGrants());
 
-            var options = new IdentityServiceOptions()
+            var options = new ApplicationTokenOptions()
             {
                 Issuer = "http://www.example.com/Identity"
             };
@@ -99,7 +100,7 @@ namespace Microsoft.AspNetCore.Identity.Service.Claims
             // Assert
             Assert.Single(
                 context.CurrentClaims,
-                c => c.Type.Equals(IdentityServiceClaimTypes.RedirectUri, StringComparison.Ordinal) &&
+                c => c.Type.Equals(TokenClaimTypes.RedirectUri, StringComparison.Ordinal) &&
                      c.Value.Equals(expectedRedirectUri));
         }
 
@@ -166,7 +167,7 @@ namespace Microsoft.AspNetCore.Identity.Service.Claims
             context.AmbientClaims.Add(new Claim("context-multiple-aliased", "cma1"));
             context.AmbientClaims.Add(new Claim("context-multiple-aliased", "cma2"));
 
-            var options = new IdentityServiceOptions()
+            var options = new ApplicationTokenOptions()
             {
                 Issuer = "http://www.example.com/Identity"
             };
@@ -183,8 +184,8 @@ namespace Microsoft.AspNetCore.Identity.Service.Claims
             // Act
             await claimsProvider.OnGeneratingClaims(context);
             var claims = context.CurrentClaims.Where(c => 
-                c.Type != IdentityServiceClaimTypes.Issuer &&
-                c.Type != IdentityServiceClaimTypes.TokenUniqueId).ToList();
+                c.Type != TokenClaimTypes.Issuer &&
+                c.Type != TokenClaimTypes.TokenUniqueId).ToList();
 
             // Assert
             Assert.Equal(expectedClaims.Count, claims.Count);
@@ -194,7 +195,7 @@ namespace Microsoft.AspNetCore.Identity.Service.Claims
             }
         }
 
-        private void CreateTestMapping(TokenOptions tokenOptions)
+        private void CreateTestMapping(TokenClaimsOptions tokenOptions)
         {
             tokenOptions.ContextClaims.AddSingle("context-single");
             tokenOptions.ContextClaims.AddSingle("context-single-claim", "context-single-aliased");

@@ -7,10 +7,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity.Service.Claims;
-using Microsoft.AspNetCore.Identity.Service.Serialization;
+using Microsoft.AspNetCore.Identity.Service.Core;
+using Microsoft.AspNetCore.Identity.Service.Internal;
+using Microsoft.AspNetCore.Identity.Service.Validation;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
@@ -60,7 +61,7 @@ namespace Microsoft.AspNetCore.Identity.Service
                 () => issuer.IssueRefreshTokenAsync(context));
 
             // Assert
-            Assert.Equal($"Missing '{IdentityServiceClaimTypes.ClientId}' claim from the application.", exception.Message);
+            Assert.Equal($"Missing '{TokenClaimTypes.ClientId}' claim from the application.", exception.Message);
         }
 
         [Fact]
@@ -70,7 +71,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             var options = GetOptions();
             var protector = new EphemeralDataProtectionProvider(new LoggerFactory()).CreateProtector("test");
             var refreshTokenSerializer = new TokenDataSerializer<RefreshToken>(options, ArrayPool<char>.Shared);
-            var dataFormat = new SecureDataFormat<RefreshToken>(refreshTokenSerializer, protector);
+            var dataFormat = new DefaultTokenProtector<RefreshToken>(refreshTokenSerializer, protector);
 
             var expectedDateTime = new DateTimeOffset(2000, 01, 01, 0, 0, 0, TimeSpan.FromHours(1));
             var now = DateTimeOffset.UtcNow;
@@ -80,7 +81,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             var issuer = new RefreshTokenIssuer(GetClaimsManager(timeManager), dataFormat);
             var context = GetTokenGenerationContext(
                 new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, "user") })),
-                new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(IdentityServiceClaimTypes.ClientId, "clientId") })));
+                new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(TokenClaimTypes.ClientId, "clientId") })));
 
             context.InitializeForToken(TokenTypes.RefreshToken);
 
@@ -119,7 +120,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             var issuer = new RefreshTokenIssuer(GetClaimsManager(timeManager), dataFormat);
             var context = GetTokenGenerationContext(
                 new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, "user") })),
-                new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(IdentityServiceClaimTypes.ClientId, "clientId") })));
+                new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(TokenClaimTypes.ClientId, "clientId") })));
 
             context.InitializeForToken(TokenTypes.RefreshToken);
 
@@ -158,7 +159,7 @@ namespace Microsoft.AspNetCore.Identity.Service
                     RedirectUri = "http://www.example.com/callback",
                     Scopes = new ApplicationScope[] { ApplicationScope.OpenId, ApplicationScope.Profile },
                     Tokens = new[] { TokenTypes.AuthorizationCode },
-                    Claims = new[] {new Claim("scp","openid profile")}
+                    Claims = new[] { new Claim("scp", "openid profile") }
                 });
 
         private ITimeStampManager GetTimeManager(
@@ -182,27 +183,27 @@ namespace Microsoft.AspNetCore.Identity.Service
             return manager.Object;
         }
 
-        private ISecureDataFormat<RefreshToken> GetDataFormat()
+        private ITokenProtector<RefreshToken> GetDataFormat()
         {
-            var mock = new Mock<ISecureDataFormat<RefreshToken>>();
+            var mock = new Mock<ITokenProtector<RefreshToken>>();
             mock.Setup(s => s.Protect(It.IsAny<RefreshToken>()))
                 .Returns("protected refresh token");
 
             return mock.Object;
         }
 
-        private IOptions<IdentityServiceOptions> GetOptions()
+        private IOptions<ApplicationTokenOptions> GetOptions()
         {
-            var IdentityServiceOptions = new IdentityServiceOptions()
+            var IdentityServiceOptions = new ApplicationTokenOptions()
             {
                 Issuer = "http://www.example.com/issuer"
             };
             IdentityServiceOptions.SigningKeys.Add(new SigningCredentials(CryptoUtilities.CreateTestKey(), "RS256"));
 
-            var optionsSetup = new IdentityServiceOptionsDefaultSetup();
+            var optionsSetup = new IdentityTokensOptionsDefaultSetup();
             optionsSetup.Configure(IdentityServiceOptions);
 
-            var mock = new Mock<IOptions<IdentityServiceOptions>>();
+            var mock = new Mock<IOptions<ApplicationTokenOptions>>();
             mock.Setup(m => m.Value).Returns(IdentityServiceOptions);
 
             return mock.Object;

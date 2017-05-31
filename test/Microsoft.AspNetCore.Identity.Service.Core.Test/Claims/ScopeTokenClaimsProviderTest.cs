@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity.Service.Internal;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Xunit;
 
@@ -39,8 +40,8 @@ namespace Microsoft.AspNetCore.Identity.Service.Claims
             var claims = context.CurrentClaims;
 
             // Assert
-            Assert.Single(claims, c => c.Type.Equals(IdentityServiceClaimTypes.Scope) && c.Value.Equals("openid custom"));
-            Assert.Single(claims, c => c.Type.Equals(IdentityServiceClaimTypes.Resource) && c.Value.Equals("resourceId"));
+            Assert.Single(claims, c => c.Type.Equals(TokenClaimTypes.Scope) && c.Value.Equals("openid custom"));
+            Assert.Single(claims, c => c.Type.Equals(TokenClaimTypes.Resource) && c.Value.Equals("resourceId"));
         }
 
         [Fact]
@@ -71,9 +72,9 @@ namespace Microsoft.AspNetCore.Identity.Service.Claims
             var claims = context.CurrentClaims;
 
             // Assert
-            Assert.Single(claims, c => c.Type.Equals(IdentityServiceClaimTypes.Scope) && c.Value.Equals("custom"));
-            Assert.Single(claims, c => c.Type.Equals(IdentityServiceClaimTypes.Audience) && c.Value.Equals("resourceId"));
-            Assert.Single(claims, c => c.Type.Equals(IdentityServiceClaimTypes.AuthorizedParty) && c.Value.Equals("clientId"));
+            Assert.Single(claims, c => c.Type.Equals(TokenClaimTypes.Scope) && c.Value.Equals("custom"));
+            Assert.Single(claims, c => c.Type.Equals(TokenClaimTypes.Audience) && c.Value.Equals("resourceId"));
+            Assert.Single(claims, c => c.Type.Equals(TokenClaimTypes.AuthorizedParty) && c.Value.Equals("clientId"));
         }
 
         [Fact]
@@ -102,8 +103,8 @@ namespace Microsoft.AspNetCore.Identity.Service.Claims
                     // from the set of granted scopes (for access tokens).
                     Claims = new List<Claim>
                     {
-                        new Claim(IdentityServiceClaimTypes.Resource, "ridClaim"),
-                        new Claim(IdentityServiceClaimTypes.Scope, "custom3")
+                        new Claim(TokenClaimTypes.Resource, "ridClaim"),
+                        new Claim(TokenClaimTypes.Scope, "custom3")
                     }
                 });
 
@@ -116,9 +117,9 @@ namespace Microsoft.AspNetCore.Identity.Service.Claims
             var claims = context.CurrentClaims;
 
             // Assert
-            Assert.Single(claims, c => c.Type.Equals(IdentityServiceClaimTypes.Scope) && c.Value.Equals("custom custom2"));
-            Assert.Single(claims, c => c.Type.Equals(IdentityServiceClaimTypes.Audience) && c.Value.Equals("resourceId"));
-            Assert.Single(claims, c => c.Type.Equals(IdentityServiceClaimTypes.AuthorizedParty) && c.Value.Equals("clientId"));
+            Assert.Single(claims, c => c.Type.Equals(TokenClaimTypes.Scope) && c.Value.Equals("custom custom2"));
+            Assert.Single(claims, c => c.Type.Equals(TokenClaimTypes.Audience) && c.Value.Equals("resourceId"));
+            Assert.Single(claims, c => c.Type.Equals(TokenClaimTypes.AuthorizedParty) && c.Value.Equals("clientId"));
         }
 
         [Fact]
@@ -148,8 +149,8 @@ namespace Microsoft.AspNetCore.Identity.Service.Claims
                     Scopes = applicationScopes.ToList(),
                     Claims = new List<Claim>
                     {
-                        new Claim(IdentityServiceClaimTypes.Resource, "ridClaim"),
-                        new Claim(IdentityServiceClaimTypes.Scope, "openid custom3")
+                        new Claim(TokenClaimTypes.Resource, "ridClaim"),
+                        new Claim(TokenClaimTypes.Scope, "openid custom3")
                     }
                 });
 
@@ -162,8 +163,8 @@ namespace Microsoft.AspNetCore.Identity.Service.Claims
             var claims = context.CurrentClaims;
 
             // Assert
-            Assert.Single(claims, c => c.Type.Equals(IdentityServiceClaimTypes.Scope) && c.Value.Equals("openid custom3"));
-            Assert.Single(claims, c => c.Type.Equals(IdentityServiceClaimTypes.Resource) && c.Value.Equals("ridClaim"));
+            Assert.Single(claims, c => c.Type.Equals(TokenClaimTypes.Scope) && c.Value.Equals("openid custom3"));
+            Assert.Single(claims, c => c.Type.Equals(TokenClaimTypes.Resource) && c.Value.Equals("ridClaim"));
         }
 
         [Fact]
@@ -193,7 +194,7 @@ namespace Microsoft.AspNetCore.Identity.Service.Claims
                     Scopes = applicationScopes.ToList(),
                     Claims = new List<Claim>
                     {
-                        new Claim(IdentityServiceClaimTypes.Scope, "openid")
+                        new Claim(TokenClaimTypes.Scope, "openid")
                     }
                 });
 
@@ -206,7 +207,7 @@ namespace Microsoft.AspNetCore.Identity.Service.Claims
             var claims = context.CurrentClaims;
 
             // Assert
-            Assert.Single(claims, c => c.Type.Equals(IdentityServiceClaimTypes.Scope) && c.Value.Equals("openid"));
+            Assert.Single(claims, c => c.Type.Equals(TokenClaimTypes.Scope) && c.Value.Equals("openid"));
         }
     }
 }

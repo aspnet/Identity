@@ -7,10 +7,10 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
 namespace Microsoft.AspNetCore.Identity.Service
 {
-    public class IdentityServiceErrorComparer : IEqualityComparer<AuthorizationRequestError>,
+    public class IdentityErrorComparer : IEqualityComparer<AuthorizationRequestError>,
         IEqualityComparer<OpenIdConnectMessage>
     {
-        public static IdentityServiceErrorComparer Instance { get; } = new IdentityServiceErrorComparer();
+        public static IdentityErrorComparer Instance { get; } = new IdentityErrorComparer();
 
         public bool Equals(AuthorizationRequestError left, AuthorizationRequestError right)
         {

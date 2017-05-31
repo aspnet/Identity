@@ -14,7 +14,7 @@ using Xunit;
 
 namespace Microsoft.AspNetCore.Identity.Service.EntityFrameworkCore.Test
 {
-    public class ApplicationStoreTest : IdentityServiceSpecificationTestBase<IdentityUser, IdentityServiceApplication>, IClassFixture<ScratchDatabaseFixture>
+    public class ApplicationStoreTest : IdentityServiceSpecificationTestBase<IdentityUser, IdentityClientApplication>, IClassFixture<ScratchDatabaseFixture>
     {
         private readonly ScratchDatabaseFixture _fixture;
         public static readonly ApplicationErrorDescriber ErrorDescriber = new ApplicationErrorDescriber();
@@ -26,11 +26,11 @@ namespace Microsoft.AspNetCore.Identity.Service.EntityFrameworkCore.Test
 
         protected override void AddApplicationStore(IServiceCollection services, object context = null)
         {
-            services.AddSingleton<IApplicationStore<IdentityServiceApplication>>(
-                new ApplicationStore<IdentityServiceApplication, IdentityServiceScope<string>, IdentityServiceApplicationClaim<string>, IdentityServiceRedirectUri<string>, IdentityServiceDbContext<IdentityUser, IdentityServiceApplication>, string, string>((IdentityServiceDbContext<IdentityUser, IdentityServiceApplication>)context, new ApplicationErrorDescriber()));
+            services.AddSingleton<IApplicationStore<IdentityClientApplication>>(
+                new ApplicationStore<IdentityClientApplication, IdentityClientApplicationScope<string>, IdentityClientApplicationClaim<string>, IdentityClientApplicationRedirectUri<string>, IdentityClientApplicationsDbContext<IdentityUser, IdentityClientApplication>, string>((IdentityClientApplicationsDbContext<IdentityUser, IdentityClientApplication>)context, new ApplicationErrorDescriber()));
         }
 
-        public IdentityServiceDbContext<IdentityUser, IdentityServiceApplication> CreateContext(bool delete = false)
+        public IdentityClientApplicationsDbContext<IdentityUser, IdentityClientApplication> CreateContext(bool delete = false)
         {
             var db = DbUtil.Create<TestContext>(_fixture.ConnectionString);
             if (delete)
@@ -41,9 +41,9 @@ namespace Microsoft.AspNetCore.Identity.Service.EntityFrameworkCore.Test
             return db;
         }
 
-        protected override IdentityServiceApplication CreateTestApplication()
+        protected override IdentityClientApplication CreateTestApplication()
         {
-            return new IdentityServiceApplication
+            return new IdentityClientApplication
             {
                 Id = Guid.NewGuid().ToString(),
                 ClientId = Guid.NewGuid().ToString(),
@@ -56,7 +56,7 @@ namespace Microsoft.AspNetCore.Identity.Service.EntityFrameworkCore.Test
             return CreateContext();
         }
 
-        private class TestContext : IdentityServiceDbContext<IdentityUser, IdentityServiceApplication>
+        private class TestContext : IdentityClientApplicationsDbContext<IdentityUser, IdentityClientApplication>
         {
             public TestContext(DbContextOptions options) : base(options) { }
         }
@@ -73,7 +73,7 @@ namespace Microsoft.AspNetCore.Identity.Service.EntityFrameworkCore.Test
             using (var db = CreateContext())
             {
                 var manager = CreateManager(db);
-                IdentityServiceResultAssert.IsSuccess(await manager.CreateAsync(application));
+                IdentityResultAssert.IsSuccess(await manager.CreateAsync(application));
             }
             using (var db = CreateContext())
             using (var db2 = CreateContext())
@@ -87,8 +87,8 @@ namespace Microsoft.AspNetCore.Identity.Service.EntityFrameworkCore.Test
                 Assert.NotSame(application1, application2);
                 application1.Name = Guid.NewGuid().ToString();
                 application2.Name = Guid.NewGuid().ToString();
-                IdentityServiceResultAssert.IsSuccess(await manager1.UpdateAsync(application1));
-                IdentityServiceResultAssert.IsFailure(await manager2.UpdateAsync(application2), ErrorDescriber.ConcurrencyFailure());
+                IdentityResultAssert.IsSuccess(await manager1.UpdateAsync(application1));
+                IdentityResultAssert.IsFailure(await manager2.UpdateAsync(application2), ErrorDescriber.ConcurrencyFailure());
             }
         }
 
@@ -102,7 +102,7 @@ namespace Microsoft.AspNetCore.Identity.Service.EntityFrameworkCore.Test
             using (var db = CreateContext())
             {
                 var manager = CreateManager(db);
-                IdentityServiceResultAssert.IsSuccess(await manager.CreateAsync(application));
+                IdentityResultAssert.IsSuccess(await manager.CreateAsync(application));
             }
             using (var db1 = CreateContext())
             using (var db2 = CreateContext())
@@ -114,8 +114,8 @@ namespace Microsoft.AspNetCore.Identity.Service.EntityFrameworkCore.Test
                 Assert.NotSame(application, application2);
                 application.Name= Guid.NewGuid().ToString();
                 application2.Name = Guid.NewGuid().ToString();
-                IdentityServiceResultAssert.IsSuccess(await manager1.UpdateAsync(application));
-                IdentityServiceResultAssert.IsFailure(await manager2.UpdateAsync(application2), ErrorDescriber.ConcurrencyFailure());
+                IdentityResultAssert.IsSuccess(await manager1.UpdateAsync(application));
+                IdentityResultAssert.IsFailure(await manager2.UpdateAsync(application2), ErrorDescriber.ConcurrencyFailure());
             }
         }
 
@@ -129,7 +129,7 @@ namespace Microsoft.AspNetCore.Identity.Service.EntityFrameworkCore.Test
             using (var db = CreateContext())
             {
                 var manager = CreateManager(db);
-                IdentityServiceResultAssert.IsSuccess(await manager.CreateAsync(application));
+                IdentityResultAssert.IsSuccess(await manager.CreateAsync(application));
             }
             using (var db = CreateContext())
             using (var db2 = CreateContext())
@@ -142,8 +142,8 @@ namespace Microsoft.AspNetCore.Identity.Service.EntityFrameworkCore.Test
                 Assert.NotNull(application2);
                 Assert.NotSame(application1, application2);
                 application1.Name = Guid.NewGuid().ToString();
-                IdentityServiceResultAssert.IsSuccess(await manager1.UpdateAsync(application1));
-                IdentityServiceResultAssert.IsFailure(await manager2.DeleteAsync(application2), ErrorDescriber.ConcurrencyFailure());
+                IdentityResultAssert.IsSuccess(await manager1.UpdateAsync(application1));
+                IdentityResultAssert.IsFailure(await manager2.DeleteAsync(application2), ErrorDescriber.ConcurrencyFailure());
             }
         }
     }

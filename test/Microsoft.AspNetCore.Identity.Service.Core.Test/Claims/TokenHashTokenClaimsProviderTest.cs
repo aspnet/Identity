@@ -4,6 +4,8 @@
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity.Service.Internal;
+using Microsoft.AspNetCore.Identity.Service.Issuers;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Moq;
 using Xunit;
@@ -56,20 +58,20 @@ namespace Microsoft.AspNetCore.Identity.Service.Claims
             // Assert
             if (accessToken != null)
             {
-                Assert.Single(claims, c => c.Type.Equals(IdentityServiceClaimTypes.AccessTokenHash) && c.Value.Equals("access_token_hash"));
+                Assert.Single(claims, c => c.Type.Equals(TokenClaimTypes.AccessTokenHash) && c.Value.Equals("access_token_hash"));
             }
             else
             {
-                Assert.DoesNotContain(claims, c => c.Type.Equals(IdentityServiceClaimTypes.AccessTokenHash));
+                Assert.DoesNotContain(claims, c => c.Type.Equals(TokenClaimTypes.AccessTokenHash));
             }
 
             if (code != null)
             {
-                Assert.Single(claims, c => c.Type.Equals(IdentityServiceClaimTypes.CodeHash) && c.Value.Equals("code_hash"));
+                Assert.Single(claims, c => c.Type.Equals(TokenClaimTypes.CodeHash) && c.Value.Equals("code_hash"));
             }
             else
             {
-                Assert.DoesNotContain(claims, c => c.Type.Equals(IdentityServiceClaimTypes.CodeHash));
+                Assert.DoesNotContain(claims, c => c.Type.Equals(TokenClaimTypes.CodeHash));
             }
         }
 
@@ -80,10 +82,10 @@ namespace Microsoft.AspNetCore.Identity.Service.Claims
             public TestToken(string kind)
                 : base(new List<Claim>
                 {
-                    new Claim(IdentityServiceClaimTypes.TokenUniqueId, "id"),
-                    new Claim(IdentityServiceClaimTypes.IssuedAt, "issuedAt"),
-                    new Claim(IdentityServiceClaimTypes.Expires, "expires"),
-                    new Claim(IdentityServiceClaimTypes.NotBefore, "notBefore"),
+                    new Claim(TokenClaimTypes.TokenUniqueId, "id"),
+                    new Claim(TokenClaimTypes.IssuedAt, "issuedAt"),
+                    new Claim(TokenClaimTypes.Expires, "expires"),
+                    new Claim(TokenClaimTypes.NotBefore, "notBefore"),
                 })
             {
                 _kind = kind;

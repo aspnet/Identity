@@ -23,13 +23,13 @@ namespace Microsoft.AspNetCore.Identity.Service
             var clientId = await ApplicationManager.GetApplicationClientIdAsync(application);
 
             var applicationIdentity = new ClaimsIdentity();
-            applicationIdentity.AddClaim(new Claim(IdentityServiceClaimTypes.ObjectId, appId));
-            applicationIdentity.AddClaim(new Claim(IdentityServiceClaimTypes.ClientId, clientId));
+            applicationIdentity.AddClaim(new Claim(TokenClaimTypes.ObjectId, appId));
+            applicationIdentity.AddClaim(new Claim(TokenClaimTypes.ClientId, clientId));
 
             var logoutRedirectUris = await ApplicationManager.FindRegisteredLogoutUrisAsync(application);
             foreach (var logoutRedirectUri in logoutRedirectUris)
             {
-                applicationIdentity.AddClaim(new Claim(IdentityServiceClaimTypes.LogoutRedirectUri, logoutRedirectUri));
+                applicationIdentity.AddClaim(new Claim(TokenClaimTypes.LogoutRedirectUri, logoutRedirectUri));
             }
 
             return new ClaimsPrincipal(applicationIdentity);

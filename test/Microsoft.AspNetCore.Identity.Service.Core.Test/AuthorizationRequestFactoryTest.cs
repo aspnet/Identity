@@ -4,6 +4,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity.Service.Authorization;
+using Microsoft.AspNetCore.Identity.Service.Internal;
+using Microsoft.AspNetCore.Identity.Service.Validation;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Moq;
 using Xunit;
@@ -30,7 +33,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             // Assert
             Assert.False(result.IsValid);
-            Assert.Equal(expectedError, result.Error, IdentityServiceErrorComparer.Instance);
+            Assert.Equal(expectedError, result.Error, IdentityErrorComparer.Instance);
             Assert.Null(result.Error.RedirectUri);
             Assert.Null(result.Error.ResponseMode);
         }
@@ -53,7 +56,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             // Assert
             Assert.False(result.IsValid);
-            Assert.Equal(expectedError, result.Error, IdentityServiceErrorComparer.Instance);
+            Assert.Equal(expectedError, result.Error, IdentityErrorComparer.Instance);
             Assert.Null(result.Error.RedirectUri);
             Assert.Null(result.Error.ResponseMode);
         }
@@ -77,7 +80,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             // Assert
             Assert.False(result.IsValid);
-            Assert.Equal(expectedError, result.Error, IdentityServiceErrorComparer.Instance);
+            Assert.Equal(expectedError, result.Error, IdentityErrorComparer.Instance);
             Assert.Null(result.Error.RedirectUri);
             Assert.Null(result.Error.ResponseMode);
         }
@@ -101,7 +104,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             // Assert
             Assert.False(result.IsValid);
-            Assert.Equal(expectedError, result.Error, IdentityServiceErrorComparer.Instance);
+            Assert.Equal(expectedError, result.Error, IdentityErrorComparer.Instance);
             Assert.Null(result.Error.RedirectUri);
             Assert.Null(result.Error.ResponseMode);
         }
@@ -127,7 +130,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             // Assert
             Assert.False(result.IsValid);
-            Assert.Equal(expectedError, result.Error, IdentityServiceErrorComparer.Instance);
+            Assert.Equal(expectedError, result.Error, IdentityErrorComparer.Instance);
             Assert.Null(result.Error.RedirectUri);
             Assert.Null(result.Error.ResponseMode);
         }
@@ -153,7 +156,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             // Assert
             Assert.False(result.IsValid);
-            Assert.Equal(expectedError, result.Error, IdentityServiceErrorComparer.Instance);
+            Assert.Equal(expectedError, result.Error, IdentityErrorComparer.Instance);
             Assert.Null(result.Error.RedirectUri);
             Assert.Null(result.Error.ResponseMode);
         }
@@ -179,7 +182,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             // Assert
             Assert.False(result.IsValid);
-            Assert.Equal(expectedError, result.Error, IdentityServiceErrorComparer.Instance);
+            Assert.Equal(expectedError, result.Error, IdentityErrorComparer.Instance);
             Assert.Null(result.Error.RedirectUri);
             Assert.Null(result.Error.ResponseMode);
         }
@@ -205,7 +208,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             // Assert
             Assert.False(result.IsValid);
-            Assert.Equal(expectedError, result.Error, IdentityServiceErrorComparer.Instance);
+            Assert.Equal(expectedError, result.Error, IdentityErrorComparer.Instance);
             Assert.Null(result.Error.RedirectUri);
             Assert.Null(result.Error.ResponseMode);
         }
@@ -231,7 +234,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             // Assert
             Assert.False(result.IsValid);
-            Assert.Equal(expectedError, result.Error, IdentityServiceErrorComparer.Instance);
+            Assert.Equal(expectedError, result.Error, IdentityErrorComparer.Instance);
             Assert.Equal("http://www.example.com/callback", result.Error.RedirectUri);
             Assert.Equal(OpenIdConnectResponseMode.Query, result.Error.ResponseMode);
         }
@@ -258,7 +261,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             // Assert
             Assert.False(result.IsValid);
-            Assert.Equal(expectedError, result.Error, IdentityServiceErrorComparer.Instance);
+            Assert.Equal(expectedError, result.Error, IdentityErrorComparer.Instance);
             Assert.Equal("http://www.example.com/callback", result.Error.RedirectUri);
             Assert.Equal(OpenIdConnectResponseMode.Query, result.Error.ResponseMode);
         }
@@ -285,7 +288,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             // Assert
             Assert.False(result.IsValid);
-            Assert.Equal(expectedError, result.Error, IdentityServiceErrorComparer.Instance);
+            Assert.Equal(expectedError, result.Error, IdentityErrorComparer.Instance);
             Assert.Equal("http://www.example.com/callback", result.Error.RedirectUri);
             Assert.Equal(OpenIdConnectResponseMode.Query, result.Error.ResponseMode);
         }
@@ -312,7 +315,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             // Assert
             Assert.False(result.IsValid);
-            Assert.Equal(expectedError, result.Error, IdentityServiceErrorComparer.Instance);
+            Assert.Equal(expectedError, result.Error, IdentityErrorComparer.Instance);
             Assert.Equal("http://www.example.com/callback", result.Error.RedirectUri);
             Assert.Equal(OpenIdConnectResponseMode.Fragment, result.Error.ResponseMode);
         }
@@ -340,7 +343,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             // Assert
             Assert.False(result.IsValid);
-            Assert.Equal(expectedError, result.Error, IdentityServiceErrorComparer.Instance);
+            Assert.Equal(expectedError, result.Error, IdentityErrorComparer.Instance);
             Assert.Equal("http://www.example.com/callback", result.Error.RedirectUri);
             Assert.Equal(OpenIdConnectResponseMode.Query, result.Error.ResponseMode);
         }
@@ -375,7 +378,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             // Assert
             Assert.False(result.IsValid);
-            Assert.Equal(expectedError, result.Error, IdentityServiceErrorComparer.Instance);
+            Assert.Equal(expectedError, result.Error, IdentityErrorComparer.Instance);
             Assert.Equal("http://www.example.com/callback", result.Error.RedirectUri);
             Assert.Equal(errorResponseMode, result.Error.ResponseMode);
         }
@@ -409,7 +412,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             // Assert
             Assert.False(result.IsValid);
-            Assert.Equal(expectedError, result.Error, IdentityServiceErrorComparer.Instance);
+            Assert.Equal(expectedError, result.Error, IdentityErrorComparer.Instance);
             Assert.Equal("http://www.example.com/callback", result.Error.RedirectUri);
             Assert.Equal(OpenIdConnectResponseMode.Query, result.Error.ResponseMode);
         }
@@ -444,7 +447,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             // Assert
             Assert.False(result.IsValid);
-            Assert.Equal(expectedError, result.Error, IdentityServiceErrorComparer.Instance);
+            Assert.Equal(expectedError, result.Error, IdentityErrorComparer.Instance);
             Assert.Equal("http://www.example.com/callback", result.Error.RedirectUri);
             Assert.Equal(OpenIdConnectResponseMode.FormPost, result.Error.ResponseMode);
         }
@@ -481,7 +484,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             // Assert
             Assert.False(result.IsValid);
-            Assert.Equal(expectedError, result.Error, IdentityServiceErrorComparer.Instance);
+            Assert.Equal(expectedError, result.Error, IdentityErrorComparer.Instance);
             Assert.Equal("http://www.example.com/callback", result.Error.RedirectUri);
             Assert.Equal(OpenIdConnectResponseMode.FormPost, result.Error.ResponseMode);
         }
@@ -518,7 +521,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             // Assert
             Assert.False(result.IsValid);
-            Assert.Equal(expectedError, result.Error, IdentityServiceErrorComparer.Instance);
+            Assert.Equal(expectedError, result.Error, IdentityErrorComparer.Instance);
             Assert.Equal("http://www.example.com/callback", result.Error.RedirectUri);
             Assert.Equal(OpenIdConnectResponseMode.FormPost, result.Error.ResponseMode);
         }
@@ -553,7 +556,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             // Assert
             Assert.False(result.IsValid);
-            Assert.Equal(expectedError, result.Error, IdentityServiceErrorComparer.Instance);
+            Assert.Equal(expectedError, result.Error, IdentityErrorComparer.Instance);
             Assert.Equal("http://www.example.com/callback", result.Error.RedirectUri);
             Assert.Equal(OpenIdConnectResponseMode.FormPost, result.Error.ResponseMode);
         }
@@ -583,7 +586,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             // Assert
             Assert.False(result.IsValid);
-            Assert.Equal(expectedError, result.Error, IdentityServiceErrorComparer.Instance);
+            Assert.Equal(expectedError, result.Error, IdentityErrorComparer.Instance);
             Assert.Equal("http://www.example.com/callback", result.Error.RedirectUri);
             Assert.Equal(OpenIdConnectResponseMode.FormPost, result.Error.ResponseMode);
         }
@@ -613,7 +616,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             // Assert
             Assert.False(result.IsValid);
-            Assert.Equal(expectedError, result.Error, IdentityServiceErrorComparer.Instance);
+            Assert.Equal(expectedError, result.Error, IdentityErrorComparer.Instance);
             Assert.Equal("http://www.example.com/callback", result.Error.RedirectUri);
             Assert.Equal(OpenIdConnectResponseMode.FormPost, result.Error.ResponseMode);
         }
@@ -645,7 +648,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             // Assert
             Assert.False(result.IsValid);
-            Assert.Equal(expectedError, result.Error, IdentityServiceErrorComparer.Instance);
+            Assert.Equal(expectedError, result.Error, IdentityErrorComparer.Instance);
             Assert.Equal("http://www.example.com/callback", result.Error.RedirectUri);
             Assert.Equal(OpenIdConnectResponseMode.FormPost, result.Error.ResponseMode);
         }
@@ -677,7 +680,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             // Assert
             Assert.False(result.IsValid);
-            Assert.Equal(expectedError, result.Error, IdentityServiceErrorComparer.Instance);
+            Assert.Equal(expectedError, result.Error, IdentityErrorComparer.Instance);
             Assert.Equal("http://www.example.com/callback", result.Error.RedirectUri);
             Assert.Equal(OpenIdConnectResponseMode.FormPost, result.Error.ResponseMode);
         }
@@ -744,7 +747,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             // Assert
             Assert.False(result.IsValid);
-            Assert.Equal(expectedError, result.Error, IdentityServiceErrorComparer.Instance);
+            Assert.Equal(expectedError, result.Error, IdentityErrorComparer.Instance);
             Assert.Equal("http://www.example.com/callback", result.Error.RedirectUri);
             Assert.Equal(OpenIdConnectResponseMode.FormPost, result.Error.ResponseMode);
         }
@@ -777,7 +780,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             // Assert
             Assert.False(result.IsValid);
-            Assert.Equal(expectedError, result.Error, IdentityServiceErrorComparer.Instance);
+            Assert.Equal(expectedError, result.Error, IdentityErrorComparer.Instance);
             Assert.Equal("http://www.example.com/callback", result.Error.RedirectUri);
             Assert.Equal(OpenIdConnectResponseMode.FormPost, result.Error.ResponseMode);
         }
@@ -808,7 +811,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             // Assert
             Assert.False(result.IsValid);
-            Assert.Equal(expectedError, result.Error, IdentityServiceErrorComparer.Instance);
+            Assert.Equal(expectedError, result.Error, IdentityErrorComparer.Instance);
             Assert.Equal("http://www.example.com/callback", result.Error.RedirectUri);
             Assert.Equal(OpenIdConnectResponseMode.FormPost, result.Error.ResponseMode);
         }
@@ -840,7 +843,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             // Assert
             Assert.False(result.IsValid);
-            Assert.Equal(expectedError, result.Error, IdentityServiceErrorComparer.Instance);
+            Assert.Equal(expectedError, result.Error, IdentityErrorComparer.Instance);
             Assert.Equal("http://www.example.com/callback", result.Error.RedirectUri);
             Assert.Equal(OpenIdConnectResponseMode.FormPost, result.Error.ResponseMode);
         }
@@ -872,7 +875,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             // Assert
             Assert.False(result.IsValid);
-            Assert.Equal(expectedError, result.Error, IdentityServiceErrorComparer.Instance);
+            Assert.Equal(expectedError, result.Error, IdentityErrorComparer.Instance);
             Assert.Equal("http://www.example.com/callback", result.Error.RedirectUri);
             Assert.Equal(OpenIdConnectResponseMode.FormPost, result.Error.ResponseMode);
         }

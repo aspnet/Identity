@@ -11,8 +11,8 @@ namespace Microsoft.AspNetCore.Identity.Service
         where TApplication : class
     {
         Task<IEnumerable<string>> FindScopesAsync(TApplication application, CancellationToken cancellationToken);
-        Task<IdentityServiceResult> AddScopeAsync(TApplication application, string scope, CancellationToken cancellationToken);
-        Task<IdentityServiceResult> UpdateScopeAsync(TApplication application, string oldScope, string newScope, CancellationToken cancellationToken);
-        Task<IdentityServiceResult> RemoveScopeAsync(TApplication application, string scope, CancellationToken cancellationToken);
+        Task<IdentityResult> AddScopeAsync(TApplication application, string scope, CancellationToken cancellationToken);
+        Task<IdentityResult> UpdateScopeAsync(TApplication application, string oldScope, string newScope, CancellationToken cancellationToken);
+        Task<IdentityResult> RemoveScopeAsync(TApplication application, string scope, CancellationToken cancellationToken);
     }
 }

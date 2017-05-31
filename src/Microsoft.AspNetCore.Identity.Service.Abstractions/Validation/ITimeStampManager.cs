@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.AspNetCore.Identity.Service
+namespace Microsoft.AspNetCore.Identity.Service.Validation
 {
     public interface ITimeStampManager
     {

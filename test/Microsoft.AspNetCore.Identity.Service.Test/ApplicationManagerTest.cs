@@ -25,7 +25,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             var store = new Mock<IApplicationStore<TestApplication>>();
             store.Setup(s => s.CreateAsync(application, CancellationToken.None))
-                .ReturnsAsync(IdentityServiceResult.Success)
+                .ReturnsAsync(IdentityResult.Success)
                 .Verifiable();
 
             var applicationManager = GetApplicationManager(store.Object, application);
@@ -46,11 +46,11 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             var validator = new Mock<IApplicationValidator<TestApplication>>();
             validator.Setup(v => v.ValidateAsync(It.IsAny<ApplicationManager<TestApplication>>(), application))
-                .ReturnsAsync(IdentityServiceResult.Success);
+                .ReturnsAsync(IdentityResult.Success);
 
             var store = new Mock<IApplicationStore<TestApplication>>();
             store.Setup(s => s.CreateAsync(application, CancellationToken.None))
-                .ReturnsAsync(IdentityServiceResult.Success)
+                .ReturnsAsync(IdentityResult.Success)
                 .Verifiable();
 
             var applicationManager = GetApplicationManager(store.Object, application, validator.Object);
@@ -72,7 +72,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             var validator = new Mock<IApplicationValidator<TestApplication>>();
             validator.Setup(v => v.ValidateAsync(It.IsAny<ApplicationManager<TestApplication>>(), application))
-                .ReturnsAsync(IdentityServiceResult.Failed(new IdentityServiceError()));
+                .ReturnsAsync(IdentityResult.Failed(new IdentityError()));
 
             var store = new Mock<IApplicationStore<TestApplication>>();
 
@@ -95,7 +95,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             var store = new Mock<IApplicationStore<TestApplication>>();
             store.Setup(s => s.UpdateAsync(application, CancellationToken.None))
-                .ReturnsAsync(IdentityServiceResult.Success)
+                .ReturnsAsync(IdentityResult.Success)
                 .Verifiable();
 
             var applicationManager = GetApplicationManager(store.Object, application);
@@ -116,11 +116,11 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             var validator = new Mock<IApplicationValidator<TestApplication>>();
             validator.Setup(v => v.ValidateAsync(It.IsAny<ApplicationManager<TestApplication>>(), application))
-                .ReturnsAsync(IdentityServiceResult.Success);
+                .ReturnsAsync(IdentityResult.Success);
 
             var store = new Mock<IApplicationStore<TestApplication>>();
             store.Setup(s => s.UpdateAsync(application, CancellationToken.None))
-                .ReturnsAsync(IdentityServiceResult.Success)
+                .ReturnsAsync(IdentityResult.Success)
                 .Verifiable();
 
             var applicationManager = GetApplicationManager(store.Object, application, validator.Object);
@@ -142,7 +142,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             var validator = new Mock<IApplicationValidator<TestApplication>>();
             validator.Setup(v => v.ValidateAsync(It.IsAny<ApplicationManager<TestApplication>>(), application))
-                .ReturnsAsync(IdentityServiceResult.Failed(new IdentityServiceError()));
+                .ReturnsAsync(IdentityResult.Failed(new IdentityError()));
 
             var store = new Mock<IApplicationStore<TestApplication>>();
 
@@ -165,7 +165,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             var store = new Mock<IApplicationStore<TestApplication>>();
             store.Setup(s => s.DeleteAsync(application, CancellationToken.None))
-                .ReturnsAsync(IdentityServiceResult.Success)
+                .ReturnsAsync(IdentityResult.Success)
                 .Verifiable();
 
             var applicationManager = GetApplicationManager(store.Object, application);
@@ -316,7 +316,7 @@ namespace Microsoft.AspNetCore.Identity.Service
                 .Verifiable();
 
             store.Setup(s => s.UpdateAsync(application, CancellationToken.None))
-                .ReturnsAsync(IdentityServiceResult.Success)
+                .ReturnsAsync(IdentityResult.Success)
                 .Verifiable();
 
             var applicationManager = GetApplicationManager(store.Object, application);
@@ -341,12 +341,12 @@ namespace Microsoft.AspNetCore.Identity.Service
                 .Verifiable();
 
             store.Setup(s => s.UpdateAsync(application, CancellationToken.None))
-                .ReturnsAsync(IdentityServiceResult.Success)
+                .ReturnsAsync(IdentityResult.Success)
                 .Verifiable();
 
             var validator = new Mock<IApplicationValidator<TestApplication>>();
             validator.Setup(v => v.ValidateAsync(It.IsAny<ApplicationManager<TestApplication>>(), application))
-                .ReturnsAsync(IdentityServiceResult.Success);
+                .ReturnsAsync(IdentityResult.Success);
 
             var applicationManager = GetApplicationManager(store.Object, application, validator.Object);
 
@@ -371,7 +371,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             var validator = new Mock<IApplicationValidator<TestApplication>>();
             validator.Setup(v => v.ValidateAsync(It.IsAny<ApplicationManager<TestApplication>>(), application))
-                .ReturnsAsync(IdentityServiceResult.Failed(new IdentityServiceError()));
+                .ReturnsAsync(IdentityResult.Failed(new IdentityError()));
 
             var applicationManager = GetApplicationManager(store.Object, application, validator.Object);
 
@@ -423,7 +423,7 @@ namespace Microsoft.AspNetCore.Identity.Service
                 .Verifiable();
 
             store.Setup(s => s.UpdateAsync(application, CancellationToken.None))
-                .ReturnsAsync(IdentityServiceResult.Success)
+                .ReturnsAsync(IdentityResult.Success)
                 .Verifiable();
 
             var applicationManager = GetApplicationManager(store.Object, application);
@@ -441,7 +441,7 @@ namespace Microsoft.AspNetCore.Identity.Service
         {
             // Arrange
             var application = new TestApplication { Name = "Application", ClientId = "ClientId" };
-            var expectedError = new List<IdentityServiceError> { ErrorDescriber.ApplicationAlreadyHasClientSecret() };
+            var expectedError = new List<IdentityError> { ErrorDescriber.ApplicationAlreadyHasClientSecret() };
 
             var store = new Mock<IApplicationStore<TestApplication>>()
                 .As<IApplicationClientSecretStore<TestApplication>>();
@@ -481,7 +481,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             var validator = new Mock<IApplicationValidator<TestApplication>>();
             validator.Setup(v => v.ValidateAsync(It.IsAny<ApplicationManager<TestApplication>>(), application))
-                .ReturnsAsync(IdentityServiceResult.Failed(new IdentityServiceError()));
+                .ReturnsAsync(IdentityResult.Failed(new IdentityError()));
 
             var applicationManager = GetApplicationManager(store.Object, application, validator.Object);
 
@@ -507,7 +507,7 @@ namespace Microsoft.AspNetCore.Identity.Service
                 .Verifiable();
 
             store.Setup(s => s.UpdateAsync(application, CancellationToken.None))
-                .ReturnsAsync(IdentityServiceResult.Success)
+                .ReturnsAsync(IdentityResult.Success)
                 .Verifiable();
 
             var applicationManager = GetApplicationManager(store.Object, application);
@@ -535,7 +535,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             var validator = new Mock<IApplicationValidator<TestApplication>>();
             validator.Setup(v => v.ValidateAsync(It.IsAny<ApplicationManager<TestApplication>>(), application))
-                .ReturnsAsync(IdentityServiceResult.Failed(new IdentityServiceError()));
+                .ReturnsAsync(IdentityResult.Failed(new IdentityError()));
 
             var applicationManager = GetApplicationManager(store.Object, application, validator.Object);
 
@@ -561,7 +561,7 @@ namespace Microsoft.AspNetCore.Identity.Service
                 .Verifiable();
 
             store.Setup(s => s.UpdateAsync(application, CancellationToken.None))
-                .ReturnsAsync(IdentityServiceResult.Success)
+                .ReturnsAsync(IdentityResult.Success)
                 .Verifiable();
 
             var applicationManager = GetApplicationManager(store.Object, application);
@@ -589,7 +589,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             var validator = new Mock<IApplicationValidator<TestApplication>>();
             validator.Setup(v => v.ValidateAsync(It.IsAny<ApplicationManager<TestApplication>>(), application))
-                .ReturnsAsync(IdentityServiceResult.Failed(new IdentityServiceError()));
+                .ReturnsAsync(IdentityResult.Failed(new IdentityError()));
 
             var applicationManager = GetApplicationManager(store.Object, application, validator.Object);
 
@@ -641,7 +641,7 @@ namespace Microsoft.AspNetCore.Identity.Service
                 .ReturnsAsync(application);
 
             store.Setup(s => s.UpdateAsync(application, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(IdentityServiceResult.Success);
+                .ReturnsAsync(IdentityResult.Success);
 
             var secretStore = store.As<IApplicationClientSecretStore<TestApplication>>();
             secretStore.Setup(s => s.HasClientSecretAsync(application, CancellationToken.None))
@@ -725,11 +725,11 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             var store = new Mock<IApplicationStore<TestApplication>>();
             store.Setup(s => s.UpdateAsync(application, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(IdentityServiceResult.Success);
+                .ReturnsAsync(IdentityResult.Success);
 
             var redirectUriStore = store.As<IRedirectUriStore<TestApplication>>();
             redirectUriStore.Setup(s => s.RegisterRedirectUriAsync(application, It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(IdentityServiceResult.Success);
+                .ReturnsAsync(IdentityResult.Success);
 
             var applicationManager = GetApplicationManager(redirectUriStore.Object, application);
 
@@ -751,7 +751,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             var validator = new Mock<IApplicationValidator<TestApplication>>();
             validator.Setup(s => s.ValidateRedirectUriAsync(It.IsAny<ApplicationManager<TestApplication>>(), application, It.IsAny<string>()))
-                .ReturnsAsync(IdentityServiceResult.Failed(new IdentityServiceError()));
+                .ReturnsAsync(IdentityResult.Failed(new IdentityError()));
 
             var applicationManager = GetApplicationManager(redirectUriStore.Object, application, validator.Object);
 
@@ -771,14 +771,14 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             var store = new Mock<IApplicationStore<TestApplication>>();
             store.Setup(s => s.UpdateAsync(application, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(IdentityServiceResult.Success);
+                .ReturnsAsync(IdentityResult.Success);
 
             var redirectUriStore = store.As<IRedirectUriStore<TestApplication>>();
             redirectUriStore.Setup(s => s.FindRegisteredUrisAsync(application, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new[] { "https://www.example.com/sign-in" });
 
             redirectUriStore.Setup(s => s.UpdateRedirectUriAsync(application, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(IdentityServiceResult.Success);
+                .ReturnsAsync(IdentityResult.Success);
 
             var applicationManager = GetApplicationManager(redirectUriStore.Object, application);
 
@@ -825,7 +825,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             var validator = new Mock<IApplicationValidator<TestApplication>>();
             validator.Setup(s => s.ValidateRedirectUriAsync(It.IsAny<ApplicationManager<TestApplication>>(), application, It.IsAny<string>()))
-                .ReturnsAsync(IdentityServiceResult.Failed(new IdentityServiceError()));
+                .ReturnsAsync(IdentityResult.Failed(new IdentityError()));
 
             var applicationManager = GetApplicationManager(redirectUriStore.Object, application, validator.Object);
 
@@ -845,14 +845,14 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             var store = new Mock<IApplicationStore<TestApplication>>();
             store.Setup(s => s.UpdateAsync(application, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(IdentityServiceResult.Success);
+                .ReturnsAsync(IdentityResult.Success);
 
             var redirectUriStore = store.As<IRedirectUriStore<TestApplication>>();
             redirectUriStore.Setup(s => s.FindRegisteredUrisAsync(application, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new[] { "https://www.example.com/sign-in" });
 
             redirectUriStore.Setup(s => s.UnregisterRedirectUriAsync(application, It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(IdentityServiceResult.Success);
+                .ReturnsAsync(IdentityResult.Success);
 
             var applicationManager = GetApplicationManager(redirectUriStore.Object, application);
 
@@ -917,11 +917,11 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             var store = new Mock<IApplicationStore<TestApplication>>();
             store.Setup(s => s.UpdateAsync(application, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(IdentityServiceResult.Success);
+                .ReturnsAsync(IdentityResult.Success);
 
             var logoutUriStore = store.As<IRedirectUriStore<TestApplication>>();
             logoutUriStore.Setup(s => s.RegisterLogoutRedirectUriAsync(application, It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(IdentityServiceResult.Success);
+                .ReturnsAsync(IdentityResult.Success);
 
             var applicationManager = GetApplicationManager(logoutUriStore.Object, application);
 
@@ -943,7 +943,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             var validator = new Mock<IApplicationValidator<TestApplication>>();
             validator.Setup(s => s.ValidateLogoutUriAsync(It.IsAny<ApplicationManager<TestApplication>>(), application, It.IsAny<string>()))
-                .ReturnsAsync(IdentityServiceResult.Failed(new IdentityServiceError()));
+                .ReturnsAsync(IdentityResult.Failed(new IdentityError()));
 
             var applicationManager = GetApplicationManager(logoutUriStore.Object, application, validator.Object);
 
@@ -963,14 +963,14 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             var store = new Mock<IApplicationStore<TestApplication>>();
             store.Setup(s => s.UpdateAsync(application, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(IdentityServiceResult.Success);
+                .ReturnsAsync(IdentityResult.Success);
 
             var logoutUriStore = store.As<IRedirectUriStore<TestApplication>>();
             logoutUriStore.Setup(s => s.FindRegisteredLogoutUrisAsync(application, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new[] { "https://www.example.com/sign-in" });
 
             logoutUriStore.Setup(s => s.UpdateLogoutRedirectUriAsync(application, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(IdentityServiceResult.Success);
+                .ReturnsAsync(IdentityResult.Success);
 
             var applicationManager = GetApplicationManager(logoutUriStore.Object, application);
 
@@ -1017,7 +1017,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             var validator = new Mock<IApplicationValidator<TestApplication>>();
             validator.Setup(s => s.ValidateLogoutUriAsync(It.IsAny<ApplicationManager<TestApplication>>(), application, It.IsAny<string>()))
-                .ReturnsAsync(IdentityServiceResult.Failed(new IdentityServiceError()));
+                .ReturnsAsync(IdentityResult.Failed(new IdentityError()));
 
             var applicationManager = GetApplicationManager(logoutUriStore.Object, application, validator.Object);
 
@@ -1037,14 +1037,14 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             var store = new Mock<IApplicationStore<TestApplication>>();
             store.Setup(s => s.UpdateAsync(application, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(IdentityServiceResult.Success);
+                .ReturnsAsync(IdentityResult.Success);
 
             var logoutUriStore = store.As<IRedirectUriStore<TestApplication>>();
             logoutUriStore.Setup(s => s.FindRegisteredLogoutUrisAsync(application, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new[] { "https://www.example.com/sign-in" });
 
             logoutUriStore.Setup(s => s.UnregisterLogoutRedirectUriAsync(application, It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(IdentityServiceResult.Success);
+                .ReturnsAsync(IdentityResult.Success);
 
             var applicationManager = GetApplicationManager(logoutUriStore.Object, application);
 
@@ -1106,11 +1106,11 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             var store = new Mock<IApplicationStore<TestApplication>>();
             store.Setup(s => s.UpdateAsync(application, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(IdentityServiceResult.Success);
+                .ReturnsAsync(IdentityResult.Success);
 
             var scopeStore = store.As<IApplicationScopeStore<TestApplication>>();
             scopeStore.Setup(s => s.AddScopeAsync(application, It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(IdentityServiceResult.Success);
+                .ReturnsAsync(IdentityResult.Success);
 
             var applicationManager = GetApplicationManager(scopeStore.Object, application);
 
@@ -1132,7 +1132,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             var validator = new Mock<IApplicationValidator<TestApplication>>();
             validator.Setup(s => s.ValidateScopeAsync(It.IsAny<ApplicationManager<TestApplication>>(), application, It.IsAny<string>()))
-                .ReturnsAsync(IdentityServiceResult.Failed(new IdentityServiceError()));
+                .ReturnsAsync(IdentityResult.Failed(new IdentityError()));
 
             var applicationManager = GetApplicationManager(scopeStore.Object, application, validator.Object);
 
@@ -1152,14 +1152,14 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             var store = new Mock<IApplicationStore<TestApplication>>();
             store.Setup(s => s.UpdateAsync(application, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(IdentityServiceResult.Success);
+                .ReturnsAsync(IdentityResult.Success);
 
             var scopeStore = store.As<IApplicationScopeStore<TestApplication>>();
             scopeStore.Setup(s => s.FindScopesAsync(application, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new[] { "openid" });
 
             scopeStore.Setup(s => s.UpdateScopeAsync(application, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(IdentityServiceResult.Success);
+                .ReturnsAsync(IdentityResult.Success);
 
             var applicationManager = GetApplicationManager(scopeStore.Object, application);
 
@@ -1206,7 +1206,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             var validator = new Mock<IApplicationValidator<TestApplication>>();
             validator.Setup(s => s.ValidateScopeAsync(It.IsAny<ApplicationManager<TestApplication>>(), application, It.IsAny<string>()))
-                .ReturnsAsync(IdentityServiceResult.Failed(new IdentityServiceError()));
+                .ReturnsAsync(IdentityResult.Failed(new IdentityError()));
 
             var applicationManager = GetApplicationManager(scopeStore.Object, application, validator.Object);
 
@@ -1226,14 +1226,14 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             var store = new Mock<IApplicationStore<TestApplication>>();
             store.Setup(s => s.UpdateAsync(application, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(IdentityServiceResult.Success);
+                .ReturnsAsync(IdentityResult.Success);
 
             var scopeStore = store.As<IApplicationScopeStore<TestApplication>>();
             scopeStore.Setup(s => s.FindScopesAsync(application, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new[] { "openid" });
 
             scopeStore.Setup(s => s.RemoveScopeAsync(application, It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(IdentityServiceResult.Success);
+                .ReturnsAsync(IdentityResult.Success);
 
             var applicationManager = GetApplicationManager(scopeStore.Object, application);
 
@@ -1296,7 +1296,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             var store = new Mock<IApplicationStore<TestApplication>>();
             store.Setup(s => s.UpdateAsync(application, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(IdentityServiceResult.Success);
+                .ReturnsAsync(IdentityResult.Success);
 
             var claimsStore = store.As<IApplicationClaimStore<TestApplication>>();
             claimsStore.Setup(s => s.AddClaimsAsync(application, It.IsAny<IEnumerable<Claim>>(), It.IsAny<CancellationToken>()))
@@ -1322,7 +1322,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             var validator = new Mock<IApplicationValidator<TestApplication>>();
             validator.Setup(s => s.ValidateClaimAsync(It.IsAny<ApplicationManager<TestApplication>>(), application, It.IsAny<Claim>()))
-                .ReturnsAsync(IdentityServiceResult.Failed(new IdentityServiceError()));
+                .ReturnsAsync(IdentityResult.Failed(new IdentityError()));
 
             var applicationManager = GetApplicationManager(claimsStore.Object, application, validator.Object);
 
@@ -1342,7 +1342,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             var store = new Mock<IApplicationStore<TestApplication>>();
             store.Setup(s => s.UpdateAsync(application, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(IdentityServiceResult.Success);
+                .ReturnsAsync(IdentityResult.Success);
 
             var claimsStore = store.As<IApplicationClaimStore<TestApplication>>();
             claimsStore.Setup(s => s.ReplaceClaimAsync(application, It.IsAny<Claim>(), It.IsAny<Claim>(), It.IsAny<CancellationToken>()))
@@ -1368,7 +1368,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             var validator = new Mock<IApplicationValidator<TestApplication>>();
             validator.Setup(s => s.ValidateClaimAsync(It.IsAny<ApplicationManager<TestApplication>>(), application, It.IsAny<Claim>()))
-                .ReturnsAsync(IdentityServiceResult.Failed(new IdentityServiceError()));
+                .ReturnsAsync(IdentityResult.Failed(new IdentityError()));
 
             var applicationManager = GetApplicationManager(claimsStore.Object, application, validator.Object);
 
@@ -1388,7 +1388,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             var store = new Mock<IApplicationStore<TestApplication>>();
             store.Setup(s => s.UpdateAsync(application, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(IdentityServiceResult.Success);
+                .ReturnsAsync(IdentityResult.Success);
 
             var claimsStore = store.As<IApplicationClaimStore<TestApplication>>();
 
@@ -1427,13 +1427,13 @@ namespace Microsoft.AspNetCore.Identity.Service
                 new ApplicationErrorDescriber());
         }
 
-        private class ErrorsComparer : IEqualityComparer<IEnumerable<IdentityServiceError>>
+        private class ErrorsComparer : IEqualityComparer<IEnumerable<IdentityError>>
         {
             public static ErrorsComparer Instance = new ErrorsComparer();
 
             public bool Equals(
-                IEnumerable<IdentityServiceError> left,
-                IEnumerable<IdentityServiceError> right)
+                IEnumerable<IdentityError> left,
+                IEnumerable<IdentityError> right)
             {
                 var leftOrdered = left.OrderBy(o => o.Code).ThenBy(o => o.Description).ToArray();
                 var rightOrdered = right.OrderBy(o => o.Code).ThenBy(o => o.Description).ToArray();
@@ -1443,7 +1443,7 @@ namespace Microsoft.AspNetCore.Identity.Service
                     s.Description.Equals(rightOrdered[i].Description)).All(a => a);
             }
 
-            public int GetHashCode(IEnumerable<IdentityServiceError> obj)
+            public int GetHashCode(IEnumerable<IdentityError> obj)
             {
                 return 1;
             }

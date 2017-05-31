@@ -26,8 +26,8 @@ namespace Microsoft.AspNetCore.Identity.Service
             // Arrange
             var claims = new List<Claim>()
             {
-                new Claim(IdentityServiceClaimTypes.UserId,"userId"),
-                new Claim(IdentityServiceClaimTypes.UserId,"userId"),
+                new Claim(TokenClaimTypes.UserId,"userId"),
+                new Claim(TokenClaimTypes.UserId,"userId"),
             };
 
             // Act & Assert
@@ -40,7 +40,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             // Arrange
             var claims = new List<Claim>()
             {
-                new Claim(IdentityServiceClaimTypes.UserId, "userId")
+                new Claim(TokenClaimTypes.UserId, "userId")
             };
 
             // Act & Assert
@@ -53,9 +53,9 @@ namespace Microsoft.AspNetCore.Identity.Service
             // Arrange
             var claims = new List<Claim>()
             {
-                new Claim(IdentityServiceClaimTypes.UserId, "userId"),
-                new Claim(IdentityServiceClaimTypes.ClientId, "clientId"),
-                new Claim(IdentityServiceClaimTypes.ClientId, "clientId")
+                new Claim(TokenClaimTypes.UserId, "userId"),
+                new Claim(TokenClaimTypes.ClientId, "clientId"),
+                new Claim(TokenClaimTypes.ClientId, "clientId")
             };
 
             // Act & Assert
@@ -68,9 +68,9 @@ namespace Microsoft.AspNetCore.Identity.Service
             // Arrange
             var claims = new List<Claim>()
             {
-                new Claim(IdentityServiceClaimTypes.UserId, "userId"),
-                new Claim(IdentityServiceClaimTypes.ClientId, "clientId"),
-                new Claim(IdentityServiceClaimTypes.RedirectUri, "redirectUri1"),
+                new Claim(TokenClaimTypes.UserId, "userId"),
+                new Claim(TokenClaimTypes.ClientId, "clientId"),
+                new Claim(TokenClaimTypes.RedirectUri, "redirectUri1"),
             };
 
             // Act & Assert
@@ -83,11 +83,11 @@ namespace Microsoft.AspNetCore.Identity.Service
             // Arrange
             var claims = new List<Claim>()
             {
-                new Claim(IdentityServiceClaimTypes.UserId, "userId"),
-                new Claim(IdentityServiceClaimTypes.ClientId, "clientId"),
-                new Claim(IdentityServiceClaimTypes.RedirectUri, "redirectUri1"),
-                new Claim(IdentityServiceClaimTypes.Scope, "openid profile"),
-                new Claim(IdentityServiceClaimTypes.Scope, "offline_access"),
+                new Claim(TokenClaimTypes.UserId, "userId"),
+                new Claim(TokenClaimTypes.ClientId, "clientId"),
+                new Claim(TokenClaimTypes.RedirectUri, "redirectUri1"),
+                new Claim(TokenClaimTypes.Scope, "openid profile"),
+                new Claim(TokenClaimTypes.Scope, "offline_access"),
             };
 
             // Act & Assert
@@ -100,10 +100,10 @@ namespace Microsoft.AspNetCore.Identity.Service
             // Arrange
             var claims = new List<Claim>()
             {
-                new Claim(IdentityServiceClaimTypes.UserId, "userId"),
-                new Claim(IdentityServiceClaimTypes.ClientId, "clientId"),
-                new Claim(IdentityServiceClaimTypes.RedirectUri, "redirectUri1"),
-                new Claim(IdentityServiceClaimTypes.Scope, "openid"),
+                new Claim(TokenClaimTypes.UserId, "userId"),
+                new Claim(TokenClaimTypes.ClientId, "clientId"),
+                new Claim(TokenClaimTypes.RedirectUri, "redirectUri1"),
+                new Claim(TokenClaimTypes.Scope, "openid"),
             };
 
             // Act & Assert
@@ -116,11 +116,11 @@ namespace Microsoft.AspNetCore.Identity.Service
             // Arrange
             var claims = new List<Claim>()
             {
-                new Claim(IdentityServiceClaimTypes.UserId, "userId"),
-                new Claim(IdentityServiceClaimTypes.ClientId, "clientId"),
-                new Claim(IdentityServiceClaimTypes.RedirectUri, "redirectUri1"),
-                new Claim(IdentityServiceClaimTypes.Scope, "openid"),
-                new Claim(IdentityServiceClaimTypes.GrantedToken, "access_token"),
+                new Claim(TokenClaimTypes.UserId, "userId"),
+                new Claim(TokenClaimTypes.ClientId, "clientId"),
+                new Claim(TokenClaimTypes.RedirectUri, "redirectUri1"),
+                new Claim(TokenClaimTypes.Scope, "openid"),
+                new Claim(TokenClaimTypes.GrantedToken, "access_token"),
             };
 
             // Act & Assert
@@ -133,13 +133,13 @@ namespace Microsoft.AspNetCore.Identity.Service
             // Arrange
             var claims = new List<Claim>()
             {
-                new Claim(IdentityServiceClaimTypes.UserId, "userId"),
-                new Claim(IdentityServiceClaimTypes.ClientId, "clientId"),
-                new Claim(IdentityServiceClaimTypes.RedirectUri, "redirectUri1"),
-                new Claim(IdentityServiceClaimTypes.Scope, "openid"),
-                new Claim(IdentityServiceClaimTypes.GrantedToken, "access_token"),
-                new Claim(IdentityServiceClaimTypes.TokenUniqueId, "id1"),
-                new Claim(IdentityServiceClaimTypes.TokenUniqueId, "id2"),
+                new Claim(TokenClaimTypes.UserId, "userId"),
+                new Claim(TokenClaimTypes.ClientId, "clientId"),
+                new Claim(TokenClaimTypes.RedirectUri, "redirectUri1"),
+                new Claim(TokenClaimTypes.Scope, "openid"),
+                new Claim(TokenClaimTypes.GrantedToken, "access_token"),
+                new Claim(TokenClaimTypes.TokenUniqueId, "id1"),
+                new Claim(TokenClaimTypes.TokenUniqueId, "id2"),
             };
 
             // Act & Assert
@@ -152,12 +152,12 @@ namespace Microsoft.AspNetCore.Identity.Service
             // Arrange
             var claims = new List<Claim>()
             {
-                new Claim(IdentityServiceClaimTypes.UserId, "userId"),
-                new Claim(IdentityServiceClaimTypes.ClientId, "clientId"),
-                new Claim(IdentityServiceClaimTypes.RedirectUri, "redirectUri1"),
-                new Claim(IdentityServiceClaimTypes.Scope, "openid"),
-                new Claim(IdentityServiceClaimTypes.GrantedToken, "access_token"),
-                new Claim(IdentityServiceClaimTypes.TokenUniqueId, "tuid"),
+                new Claim(TokenClaimTypes.UserId, "userId"),
+                new Claim(TokenClaimTypes.ClientId, "clientId"),
+                new Claim(TokenClaimTypes.RedirectUri, "redirectUri1"),
+                new Claim(TokenClaimTypes.Scope, "openid"),
+                new Claim(TokenClaimTypes.GrantedToken, "access_token"),
+                new Claim(TokenClaimTypes.TokenUniqueId, "tuid"),
             };
 
             // Act & Assert
@@ -170,14 +170,14 @@ namespace Microsoft.AspNetCore.Identity.Service
             // Arrange
             var claims = new List<Claim>()
             {
-                new Claim(IdentityServiceClaimTypes.UserId, "userId"),
-                new Claim(IdentityServiceClaimTypes.ClientId, "clientId"),
-                new Claim(IdentityServiceClaimTypes.RedirectUri, "redirectUri1"),
-                new Claim(IdentityServiceClaimTypes.Scope, "openid"),
-                new Claim(IdentityServiceClaimTypes.GrantedToken, "access_token"),
-                new Claim(IdentityServiceClaimTypes.TokenUniqueId, "tuid"),
-                new Claim(IdentityServiceClaimTypes.IssuedAt, "issuedAt1"),
-                new Claim(IdentityServiceClaimTypes.IssuedAt, "issuedAt2"),
+                new Claim(TokenClaimTypes.UserId, "userId"),
+                new Claim(TokenClaimTypes.ClientId, "clientId"),
+                new Claim(TokenClaimTypes.RedirectUri, "redirectUri1"),
+                new Claim(TokenClaimTypes.Scope, "openid"),
+                new Claim(TokenClaimTypes.GrantedToken, "access_token"),
+                new Claim(TokenClaimTypes.TokenUniqueId, "tuid"),
+                new Claim(TokenClaimTypes.IssuedAt, "issuedAt1"),
+                new Claim(TokenClaimTypes.IssuedAt, "issuedAt2"),
             };
 
             // Act & Assert
@@ -190,13 +190,13 @@ namespace Microsoft.AspNetCore.Identity.Service
             // Arrange
             var claims = new List<Claim>()
             {
-                new Claim(IdentityServiceClaimTypes.UserId, "userId"),
-                new Claim(IdentityServiceClaimTypes.ClientId, "clientId"),
-                new Claim(IdentityServiceClaimTypes.RedirectUri, "redirectUri1"),
-                new Claim(IdentityServiceClaimTypes.Scope, "openid"),
-                new Claim(IdentityServiceClaimTypes.GrantedToken, "access_token"),
-                new Claim(IdentityServiceClaimTypes.TokenUniqueId, "tuid"),
-                new Claim(IdentityServiceClaimTypes.IssuedAt, "issuedAt"),
+                new Claim(TokenClaimTypes.UserId, "userId"),
+                new Claim(TokenClaimTypes.ClientId, "clientId"),
+                new Claim(TokenClaimTypes.RedirectUri, "redirectUri1"),
+                new Claim(TokenClaimTypes.Scope, "openid"),
+                new Claim(TokenClaimTypes.GrantedToken, "access_token"),
+                new Claim(TokenClaimTypes.TokenUniqueId, "tuid"),
+                new Claim(TokenClaimTypes.IssuedAt, "issuedAt"),
             };
 
             // Act & Assert
@@ -209,15 +209,15 @@ namespace Microsoft.AspNetCore.Identity.Service
             // Arrange
             var claims = new List<Claim>()
             {
-                new Claim(IdentityServiceClaimTypes.UserId, "userId"),
-                new Claim(IdentityServiceClaimTypes.ClientId, "clientId"),
-                new Claim(IdentityServiceClaimTypes.RedirectUri, "redirectUri1"),
-                new Claim(IdentityServiceClaimTypes.Scope, "openid"),
-                new Claim(IdentityServiceClaimTypes.GrantedToken, "access_token"),
-                new Claim(IdentityServiceClaimTypes.TokenUniqueId, "tuid"),
-                new Claim(IdentityServiceClaimTypes.IssuedAt, "issuedAt"),
-                new Claim(IdentityServiceClaimTypes.Expires, "expires"),
-                new Claim(IdentityServiceClaimTypes.Expires, "expires"),
+                new Claim(TokenClaimTypes.UserId, "userId"),
+                new Claim(TokenClaimTypes.ClientId, "clientId"),
+                new Claim(TokenClaimTypes.RedirectUri, "redirectUri1"),
+                new Claim(TokenClaimTypes.Scope, "openid"),
+                new Claim(TokenClaimTypes.GrantedToken, "access_token"),
+                new Claim(TokenClaimTypes.TokenUniqueId, "tuid"),
+                new Claim(TokenClaimTypes.IssuedAt, "issuedAt"),
+                new Claim(TokenClaimTypes.Expires, "expires"),
+                new Claim(TokenClaimTypes.Expires, "expires"),
             };
 
             // Act & Assert
@@ -230,14 +230,14 @@ namespace Microsoft.AspNetCore.Identity.Service
             // Arrange
             var claims = new List<Claim>()
             {
-                new Claim(IdentityServiceClaimTypes.UserId, "userId"),
-                new Claim(IdentityServiceClaimTypes.ClientId, "clientId"),
-                new Claim(IdentityServiceClaimTypes.RedirectUri, "redirectUri1"),
-                new Claim(IdentityServiceClaimTypes.Scope, "openid"),
-                new Claim(IdentityServiceClaimTypes.GrantedToken, "access_token"),
-                new Claim(IdentityServiceClaimTypes.TokenUniqueId, "tuid"),
-                new Claim(IdentityServiceClaimTypes.IssuedAt, "issuedAt"),
-                new Claim(IdentityServiceClaimTypes.Expires, "expires"),
+                new Claim(TokenClaimTypes.UserId, "userId"),
+                new Claim(TokenClaimTypes.ClientId, "clientId"),
+                new Claim(TokenClaimTypes.RedirectUri, "redirectUri1"),
+                new Claim(TokenClaimTypes.Scope, "openid"),
+                new Claim(TokenClaimTypes.GrantedToken, "access_token"),
+                new Claim(TokenClaimTypes.TokenUniqueId, "tuid"),
+                new Claim(TokenClaimTypes.IssuedAt, "issuedAt"),
+                new Claim(TokenClaimTypes.Expires, "expires"),
             };
 
             // Act & Assert
@@ -250,16 +250,16 @@ namespace Microsoft.AspNetCore.Identity.Service
             // Arrange
             var claims = new List<Claim>()
             {
-                new Claim(IdentityServiceClaimTypes.UserId, "userId"),
-                new Claim(IdentityServiceClaimTypes.ClientId, "clientId"),
-                new Claim(IdentityServiceClaimTypes.RedirectUri, "redirectUri1"),
-                new Claim(IdentityServiceClaimTypes.Scope, "openid"),
-                new Claim(IdentityServiceClaimTypes.GrantedToken, "access_token"),
-                new Claim(IdentityServiceClaimTypes.TokenUniqueId, "tuid"),
-                new Claim(IdentityServiceClaimTypes.IssuedAt, "issuedAt"),
-                new Claim(IdentityServiceClaimTypes.Expires, "expires"),
-                new Claim(IdentityServiceClaimTypes.NotBefore, "notBefore"),
-                new Claim(IdentityServiceClaimTypes.NotBefore, "notBefore"),
+                new Claim(TokenClaimTypes.UserId, "userId"),
+                new Claim(TokenClaimTypes.ClientId, "clientId"),
+                new Claim(TokenClaimTypes.RedirectUri, "redirectUri1"),
+                new Claim(TokenClaimTypes.Scope, "openid"),
+                new Claim(TokenClaimTypes.GrantedToken, "access_token"),
+                new Claim(TokenClaimTypes.TokenUniqueId, "tuid"),
+                new Claim(TokenClaimTypes.IssuedAt, "issuedAt"),
+                new Claim(TokenClaimTypes.Expires, "expires"),
+                new Claim(TokenClaimTypes.NotBefore, "notBefore"),
+                new Claim(TokenClaimTypes.NotBefore, "notBefore"),
             };
 
             // Act & Assert
