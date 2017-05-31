@@ -25,7 +25,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             options.ManagementPolicy = new AuthorizationPolicyBuilder()
                 .AddAuthenticationSchemes(IdentityServiceOptions.CookieAuthenticationScheme)
-                .RequireAuthenticatedUser()
+                .RequireAssertion(a => { a.Fail(); return false; })
                 .Build();
 
             options.SerializationSettings = CreateDefault();

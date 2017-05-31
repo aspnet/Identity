@@ -91,7 +91,7 @@ namespace Microsoft.AspNetCore.Identity.Service
         public async Task StartSessionAsync(ClaimsPrincipal user, ClaimsPrincipal application)
         {
             var policy = _options.Value.SessionPolicy;
-            ClaimsPrincipal newPrincipal = await GetCurrentSessions();
+            var newPrincipal = await GetCurrentSessions();
 
             newPrincipal = FilterExistingIdentities();
             newPrincipal = SecurityHelper.MergeUserPrincipal(newPrincipal, CreatePrincipal());
@@ -102,8 +102,17 @@ namespace Microsoft.AspNetCore.Identity.Service
                 await Context.SignInAsync(scheme, newPrincipal);
             }
 
+            for (int i = 0; i < _options.Value.LoginPolicy.AuthenticationSchemes.Count; i++)
+            {
+                var scheme = _options.Value.LoginPolicy.AuthenticationSchemes[i];
+                await Context.SignOutAsync(scheme);
+            }
+
             ClaimsPrincipal FilterExistingIdentities()
             {
+                var sessions = newPrincipal.Identities
+                    .Where(i => !user.Identities.Select(l => l.AuthenticationType).Contains(i.AuthenticationType));
+
                 var scheme = IdentityServiceOptions.CookieAuthenticationScheme;
                 string userIdClaimType = _identityOptions.Value.ClaimsIdentity.UserIdClaimType;
                 var userId = user.FindFirstValue(userIdClaimType);
@@ -113,7 +122,9 @@ namespace Microsoft.AspNetCore.Identity.Service
                     .Where(i => scheme.Equals(i.AuthenticationType, StringComparison.Ordinal) &&
                                 !IsUserSesionForApplication(i, userId, clientId));
 
-                return new ClaimsPrincipal(filteredIdentities);
+                var result = new ClaimsPrincipal(filteredIdentities);
+                result.AddIdentities(user.Identities);
+                return result;
             }
 
             ClaimsPrincipal CreatePrincipal()

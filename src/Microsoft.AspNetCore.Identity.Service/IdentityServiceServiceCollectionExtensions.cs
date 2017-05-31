@@ -57,15 +57,16 @@ namespace Microsoft.Extensions.DependencyInjection
                 options.CookieHttpOnly = true;
                 options.CookieSecure = CookieSecurePolicy.Always;
                 options.CookiePath = "/tfp/Identity/signinsignup";
+                options.AccessDeniedPath = "/tfp/Identity/signinsignup/Account/AccessDenied";
                 options.CookieName = IdentityServiceOptions.AuthenticationCookieName;
             });
             services.ConfigureApplicationCookie(options =>
             {
-                options.LoginPath = $"/tfp/Identity/Account/Login";
-                options.AccessDeniedPath = $"/tfp/Identity/Account/Denied";
-                options.CookiePath = $"/tfp/Identity";
+                options.LoginPath = "/tfp/Identity/signinsignup/Account/Login";
+                options.AccessDeniedPath = "/tfp/Identity/signinsignup/Account/AccessDenied";
+                options.CookiePath = "/tfp/Identity/signinsignup/oauth2/v2.0/authorize";
             });
-            services.ConfigureApplicationCookie(options => options.CookiePath = $"/tfp/Identity");
+            services.ConfigureExternalCookie(options => options.CookiePath = $"/tfp/Identity/signinsignup");
             services.Configure<CookieAuthenticationOptions>(IdentityConstants.TwoFactorRememberMeScheme, options => options.CookiePath = $"/tfp/Identity");
             services.Configure<CookieAuthenticationOptions>(IdentityConstants.TwoFactorUserIdScheme, options => options.CookiePath = $"/tfp/Identity");
 
