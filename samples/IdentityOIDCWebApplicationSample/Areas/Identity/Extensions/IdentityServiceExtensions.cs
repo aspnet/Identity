@@ -13,27 +13,22 @@ using Newtonsoft.Json;
 
 namespace Microsoft.AspNetCore.Identity.Service.Extensions
 {
-    public static class IdentityServiceExtensions
+    public static class IdentityApplicationExtensions
     {
-        public static IIdentityServiceBuilder AddClientInfoBinding(this IIdentityServiceBuilder builder)
+        public static IIdentityServiceBuilder AddClientExtensions(this IIdentityServiceBuilder builder)
         {
+            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<IdentityServiceOptions>, DefaultSetup>());
+            builder.Services.Configure<IdentityServiceOptions>(options =>
+            {
+                options.IdTokenOptions.ContextClaims.AddSingle("tfp", "policy");
+                options.IdTokenOptions.ContextClaims.AddSingle("ver", "version");
+                options.AccessTokenOptions.ContextClaims.AddSingle("tfp", "policy");
+                options.AccessTokenOptions.ContextClaims.AddSingle("ver", "version");
+            });
+
             builder.Services.AddSingleton<IAuthorizationResponseParameterProvider, ClientInfoProvider>();
             builder.Services.AddSingleton<ITokenResponseParameterProvider, ClientInfoProvider>();
             return builder;
-        }
-
-        public static IIdentityServiceBuilder AddApplications<TUser, TApplication>(this IdentityBuilder builder)
-            where TUser : class
-            where TApplication : class
-        {
-            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<IdentityServiceOptions>, DefaultSetup>());
-            return builder.AddApplications<TUser, TApplication>(options =>
-                        {
-                            options.IdTokenOptions.ContextClaims.AddSingle("tfp", "policy");
-                            options.IdTokenOptions.ContextClaims.AddSingle("ver", "version");
-                            options.AccessTokenOptions.ContextClaims.AddSingle("tfp", "policy");
-                            options.AccessTokenOptions.ContextClaims.AddSingle("ver", "version");
-                        });
         }
 
         private class DefaultSetup : ConfigureOptions<IdentityServiceOptions>

@@ -10,8 +10,8 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
 namespace IdentityOIDCWebApplicationSample.Identity.Controllers
 {
-    [Area("IdentityService")]
-    public class IdentityServiceController : Controller
+    [Area("Identity")]
+    public class ApplicationAuthorizationController : Controller
     {
         private readonly IOptions<IdentityServiceOptions> _options;
         private readonly ITokenManager _tokenManager;
@@ -19,7 +19,7 @@ namespace IdentityOIDCWebApplicationSample.Identity.Controllers
         private readonly IAuthorizationResponseFactory _authorizationResponseFactory;
         private readonly ITokenResponseFactory _tokenResponseFactory;
 
-        public IdentityServiceController(
+        public ApplicationAuthorizationController(
             IOptions<IdentityServiceOptions> options,
             ITokenManager tokenManager,
             SessionManager<ApplicationUser, IdentityServiceApplication> sessionManager,
@@ -33,7 +33,7 @@ namespace IdentityOIDCWebApplicationSample.Identity.Controllers
             _tokenResponseFactory = tokenResponseFactory;
         }
 
-        [HttpGet("tfp/IdentityService/signinsignup/oauth2/v2.0/authorize/")]
+        [HttpGet("tfp/Identity/signinsignup/oauth2/v2.0/authorize/")]
         public async Task<IActionResult> Authorize(
             [EnableIntegratedWebClient, ModelBinder(typeof(AuthorizationRequestModelBinder))] AuthorizationRequest authorization)
         {
@@ -69,7 +69,7 @@ namespace IdentityOIDCWebApplicationSample.Identity.Controllers
             return this.ValidAuthorization(response);
         }
 
-        [HttpPost("tfp/IdentityService/signinsignup/oauth2/v2.0/token")]
+        [HttpPost("tfp/Identity/signinsignup/oauth2/v2.0/token")]
         [Produces("application/json")]
         public async Task<IActionResult> Token(
             [ModelBinder(typeof(TokenRequestModelBinder))] TokenRequest request)
@@ -92,7 +92,7 @@ namespace IdentityOIDCWebApplicationSample.Identity.Controllers
             return Ok(response.Parameters);
         }
 
-        [HttpGet("tfp/IdentityService/signinsignup/oauth2/v2.0/logout")]
+        [HttpGet("tfp/Identity/signinsignup/oauth2/v2.0/logout")]
         public async Task<IActionResult> Logout(
             [EnableIntegratedWebClient, ModelBinder(typeof(LogoutRequestModelBinder))] LogoutRequest request)
         {
@@ -119,7 +119,7 @@ namespace IdentityOIDCWebApplicationSample.Identity.Controllers
 
             var parameters = new
             {
-                ReturnUrl = Url.Action("Authorize", "IdentityService", messageCopy.Parameters)
+                ReturnUrl = Url.Action("Authorize", "ApplicationAuthorization", messageCopy.Parameters)
             };
 
             return RedirectToAction(action, controller, parameters);

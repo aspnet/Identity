@@ -14,9 +14,10 @@ using Microsoft.Extensions.Logging;
 
 namespace IdentityOIDCWebApplicationSample.Identity.Controllers
 {
-    [Area("IdentityService")]
-    [Route("tfp/IdentityService/[controller]/[action]")]
+    [Area("Identity")]
+    [Route("tfp/Identity/signinsignup/[controller]/[action]")]
     [Authorize(IdentityServiceOptions.LoginPolicyName)]
+    [Authorize(IdentityServiceOptions.SessionPolicyName)]
     [AllowAnonymous]
     public class AccountController : Controller
     {

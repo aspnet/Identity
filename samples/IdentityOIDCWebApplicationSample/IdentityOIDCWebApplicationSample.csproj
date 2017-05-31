@@ -7,12 +7,17 @@
     <MvcRazorCompileOnPublish>true</MvcRazorCompileOnPublish>
     <PackageTargetFallback>$(PackageTargetFallback);portable-net45+win8+wp8+wpa81;</PackageTargetFallback>
     <UserSecretsId>aspnet-IdentityWebApplicationSample-71B323EE-A696-4709-9EA5-C93EFCD9E6FB</UserSecretsId>
+    <TypeScriptToolsVersion>2.3</TypeScriptToolsVersion>
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Areas\IdentityService\**" />
     <Compile Remove="Extensions\IdentityService\**" />
+    <Content Remove="Areas\IdentityService\**" />
     <Content Remove="Extensions\IdentityService\**" />
+    <EmbeddedResource Remove="Areas\IdentityService\**" />
     <EmbeddedResource Remove="Extensions\IdentityService\**" />
+    <None Remove="Areas\IdentityService\**" />
     <None Remove="Extensions\IdentityService\**" />
   </ItemGroup>
 
@@ -52,10 +57,6 @@
     <ProjectReference Include="..\..\src\Microsoft.AspNetCore.Identity.Service.EntityFrameworkCore\Microsoft.AspNetCore.Identity.Service.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Microsoft.AspNetCore.Identity.Service.IntegratedWebClient\Microsoft.AspNetCore.Identity.Service.IntegratedWebClient.csproj" />
     <ProjectReference Include="..\..\src\Microsoft.AspNetCore.Identity.Service.AzureKeyVault\Microsoft.AspNetCore.Identity.Service.AzureKeyVault.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Areas\IdentityService\Views\Shared\" />
   </ItemGroup>
 
 </Project>

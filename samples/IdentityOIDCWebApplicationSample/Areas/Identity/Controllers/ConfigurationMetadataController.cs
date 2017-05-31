@@ -4,13 +4,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityOIDCWebApplicationSample.Identity.Controllers
 {
-    [Area("IdentityService")]
-    public class IdentityServiceConfigurationController : Controller
+    [Area("Identity")]
+    public class ConfigurationMetadataController : Controller
     {
         private readonly IConfigurationManager _configurationProvider;
         private readonly IKeySetMetadataProvider _keySetProvider;
 
-        public IdentityServiceConfigurationController(
+        public ConfigurationMetadataController(
             IConfigurationManager configurationProvider,
             IKeySetMetadataProvider keySetProvider)
         {
@@ -18,24 +18,24 @@ namespace IdentityOIDCWebApplicationSample.Identity.Controllers
             _keySetProvider = keySetProvider;
         }
 
-        [HttpGet("tfp/IdentityService/signinsignup/v2.0/.well-known/openid-configuration")]
+        [HttpGet("tfp/Identity/signinsignup/v2.0/.well-known/openid-configuration")]
         [Produces("application/json")]
         public async Task<IActionResult> Metadata()
         {
             var configurationContext = new ConfigurationContext
             {
-                Id = "IdentityService:signinsignup",
+                Id = "Identity:signinsignup",
                 HttpContext = HttpContext,
-                AuthorizationEndpoint = EndpointLink("Authorize", "IdentityService"),
-                TokenEndpoint = EndpointLink("Token", "IdentityService"),
-                JwksUriEndpoint = EndpointLink("Keys", "IdentityServiceConfiguration"),
-                EndSessionEndpoint = EndpointLink("Logout", "IdentityService"),
+                AuthorizationEndpoint = EndpointLink("Authorize", "ApplicationAuthorization"),
+                TokenEndpoint = EndpointLink("Token", "ApplicationAuthorization"),
+                JwksUriEndpoint = EndpointLink("Keys", "ConfigurationMetadata"),
+                EndSessionEndpoint = EndpointLink("Logout", "ApplicationAuthorization"),
             };
 
             return Ok(await _configurationProvider.GetConfigurationAsync(configurationContext));
         }
 
-        [HttpGet("tfp/IdentityService/signinsignup/discovery/v2.0/keys")]
+        [HttpGet("tfp/Identity/signinsignup/discovery/v2.0/keys")]
         [Produces("application/json")]
         public async Task<IActionResult> Keys()
         {

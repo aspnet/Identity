@@ -2,12 +2,11 @@
 using IdentityOIDCWebApplicationSample.Identity.Models;
 using IdentityOIDCWebApplicationSample.Identity.Services;
 using Microsoft.AspNetCore.Authentication.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.Identity.Service;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.Service;
-using Microsoft.AspNetCore.Identity.Service.AzureKeyVault;
 using Microsoft.AspNetCore.Identity.Service.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.Service.Extensions;
 using Microsoft.AspNetCore.Identity.Service.IntegratedWebClient;
@@ -37,9 +36,18 @@ namespace IdentityOIDCWebApplicationSample
 
             var builder = services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddDefaultTokenProviders()
-                .AddApplications<ApplicationUser, IdentityServiceApplication>()
+                .AddApplications(options =>
+                {
+                    if (Environment.IsDevelopment())
+                    {
+                        var policy = new AuthorizationPolicyBuilder(options.ManagementPolicy);
+                        policy.Requirements.Clear();
+                        policy.RequireAuthenticatedUser();
+                        options.ManagementPolicy = policy.Build();
+                    }
+                })
                 .AddEntityFrameworkStores<IdentityServiceDbContext>()
-                .AddClientInfoBinding();
+                .AddClientExtensions();
 
             services
                 .AddWebApplicationAuthentication()
