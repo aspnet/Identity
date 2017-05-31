@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging;
 namespace IdentityOIDCWebApplicationSample.Identity.Controllers
 {
     [Authorize(IdentityServiceOptions.SessionPolicyName)]
+    [Authorize(IdentityServiceOptions.LoginPolicyName)]
     [Area("Identity")]
     [Route("tfp/Identity/signinsignup/[controller]/[action]")]
     public class ManageController : Controller

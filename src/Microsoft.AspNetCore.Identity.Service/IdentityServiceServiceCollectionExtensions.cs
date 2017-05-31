@@ -64,7 +64,7 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 options.LoginPath = "/tfp/Identity/signinsignup/Account/Login";
                 options.AccessDeniedPath = "/tfp/Identity/signinsignup/Account/AccessDenied";
-                options.CookiePath = "/tfp/Identity/signinsignup/oauth2/v2.0/authorize";
+                options.CookiePath = "/tfp/Identity/signinsignup";
             });
             services.ConfigureExternalCookie(options => options.CookiePath = $"/tfp/Identity/signinsignup");
             services.Configure<CookieAuthenticationOptions>(IdentityConstants.TwoFactorRememberMeScheme, options => options.CookiePath = $"/tfp/Identity");

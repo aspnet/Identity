@@ -19,7 +19,9 @@ namespace Microsoft.AspNetCore.Identity.Service
         public string Issuer { get; set; }
 
         public AuthorizationPolicy LoginPolicy { get; set; }
+
         public AuthorizationPolicy SessionPolicy { get; set; }
+
         public AuthorizationPolicy ManagementPolicy { get; set; }
 
         public IList<SigningCredentials> SigningKeys { get; set; } = new List<SigningCredentials>();

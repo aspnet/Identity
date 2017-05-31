@@ -178,7 +178,9 @@ namespace Microsoft.AspNetCore.Identity.Service.Test
             var application = CreateApplication();
             var manager = CreateTestManager();
 
-            var expectedError = new List<IdentityServiceError> { errorDescriber.NoHttpsUri("http://www.example.com/signout-oidc") };
+            var expectedError = new List<IdentityServiceError> {
+                errorDescriber.InvalidLogoutUri("http://www.example.com/signout-oidc")
+            };
 
             // Act
             var result = await validator.ValidateLogoutUriAsync(manager, application, "http://www.example.com/signout-oidc");
@@ -207,7 +209,7 @@ namespace Microsoft.AspNetCore.Identity.Service.Test
         }
 
         [Fact]
-        public async Task ValidateLogoutUri_FailsFailsForOtherNonHttpsUris()
+        public async Task ValidateLogoutUri_FailsForOtherNonHttpsUris()
         {
             // Arrange
             var validator = new ApplicationValidator<TestApplication>(new ApplicationErrorDescriber());
@@ -215,8 +217,7 @@ namespace Microsoft.AspNetCore.Identity.Service.Test
             var manager = CreateTestManager();
 
             var expectedError = new List<IdentityServiceError> {
-                errorDescriber.NoHttpsUri("urn:self:aspnet:identity:integrated"),
-                errorDescriber.DifferentDomains()
+                errorDescriber.InvalidLogoutUri("urn:self:aspnet:identity:integrated")
             };
 
             // Act
@@ -292,7 +293,9 @@ namespace Microsoft.AspNetCore.Identity.Service.Test
             var application = CreateApplication();
             var manager = CreateTestManager();
 
-            var expectedError = new List<IdentityServiceError> { errorDescriber.NoHttpsUri("http://www.example.com/signin-oidc") };
+            var expectedError = new List<IdentityServiceError> {
+                errorDescriber.InvalidRedirectUri("http://www.example.com/signin-oidc")
+            };
 
             // Act
             var result = await validator.ValidateRedirectUriAsync(manager, application, "http://www.example.com/signin-oidc");
@@ -329,8 +332,7 @@ namespace Microsoft.AspNetCore.Identity.Service.Test
             var manager = CreateTestManager();
 
             var expectedError = new List<IdentityServiceError> {
-                errorDescriber.NoHttpsUri("urn:self:aspnet:identity:integrated"),
-                errorDescriber.DifferentDomains()
+                errorDescriber.InvalidRedirectUri("urn:self:aspnet:identity:integrated")
             };
 
             // Act

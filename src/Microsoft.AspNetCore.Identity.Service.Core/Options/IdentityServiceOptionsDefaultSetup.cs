@@ -25,6 +25,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             options.ManagementPolicy = new AuthorizationPolicyBuilder()
                 .AddAuthenticationSchemes(IdentityServiceOptions.CookieAuthenticationScheme)
+                .AddAuthenticationSchemes("Identity.Application")
                 .RequireAssertion(a => { a.Fail(); return false; })
                 .Build();
 

@@ -43,12 +43,6 @@ namespace Microsoft.AspNetCore.Identity.Service
             Description = $"The logout uri '{logoutUri}' is not valid."
         };
 
-        public virtual IdentityServiceError NoHttpsUri(string logoutUri) => new IdentityServiceError
-        {
-            Code = nameof(NoHttpsUri),
-            Description = $"The uri '{logoutUri}' must use https."
-        };
-
         public virtual IdentityServiceError DifferentDomains() => new IdentityServiceError
         {
             Code = nameof(DifferentDomains),

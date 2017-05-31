@@ -113,17 +113,13 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             if (!manager.Options.AllowedLogoutUris.Contains(logoutUri, StringComparer.OrdinalIgnoreCase))
             {
-                if (!Uri.TryCreate(logoutUri, UriKind.Absolute, out var parsedUri))
+                if (!Uri.TryCreate(logoutUri, UriKind.Absolute, out var parsedUri) ||
+                    !string.Equals(parsedUri.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase))
                 {
                     errors.Add(ErrorDescriber.InvalidLogoutUri(logoutUri));
                 }
                 else
                 {
-                    if (!parsedUri.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase))
-                    {
-                        errors.Add(ErrorDescriber.NoHttpsUri(logoutUri));
-                    }
-
                     var redirectUris = await manager.FindRegisteredUrisAsync(application);
                     var regularRedirectUris = redirectUris.Except(manager.Options.AllowedRedirectUris, StringComparer.Ordinal);
                     var regularLogoutUris = logoutUris.Except(manager.Options.AllowedLogoutUris, StringComparer.Ordinal);
@@ -160,17 +156,13 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             if (!manager.Options.AllowedRedirectUris.Contains(redirectUri, StringComparer.OrdinalIgnoreCase))
             {
-                if (!Uri.TryCreate(redirectUri, UriKind.Absolute, out var parsedUri))
+                if (!Uri.TryCreate(redirectUri, UriKind.Absolute, out var parsedUri) ||
+                    !string.Equals(parsedUri.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase))
                 {
                     errors.Add(ErrorDescriber.InvalidRedirectUri(redirectUri));
                 }
                 else
                 {
-                    if (!parsedUri.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase))
-                    {
-                        errors.Add(ErrorDescriber.NoHttpsUri(redirectUri));
-                    }
-
                     var logoutUris = await manager.FindRegisteredUrisAsync(application);
                     var regularLogoutUris = logoutUris.Except(manager.Options.AllowedLogoutUris, StringComparer.Ordinal);
                     var regularRedirectUris = redirectUris.Except(manager.Options.AllowedRedirectUris, StringComparer.Ordinal);
