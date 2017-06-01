@@ -47,7 +47,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddDataProtection();
             services.AddAuthentication();
 
-            services.TryAdd(CreateServices<TUser, TApplication>());
+            services.TryAdd(CreateServices<TApplication>());
 
             // Configuration
             services.AddTransient<IConfigureOptions<IdentityServiceOptions>, IdentityServiceOptionsDefaultSetup>();
@@ -57,18 +57,19 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 options.CookieHttpOnly = true;
                 options.CookieSecure = CookieSecurePolicy.Always;
-                options.CookiePath = "/tfp/IdentityService/signinsignup";
+                options.CookiePath = "/tfp/Identity/signinsignup";
+                options.AccessDeniedPath = "/tfp/Identity/signinsignup/Account/AccessDenied";
                 options.CookieName = IdentityServiceOptions.AuthenticationCookieName;
             });
             services.ConfigureApplicationCookie(options =>
             {
-                options.LoginPath = $"/tfp/IdentityService/Account/Login";
-                options.AccessDeniedPath = $"/tfp/IdentityService/Account/Denied";
-                options.CookiePath = $"/tfp/IdentityService";
+                options.LoginPath = "/tfp/Identity/signinsignup/Account/Login";
+                options.AccessDeniedPath = "/tfp/Identity/signinsignup/Account/AccessDenied";
+                options.CookiePath = "/tfp/Identity/signinsignup";
             });
-            services.ConfigureApplicationCookie(options => options.CookiePath = $"/tfp/IdentityService");
-            services.Configure<CookieAuthenticationOptions>(IdentityConstants.TwoFactorRememberMeScheme, options => options.CookiePath = $"/tfp/IdentityService");
-            services.Configure<CookieAuthenticationOptions>(IdentityConstants.TwoFactorUserIdScheme, options => options.CookiePath = $"/tfp/IdentityService");
+            services.ConfigureExternalCookie(options => options.CookiePath = $"/tfp/Identity/signinsignup");
+            services.Configure<CookieAuthenticationOptions>(IdentityConstants.TwoFactorRememberMeScheme, options => options.CookiePath = $"/tfp/Identity");
+            services.Configure<CookieAuthenticationOptions>(IdentityConstants.TwoFactorUserIdScheme, options => options.CookiePath = $"/tfp/Identity");
 
             services.AddTransient<IConfigureOptions<AuthorizationOptions>, IdentityServiceAuthorizationOptionsSetup>();
 
