@@ -30,6 +30,12 @@ namespace Microsoft.AspNetCore.Identity.Service.Configuration
             options.LoginPolicy = new AuthorizationPolicyBuilder(options.LoginPolicy)
                 .AddAuthenticationSchemes(IdentityConstants.ApplicationScheme)
                 .Build();
+
+            options.ManagementPolicy = new AuthorizationPolicyBuilder()
+                .AddAuthenticationSchemes(IdentityConstants.ApplicationScheme)
+                .AddAuthenticationSchemes(IdentityServiceOptions.CookieAuthenticationScheme)
+                .AddRequirements(new ApplicationManagementRequirement())
+                .Build();
         }
     }
 }

@@ -23,11 +23,6 @@ namespace Microsoft.AspNetCore.Identity.Service
                 .RequireAuthenticatedUser()
                 .Build();
 
-            options.ManagementPolicy = new AuthorizationPolicyBuilder()
-                .AddAuthenticationSchemes(IdentityServiceOptions.CookieAuthenticationScheme)
-                .RequireAuthenticatedUser()
-                .Build();
-
             options.SerializationSettings = CreateDefault();
             options.SerializationSettings.Converters.Insert(0, new AuthorizationCodeConverter());
             options.SerializationSettings.Converters.Insert(0, new RefreshTokenConverter());

@@ -96,6 +96,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<ISigningCredentialsSource, DefaultSigningCredentialsSource>();
             services.AddSingleton<IApplicationValidator<TApplication>, ApplicationValidator<TApplication>>();
             services.AddSingleton<ApplicationErrorDescriber>();
+            services.AddSingleton<ApplicationManagementHandler>();
 
             // Session
             services.AddTransient<SessionManager, SessionManager<TUser, TApplication>>();
