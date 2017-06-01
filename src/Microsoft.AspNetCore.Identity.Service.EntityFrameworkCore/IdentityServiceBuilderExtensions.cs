@@ -11,6 +11,13 @@ namespace Microsoft.AspNetCore.Identity.Service.EntityFrameworkCore
 {
     public static class IdentityServiceBuilderExtensions
     {
+        public static IIdentityServiceBuilder AddApplications(
+            this IdentityBuilder builder,
+            Action<IdentityServiceOptions> configure)
+        {
+            return builder.AddApplications<IdentityServiceApplication>(configure);
+        }
+
         public static IIdentityServiceBuilder AddEntityFrameworkStores<TContext>(this IIdentityServiceBuilder builder)
             where TContext : DbContext
         {
