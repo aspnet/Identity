@@ -9,10 +9,9 @@ namespace Microsoft.AspNetCore.Diagnostics.Identity.Service
     public static class IdentityApplicationBuilderExtensions
     {
         public static IApplicationBuilder UseDevelopmentCertificateErrorPage(
-            this IApplicationBuilder builder,
-            IConfiguration configuration)
+            this IApplicationBuilder builder)
         {
-            builder.UseMiddleware<DeveloperCertificateMiddleware>(configuration);
+            builder.UseMiddleware<DeveloperCertificateMiddleware>();
             return builder;
         }
     }

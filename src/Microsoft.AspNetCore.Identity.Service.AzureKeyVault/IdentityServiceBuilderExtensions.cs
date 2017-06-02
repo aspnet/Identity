@@ -5,7 +5,7 @@ using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Options.Infrastructure;
 
 namespace Microsoft.AspNetCore.Identity.Service.AzureKeyVault
 {
@@ -19,7 +19,7 @@ namespace Microsoft.AspNetCore.Identity.Service.AzureKeyVault
             }
 
             var services = builder.Services;
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<KeyVaultSigningCredentialsSourceOptions>, DefaultSetup>());
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<ConfigureDefaultOptions<KeyVaultSigningCredentialsSourceOptions>, DefaultSetup>());
             services.TryAddSingleton<ISigningCredentialsSource, KeyVaultSigningCredentialSource>();
             return builder;
         }
@@ -36,16 +36,18 @@ namespace Microsoft.AspNetCore.Identity.Service.AzureKeyVault
                 throw new ArgumentNullException(nameof(configure));
             }
 
+            builder.AddKeyVault();
             builder.Services.Configure(configure);
-            builder.Services.TryAddSingleton<ISigningCredentialsSource, KeyVaultSigningCredentialSource>();
 
             return builder;
         }
 
-        private class DefaultSetup : ConfigureOptions<KeyVaultSigningCredentialsSourceOptions>
+        private class DefaultSetup : ConfigureDefaultOptions<KeyVaultSigningCredentialsSourceOptions>
         {
-            public DefaultSetup(IConfiguration configuration)
-                : base(options => configuration.GetSection("Identity:KeyVault").Bind(options)) { }
+            private const string SectionKey = "Microsoft:AspNetCore:Identity:Service:SigningKeys:KeyVault";
+
+            public DefaultSetup(IConfiguration configuration) : 
+                base(options => configuration.GetSection(SectionKey).Bind(options)) { }
         }
     }
 }

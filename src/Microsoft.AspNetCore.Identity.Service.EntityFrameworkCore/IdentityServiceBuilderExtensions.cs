@@ -3,7 +3,6 @@
 
 using System;
 using System.Reflection;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -15,7 +14,28 @@ namespace Microsoft.AspNetCore.Identity.Service.EntityFrameworkCore
             this IdentityBuilder builder,
             Action<IdentityServiceOptions> configure)
         {
+            if (builder == null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            if (configure == null)
+            {
+                throw new ArgumentNullException(nameof(configure));
+            }
+
             return builder.AddApplications<IdentityServiceApplication>(configure);
+        }
+
+        public static IIdentityServiceBuilder AddApplications(
+            this IdentityBuilder builder)
+        {
+            if (builder == null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            return builder.AddApplications<IdentityServiceApplication>();
         }
 
         public static IIdentityServiceBuilder AddEntityFrameworkStores<TContext>(this IIdentityServiceBuilder builder)

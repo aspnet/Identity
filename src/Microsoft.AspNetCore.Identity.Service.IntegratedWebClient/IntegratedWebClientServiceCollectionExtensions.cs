@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Options.Infrastructure;
 
 namespace Microsoft.AspNetCore.Identity.Service.IntegratedWebClient
 {
@@ -17,33 +18,42 @@ namespace Microsoft.AspNetCore.Identity.Service.IntegratedWebClient
             this IServiceCollection services,
             Action<IntegratedWebClientOptions> action)
         {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            if (action == null)
+            {
+                throw new ArgumentNullException(nameof(action));
+            }
+
+            services.WithIntegratedWebClient();
             services.Configure(action);
-            services.TryAddEnumerable(ServiceDescriptor.Scoped<IConfigureOptions<OpenIdConnectOptions>, IntegratedWebClientOpenIdConnectOptionsSetup>());
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<MvcOptions>, IntegratedWebclientMvcOptionsSetup>());
 
-            return services;
-        }
-
-        public static IServiceCollection WithIntegratedWebClient(
-            this IServiceCollection services,
-            IConfiguration configuration)
-        {
-            services.WithIntegratedWebClient(options => configuration.Bind(options));
             return services;
         }
 
         public static IServiceCollection WithIntegratedWebClient(this IServiceCollection services)
         {
-            services.TryAddTransient<IConfigureOptions<IntegratedWebClientOptions>, DefaultSetup>();
-            services.WithIntegratedWebClient(_ => { });
+            services.TryAddTransient<ConfigureDefaultOptions<IntegratedWebClientOptions>, DefaultSetup>();
+            services.TryAddEnumerable(ServiceDescriptor.Scoped<IConfigureOptions<OpenIdConnectOptions>, IntegratedWebClientOpenIdConnectOptionsSetup>());
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<MvcOptions>, IntegratedWebclientMvcOptionsSetup>());
             return services;
         }
 
-        private class DefaultSetup : ConfigureOptions<IntegratedWebClientOptions>
+        private class DefaultSetup : ConfigureDefaultOptions<IntegratedWebClientOptions>
         {
+            public static readonly string SectionKey = "Microsoft:AspNetCore:Authentication:Schemes:" + OpenIdConnectDefaults.AuthenticationScheme;
+
             public DefaultSetup(IConfiguration configuration)
-                : base(options => configuration.GetSection(OpenIdConnectDefaults.AuthenticationScheme).Bind(options))
+                : base(options => Configure(options, configuration))
             {
+            }
+
+            private static void Configure(IntegratedWebClientOptions options, IConfiguration configuration)
+            {
+                configuration.GetSection(SectionKey).Bind(options);
             }
         }
     }

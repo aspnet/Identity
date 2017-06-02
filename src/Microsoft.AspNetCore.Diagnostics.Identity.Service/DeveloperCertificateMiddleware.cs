@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity.Service;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -23,7 +22,6 @@ namespace Microsoft.AspNetCore.Diagnostics.Identity.Service
         private readonly IHostingEnvironment _environment;
         private readonly IOptions<DeveloperCertificateOptions> _options;
         private readonly ITimeStampManager _timeStampManager;
-        private readonly IConfiguration _configuration;
         private readonly IOptionsCache<IdentityServiceOptions> _identityServiceOptionsCache;
 
         public DeveloperCertificateMiddleware(
@@ -31,15 +29,13 @@ namespace Microsoft.AspNetCore.Diagnostics.Identity.Service
             IOptions<DeveloperCertificateOptions> options,
             IOptionsCache<IdentityServiceOptions> identityServiceOptions,
             ITimeStampManager timeStampManager,
-            IHostingEnvironment environment,
-            IConfiguration configuration)
+            IHostingEnvironment environment)
         {
             _next = next;
             _options = options;
             _identityServiceOptionsCache = identityServiceOptions;
             _environment = environment;
             _timeStampManager = timeStampManager;
-            _configuration = configuration;
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -51,6 +47,7 @@ namespace Microsoft.AspNetCore.Diagnostics.Identity.Service
                 await _next(context);
                 return;
             }
+
             var openIdOptionsCache = context.RequestServices.GetRequiredService<IOptionsCache<OpenIdConnectOptions>>();
             if (_environment.IsDevelopment() &&
                 context.Request.Path.Equals(_options.Value.ListeningEndpoint))
