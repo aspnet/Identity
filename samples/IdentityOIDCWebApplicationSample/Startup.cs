@@ -1,18 +1,22 @@
 ﻿using IdentityOIDCWebApplicationSample.Identity.Data;
 using IdentityOIDCWebApplicationSample.Identity.Models;
 using IdentityOIDCWebApplicationSample.Identity.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Extensions;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.Identity.Service;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.Service;
 using Microsoft.AspNetCore.Identity.Service.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.Service.Extensions;
 using Microsoft.AspNetCore.Identity.Service.IntegratedWebClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace IdentityOIDCWebApplicationSample
 {
@@ -46,12 +50,21 @@ namespace IdentityOIDCWebApplicationSample
                         options.ManagementPolicy = policy.Build();
                     }
                 })
+                .DisableDeveloperCertificate()
                 .AddEntityFrameworkStores<IdentityServiceDbContext>()
                 .AddClientExtensions();
 
-            services
-                .AddWebApplicationAuthentication()
+            services.AddAuthentication(sharedOptions =>
+            {
+                sharedOptions.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                sharedOptions.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                sharedOptions.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+            });
+
+            services.AddOpenIdConnectAuthentication()
                 .WithIntegratedWebClient();
+
+            services.AddCookieAuthentication();
 
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
@@ -66,7 +79,7 @@ namespace IdentityOIDCWebApplicationSample
             {
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
-                app.UseDevelopmentCertificateErrorPage(Configuration);
+                app.UseDevelopmentCertificateErrorPage();
             }
             else
             {

@@ -14,20 +14,6 @@ namespace Microsoft.AspNetCore.Authentication.Extensions
 {
     public static class AuthenticationServiceCollectionExtensions
     {
-        public static IServiceCollection AddWebApplicationAuthentication(this IServiceCollection services)
-        {
-            services.AddAuthentication(sharedOptions =>
-            {
-                sharedOptions.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                sharedOptions.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                sharedOptions.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
-            });
-
-            services.AddOpenIdConnectAuthentication();
-            services.AddCookieAuthentication();
-            return services;
-        }
-
         public static IApplicationBuilder UseHttps(this IApplicationBuilder builder)
         {
             var configuration = builder.ApplicationServices.GetRequiredService<IConfiguration>();

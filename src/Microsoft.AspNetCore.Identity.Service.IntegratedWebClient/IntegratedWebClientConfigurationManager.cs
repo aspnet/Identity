@@ -38,8 +38,12 @@ namespace Microsoft.AspNetCore.Identity.Service.IntegratedWebClient
         {
             var ctx = _accessor.HttpContext;
             var manager = ctx.RequestServices.GetRequiredService<IConfigurationManager>();
+            var configurationContext = new ConfigurationContext() {
+                AuthorizationEndpoint = _integratedWebClientOptions.AuthorizationEndpoint,
+                TokenEndpoint = _integratedWebClientOptions.TokenEndpoint,
+                EndSessionEndpoint = _integratedWebClientOptions.EndsSessionEndpoint
+            };
 
-            var configurationContext = new ConfigurationContext();
             var baseUrl = $"{ctx.Request.Scheme}://{ctx.Request.Host.ToUriComponent()}{ctx.Request.PathBase}";
             if (!Uri.TryCreate(configurationContext.AuthorizationEndpoint, UriKind.RelativeOrAbsolute, out var authorizationUri))
             {
@@ -72,6 +76,7 @@ namespace Microsoft.AspNetCore.Identity.Service.IntegratedWebClient
 
             var configuration = await manager.GetConfigurationAsync(configurationContext);
             return configuration;
+
             string MakeAbsolute(Uri relativeOrAbsoluteUri)
             {
                 if (relativeOrAbsoluteUri.IsAbsoluteUri)

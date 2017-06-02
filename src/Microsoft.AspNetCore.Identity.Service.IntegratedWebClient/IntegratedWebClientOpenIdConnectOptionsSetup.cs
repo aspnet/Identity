@@ -32,36 +32,31 @@ namespace Microsoft.AspNetCore.Identity.Service.IntegratedWebClient
             }
 
             options.TokenValidationParameters.NameClaimType = "name";
-            options.SignInScheme = _webApplicationOptions.Value.CookieSignInScheme;
-            options.ClientId = _webApplicationOptions.Value.ClientId;
 
-            if (!string.IsNullOrEmpty(_webApplicationOptions.Value.TokenRedirectUrn))
+            options.Events = new OpenIdConnectEvents
             {
-                options.Events = new OpenIdConnectEvents
+                OnRedirectToIdentityProvider = (ctx) =>
                 {
-                    OnRedirectToIdentityProvider = (ctx) =>
-                    {
-                        ctx.ProtocolMessage.RedirectUri = _webApplicationOptions.Value.TokenRedirectUrn;
-                        return Task.CompletedTask;
-                    },
-                    OnRedirectToIdentityProviderForSignOut = (ctx) =>
-                    {
+                    ctx.ProtocolMessage.RedirectUri = IntegratedWebClientOptions.TokenRedirectUrn;
+                    return Task.CompletedTask;
+                },
+                OnRedirectToIdentityProviderForSignOut = (ctx) =>
+                {
 
-                        ctx.ProtocolMessage.PostLogoutRedirectUri = _webApplicationOptions.Value.TokenRedirectUrn;
-                        return Task.CompletedTask;
-                    },
-                    OnAuthorizationCodeReceived = (ctx) =>
-                    {
-                        ctx.ProtocolMessage.RedirectUri = _webApplicationOptions.Value.TokenRedirectUrn;
-                        return Task.CompletedTask;
-                    }
-                };
+                    ctx.ProtocolMessage.PostLogoutRedirectUri = IntegratedWebClientOptions.TokenRedirectUrn;
+                    return Task.CompletedTask;
+                },
+                OnAuthorizationCodeReceived = (ctx) =>
+                {
+                    ctx.ProtocolMessage.RedirectUri = IntegratedWebClientOptions.TokenRedirectUrn;
+                    return Task.CompletedTask;
+                }
+            };
 
-                var keys = _keysProvider.GetKeysAsync().GetAwaiter().GetResult().Keys;
+            var keys = _keysProvider.GetKeysAsync().GetAwaiter().GetResult().Keys;
 
-                options.ConfigurationManager = new WebApplicationConfiguration(_webApplicationOptions.Value, _accessor);
-                options.TokenValidationParameters.IssuerSigningKeys = keys;
-            }
+            options.ConfigurationManager = new WebApplicationConfiguration(_webApplicationOptions.Value, _accessor);
+            options.TokenValidationParameters.IssuerSigningKeys = keys;
         }
 
         public void Configure(OpenIdConnectOptions options)

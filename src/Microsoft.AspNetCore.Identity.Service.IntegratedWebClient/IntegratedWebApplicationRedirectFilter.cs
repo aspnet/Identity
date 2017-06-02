@@ -48,12 +48,12 @@ namespace Microsoft.AspNetCore.Identity.Service.IntegratedWebClient
 
             bool IsLogoutForWebApplication(LogoutRequest logout) =>
                 logout.IsValid && logout.LogoutRedirectUri != null &&
-                logout.LogoutRedirectUri.Equals(_webClientOptions.Value.TokenRedirectUrn);
+                logout.LogoutRedirectUri.Equals(IntegratedWebClientOptions.TokenRedirectUrn);
 
             bool IsAuthorizationForWebApplication(AuthorizationRequest request) =>
                 _webClientOptions.Value.ClientId.Equals(request.Message?.ClientId) &&
                 request.RequestGrants.RedirectUri != null &&
-                request.RequestGrants.RedirectUri.Equals(_webClientOptions.Value.TokenRedirectUrn);
+                request.RequestGrants.RedirectUri.Equals(IntegratedWebClientOptions.TokenRedirectUrn);
 
             string ComputeRedirectUri(bool isLogout)
             {

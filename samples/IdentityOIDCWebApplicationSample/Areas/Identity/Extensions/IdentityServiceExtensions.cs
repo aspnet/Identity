@@ -17,7 +17,6 @@ namespace Microsoft.AspNetCore.Identity.Service.Extensions
     {
         public static IIdentityServiceBuilder AddClientExtensions(this IIdentityServiceBuilder builder)
         {
-            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<IdentityServiceOptions>, DefaultSetup>());
             builder.Services.Configure<IdentityServiceOptions>(options =>
             {
                 options.IdTokenOptions.ContextClaims.AddSingle("tfp", "policy");
@@ -29,13 +28,6 @@ namespace Microsoft.AspNetCore.Identity.Service.Extensions
             builder.Services.AddSingleton<IAuthorizationResponseParameterProvider, ClientInfoProvider>();
             builder.Services.AddSingleton<ITokenResponseParameterProvider, ClientInfoProvider>();
             return builder;
-        }
-
-        private class DefaultSetup : ConfigureOptions<IdentityServiceOptions>
-        {
-            public DefaultSetup(IConfiguration configuration) : base(options => configuration.GetSection("Identity:Protocol").Bind(options))
-            {
-            }
         }
 
         private class ClientInfoProvider : IAuthorizationResponseParameterProvider, ITokenResponseParameterProvider

@@ -4,15 +4,19 @@
 using System;
 using System.IO;
 using System.Reflection;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity.Service;
+using Microsoft.AspNetCore.Identity.Service.IntegratedWebClient;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Options.Infrastructure;
 
 namespace Microsoft.AspNetCore
 {
@@ -189,9 +193,20 @@ namespace Microsoft.AspNetCore
                 .ConfigureServices(services =>
                 {
                     services.AddTransient<IConfigureOptions<KestrelServerOptions>, KestrelServerOptionsSetup>();
+                    services.AddTransient<IConfigureOptions<IdentityServiceOptions>, ConfigureDefaults<IdentityServiceOptions>>();
+                    services.AddTransient<IConfigureOptions<OpenIdConnectOptions>, ConfigureDefaults<OpenIdConnectOptions>>();
+                    services.AddTransient<IConfigureOptions<IntegratedWebClientOptions>, ConfigureDefaults<IntegratedWebClientOptions>>();
+                    services.ConfigureAspNetCoreDefaults();
                 });
 
             return builder;
+        }
+
+        public static IServiceCollection ConfigureAspNetCoreDefaults(this IServiceCollection services)
+        {
+            //services.AddTransient(typeof(IConfigureOptions<>), typeof(ConfigureDefaults<>));
+            //services.AddTransient(typeof(IConfigureNamedOptions<>), typeof(ConfigureDefaults<>));
+            return services;
         }
     }
 }

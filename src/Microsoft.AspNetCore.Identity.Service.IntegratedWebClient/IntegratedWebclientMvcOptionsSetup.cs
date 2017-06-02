@@ -17,10 +17,7 @@ namespace Microsoft.AspNetCore.Identity.Service.IntegratedWebClient
 
         public void Configure(MvcOptions options)
         {
-            if (!string.IsNullOrEmpty(_webClientOptions.Value.TokenRedirectUrn))
-            {
-                options.Conventions.Add(new IntegratedWebClientModelConvention(_webClientOptions));
-            }
+            options.Conventions.Add(new IntegratedWebClientModelConvention(_webClientOptions));
         }
     }
 }

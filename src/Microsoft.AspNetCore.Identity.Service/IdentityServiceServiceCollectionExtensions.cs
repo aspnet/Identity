@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Identity.Service.Metadata;
 using Microsoft.AspNetCore.Identity.Service.Serialization;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Options.Infrastructure;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -49,6 +50,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAdd(CreateServices<TApplication>());
 
             // Configuration
+            services.AddTransient<ConfigureDefaultOptions<IdentityServiceOptions>, IdentityServiceOptionsConfigurationDefaultSetup>();
             services.AddTransient<IConfigureOptions<IdentityServiceOptions>, IdentityServiceOptionsDefaultSetup>();
             services.AddTransient<IConfigureOptions<IdentityServiceOptions>, IdentityServiceOptionsSetup>();
 
