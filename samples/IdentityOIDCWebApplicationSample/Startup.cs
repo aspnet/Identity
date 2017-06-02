@@ -4,7 +4,6 @@ using IdentityOIDCWebApplicationSample.Identity.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Extensions;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.Identity.Service;
 using Microsoft.AspNetCore.Hosting;
@@ -16,7 +15,6 @@ using Microsoft.AspNetCore.Identity.Service.IntegratedWebClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
 namespace IdentityOIDCWebApplicationSample
 {
@@ -31,7 +29,6 @@ namespace IdentityOIDCWebApplicationSample
         public IConfiguration Configuration { get; }
         public IHostingEnvironment Environment { get; }
 
-
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
@@ -40,16 +37,7 @@ namespace IdentityOIDCWebApplicationSample
 
             var builder = services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddDefaultTokenProviders()
-                .AddApplications(options =>
-                {
-                    if (Environment.IsDevelopment())
-                    {
-                        var policy = new AuthorizationPolicyBuilder(options.ManagementPolicy);
-                        policy.Requirements.Clear();
-                        policy.RequireAuthenticatedUser();
-                        options.ManagementPolicy = policy.Build();
-                    }
-                })
+                .AddApplications()
                 .DisableDeveloperCertificate()
                 .AddEntityFrameworkStores<IdentityServiceDbContext>()
                 .AddClientExtensions();

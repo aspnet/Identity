@@ -32,12 +32,27 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             if (builder == null)
             {
-                throw new NullReferenceException(nameof(builder));
+                throw new ArgumentNullException(nameof(builder));
             }
 
             if (configure == null)
             {
-                throw new NullReferenceException(nameof(configure));
+                throw new ArgumentNullException(nameof(configure));
+            }
+
+            var identityServiceBuilder = builder.AddApplications<TApplication>();
+            builder.Services.Configure(configure);
+
+            return identityServiceBuilder;
+        }
+
+        public static IIdentityServiceBuilder AddApplications<TApplication>(
+            this IdentityBuilder builder)
+            where TApplication : class
+        {
+            if (builder == null)
+            {
+                throw new ArgumentNullException(nameof(builder));
             }
 
             var services = builder.Services;
@@ -104,8 +119,6 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddTransient(typeof(SessionManager<,>).MakeGenericType(builder.UserType, typeof(TApplication)));
             services.AddTransient<IRedirectUriResolver, ClientApplicationValidator<TApplication>>();
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
-            services.Configure(configure);
 
             return new IdentityServiceBuilder<TApplication>(builder);
         }
