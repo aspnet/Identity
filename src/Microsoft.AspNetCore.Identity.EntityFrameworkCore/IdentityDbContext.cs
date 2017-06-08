@@ -218,7 +218,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
 
             builder.Entity<TUserLogin>(b =>
             {
-                b.HasKey(l => new { l.LoginProvider, l.ProviderKey });
+                b.HasKey(l => new { l.UserId, l.LoginProvider, l.ProviderKey });
                 b.ToTable("AspNetUserLogins");
             });
 
