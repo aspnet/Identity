@@ -1,18 +1,16 @@
 ﻿using IdentityOIDCWebApplicationSample.Identity.Data;
 using IdentityOIDCWebApplicationSample.Identity.Models;
 using IdentityOIDCWebApplicationSample.Identity.Services;
-using Microsoft.AspNetCore.Applications.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.Extensions;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Diagnostics.Identity.Service;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.Service;
 using Microsoft.AspNetCore.Identity.Service.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.Service.Extensions;
-using Microsoft.AspNetCore.Identity.Service.IntegratedWebClient;
+using Microsoft.AspNetCore.Rewrite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -39,9 +37,12 @@ namespace IdentityOIDCWebApplicationSample
             var builder = services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddDefaultTokenProviders()
                 .AddApplications<IdentityClientApplication>()
-                .DisableDeveloperCertificate()
                 .AddEntityFrameworkStores<IdentityApplicationDbContext>()
+                .AddDeveloperCertificate()
                 .AddClientExtensions();
+
+            services.ConfigureApplicationTokens(options =>
+                options.Issuer = "https://localhost/DFC7191F-FF74-42B9-A292-08FEA80F5B20/v2.0/");
 
             services.AddAuthentication(sharedOptions =>
             {
@@ -50,7 +51,7 @@ namespace IdentityOIDCWebApplicationSample
                 sharedOptions.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
             });
 
-            services.AddOpenIdConnectAuthentication()
+            services.AddOpenIdConnectAuthentication(options => options.ClientId = "56A33E6A-ADFE-47EA-BBFE-40F4AE4C55BA")
                 .WithIntegratedWebClient();
 
             services.AddCookieAuthentication();
@@ -75,7 +76,7 @@ namespace IdentityOIDCWebApplicationSample
                 app.UseExceptionHandler("/Home/Error");
             }
 
-            app.UseHttps();
+            app.UseRewriter(new RewriteOptions().AddRedirectToHttps(StatusCodes.Status302Found, 44324));
 
             app.UseStaticFiles();
 

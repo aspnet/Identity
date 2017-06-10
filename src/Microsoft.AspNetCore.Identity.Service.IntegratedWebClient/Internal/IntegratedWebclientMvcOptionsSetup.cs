@@ -8,16 +8,9 @@ namespace Microsoft.AspNetCore.Identity.Service.IntegratedWebClient.Internal
 {
     public class IntegratedWebclientMvcOptionsSetup : IConfigureOptions<MvcOptions>
     {
-        private readonly IOptions<IntegratedWebClientOptions> _webClientOptions;
-
-        public IntegratedWebclientMvcOptionsSetup(IOptions<IntegratedWebClientOptions> webClientOptions)
-        {
-            _webClientOptions = webClientOptions;
-        }
-
         public void Configure(MvcOptions options)
         {
-            options.Conventions.Add(new IntegratedWebClientModelConvention(_webClientOptions));
+            options.Conventions.Add(new IntegratedWebClientModelConvention());
         }
     }
 }

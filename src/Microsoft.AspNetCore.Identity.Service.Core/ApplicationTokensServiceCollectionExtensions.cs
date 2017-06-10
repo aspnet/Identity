@@ -17,7 +17,6 @@ using Microsoft.AspNetCore.Identity.Service.Validation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Options.Infrastructure;
 
 namespace Microsoft.AspNetCore.Identity.Service
 {
@@ -31,8 +30,6 @@ namespace Microsoft.AspNetCore.Identity.Service
             }
 
             services.AddOptions();
-
-            services.TryAddEnumerable(ServiceDescriptor.Transient<ConfigureDefaultOptions<ApplicationTokenOptions>, IdentityTokensOptionsConfigurationDefaultSetup>());
             services.TryAddEnumerable(ServiceDescriptor.Transient<IConfigureOptions<ApplicationTokenOptions>, IdentityTokensOptionsDefaultSetup>());
 
             // Protocol services
@@ -72,7 +69,6 @@ namespace Microsoft.AspNetCore.Identity.Service
             services.TryAddSingleton(new ProtocolErrorProvider());
             services.TryAddSingleton<ISigningCredentialsPolicyProvider, DefaultSigningCredentialsPolicyProvider>();
             services.TryAddEnumerable(ServiceDescriptor.Singleton<ISigningCredentialsSource, DefaultSigningCredentialsSource>());
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<ISigningCredentialsSource, DeveloperCertificateSigningCredentialsSource>());
 
             services.TryAddEnumerable(ServiceDescriptor.Singleton<ITokenClaimsProvider, DefaultTokenClaimsProvider>());
             services.TryAddEnumerable(ServiceDescriptor.Singleton<ITokenClaimsProvider, GrantedTokensTokenClaimsProvider>());
@@ -85,6 +81,9 @@ namespace Microsoft.AspNetCore.Identity.Service
 
             return services;
         }
+
+        public static IServiceCollection ConfigureApplicationTokens(this IServiceCollection services, Action<ApplicationTokenOptions> configure) =>
+            services.Configure(configure);
 
         public static IServiceCollection AddApplicationTokens(
             this IServiceCollection services,

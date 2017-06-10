@@ -11,14 +11,11 @@ namespace Microsoft.AspNetCore.Identity.Service.IntegratedWebClient.Internal
 {
     public class IntegratedWebClientRedirectFilter : IActionFilter
     {
-        private IOptions<IntegratedWebClientOptions> _webClientOptions;
         private IEnumerable<string> _parameters;
 
         public IntegratedWebClientRedirectFilter(
-            IOptions<IntegratedWebClientOptions> webClientOptions,
             IEnumerable<string> parameters)
         {
-            _webClientOptions = webClientOptions;
             _parameters = parameters;
         }
 
@@ -28,6 +25,9 @@ namespace Microsoft.AspNetCore.Identity.Service.IntegratedWebClient.Internal
 
         public void OnActionExecuting(ActionExecutingContext context)
         {
+            var openIdConnectOptions = context.HttpContext.RequestServices.GetRequiredService<IOptionsSnapshot<OpenIdConnectOptions>>();
+            var options = openIdConnectOptions.Get(OpenIdConnectDefaults.AuthenticationScheme);
+
             foreach (var parameter in _parameters)
             {
                 if (context.ActionArguments.TryGetValue(parameter, out var parameterValue))
@@ -51,18 +51,16 @@ namespace Microsoft.AspNetCore.Identity.Service.IntegratedWebClient.Internal
                 logout.LogoutRedirectUri.Equals(IntegratedWebClientOptions.TokenRedirectUrn);
 
             bool IsAuthorizationForWebApplication(AuthorizationRequest request) =>
-                _webClientOptions.Value.ClientId.Equals(request.Message?.ClientId) &&
+                options.ClientId.Equals(request.Message?.ClientId) &&
                 request.RequestGrants.RedirectUri != null &&
                 request.RequestGrants.RedirectUri.Equals(IntegratedWebClientOptions.TokenRedirectUrn);
 
             string ComputeRedirectUri(bool isLogout)
             {
                 var request = context.HttpContext.Request;
-                var openIdConnectOptions = context.HttpContext.RequestServices.GetRequiredService<IOptionsSnapshot<OpenIdConnectOptions>>();
                 var scheme = request.Scheme;
                 var host = request.Host.ToUriComponent();
                 var pathBase = request.PathBase;
-                var options = openIdConnectOptions.Get(OpenIdConnectDefaults.AuthenticationScheme);
                 var path = !isLogout ? options.CallbackPath : options.SignedOutCallbackPath;
                 return $"{scheme}://{host}{pathBase}{path}";
             }

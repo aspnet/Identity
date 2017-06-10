@@ -7,6 +7,8 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Identity.Service;
 using Microsoft.AspNetCore.Identity.Service.Internal;
+using Microsoft.AspNetCore.Identity.Service.Signing;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -58,16 +60,11 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder;
         }
 
-        public static IIdentityClientApplicationsBuilder DisableDeveloperCertificate(this IIdentityClientApplicationsBuilder builder)
+        public static IIdentityClientApplicationsBuilder AddDeveloperCertificate(this IIdentityClientApplicationsBuilder builder)
         {
             var services = builder.Services;
-            foreach (var service in services.ToList())
-            {
-                if (service.ImplementationType == typeof(DeveloperCertificateSigningCredentialsSource))
-                {
-                    services.Remove(service);
-                }
-            }
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<ISigningCredentialsSource,DeveloperCertificateSigningCredentialsSource>());
+            services.TryAddSingleton<DeveloperCertificateSigningCredentialsSource>();
 
             return builder;
         }

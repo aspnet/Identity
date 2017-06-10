@@ -9,13 +9,6 @@ namespace Microsoft.AspNetCore.Identity.Service.IntegratedWebClient.Internal
 {
     public class IntegratedWebClientModelConvention : IApplicationModelConvention
     {
-        private readonly IOptions<IntegratedWebClientOptions> _webClientOptions;
-
-        public IntegratedWebClientModelConvention(IOptions<IntegratedWebClientOptions> webClientOptions)
-        {
-            _webClientOptions = webClientOptions;
-        }
-
         public void Apply(ApplicationModel application)
         {
             foreach (var controller in application.Controllers)
@@ -33,7 +26,6 @@ namespace Microsoft.AspNetCore.Identity.Service.IntegratedWebClient.Internal
             if (parameters.Any())
             {
                 action.Filters.Add(new IntegratedWebClientRedirectFilter(
-                    _webClientOptions,
                     parameters.Select(p => p.ParameterName)));
             }
         }
