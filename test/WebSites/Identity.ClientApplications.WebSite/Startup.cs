@@ -1,4 +1,4 @@
-﻿using IIdentity.ClientApplications.WebSiteIdentity.Data;
+﻿using Identity.ClientApplications.WebSite.Identity.Data;
 using Identity.ClientApplications.WebSite.Identity.Models;
 using Identity.ClientApplications.WebSite.Identity.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;

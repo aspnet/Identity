@@ -1,4 +1,4 @@
-﻿namespace IIdentity.ClientApplications.WebSiteIdentity.Models.ApplicationViewModels
+﻿namespace Identity.ClientApplications.WebSite
 {
     public class RemoveLogoutUriViewModel
     {
