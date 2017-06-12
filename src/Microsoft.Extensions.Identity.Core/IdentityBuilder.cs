@@ -160,12 +160,32 @@ namespace Microsoft.AspNetCore.Identity
         }
 
         /// <summary>
+<<<<<<< HEAD
+=======
+        /// Adds Role related services for TRole, including IRoleStore, IRoleValidator, and RoleManager.
+        /// </summary>
+        /// <typeparam name="TRole">The role type.</typeparam>
+        /// <returns>The current <see cref="IdentityBuilder"/> instance.</returns>
+        public virtual IdentityBuilder AddRoles<TRole>() where TRole : class
+        {
+            RoleType = typeof(TRole);
+            AddRoleStore<TRole>();
+            AddRoleValidator<RoleValidator<TRole>>();
+            Services.TryAddScoped<RoleManager<TRole>, RoleManager<TRole>>();
+            return this;
+        }
+
+        /// <summary>
         /// Adds an <see cref="IRoleValidator{TRole}"/> for the <seealso cref="RoleType"/>.
         /// </summary>
         /// <typeparam name="TRole">The role validator type.</typeparam>
         /// <returns>The current <see cref="IdentityBuilder"/> instance.</returns>
         public virtual IdentityBuilder AddRoleValidator<TRole>() where TRole : class
         {
+            if (RoleType == null)
+            {
+                throw new InvalidOperationException(Resources.NoRoleType);
+            }
             return AddScoped(typeof(IRoleValidator<>).MakeGenericType(RoleType), typeof(TRole));
         }
 
@@ -177,6 +197,10 @@ namespace Microsoft.AspNetCore.Identity
         /// <returns>The current <see cref="IdentityBuilder"/> instance.</returns>
         public virtual IdentityBuilder AddRoleStore<TRole>() where TRole : class
         {
+            if (RoleType == null)
+            {
+                throw new InvalidOperationException(Resources.NoRoleType);
+            }
             return AddScoped(typeof(IRoleStore<>).MakeGenericType(RoleType), typeof(TRole));
         }
 
@@ -187,6 +211,10 @@ namespace Microsoft.AspNetCore.Identity
         /// <returns>The current <see cref="IdentityBuilder"/> instance.</returns>
         public virtual IdentityBuilder AddRoleManager<TRoleManager>() where TRoleManager : class
         {
+            if (RoleType == null)
+            {
+                throw new InvalidOperationException(Resources.NoRoleType);
+            }
             var managerType = typeof(RoleManager<>).MakeGenericType(RoleType);
             var customType = typeof(TRoleManager);
             if (managerType == customType ||

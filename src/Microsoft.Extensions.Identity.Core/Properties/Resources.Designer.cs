@@ -668,6 +668,20 @@ namespace Microsoft.Extensions.Identity.Core
         internal static string FormatPasswordRequiresUniqueChars(object p0)
             => string.Format(CultureInfo.CurrentCulture, GetString("PasswordRequiresUniqueChars"), p0);
 
+        /// <summary>
+        /// No RoleType was specified, try AddRoles&lt;TRole&gt;().
+        /// </summary>
+        internal static string NoRoleType
+        {
+            get => GetString("NoRoleType");
+        }
+
+        /// <summary>
+        /// No RoleType was specified, try AddRoles&lt;TRole&gt;().
+        /// </summary>
+        internal static string FormatNoRoleType()
+            => GetString("NoRoleType");
+
         private static string GetString(string name, params string[] formatterNames)
         {
             var value = _resourceManager.GetString(name);
