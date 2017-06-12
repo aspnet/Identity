@@ -13,9 +13,29 @@ namespace Microsoft.AspNetCore.Identity
     public static class IdentityBuilderExtensions
     {
         /// <summary>
+        /// Adds the default token providers used to generate tokens for reset passwords, change email
+        /// and change telephone number operations, and for two factor authentication token generation.
+        /// </summary>
+        /// <param name="builder">The current <see cref="IdentityBuilder"/> instance.</param>
+        /// <returns>The current <see cref="IdentityBuilder"/> instance.</returns>
+        public static IdentityBuilder AddDefaultTokenProviders(this IdentityBuilder builder)
+        {
+            var userType = builder.UserType;
+            var dataProtectionProviderType = typeof(DataProtectorTokenProvider<>).MakeGenericType(userType);
+            var phoneNumberProviderType = typeof(PhoneNumberTokenProvider<>).MakeGenericType(userType);
+            var emailTokenProviderType = typeof(EmailTokenProvider<>).MakeGenericType(userType);
+            var authenticatorProviderType = typeof(AuthenticatorTokenProvider<>).MakeGenericType(userType);
+            return builder.AddTokenProvider(TokenOptions.DefaultProvider, dataProtectionProviderType)
+                .AddTokenProvider(TokenOptions.DefaultEmailProvider, emailTokenProviderType)
+                .AddTokenProvider(TokenOptions.DefaultPhoneProvider, phoneNumberProviderType)
+                .AddTokenProvider(TokenOptions.DefaultAuthenticatorProvider, authenticatorProviderType);
+        }
+
+        /// <summary>
         /// Adds a <see cref="SignInManager{TUser}"/> for the <seealso cref="IdentityBuilder.UserType"/>.
         /// </summary>
         /// <typeparam name="TSignInManager">The type of the sign in manager to add.</typeparam>
+        /// <param name="builder">The current <see cref="IdentityBuilder"/> instance.</param>
         /// <returns>The current <see cref="IdentityBuilder"/> instance.</returns>
         public static IdentityBuilder AddSignInManager<TSignInManager>(this IdentityBuilder builder) where TSignInManager : class
         {
