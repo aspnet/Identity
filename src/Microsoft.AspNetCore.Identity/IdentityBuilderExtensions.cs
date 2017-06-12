@@ -44,7 +44,7 @@ namespace Microsoft.AspNetCore.Identity
             if (managerType == customType ||
                 !managerType.GetTypeInfo().IsAssignableFrom(customType.GetTypeInfo()))
             {
-                throw new InvalidOperationException(AspNetIdentityResources.FormatInvalidManagerType(customType.Name, "SignInManager", builder.UserType.Name));
+                throw new InvalidOperationException(Resources.FormatInvalidManagerType(customType.Name, "SignInManager", builder.UserType.Name));
             }
             builder.Services.AddScoped(typeof(TSignInManager), services => services.GetRequiredService(managerType));
             builder.Services.AddScoped(managerType, typeof(TSignInManager));
