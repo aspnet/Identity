@@ -19,21 +19,14 @@ namespace Microsoft.AspNetCore.Identity
         /// Creates a new instance of <see cref="IdentityBuilder"/>.
         /// </summary>
         /// <param name="user">The <see cref="Type"/> to use for the users.</param>
-        /// <param name="services">The <see cref="IServiceCollection"/> to attach to.</param>
-        public IdentityBuilder(Type user, IServiceCollection services)
-        {
-            UserType = user;
-            Services = services;
-        }
-
-        /// <summary>
-        /// Creates a new instance of <see cref="IdentityBuilder"/>.
-        /// </summary>
-        /// <param name="user">The <see cref="Type"/> to use for the users.</param>
         /// <param name="role">The <see cref="Type"/> to use for the roles.</param>
         /// <param name="services">The <see cref="IServiceCollection"/> to attach to.</param>
-        public IdentityBuilder(Type user, Type role, IServiceCollection services) : this(user, services)
-            => RoleType = role;
+        public IdentityBuilder(Type user, Type role, IServiceCollection services)
+        {
+            UserType = user;
+            RoleType = role;
+            Services = services;
+        }
 
         /// <summary>
         /// Gets the <see cref="Type"/> used for users.
@@ -167,30 +160,12 @@ namespace Microsoft.AspNetCore.Identity
         }
 
         /// <summary>
-        /// Adds Role related services for TRole, including IRoleStore, IRoleValidator, and RoleManager.
-        /// </summary>
-        /// <typeparam name="TRole">The role type.</typeparam>
-        /// <returns>The current <see cref="IdentityBuilder"/> instance.</returns>
-        public virtual IdentityBuilder AddRoles<TRole>() where TRole : class
-        {
-            RoleType = typeof(TRole);
-            AddRoleStore<TRole>();
-            AddRoleValidator<RoleValidator<TRole>>();
-            Services.TryAddScoped<RoleManager<TRole>, RoleManager<TRole>>();
-            return this;
-        }
-
-        /// <summary>
         /// Adds an <see cref="IRoleValidator{TRole}"/> for the <seealso cref="RoleType"/>.
         /// </summary>
         /// <typeparam name="TRole">The role validator type.</typeparam>
         /// <returns>The current <see cref="IdentityBuilder"/> instance.</returns>
         public virtual IdentityBuilder AddRoleValidator<TRole>() where TRole : class
         {
-            if (RoleType == null)
-            {
-                throw new InvalidOperationException(Resources.NoRoleType);
-            }
             return AddScoped(typeof(IRoleValidator<>).MakeGenericType(RoleType), typeof(TRole));
         }
 
@@ -202,10 +177,6 @@ namespace Microsoft.AspNetCore.Identity
         /// <returns>The current <see cref="IdentityBuilder"/> instance.</returns>
         public virtual IdentityBuilder AddRoleStore<TRole>() where TRole : class
         {
-            if (RoleType == null)
-            {
-                throw new InvalidOperationException(Resources.NoRoleType);
-            }
             return AddScoped(typeof(IRoleStore<>).MakeGenericType(RoleType), typeof(TRole));
         }
 
@@ -216,10 +187,6 @@ namespace Microsoft.AspNetCore.Identity
         /// <returns>The current <see cref="IdentityBuilder"/> instance.</returns>
         public virtual IdentityBuilder AddRoleManager<TRoleManager>() where TRoleManager : class
         {
-            if (RoleType == null)
-            {
-                throw new InvalidOperationException(Resources.NoRoleType);
-            }
             var managerType = typeof(RoleManager<>).MakeGenericType(RoleType);
             var customType = typeof(TRoleManager);
             if (managerType == customType ||
