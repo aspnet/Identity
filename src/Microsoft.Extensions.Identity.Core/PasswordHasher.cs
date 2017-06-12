@@ -53,12 +53,12 @@ namespace Microsoft.AspNetCore.Identity
                     _iterCount = options.IterationCount;
                     if (_iterCount < 1)
                     {
-                        throw new InvalidOperationException(AspNetIdentityResources.InvalidPasswordHasherIterationCount);
+                        throw new InvalidOperationException(Resources.InvalidPasswordHasherIterationCount);
                     }
                     break;
 
                 default:
-                    throw new InvalidOperationException(AspNetIdentityResources.InvalidPasswordHasherCompatibilityMode);
+                    throw new InvalidOperationException(Resources.InvalidPasswordHasherCompatibilityMode);
             }
 
             _rng = options.Rng;
