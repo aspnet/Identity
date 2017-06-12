@@ -5,6 +5,8 @@ using System;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Identity.Core;
 
 namespace Microsoft.AspNetCore.Identity
 {
@@ -67,31 +69,21 @@ namespace Microsoft.AspNetCore.Identity
         /// <summary>
         /// Adds an <see cref="IUserValidator{TUser}"/> for the <seealso cref="UserType"/>.
         /// </summary>
-        /// <typeparam name="T">The user validator type.</typeparam>
+        /// <typeparam name="TUser">The user validator type.</typeparam>
         /// <returns>The current <see cref="IdentityBuilder"/> instance.</returns>
-        public virtual IdentityBuilder AddUserValidator<T>() where T : class
+        public virtual IdentityBuilder AddUserValidator<TUser>() where TUser : class
         {
-            return AddScoped(typeof(IUserValidator<>).MakeGenericType(UserType), typeof(T));
-        }
-
-        /// <summary>
-        /// Adds an <see cref="IRoleValidator{TRole}"/> for the <seealso cref="RoleType"/>.
-        /// </summary>
-        /// <typeparam name="T">The role validator type.</typeparam>
-        /// <returns>The current <see cref="IdentityBuilder"/> instance.</returns>
-        public virtual IdentityBuilder AddRoleValidator<T>() where T : class
-        {
-            return AddScoped(typeof(IRoleValidator<>).MakeGenericType(RoleType), typeof(T));
+            return AddScoped(typeof(IUserValidator<>).MakeGenericType(UserType), typeof(TUser));
         }
 
         /// <summary>
         /// Adds an <see cref="IUserClaimsPrincipalFactory{TUser}"/> for the <seealso cref="UserType"/>.
         /// </summary>
-        /// <typeparam name="T">The type of the claims principal factory.</typeparam>
+        /// <typeparam name="TUser">The type of the claims principal factory.</typeparam>
         /// <returns>The current <see cref="IdentityBuilder"/> instance.</returns>
-        public virtual IdentityBuilder AddClaimsPrincipalFactory<T>() where T : class
+        public virtual IdentityBuilder AddClaimsPrincipalFactory<TUser>() where TUser : class
         {
-            return AddScoped(typeof(IUserClaimsPrincipalFactory<>).MakeGenericType(UserType), typeof(T));
+            return AddScoped(typeof(IUserClaimsPrincipalFactory<>).MakeGenericType(UserType), typeof(TUser));
         }
 
         /// <summary>
@@ -108,31 +100,21 @@ namespace Microsoft.AspNetCore.Identity
         /// <summary>
         /// Adds an <see cref="IPasswordValidator{TUser}"/> for the <seealso cref="UserType"/>.
         /// </summary>
-        /// <typeparam name="T">The user type whose password will be validated.</typeparam>
+        /// <typeparam name="TUser">The user type whose password will be validated.</typeparam>
         /// <returns>The current <see cref="IdentityBuilder"/> instance.</returns>
-        public virtual IdentityBuilder AddPasswordValidator<T>() where T : class
+        public virtual IdentityBuilder AddPasswordValidator<TUser>() where TUser : class
         {
-            return AddScoped(typeof(IPasswordValidator<>).MakeGenericType(UserType), typeof(T));
+            return AddScoped(typeof(IPasswordValidator<>).MakeGenericType(UserType), typeof(TUser));
         }
 
         /// <summary>
         /// Adds an <see cref="IUserStore{TUser}"/> for the <seealso cref="UserType"/>.
         /// </summary>
-        /// <typeparam name="T">The user type held in the store.</typeparam>
+        /// <typeparam name="TUser">The user type held in the store.</typeparam>
         /// <returns>The current <see cref="IdentityBuilder"/> instance.</returns>
-        public virtual IdentityBuilder AddUserStore<T>() where T : class
+        public virtual IdentityBuilder AddUserStore<TUser>() where TUser : class
         {
-            return AddScoped(typeof(IUserStore<>).MakeGenericType(UserType), typeof(T));
-        }
-
-        /// <summary>
-        /// Adds a <see cref="IRoleStore{TRole}"/> for the <seealso cref="RoleType"/>.
-        /// </summary>
-        /// <typeparam name="T">The role type held in the store.</typeparam>
-        /// <returns>The current <see cref="IdentityBuilder"/> instance.</returns>
-        public virtual IdentityBuilder AddRoleStore<T>() where T : class
-        {
-            return AddScoped(typeof(IRoleStore<>).MakeGenericType(RoleType), typeof(T));
+            return AddScoped(typeof(IUserStore<>).MakeGenericType(UserType), typeof(TUser));
         }
 
         /// <summary>
@@ -185,12 +167,59 @@ namespace Microsoft.AspNetCore.Identity
         }
 
         /// <summary>
+        /// Adds Role related services for TRole, including IRoleStore, IRoleValidator, and RoleManager.
+        /// </summary>
+        /// <typeparam name="TRole">The role type.</typeparam>
+        /// <returns>The current <see cref="IdentityBuilder"/> instance.</returns>
+        public virtual IdentityBuilder AddRoles<TRole>() where TRole : class
+        {
+            RoleType = typeof(TRole);
+            AddRoleStore<TRole>();
+            AddRoleValidator<RoleValidator<TRole>>();
+            Services.TryAddScoped<RoleManager<TRole>, RoleManager<TRole>>();
+            return this;
+        }
+
+        /// <summary>
+        /// Adds an <see cref="IRoleValidator{TRole}"/> for the <seealso cref="RoleType"/>.
+        /// </summary>
+        /// <typeparam name="TRole">The role validator type.</typeparam>
+        /// <returns>The current <see cref="IdentityBuilder"/> instance.</returns>
+        public virtual IdentityBuilder AddRoleValidator<TRole>() where TRole : class
+        {
+            if (RoleType == null)
+            {
+                throw new InvalidOperationException(Resources.NoRoleType);
+            }
+            return AddScoped(typeof(IRoleValidator<>).MakeGenericType(RoleType), typeof(TRole));
+        }
+
+
+        /// <summary>
+        /// Adds a <see cref="IRoleStore{TRole}"/> for the <seealso cref="RoleType"/>.
+        /// </summary>
+        /// <typeparam name="TRole">The role type held in the store.</typeparam>
+        /// <returns>The current <see cref="IdentityBuilder"/> instance.</returns>
+        public virtual IdentityBuilder AddRoleStore<TRole>() where TRole : class
+        {
+            if (RoleType == null)
+            {
+                throw new InvalidOperationException(Resources.NoRoleType);
+            }
+            return AddScoped(typeof(IRoleStore<>).MakeGenericType(RoleType), typeof(TRole));
+        }
+
+        /// <summary>
         /// Adds a <see cref="RoleManager{TRole}"/> for the <seealso cref="RoleType"/>.
         /// </summary>
         /// <typeparam name="TRoleManager">The type of the role manager to add.</typeparam>
         /// <returns>The current <see cref="IdentityBuilder"/> instance.</returns>
         public virtual IdentityBuilder AddRoleManager<TRoleManager>() where TRoleManager : class
         {
+            if (RoleType == null)
+            {
+                throw new InvalidOperationException(Resources.NoRoleType);
+            }
             var managerType = typeof(RoleManager<>).MakeGenericType(RoleType);
             var customType = typeof(TRoleManager);
             if (managerType == customType ||
