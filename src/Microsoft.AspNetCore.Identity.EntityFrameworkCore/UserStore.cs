@@ -158,6 +158,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
         protected Task SaveChanges(CancellationToken cancellationToken)
         {
+            return AutoSaveChanges ? Context.SaveChangesAsync(cancellationToken) : Task.CompletedTask;
         }
 
         /// <summary>
@@ -726,6 +727,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
         protected override Task AddUserTokenAsync(TUserToken token)
         {
             UserTokens.Add(token);
+            return Task.CompletedTask;
         }
 
 
@@ -737,6 +739,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
         protected override Task RemoveUserTokenAsync(TUserToken token)
         {
             UserTokens.Remove(token);
+            return Task.CompletedTask;
         }
     }
 }
