@@ -8,7 +8,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Internal;
 
 namespace Microsoft.AspNetCore.Identity
 {
@@ -23,7 +22,22 @@ namespace Microsoft.AspNetCore.Identity
     /// <typeparam name="TUserLogin">The type representing a user external login.</typeparam>
     /// <typeparam name="TUserToken">The type representing a user token.</typeparam>
     /// <typeparam name="TRoleClaim">The type representing a role claim.</typeparam>
-    public abstract class UserStoreBase<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TUserToken, TRoleClaim> :
+    public abstract class UserStoreBaseV1<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TUserToken, TRoleClaim> :
+        IUserLoginStore<TUser>,
+        IUserRoleStore<TUser>,
+        IUserClaimStore<TUser>,
+        IUserPasswordStore<TUser>,
+        IUserSecurityStampStore<TUser>,
+        IUserEmailStore<TUser>,
+        IUserLockoutStore<TUser>,
+        IUserPhoneNumberStore<TUser>,
+        IQueryableUserStore<TUser>,
+        IUserTwoFactorStore<TUser>,
+        IUserAuthenticationTokenStore<TUser>,
+        IUserAuthenticatorKeyStore<TUser>,
+        IUserTwoFactorRecoveryCodeStore<TUser>
+        where TUser : IdentityUser<TKey>
+        where TRole : IdentityRole<TKey>
         where TKey : IEquatable<TKey>
         where TUserClaim : IdentityUserClaim<TKey>, new()
         where TUserRole : IdentityUserRole<TKey>, new()
@@ -35,7 +49,7 @@ namespace Microsoft.AspNetCore.Identity
         /// Creates a new instance.
         /// </summary>
         /// <param name="describer">The <see cref="IdentityErrorDescriber"/> used to describe store errors.</param>
-        public UserStoreBase(IdentityErrorDescriber describer)
+        public UserStoreBaseV1(IdentityErrorDescriber describer)
         {
             if (describer == null)
             {
@@ -58,7 +72,7 @@ namespace Microsoft.AspNetCore.Identity
         /// <param name="user">The associated user.</param>
         /// <param name="role">The associated role.</param>
         /// <returns></returns>
-        protected virtual TUserRole CreateUserRole(TUser user, TRole role)
+        public virtual TUserRole CreateUserRole(TUser user, TRole role)
         {
             return new TUserRole()
             {
@@ -73,7 +87,7 @@ namespace Microsoft.AspNetCore.Identity
         /// <param name="user">The associated user.</param>
         /// <param name="claim">The associated claim.</param>
         /// <returns></returns>
-        protected virtual TUserClaim CreateUserClaim(TUser user, Claim claim)
+        public virtual TUserClaim CreateUserClaim(TUser user, Claim claim)
         {
             var userClaim = new TUserClaim { UserId = user.Id };
             userClaim.InitializeFromClaim(claim);
@@ -86,7 +100,7 @@ namespace Microsoft.AspNetCore.Identity
         /// <param name="user">The associated user.</param>
         /// <param name="login">The sasociated login.</param>
         /// <returns></returns>
-        protected virtual TUserLogin CreateUserLogin(TUser user, UserLoginInfo login)
+        public virtual TUserLogin CreateUserLogin(TUser user, UserLoginInfo login)
         {
             return new TUserLogin
             {
@@ -105,7 +119,7 @@ namespace Microsoft.AspNetCore.Identity
         /// <param name="name">The name of the user token.</param>
         /// <param name="value">The value of the user token.</param>
         /// <returns></returns>
-        protected virtual TUserToken CreateUserToken(TUser user, string loginProvider, string name, string value)
+        public virtual TUserToken CreateUserToken(TUser user, string loginProvider, string name, string value)
         {
             return new TUserToken
             {
@@ -340,7 +354,7 @@ namespace Microsoft.AspNetCore.Identity
         /// <param name="normalizedRoleName">The normalized role name.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The role if it exists.</returns>
-        protected abstract Task<TRole> FindRoleAsync(string normalizedRoleName, CancellationToken cancellationToken);
+        public abstract Task<TRole> FindRoleAsync(string normalizedRoleName, CancellationToken cancellationToken);
 
         /// <summary>
         /// Return a user role for the userId and roleId if it exists.
@@ -349,7 +363,7 @@ namespace Microsoft.AspNetCore.Identity
         /// <param name="roleId">The role's id.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The user role if it exists.</returns>
-        protected abstract Task<TUserRole> FindUserRoleAsync(TKey userId, TKey roleId, CancellationToken cancellationToken);
+        public abstract Task<TUserRole> FindUserRoleAsync(TKey userId, TKey roleId, CancellationToken cancellationToken);
 
         /// <summary>
         /// Return a user with the matching userId if it exists.
@@ -357,7 +371,7 @@ namespace Microsoft.AspNetCore.Identity
         /// <param name="userId">The user's id.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The user if it exists.</returns>
-        protected abstract Task<TUser> FindUserAsync(TKey userId, CancellationToken cancellationToken);
+        public abstract Task<TUser> FindUserAsync(TKey userId, CancellationToken cancellationToken);
 
         /// <summary>
         /// Return a user login with the matching userId, provider, providerKey if it exists.
@@ -367,7 +381,7 @@ namespace Microsoft.AspNetCore.Identity
         /// <param name="providerKey">The key provided by the <paramref name="loginProvider"/> to identify a user.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The user login if it exists.</returns>
-        protected abstract Task<TUserLogin> FindUserLoginAsync(TKey userId, string loginProvider, string providerKey, CancellationToken cancellationToken);
+        public abstract Task<TUserLogin> FindUserLoginAsync(TKey userId, string loginProvider, string providerKey, CancellationToken cancellationToken);
 
         /// <summary>
         /// Return a user login with  provider, providerKey if it exists.
@@ -376,7 +390,7 @@ namespace Microsoft.AspNetCore.Identity
         /// <param name="providerKey">The key provided by the <paramref name="loginProvider"/> to identify a user.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The user login if it exists.</returns>
-        protected abstract Task<TUserLogin> FindUserLoginAsync(string loginProvider, string providerKey, CancellationToken cancellationToken);
+        public abstract Task<TUserLogin> FindUserLoginAsync(string loginProvider, string providerKey, CancellationToken cancellationToken);
 
         /// <summary>
         /// Adds the given <paramref name="normalizedRoleName"/> to the specified <paramref name="user"/>.
@@ -415,6 +429,11 @@ namespace Microsoft.AspNetCore.Identity
         public abstract Task<bool> IsInRoleAsync(TUser user, string normalizedRoleName, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
+        /// True if this class has been disposed.
+        /// </summary>
+        protected bool IsDisposed => _disposed;
+
+        /// <summary>
         /// Throws if this class has been disposed.
         /// </summary>
         protected void ThrowIfDisposed()
@@ -429,6 +448,16 @@ namespace Microsoft.AspNetCore.Identity
         /// Dispose the store
         /// </summary>
         public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Dispose the store
+        /// </summary>
+        /// <param name="disposing">True when called from Dispose</param>
+        protected virtual void Dispose(bool disposing)
         {
             _disposed = true;
         }
@@ -960,21 +989,21 @@ namespace Microsoft.AspNetCore.Identity
         /// <param name="name">The name of the token.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The user token if it exists.</returns>
-        protected abstract Task<TUserToken> FindTokenAsync(TUser user, string loginProvider, string name, CancellationToken cancellationToken);
+        public abstract Task<TUserToken> FindTokenAsync(TUser user, string loginProvider, string name, CancellationToken cancellationToken);
 
         /// <summary>
         /// Add a new user token.
         /// </summary>
         /// <param name="token">The token to be added.</param>
         /// <returns></returns>
-        protected abstract Task AddUserTokenAsync(TUserToken token);
+        public abstract Task AddUserTokenAsync(TUserToken token);
 
         /// <summary>
         /// Remove a new user token.
         /// </summary>
         /// <param name="token">The token to be removed.</param>
         /// <returns></returns>
-        protected abstract Task RemoveUserTokenAsync(TUserToken token);
+        public abstract Task RemoveUserTokenAsync(TUserToken token);
 
         /// <summary>
         /// Sets the token value for a particular user.

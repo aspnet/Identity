@@ -219,10 +219,7 @@ namespace Microsoft.AspNetCore.Identity
         /// <summary>
         /// Dispose the stores
         /// </summary>
-        public void Dispose()
-        {
-            _disposed = true;
-        }
+        public void Dispose() => _disposed = true;
 
         /// <summary>
         /// Get the claims associated with the specified <paramref name="role"/> as an asynchronous operation.
@@ -265,8 +262,6 @@ namespace Microsoft.AspNetCore.Identity
         /// <param name="claim">The associated claim.</param>
         /// <returns>The role claim entity.</returns>
         protected virtual TRoleClaim CreateRoleClaim(TRole role, Claim claim)
-        {
-            return new TRoleClaim { RoleId = role.Id, ClaimType = claim.Type, ClaimValue = claim.Value };
-        }
+            => new TRoleClaim { RoleId = role.Id, ClaimType = claim.Type, ClaimValue = claim.Value };
     }
 }

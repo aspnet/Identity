@@ -361,10 +361,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
         /// <summary>
         /// Dispose the stores
         /// </summary>
-        public void Dispose()
-        {
-            _disposed = true;
-        }
+        public void Dispose() => _disposed = true;
 
         /// <summary>
         /// Get the claims associated with the specified <paramref name="role"/> as an asynchronous operation.
@@ -434,10 +431,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
         /// <summary>
         /// A navigation property for the roles the store contains.
         /// </summary>
-        public virtual IQueryable<TRole> Roles
-        {
-            get { return Context.Set<TRole>(); }
-        }
+        public virtual IQueryable<TRole> Roles => Context.Set<TRole>();
 
         private DbSet<TRoleClaim> RoleClaims { get { return Context.Set<TRoleClaim>(); } }
 
@@ -448,8 +442,6 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
         /// <param name="claim">The associated claim.</param>
         /// <returns>The role claim entity.</returns>
         protected virtual TRoleClaim CreateRoleClaim(TRole role, Claim claim)
-        {
-            return new TRoleClaim { RoleId = role.Id, ClaimType = claim.Type, ClaimValue = claim.Value };
-        }
+            => new TRoleClaim { RoleId = role.Id, ClaimType = claim.Type, ClaimValue = claim.Value };
     }
 }
