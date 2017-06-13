@@ -5,6 +5,8 @@ using System;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Identity.Core;
 
 namespace Microsoft.AspNetCore.Identity
 {
@@ -60,31 +62,21 @@ namespace Microsoft.AspNetCore.Identity
         /// <summary>
         /// Adds an <see cref="IUserValidator{TUser}"/> for the <seealso cref="UserType"/>.
         /// </summary>
-        /// <typeparam name="T">The user validator type.</typeparam>
+        /// <typeparam name="TUser">The user validator type.</typeparam>
         /// <returns>The current <see cref="IdentityBuilder"/> instance.</returns>
-        public virtual IdentityBuilder AddUserValidator<T>() where T : class
+        public virtual IdentityBuilder AddUserValidator<TUser>() where TUser : class
         {
-            return AddScoped(typeof(IUserValidator<>).MakeGenericType(UserType), typeof(T));
-        }
-
-        /// <summary>
-        /// Adds an <see cref="IRoleValidator{TRole}"/> for the <seealso cref="RoleType"/>.
-        /// </summary>
-        /// <typeparam name="T">The role validator type.</typeparam>
-        /// <returns>The current <see cref="IdentityBuilder"/> instance.</returns>
-        public virtual IdentityBuilder AddRoleValidator<T>() where T : class
-        {
-            return AddScoped(typeof(IRoleValidator<>).MakeGenericType(RoleType), typeof(T));
+            return AddScoped(typeof(IUserValidator<>).MakeGenericType(UserType), typeof(TUser));
         }
 
         /// <summary>
         /// Adds an <see cref="IUserClaimsPrincipalFactory{TUser}"/> for the <seealso cref="UserType"/>.
         /// </summary>
-        /// <typeparam name="T">The type of the claims principal factory.</typeparam>
+        /// <typeparam name="TUser">The type of the claims principal factory.</typeparam>
         /// <returns>The current <see cref="IdentityBuilder"/> instance.</returns>
-        public virtual IdentityBuilder AddClaimsPrincipalFactory<T>() where T : class
+        public virtual IdentityBuilder AddClaimsPrincipalFactory<TUser>() where TUser : class
         {
-            return AddScoped(typeof(IUserClaimsPrincipalFactory<>).MakeGenericType(UserType), typeof(T));
+            return AddScoped(typeof(IUserClaimsPrincipalFactory<>).MakeGenericType(UserType), typeof(TUser));
         }
 
         /// <summary>
@@ -101,31 +93,21 @@ namespace Microsoft.AspNetCore.Identity
         /// <summary>
         /// Adds an <see cref="IPasswordValidator{TUser}"/> for the <seealso cref="UserType"/>.
         /// </summary>
-        /// <typeparam name="T">The user type whose password will be validated.</typeparam>
+        /// <typeparam name="TUser">The user type whose password will be validated.</typeparam>
         /// <returns>The current <see cref="IdentityBuilder"/> instance.</returns>
-        public virtual IdentityBuilder AddPasswordValidator<T>() where T : class
+        public virtual IdentityBuilder AddPasswordValidator<TUser>() where TUser : class
         {
-            return AddScoped(typeof(IPasswordValidator<>).MakeGenericType(UserType), typeof(T));
+            return AddScoped(typeof(IPasswordValidator<>).MakeGenericType(UserType), typeof(TUser));
         }
 
         /// <summary>
         /// Adds an <see cref="IUserStore{TUser}"/> for the <seealso cref="UserType"/>.
         /// </summary>
-        /// <typeparam name="T">The user type held in the store.</typeparam>
+        /// <typeparam name="TUser">The user type held in the store.</typeparam>
         /// <returns>The current <see cref="IdentityBuilder"/> instance.</returns>
-        public virtual IdentityBuilder AddUserStore<T>() where T : class
+        public virtual IdentityBuilder AddUserStore<TUser>() where TUser : class
         {
-            return AddScoped(typeof(IUserStore<>).MakeGenericType(UserType), typeof(T));
-        }
-
-        /// <summary>
-        /// Adds a <see cref="IRoleStore{TRole}"/> for the <seealso cref="RoleType"/>.
-        /// </summary>
-        /// <typeparam name="T">The role type held in the store.</typeparam>
-        /// <returns>The current <see cref="IdentityBuilder"/> instance.</returns>
-        public virtual IdentityBuilder AddRoleStore<T>() where T : class
-        {
-            return AddScoped(typeof(IRoleStore<>).MakeGenericType(RoleType), typeof(T));
+            return AddScoped(typeof(IUserStore<>).MakeGenericType(UserType), typeof(TUser));
         }
 
         /// <summary>
@@ -149,7 +131,7 @@ namespace Microsoft.AspNetCore.Identity
         {
             if (!typeof(IUserTwoFactorTokenProvider<>).MakeGenericType(UserType).GetTypeInfo().IsAssignableFrom(provider.GetTypeInfo()))
             {
-                throw new InvalidOperationException(AspNetIdentityResources.FormatInvalidManagerType(provider.Name, "IUserTokenProvider", UserType.Name));
+                throw new InvalidOperationException(Resources.FormatInvalidManagerType(provider.Name, "IUserTokenProvider", UserType.Name));
             }
             Services.Configure<IdentityOptions>(options =>
             {
@@ -157,23 +139,6 @@ namespace Microsoft.AspNetCore.Identity
             });
             Services.AddTransient(provider);
             return this; 
-        }
-
-        /// <summary>
-        /// Adds the default token providers used to generate tokens for reset passwords, change email
-        /// and change telephone number operations, and for two factor authentication token generation.
-        /// </summary>
-        /// <returns>The current <see cref="IdentityBuilder"/> instance.</returns>
-        public virtual IdentityBuilder AddDefaultTokenProviders()
-        {
-            var dataProtectionProviderType = typeof(DataProtectorTokenProvider<>).MakeGenericType(UserType);
-            var phoneNumberProviderType = typeof(PhoneNumberTokenProvider<>).MakeGenericType(UserType);
-            var emailTokenProviderType = typeof(EmailTokenProvider<>).MakeGenericType(UserType);
-            var authenticatorProviderType = typeof(AuthenticatorTokenProvider<>).MakeGenericType(UserType);
-            return AddTokenProvider(TokenOptions.DefaultProvider, dataProtectionProviderType)
-                .AddTokenProvider(TokenOptions.DefaultEmailProvider, emailTokenProviderType)
-                .AddTokenProvider(TokenOptions.DefaultPhoneProvider, phoneNumberProviderType)
-                .AddTokenProvider(TokenOptions.DefaultAuthenticatorProvider, authenticatorProviderType);
         }
 
         /// <summary>
@@ -188,10 +153,31 @@ namespace Microsoft.AspNetCore.Identity
             if (userManagerType == customType ||
                 !userManagerType.GetTypeInfo().IsAssignableFrom(customType.GetTypeInfo()))
             {
-                throw new InvalidOperationException(AspNetIdentityResources.FormatInvalidManagerType(customType.Name, "UserManager", UserType.Name));
+                throw new InvalidOperationException(Resources.FormatInvalidManagerType(customType.Name, "UserManager", UserType.Name));
             }
             Services.AddScoped(customType, services => services.GetRequiredService(userManagerType));
             return AddScoped(userManagerType, customType);
+        }
+
+        /// <summary>
+        /// Adds an <see cref="IRoleValidator{TRole}"/> for the <seealso cref="RoleType"/>.
+        /// </summary>
+        /// <typeparam name="TRole">The role validator type.</typeparam>
+        /// <returns>The current <see cref="IdentityBuilder"/> instance.</returns>
+        public virtual IdentityBuilder AddRoleValidator<TRole>() where TRole : class
+        {
+            return AddScoped(typeof(IRoleValidator<>).MakeGenericType(RoleType), typeof(TRole));
+        }
+
+
+        /// <summary>
+        /// Adds a <see cref="IRoleStore{TRole}"/> for the <seealso cref="RoleType"/>.
+        /// </summary>
+        /// <typeparam name="TRole">The role type held in the store.</typeparam>
+        /// <returns>The current <see cref="IdentityBuilder"/> instance.</returns>
+        public virtual IdentityBuilder AddRoleStore<TRole>() where TRole : class
+        {
+            return AddScoped(typeof(IRoleStore<>).MakeGenericType(RoleType), typeof(TRole));
         }
 
         /// <summary>
@@ -206,28 +192,10 @@ namespace Microsoft.AspNetCore.Identity
             if (managerType == customType ||
                 !managerType.GetTypeInfo().IsAssignableFrom(customType.GetTypeInfo()))
             {
-                throw new InvalidOperationException(AspNetIdentityResources.FormatInvalidManagerType(customType.Name, "RoleManager", RoleType.Name));
+                throw new InvalidOperationException(Resources.FormatInvalidManagerType(customType.Name, "RoleManager", RoleType.Name));
             }
             Services.AddScoped(typeof(TRoleManager), services => services.GetRequiredService(managerType));
             return AddScoped(managerType, typeof(TRoleManager));
-        }
-
-        /// <summary>
-        /// Adds a <see cref="SignInManager{TUser}"/> for the <seealso cref="UserType"/>.
-        /// </summary>
-        /// <typeparam name="TSignInManager">The type of the sign in manager to add.</typeparam>
-        /// <returns>The current <see cref="IdentityBuilder"/> instance.</returns>
-        public virtual IdentityBuilder AddSignInManager<TSignInManager>() where TSignInManager : class
-        {
-            var managerType = typeof(SignInManager<>).MakeGenericType(UserType);
-            var customType = typeof(TSignInManager);
-            if (managerType == customType ||
-                !managerType.GetTypeInfo().IsAssignableFrom(customType.GetTypeInfo()))
-            {
-                throw new InvalidOperationException(AspNetIdentityResources.FormatInvalidManagerType(customType.Name, "SignInManager", UserType.Name));
-            }
-            Services.AddScoped(typeof(TSignInManager), services => services.GetRequiredService(managerType));
-            return AddScoped(managerType, typeof(TSignInManager));
         }
     }
 }
