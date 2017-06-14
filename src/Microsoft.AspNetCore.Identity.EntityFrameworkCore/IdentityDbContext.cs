@@ -226,14 +226,14 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
         public DbSet<TRoleClaim> RoleClaims { get; set; }
 
         /// <summary>
-        /// Configures the schema needed for the identity framework version <see cref="IdentityStoreOptions.Version2_0"/>.
+        /// Configures the schema needed for the identity framework.
         /// </summary>
         /// <param name="builder">
         /// The builder being used to construct the model for this context.
         /// </param>
-        protected override void OnModelCreatingV2(ModelBuilder builder)
+        protected override void OnModelCreating(ModelBuilder builder)
         {
-            base.OnModelCreatingV2(builder);
+            base.OnModelCreating(builder);
             builder.Entity<TUser>(b =>
             {
                 b.HasMany<TUserRole>().WithOne().HasForeignKey(ur => ur.UserId).IsRequired();

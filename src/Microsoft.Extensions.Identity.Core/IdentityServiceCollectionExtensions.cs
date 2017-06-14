@@ -23,6 +23,9 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IdentityBuilder AddIdentityCore<TUser>(this IServiceCollection services, Action<IdentityOptions> setupAction)
             where TUser : class
         {
+            // Services identity depends on
+            services.AddOptions().AddLogging();
+
             // Services used by identity
             services.TryAddScoped<IUserValidator<TUser>, UserValidator<TUser>>();
             services.TryAddScoped<IPasswordValidator<TUser>, PasswordValidator<TUser>>();

@@ -14,11 +14,16 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.InMemory.Test
     }
 
     public class InMemoryContext<TUser> :
-        InMemoryContext<TUser, IdentityRole, string>
+        IdentityDbContext<TUser, string>
         where TUser : IdentityUser
     {
         public InMemoryContext(DbContextOptions options) : base(options)
         { }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseInMemoryDatabase("ScratchUsers");
+        }
     }
 
     public class InMemoryContext<TUser, TRole, TKey> : IdentityDbContext<TUser, TRole, TKey>

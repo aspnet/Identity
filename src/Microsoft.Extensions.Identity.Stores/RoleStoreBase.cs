@@ -22,7 +22,7 @@ namespace Microsoft.AspNetCore.Identity
     public abstract class RoleStoreBase<TRole, TKey, TUserRole, TRoleClaim> :
         IQueryableRoleStore<TRole>,
         IRoleClaimStore<TRole>
-        where TRole : IdentityRole<TKey, TUserRole, TRoleClaim>
+        where TRole : IdentityRole<TKey>
         where TKey : IEquatable<TKey>
         where TUserRole : IdentityUserRole<TKey>, new()
         where TRoleClaim : IdentityRoleClaim<TKey>, new()

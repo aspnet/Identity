@@ -19,14 +19,21 @@ namespace Microsoft.AspNetCore.Identity
         /// Creates a new instance of <see cref="IdentityBuilder"/>.
         /// </summary>
         /// <param name="user">The <see cref="Type"/> to use for the users.</param>
-        /// <param name="role">The <see cref="Type"/> to use for the roles.</param>
         /// <param name="services">The <see cref="IServiceCollection"/> to attach to.</param>
-        public IdentityBuilder(Type user, Type role, IServiceCollection services)
+        public IdentityBuilder(Type user, IServiceCollection services)
         {
             UserType = user;
-            RoleType = role;
             Services = services;
         }
+
+        /// <summary>
+        /// Creates a new instance of <see cref="IdentityBuilder"/>.
+        /// </summary>
+        /// <param name="user">The <see cref="Type"/> to use for the users.</param>
+        /// <param name="role">The <see cref="Type"/> to use for the roles.</param>
+        /// <param name="services">The <see cref="IServiceCollection"/> to attach to.</param>
+        public IdentityBuilder(Type user, Type role, IServiceCollection services) : this(user, services)
+            => RoleType = role;
 
         /// <summary>
         /// Gets the <see cref="Type"/> used for users.
@@ -160,8 +167,6 @@ namespace Microsoft.AspNetCore.Identity
         }
 
         /// <summary>
-<<<<<<< HEAD
-=======
         /// Adds Role related services for TRole, including IRoleStore, IRoleValidator, and RoleManager.
         /// </summary>
         /// <typeparam name="TRole">The role type.</typeparam>

@@ -12,10 +12,10 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.InMemory.Test
     public class InMemoryEFOnlyUsersTest : UserManagerSpecificationTestBase<IdentityUser, string>
     {
         protected override object CreateTestContext()
-            => new InMemoryContext(new DbContextOptionsBuilder().Options);
+            => new InMemoryContext<IdentityUser>(new DbContextOptionsBuilder().Options);
 
         protected override void AddUserStore(IServiceCollection services, object context = null)
-            => services.AddSingleton<IUserStore<IdentityUser>>(new UserStore<IdentityUser, IdentityRole, DbContext, string, IdentityUserClaim<string>, IdentityUserRole<string>, IdentityUserLogin<string>, IdentityUserToken<string>, IdentityRoleClaim<string>>((InMemoryContext)context, new IdentityErrorDescriber()));
+            => services.AddSingleton<IUserStore<IdentityUser>>(new UserStore<IdentityUser, IdentityRole, DbContext, string, IdentityUserClaim<string>, IdentityUserRole<string>, IdentityUserLogin<string>, IdentityUserToken<string>, IdentityRoleClaim<string>>((InMemoryContext<IdentityUser>)context, new IdentityErrorDescriber()));
 
         protected override IdentityUser CreateTestUser(string namePrefix = "", string email = "", string phoneNumber = "",
             bool lockoutEnabled = false, DateTimeOffset? lockoutEnd = default(DateTimeOffset?), bool useNamePrefixAsUserName = false)

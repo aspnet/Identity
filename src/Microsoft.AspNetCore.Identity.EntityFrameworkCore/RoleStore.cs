@@ -9,7 +9,6 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Internal;
 
 namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
 {
@@ -77,7 +76,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
     public class RoleStore<TRole, TContext, TKey, TUserRole, TRoleClaim> :
         IQueryableRoleStore<TRole>,
         IRoleClaimStore<TRole>
-        where TRole : IdentityRole<TKey, TUserRole, TRoleClaim>
+        where TRole : IdentityRole<TKey>
         where TKey : IEquatable<TKey>
         where TContext : DbContext
         where TUserRole : IdentityUserRole<TKey>, new()
