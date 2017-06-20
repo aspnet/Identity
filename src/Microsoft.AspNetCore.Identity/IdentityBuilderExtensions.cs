@@ -40,13 +40,16 @@ namespace Microsoft.AspNetCore.Identity
         public static IdentityBuilder AddSignInManager<TSignInManager>(this IdentityBuilder builder) where TSignInManager : class
         {
             var managerType = typeof(SignInManager<>).MakeGenericType(builder.UserType);
+
             var customType = typeof(TSignInManager);
-            if (managerType == customType ||
-                !managerType.GetTypeInfo().IsAssignableFrom(customType.GetTypeInfo()))
+            if (!managerType.GetTypeInfo().IsAssignableFrom(customType.GetTypeInfo()))
             {
                 throw new InvalidOperationException(Resources.FormatInvalidManagerType(customType.Name, "SignInManager", builder.UserType.Name));
             }
-            builder.Services.AddScoped(typeof(TSignInManager), services => services.GetRequiredService(managerType));
+            if (managerType != customType)
+            {
+                builder.Services.AddScoped(typeof(TSignInManager), services => services.GetRequiredService(managerType));
+            }
             builder.Services.AddScoped(managerType, typeof(TSignInManager));
             return builder;
         }
