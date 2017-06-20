@@ -17,13 +17,22 @@ namespace Microsoft.AspNetCore.Identity
         /// Creates a new instance of <see cref="IdentityBuilder"/>.
         /// </summary>
         /// <param name="user">The <see cref="Type"/> to use for the users.</param>
-        /// <param name="role">The <see cref="Type"/> to use for the roles.</param>
         /// <param name="services">The <see cref="IServiceCollection"/> to attach to.</param>
-        public IdentityBuilder(Type user, Type role, IServiceCollection services)
+        public IdentityBuilder(Type user, IServiceCollection services)
         {
             UserType = user;
-            RoleType = role;
             Services = services;
+        }
+
+        /// <summary>
+        /// Creates a new instance of <see cref="IdentityBuilder"/>.
+        /// </summary>
+        /// <param name="user">The <see cref="Type"/> to use for the users.</param>
+        /// <param name="role">The <see cref="Type"/> to use for the roles.</param>
+        /// <param name="services">The <see cref="IServiceCollection"/> to attach to.</param>
+        public IdentityBuilder(Type user, Type role, IServiceCollection services) : this(user, services)
+        {
+            RoleType = role;
         }
 
         /// <summary>
@@ -42,6 +51,14 @@ namespace Microsoft.AspNetCore.Identity
         /// The <see cref="Type"/> used for roles.
         /// </value>
         public Type RoleType { get; private set; }
+
+        /// <summary>
+        /// Gets the <see cref="Type"/> used for clients.
+        /// </summary>
+        /// <value>
+        /// The <see cref="Type"/> used for clients.
+        /// </value>
+        public Type ClientType { get; private set; }
 
         /// <summary>
         /// Gets the <see cref="IServiceCollection"/> services are attached to.
@@ -149,31 +166,14 @@ namespace Microsoft.AspNetCore.Identity
         {
             if (!typeof(IUserTwoFactorTokenProvider<>).MakeGenericType(UserType).GetTypeInfo().IsAssignableFrom(provider.GetTypeInfo()))
             {
-                throw new InvalidOperationException(AspNetIdentityResources.FormatInvalidManagerType(provider.Name, "IUserTokenProvider", UserType.Name));
+                throw new InvalidOperationException(Resources.FormatInvalidManagerType(provider.Name, "IUserTokenProvider", UserType.Name));
             }
             Services.Configure<IdentityOptions>(options =>
             {
                 options.Tokens.ProviderMap[providerName] = new TokenProviderDescriptor(provider);
             });
             Services.AddTransient(provider);
-            return this; 
-        }
-
-        /// <summary>
-        /// Adds the default token providers used to generate tokens for reset passwords, change email
-        /// and change telephone number operations, and for two factor authentication token generation.
-        /// </summary>
-        /// <returns>The current <see cref="IdentityBuilder"/> instance.</returns>
-        public virtual IdentityBuilder AddDefaultTokenProviders()
-        {
-            var dataProtectionProviderType = typeof(DataProtectorTokenProvider<>).MakeGenericType(UserType);
-            var phoneNumberProviderType = typeof(PhoneNumberTokenProvider<>).MakeGenericType(UserType);
-            var emailTokenProviderType = typeof(EmailTokenProvider<>).MakeGenericType(UserType);
-            var authenticatorProviderType = typeof(AuthenticatorTokenProvider<>).MakeGenericType(UserType);
-            return AddTokenProvider(TokenOptions.DefaultProvider, dataProtectionProviderType)
-                .AddTokenProvider(TokenOptions.DefaultEmailProvider, emailTokenProviderType)
-                .AddTokenProvider(TokenOptions.DefaultPhoneProvider, phoneNumberProviderType)
-                .AddTokenProvider(TokenOptions.DefaultAuthenticatorProvider, authenticatorProviderType);
+            return this;
         }
 
         /// <summary>
@@ -188,7 +188,7 @@ namespace Microsoft.AspNetCore.Identity
             if (userManagerType == customType ||
                 !userManagerType.GetTypeInfo().IsAssignableFrom(customType.GetTypeInfo()))
             {
-                throw new InvalidOperationException(AspNetIdentityResources.FormatInvalidManagerType(customType.Name, "UserManager", UserType.Name));
+                throw new InvalidOperationException(Resources.FormatInvalidManagerType(customType.Name, "UserManager", UserType.Name));
             }
             Services.AddScoped(customType, services => services.GetRequiredService(userManagerType));
             return AddScoped(userManagerType, customType);
@@ -206,28 +206,11 @@ namespace Microsoft.AspNetCore.Identity
             if (managerType == customType ||
                 !managerType.GetTypeInfo().IsAssignableFrom(customType.GetTypeInfo()))
             {
-                throw new InvalidOperationException(AspNetIdentityResources.FormatInvalidManagerType(customType.Name, "RoleManager", RoleType.Name));
+                throw new InvalidOperationException(Resources.FormatInvalidManagerType(customType.Name, "RoleManager", RoleType.Name));
             }
             Services.AddScoped(typeof(TRoleManager), services => services.GetRequiredService(managerType));
             return AddScoped(managerType, typeof(TRoleManager));
         }
 
-        /// <summary>
-        /// Adds a <see cref="SignInManager{TUser}"/> for the <seealso cref="UserType"/>.
-        /// </summary>
-        /// <typeparam name="TSignInManager">The type of the sign in manager to add.</typeparam>
-        /// <returns>The current <see cref="IdentityBuilder"/> instance.</returns>
-        public virtual IdentityBuilder AddSignInManager<TSignInManager>() where TSignInManager : class
-        {
-            var managerType = typeof(SignInManager<>).MakeGenericType(UserType);
-            var customType = typeof(TSignInManager);
-            if (managerType == customType ||
-                !managerType.GetTypeInfo().IsAssignableFrom(customType.GetTypeInfo()))
-            {
-                throw new InvalidOperationException(AspNetIdentityResources.FormatInvalidManagerType(customType.Name, "SignInManager", UserType.Name));
-            }
-            Services.AddScoped(typeof(TSignInManager), services => services.GetRequiredService(managerType));
-            return AddScoped(managerType, typeof(TSignInManager));
-        }
     }
 }

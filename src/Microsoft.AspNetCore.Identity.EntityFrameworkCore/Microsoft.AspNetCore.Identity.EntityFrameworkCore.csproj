@@ -9,6 +9,10 @@
     <PackageTags>aspnetcore;entityframeworkcore;identity;membership</PackageTags>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <NoWarn>1701;1702;1705;1591</NoWarn>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.AspNetCore.Identity\Microsoft.AspNetCore.Identity.csproj" />
     <ProjectReference Include="..\Microsoft.Extensions.Identity.Stores\Microsoft.Extensions.Identity.Stores.csproj" />
