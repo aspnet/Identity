@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Identity.ClientApplications.WebSite.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Identity.ClientApplications.WebSite.Controllers
 {
@@ -15,6 +16,7 @@ namespace Identity.ClientApplications.WebSite.Controllers
             return View();
         }
 
+        [Authorize]
         public IActionResult About()
         {
             ViewData["Message"] = "Your application description page.";

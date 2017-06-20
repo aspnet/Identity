@@ -14,7 +14,7 @@ namespace Microsoft.AspNetCore.Identity.Service.EntityFrameworkCore.InMemory.Tes
         protected override void AddApplicationStore(IServiceCollection services, object context = null)
         {
             services.AddSingleton<IApplicationStore<IdentityClientApplication>>(
-                new ApplicationStore<IdentityClientApplication, IdentityClientApplicationScope<string>, IdentityClientApplicationClaim<string>, IdentityClientApplicationRedirectUri<string>, InMemoryContext, string, string>((InMemoryContext)context, new ApplicationErrorDescriber()));
+                new ApplicationStore<IdentityClientApplication, IdentityClientApplicationScope<string>, IdentityClientApplicationClaim<string>, IdentityClientApplicationRedirectUri<string>, InMemoryContext, string>((InMemoryContext)context, new ApplicationErrorDescriber()));
         }
 
         protected override IdentityClientApplication CreateTestApplication()

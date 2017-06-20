@@ -50,7 +50,7 @@ namespace Microsoft.AspNetCore.Identity.Service.Mvc
                 case OpenIdConnectResponseMode.Query:
                     return controller.Query(error);
                 default:
-                    return new BadRequestResult();
+                    return new BadRequestObjectResult(error.Message.Parameters);
             }
         }
 

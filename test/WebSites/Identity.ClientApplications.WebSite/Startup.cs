@@ -59,7 +59,8 @@ namespace Identity.ClientApplications.WebSite
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
 
-            services.AddMvc();
+            services.AddMvc()
+                .ConfigureApplicationPartManager(am => { });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

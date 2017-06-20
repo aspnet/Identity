@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  
+  <Import Project="..\..\build\common.props" />
+  
+  <PropertyGroup>
+    <Description>Desc.</Description>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+    <PackageTags>aspnetcore;aspnetcoremvc;aspnetcoremvctesting</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="Microsoft.AspNetCore.Testing" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Testing" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="xunit" Version="$(XunitVersion)" />
+    <PackageReference Include="AngleSharp" Version="0.9.9" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="build\**\*.targets" Pack="true" PackagePath="%(Identity)" />
+    <Content Include="build\xunit.runner.json" Pack="true" PackagePath="%(Identity)" />
+  </ItemGroup>
+
+</Project>

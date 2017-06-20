@@ -1,8 +1,11 @@
-﻿using IdentityOIDCWebApplicationSample.Identity.Data;
+﻿using System.Threading.Tasks;
+using IdentityOIDCWebApplicationSample.Identity.Data;
 using IdentityOIDCWebApplicationSample.Identity.Models;
 using IdentityOIDCWebApplicationSample.Identity.Services;
+using Microsoft.AspNetCore.Applications.Authentication.Internal;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -40,6 +43,8 @@ namespace IdentityOIDCWebApplicationSample
                 .AddEntityFrameworkStores<IdentityApplicationDbContext>()
                 .AddDeveloperCertificate()
                 .AddClientExtensions();
+
+            services.AddSingleton<IAuthorizationHandler, ApplicationManagementHandler>();
 
             services.ConfigureApplicationTokens(options =>
                 options.Issuer = "https://localhost/DFC7191F-FF74-42B9-A292-08FEA80F5B20/v2.0/");
@@ -88,6 +93,15 @@ namespace IdentityOIDCWebApplicationSample
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+        }
+
+        public class ApplicationManagementHandler : AuthorizationHandler<ApplicationManagementRequirement>
+        {
+            protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, ApplicationManagementRequirement requirement)
+            {
+                context.Succeed(requirement);
+                return Task.CompletedTask;
+            }
         }
     }
 }
