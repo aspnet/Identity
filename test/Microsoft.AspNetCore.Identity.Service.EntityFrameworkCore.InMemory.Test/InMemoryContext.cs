@@ -2,12 +2,11 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Microsoft.AspNetCore.Identity.Service.EntityFrameworkCore.InMemory.Test
 {
-    public class InMemoryContext : InMemoryContext<IdentityUser, IdentityServiceApplication>
+    public class InMemoryContext : InMemoryContext<IdentityUser, IdentityClientApplication>
     {
         public InMemoryContext(DbContextOptions options) : base(options)
         { }
@@ -16,17 +15,17 @@ namespace Microsoft.AspNetCore.Identity.Service.EntityFrameworkCore.InMemory.Tes
     public class InMemoryContext<TUser, TApplication> :
         InMemoryContext<TUser, IdentityRole, string, TApplication, string>
         where TUser : IdentityUser
-        where TApplication : IdentityServiceApplication
+        where TApplication : IdentityClientApplication
     {
         public InMemoryContext(DbContextOptions options) : base(options)
         { }
     }
 
-    public class InMemoryContext<TUser, TRole, TUserKey, TApplication, TApplicationKey> : IdentityServiceDbContext<TUser, TRole, TUserKey, TApplication, TApplicationKey>
+    public class InMemoryContext<TUser, TRole, TUserKey, TApplication, TApplicationKey> : IdentityClientApplicationsDbContext<TUser, TRole, TUserKey, TApplication, TApplicationKey>
         where TUser : IdentityUser<TUserKey>
         where TRole : IdentityRole<TUserKey>
         where TUserKey : IEquatable<TUserKey>
-        where TApplication : IdentityServiceApplication<TApplicationKey, TUserKey>
+        where TApplication : IdentityClientApplication<TApplicationKey>
         where TApplicationKey : IEquatable<TApplicationKey>
     {
         public InMemoryContext(DbContextOptions options) : base(options)
@@ -52,7 +51,7 @@ namespace Microsoft.AspNetCore.Identity.Service.EntityFrameworkCore.InMemory.Tes
         TApplicationClaim,
         TRedirectUri,
         TApplicationKey> :
-        IdentityServiceDbContext<TUser, TRole, TUserKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken, TApplication, TScope, TApplicationClaim, TRedirectUri, TApplicationKey>
+        IdentityClientApplicationsDbContext<TUser, TRole, TUserKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken, TApplication, TScope, TApplicationClaim, TRedirectUri, TApplicationKey>
         where TUser : IdentityUser<TUserKey>
         where TRole : IdentityRole<TUserKey>
         where TUserKey : IEquatable<TUserKey>
@@ -61,10 +60,10 @@ namespace Microsoft.AspNetCore.Identity.Service.EntityFrameworkCore.InMemory.Tes
         where TUserLogin : IdentityUserLogin<TUserKey>
         where TRoleClaim : IdentityRoleClaim<TUserKey>
         where TUserToken : IdentityUserToken<TUserKey>
-        where TApplication : IdentityServiceApplication<TApplicationKey, TUserKey, TScope, TApplicationClaim, TRedirectUri>
-        where TScope : IdentityServiceScope<TApplicationKey>
-        where TApplicationClaim : IdentityServiceApplicationClaim<TApplicationKey>
-        where TRedirectUri : IdentityServiceRedirectUri<TApplicationKey>
+        where TApplication : IdentityClientApplication<TApplicationKey, TScope, TApplicationClaim, TRedirectUri>
+        where TScope : IdentityClientApplicationScope<TApplicationKey>
+        where TApplicationClaim : IdentityClientApplicationClaim<TApplicationKey>
+        where TRedirectUri : IdentityClientApplicationRedirectUri<TApplicationKey>
         where TApplicationKey : IEquatable<TApplicationKey>
     {
         public InMemoryContext(DbContextOptions options) : base(options)

@@ -1,13 +1,17 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.Net.Http.Headers;
 using Xunit;
 
 namespace Microsoft.AspNetCore.Identity.ClientApplications.FunctionalTest
 {
-    public class Test
+    public class IdentityCredentialsServiceFunctionalTest
     {
         [Fact]
         public async Task CanPerform_AuthorizationCode_Flow()
@@ -33,42 +37,78 @@ namespace Microsoft.AspNetCore.Identity.ClientApplications.FunctionalTest
 
             var client = appBuilder.Build();
 
-            // Act
+            // Act & Assert
+
+            // Navigate to protected resource.
             var goToAuthorizeResponse = await client.GetAsync("https://localhost/Home/About");
 
-            // Assert
-            Assert.Equal(HttpStatusCode.Redirect, goToAuthorizeResponse.StatusCode);
+            // Redirected to authorize
+            var location = ResponseAssert.IsRedirect(goToAuthorizeResponse);
+            var oidcCookiesComparisonCriteria = CookieComparison.Strict & ~CookieComparison.NameEquals | CookieComparison.NameStartsWith;
+            ResponseAssert.HasCookie(CreateExpectedSetNonceCookie(), goToAuthorizeResponse, oidcCookiesComparisonCriteria);
+            ResponseAssert.HasCookie(CreateExpectedSetCorrelationIdCookie(), goToAuthorizeResponse, oidcCookiesComparisonCriteria);
+            var authorizeParameters = ResponseAssert.LocationHasQueryParameters<OpenIdConnectMessage>(
+                goToAuthorizeResponse,
+                "state");
 
-            // Act
-            var goToLoginResponse = await client.GetAsync(goToAuthorizeResponse.Headers.Location);
+            // Navigate to authorize
+            var goToLoginResponse = await client.GetAsync(location);
 
-            // Assert
-            Assert.Equal(HttpStatusCode.Redirect, goToLoginResponse.StatusCode);
+            // Redirected to login
+            location = ResponseAssert.IsRedirect(goToLoginResponse);
 
-            // Act
-            var goToAuthorizeWithCookie = await client.GetAsync(goToLoginResponse.Headers.Location);
+            // Navigate to login
+            var goToAuthorizeWithCookie = await client.GetAsync(location);
 
-            // Assert
-            Assert.Equal(HttpStatusCode.Redirect, goToAuthorizeWithCookie.StatusCode);
+            // Stamp a login cookie and redirect back to authorize.
+            location = ResponseAssert.IsRedirect(goToAuthorizeWithCookie);
+            ResponseAssert.HasCookie(".AspNetCore.Identity.Application", goToAuthorizeWithCookie, CookieComparison.NameEquals);
 
-            // Act
-            var goToSignInOidcCallback = await client.GetAsync(goToAuthorizeWithCookie.Headers.Location);
+            // Navigate to authorize with a login cookie.
+            var goToSignInOidcCallback = await client.GetAsync(location);
 
-            // Assert
-            Assert.Equal(HttpStatusCode.Redirect, goToSignInOidcCallback.StatusCode);
+            // Stamp an application session cookie and redirect to relying party callback with an authorization code on the query string.
+            location = ResponseAssert.IsRedirect(goToSignInOidcCallback);
+            ResponseAssert.HasCookie("Microsoft.AspNetCore.Applications.Authentication.Cookie", goToSignInOidcCallback, CookieComparison.NameEquals);
+            var callBackQueryParameters = ResponseAssert.LocationHasQueryParameters(goToSignInOidcCallback, "code", "state");
+            var state = callBackQueryParameters["state"];
+            Assert.Equal(authorizeParameters.State, state);
+            var code = callBackQueryParameters["code"];
 
-            // Act
-            var goToProtectedResource = await client.GetAsync(goToSignInOidcCallback.Headers.Location);
+            // Navigate to relying party callback.
+            var goToProtectedResource = await client.GetAsync(location);
 
-            // Assert
-            Assert.Equal(HttpStatusCode.Redirect, goToProtectedResource.StatusCode);
+            // Stamp a session cookie and redirect to the protected resource.
+            location = ResponseAssert.IsRedirect(goToProtectedResource);
+            ResponseAssert.HasCookie(".AspNetCore.Cookies", goToProtectedResource, CookieComparison.NameEquals);
+            ResponseAssert.HasCookie(CreateExpectedSetCorrelationIdCookie(DateTime.Parse("1/1/1970 12:00:00 AM +00:00")), goToProtectedResource, CookieComparison.Delete);
+            ResponseAssert.HasCookie(CreateExpectedSetNonceCookie(DateTime.Parse("1/1/1970 12:00:00 AM +00:00")), goToProtectedResource, CookieComparison.Delete);
 
-            // Act
-            var signInOidcCallback = await client.GetAsync(goToProtectedResource.Headers.Location);
+            var protectedResourceResponse = await client.GetAsync(location);
+            ResponseAssert.IsOK(protectedResourceResponse);
+            ResponseAssert.IsHtmlDocument(protectedResourceResponse);
+        }
 
-            // Assert
-            Assert.Equal(HttpStatusCode.OK, signInOidcCallback.StatusCode);
+        private SetCookieHeaderValue CreateExpectedSetCorrelationIdCookie(DateTime expires = default(DateTime))
+        {
+            return new SetCookieHeaderValue(new StringSegment(".AspNetCore.Correlation.OpenIdConnect."), new StringSegment("N"))
+            {
+                Expires = expires == default(DateTime) ? DateTime.UtcNow.AddMinutes(15) : expires,
+                Path = "/",
+                Secure = true,
+                HttpOnly = true
+            };
+        }
 
+        private static SetCookieHeaderValue CreateExpectedSetNonceCookie(DateTime expires = default(DateTime))
+        {
+            return new SetCookieHeaderValue(new StringSegment(".AspNetCore.OpenIdConnect.Nonce."), new StringSegment("N"))
+            {
+                Expires = expires == default(DateTime) ? DateTime.UtcNow.AddMinutes(15) : expires,
+                Path = "/",
+                Secure = true,
+                HttpOnly = true
+            };
         }
 
         [Fact]
@@ -128,7 +168,7 @@ namespace Microsoft.AspNetCore.Identity.ClientApplications.FunctionalTest
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, protectedResourceResponse.StatusCode);
+            ResponseAssert.IsHtmlDocument(protectedResourceResponse);
         }
-
     }
 }
