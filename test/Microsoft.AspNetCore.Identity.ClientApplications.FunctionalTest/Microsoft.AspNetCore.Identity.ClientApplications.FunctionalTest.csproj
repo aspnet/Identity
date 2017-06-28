@@ -1,7 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <Import Project="..\..\build\common.props" />
-  <Import Project="..\Microsoft.AspNetCore.Mvc.Testing\build\Microsoft.AspNetCore.Mvc.Testing.targets" />
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp2.0;net461</TargetFrameworks>
@@ -32,16 +31,31 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WebSites\Identity.ClientApplications.WebSite\Identity.ClientApplications.WebSite.csproj" />
-    <ProjectReference Include="..\Microsoft.AspNetCore.Mvc.Testing\Microsoft.AspNetCore.Mvc.Testing.csproj" />
+    <Content Include="build\xunit.runner.json">
+      <PackagePath>%(Identity)</PackagePath>
+      <Pack>true</Pack>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\WebSites\Identity.ClientApplications.WebSite\Identity.ClientApplications.WebSite.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging.Testing" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(TestSdkVersion)" />
     <PackageReference Include="xunit" Version="$(XunitVersion)" />
     <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitVersion)" />
   </ItemGroup>
+
+  <Target Name="CopyXunitRunner" AfterTargets="Build" Condition="'$(TargetFramework)'!=''">
+    <ItemGroup>
+      <XunitRunnerJson Include="$(MSBuildThisFileDirectory)build\xunit.runner.json" />
+    </ItemGroup>
+
+    <Copy SourceFiles="%(XunitRunnerJson.FullPath)" DestinationFolder="$(OutputPath)" Condition="Exists('%(XunitRunnerJson.FullPath)')" />
+  </Target>
 
 </Project>

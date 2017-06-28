@@ -20,9 +20,4 @@
     <PackageReference Include="AngleSharp" Version="0.9.9" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Include="build\**\*.targets" Pack="true" PackagePath="%(Identity)" />
-    <Content Include="build\xunit.runner.json" Pack="true" PackagePath="%(Identity)" />
-  </ItemGroup>
-
 </Project>
