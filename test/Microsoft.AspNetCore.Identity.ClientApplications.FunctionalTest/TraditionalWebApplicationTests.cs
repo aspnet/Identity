@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Net;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Primitives;
@@ -11,7 +9,7 @@ using Xunit;
 
 namespace Microsoft.AspNetCore.Identity.ClientApplications.FunctionalTest
 {
-    public class IdentityCredentialsServiceFunctionalTest
+    public class TraditionalWebApplicationTests
     {
         [Fact]
         public async Task CanPerform_AuthorizationCode_Flow()

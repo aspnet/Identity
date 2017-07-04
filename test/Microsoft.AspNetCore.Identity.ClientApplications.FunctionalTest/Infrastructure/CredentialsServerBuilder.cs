@@ -20,7 +20,9 @@ namespace Microsoft.AspNetCore.Identity.ClientApplications.FunctionalTest
         {
             Server = new MvcWebApplicationBuilder<Startup>()
                 .UseSolutionRelativeContentRoot(@".\test\WebSites\Identity.ClientApplications.WebSite")
-                .UseApplicationAssemblies();
+                .UseApplicationAssemblies()
+                .UseRequestCulture("en-GB","en-US")
+                .UseStartupCulture("en-GB", "en-US");
         }
 
         public CredentialsServerBuilder ConfigureReferenceData(Action<ReferenceData> action)
