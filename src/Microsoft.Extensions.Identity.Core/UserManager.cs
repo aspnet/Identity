@@ -2197,9 +2197,7 @@ namespace Microsoft.AspNetCore.Identity
         /// </summary>
         /// <returns></returns>
         protected virtual string CreateTwoFactorRecoveryCode()
-        {
-            return Guid.NewGuid().ToString();
-        }
+            => Guid.NewGuid().ToString().Substring(0, 8);
 
         /// <summary>
         /// Returns whether a recovery code is valid for a user. Note: recovery codes are only valid
@@ -2223,6 +2221,23 @@ namespace Microsoft.AspNetCore.Identity
                 return await UpdateAsync(user);
             }
             return IdentityResult.Failed(ErrorDescriber.RecoveryCodeRedemptionFailed());
+        }
+
+        /// <summary>
+        /// Returns how many recovery code are still valid for a user.
+        /// </summary>
+        /// <param name="user">The user.</param>
+        /// <returns>How many recovery code are still valid for a user.</returns>
+        public virtual Task<int> CountRecoveryCodesAsync(TUser user)
+        {
+            ThrowIfDisposed();
+            var store = GetRecoveryCodeStore();
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            return store.CountCodesAsync(user, CancellationToken);
         }
 
         /// <summary>
