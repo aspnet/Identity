@@ -2167,7 +2167,7 @@ namespace Microsoft.AspNetCore.Identity
         /// </summary>
         /// <param name="user">The user to generate recovery codes for.</param>
         /// <param name="number">The number of codes to generate.</param>
-        /// <returns>The new recovery codes for the user.</returns>
+        /// <returns>The new recovery codes for the user.  Note: there may be less than number returned, as duplicates will be removed.</returns>
         public virtual async Task<IEnumerable<string>> GenerateNewTwoFactorRecoveryCodesAsync(TUser user, int number)
         {
             ThrowIfDisposed();
@@ -2183,7 +2183,7 @@ namespace Microsoft.AspNetCore.Identity
                 newCodes.Add(CreateTwoFactorRecoveryCode());
             }
 
-            await store.ReplaceCodesAsync(user, newCodes, CancellationToken);
+            await store.ReplaceCodesAsync(user, newCodes.Distinct(), CancellationToken);
             var update = await UpdateAsync(user);
             if (update.Succeeded)
             {
