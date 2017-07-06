@@ -26,7 +26,7 @@ namespace Microsoft.AspNetCore.Identity.InMemory.Test
             auth.Setup(a => a.SignInAsync(context, IdentityConstants.ApplicationScheme,
                 It.IsAny<ClaimsPrincipal>(),
                 It.IsAny<AuthenticationProperties>())).Returns(Task.FromResult(0)).Verifiable();
-            // REVIEW: is persistant mocking broken
+            // REVIEW: is persistent mocking broken
             //It.Is<AuthenticationProperties>(v => v.IsPersistent == isPersistent))).Returns(Task.FromResult(0)).Verifiable();
             var contextAccessor = new Mock<IHttpContextAccessor>();
             contextAccessor.Setup(a => a.HttpContext).Returns(context);
