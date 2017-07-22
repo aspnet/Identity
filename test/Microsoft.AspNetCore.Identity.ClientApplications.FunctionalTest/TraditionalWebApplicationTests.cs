@@ -68,10 +68,7 @@ namespace Microsoft.AspNetCore.Identity.ClientApplications.FunctionalTest
             // Stamp an application session cookie and redirect to relying party callback with an authorization code on the query string.
             location = ResponseAssert.IsRedirect(goToSignInOidcCallback);
             ResponseAssert.HasCookie("Microsoft.AspNetCore.Applications.Authentication.Cookie", goToSignInOidcCallback, CookieComparison.NameEquals);
-            var callBackQueryParameters = ResponseAssert.LocationHasQueryParameters(goToSignInOidcCallback, "code", "state");
-            var state = callBackQueryParameters["state"];
-            Assert.Equal(authorizeParameters.State, state);
-            var code = callBackQueryParameters["code"];
+            var callBackQueryParameters = ResponseAssert.LocationHasQueryParameters<OpenIdConnectMessage>(goToSignInOidcCallback, "code", ("state", authorizeParameters.State));
 
             // Navigate to relying party callback.
             var goToProtectedResource = await client.GetAsync(location);
