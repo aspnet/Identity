@@ -20,9 +20,7 @@ namespace Microsoft.AspNetCore.Identity.ClientApplications.FunctionalTest
         {
             Server = new MvcWebApplicationBuilder<Startup>()
                 .UseSolutionRelativeContentRoot(@".\test\WebSites\Identity.ClientApplications.WebSite")
-                .UseApplicationAssemblies()
-                .UseRequestCulture("en-GB","en-US")
-                .UseStartupCulture("en-GB", "en-US");
+                .UseApplicationAssemblies();
         }
 
         public CredentialsServerBuilder ConfigureReferenceData(Action<ReferenceData> action)
@@ -59,8 +57,8 @@ namespace Microsoft.AspNetCore.Identity.ClientApplications.FunctionalTest
                 services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>
                 {
                     options.BackchannelHttpHandler = _loopBackHandler;
-                    options.ConfigureNonceCookie = (ctx, cookieOptions) => cookieOptions.Path = "/";
-                    options.ConfigureCorrelationIdCookie = (ctx, cookieOptions) => cookieOptions.Path = "/";
+                    options.CorrelationCookie.Path = "/";
+                    options.NonceCookie.Path = "/";
                 });
 
                 services.Configure(OpenIdConnectDefaults.AuthenticationScheme, action);

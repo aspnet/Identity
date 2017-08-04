@@ -39,19 +39,19 @@ namespace Microsoft.AspNetCore.Identity
             services.TryAdd(CreateServices(builder.UserType, typeof(TApplication)));
             services.TryAddEnumerable(ServiceDescriptor.Singleton<ITokenClaimsProvider, PairwiseSubClaimProvider>());
 
-            services.AddCookieAuthentication(ApplicationsAuthenticationDefaults.CookieAuthenticationScheme, options =>
+            services.AddAuthentication().AddCookie(ApplicationsAuthenticationDefaults.CookieAuthenticationScheme, options =>
             {
-                options.CookieHttpOnly = true;
-                options.CookieSecure = CookieSecurePolicy.Always;
-                options.CookiePath = "/tfp/Identity/signinsignup";
+                options.Cookie.HttpOnly = true;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.Cookie.Path = "/tfp/Identity/signinsignup";
                 options.AccessDeniedPath = "/tfp/Identity/signinsignup/Account/AccessDenied";
-                options.CookieName = ApplicationsAuthenticationDefaults.CookieAuthenticationName;
+                options.Cookie.Name = ApplicationsAuthenticationDefaults.CookieAuthenticationName;
             });
             services.ConfigureApplicationCookie(options =>
             {
                 options.LoginPath = "/tfp/Identity/signinsignup/Account/Login";
                 options.AccessDeniedPath = "/tfp/Identity/signinsignup/Account/AccessDenied";
-                options.CookiePath = "/tfp/Identity/signinsignup";
+                options.Cookie.Path = "/tfp/Identity/signinsignup";
                 options.Events = new CookieAuthenticationEvents()
                 {
                     OnSigningOut = async ctx =>
@@ -60,9 +60,10 @@ namespace Microsoft.AspNetCore.Identity
                     }
                 };
             });
-            services.ConfigureExternalCookie(options => options.CookiePath = $"/tfp/Identity/signinsignup");
-            services.Configure<CookieAuthenticationOptions>(IdentityConstants.TwoFactorRememberMeScheme, options => options.CookiePath = $"/tfp/Identity");
-            services.Configure<CookieAuthenticationOptions>(IdentityConstants.TwoFactorUserIdScheme, options => options.CookiePath = $"/tfp/Identity");
+
+            services.ConfigureExternalCookie(options => options.Cookie.Path = $"/tfp/Identity/signinsignup");
+            services.Configure<CookieAuthenticationOptions>(IdentityConstants.TwoFactorRememberMeScheme, options => options.Cookie.Path = $"/tfp/Identity");
+            services.Configure<CookieAuthenticationOptions>(IdentityConstants.TwoFactorUserIdScheme, options => options.Cookie.Path = $"/tfp/Identity");
 
             return new IdentityClientApplicationsBuilder<TApplication>(builder);
         }

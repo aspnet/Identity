@@ -56,10 +56,10 @@ namespace IdentityOIDCWebApplicationSample
                 sharedOptions.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
             });
 
-            services.AddOpenIdConnectAuthentication(options => options.ClientId = "56A33E6A-ADFE-47EA-BBFE-40F4AE4C55BA")
-                .WithIntegratedWebClient();
-
-            services.AddCookieAuthentication();
+            services.AddAuthentication()
+                .AddOpenIdConnect(options => options.ClientId = "56A33E6A-ADFE-47EA-BBFE-40F4AE4C55BA")
+                .WithIntegratedWebClient()
+                .AddCookie();
 
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();

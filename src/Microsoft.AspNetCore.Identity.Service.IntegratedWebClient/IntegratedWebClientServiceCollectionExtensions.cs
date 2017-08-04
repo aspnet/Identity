@@ -8,18 +8,19 @@ using Microsoft.AspNetCore.Identity.Service.IntegratedWebClient.Internal;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Authentication;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
     public static class IntegratedWebClientServiceCollectionExtensions
     {
-        public static IServiceCollection WithIntegratedWebClient(
-            this IServiceCollection services,
+        public static AuthenticationBuilder WithIntegratedWebClient(
+            this AuthenticationBuilder builder,
             Action<IntegratedWebClientOptions> action)
         {
-            if (services == null)
+            if (builder == null)
             {
-                throw new ArgumentNullException(nameof(services));
+                throw new ArgumentNullException(nameof(builder));
             }
 
             if (action == null)
@@ -27,17 +28,17 @@ namespace Microsoft.Extensions.DependencyInjection
                 throw new ArgumentNullException(nameof(action));
             }
 
-            services.WithIntegratedWebClient();
-            services.Configure(action);
+            builder.WithIntegratedWebClient();
+            builder.Services.Configure(action);
 
-            return services;
+            return builder;
         }
 
-        public static IServiceCollection WithIntegratedWebClient(this IServiceCollection services)
+        public static AuthenticationBuilder WithIntegratedWebClient(this AuthenticationBuilder builder)
         {
-            services.TryAddEnumerable(ServiceDescriptor.Scoped<IConfigureOptions<OpenIdConnectOptions>, IntegratedWebClientOpenIdConnectOptionsSetup>());
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<MvcOptions>, IntegratedWebclientMvcOptionsSetup>());
-            return services;
+            builder.Services.TryAddEnumerable(ServiceDescriptor.Scoped<IConfigureOptions<OpenIdConnectOptions>, IntegratedWebClientOpenIdConnectOptionsSetup>());
+            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<MvcOptions>, IntegratedWebclientMvcOptionsSetup>());
+            return builder;
         }
     }
 }
