@@ -1,11 +1,16 @@
-﻿using System.Security.Claims;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.Service;
 using Microsoft.AspNetCore.Identity.Service.Session;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace Microsoft.AspNetCore.Applications.Authentication
 {
+    /// <summary>
+    /// Factory for Users and Applications.
+    /// </summary>
+    /// <typeparam name="TUser">The <see cref="TUser"/>.</typeparam>
+    /// <typeparam name="TApplication">The <see cref="TApplication"/></typeparam>
     public class LoginContextFactory<TUser, TApplication> : ILoginFactory
         where TUser : class
         where TApplication : class
@@ -15,6 +20,14 @@ namespace Microsoft.AspNetCore.Applications.Authentication
         private readonly ApplicationManager<TApplication> _applicationManager;
         private readonly IApplicationClaimsPrincipalFactory<TApplication> _applicationClaimsPrincipalFactory;
 
+        /// <summary>
+        ///  Creates a new instance of <see cref="LoginContextFactory{TUser, TApplication}"/>.
+        /// </summary>
+        /// <param name="userManager">The <see cref="UserManager{TUser}"/>.</param>
+        /// <param name="userClaimsPrincipalFactory">The <see cref="IUserClaimsPrincipalFactory{TUser}"/>.</param>
+        /// <param name="applicationManager">The <see cref="ApplicationManager{TApplication}"/>.</param>
+        /// <param name="applicationClaimsPrincipalFactory">The <see cref="ApplicationClaimsPrincipalFactory{TApplication}"/>.
+        /// </param>
         public LoginContextFactory(
             UserManager<TUser> userManager,
             IUserClaimsPrincipalFactory<TUser> userClaimsPrincipalFactory,
@@ -27,6 +40,7 @@ namespace Microsoft.AspNetCore.Applications.Authentication
             _applicationClaimsPrincipalFactory = applicationClaimsPrincipalFactory;
         }
 
+        /// <inheritdoc />
         public async Task<ClaimsPrincipal> GetApplicationAsync(string clientId)
         {
             var application = await _applicationManager.FindByClientIdAsync(clientId);
@@ -35,6 +49,7 @@ namespace Microsoft.AspNetCore.Applications.Authentication
                 await _applicationClaimsPrincipalFactory.CreateAsync(application);
         }
 
+        /// <inheritdoc />
         public async Task<ClaimsPrincipal> GetUserAsync(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);

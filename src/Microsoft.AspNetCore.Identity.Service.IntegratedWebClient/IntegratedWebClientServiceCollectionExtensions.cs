@@ -36,7 +36,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static AuthenticationBuilder WithIntegratedWebClient(this AuthenticationBuilder builder)
         {
-            builder.Services.TryAddEnumerable(ServiceDescriptor.Scoped<IConfigureOptions<OpenIdConnectOptions>, IntegratedWebClientOpenIdConnectOptionsSetup>());
+            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<OpenIdConnectOptions>, IntegratedWebClientOpenIdConnectOptionsSetup>());
             builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<MvcOptions>, IntegratedWebclientMvcOptionsSetup>());
             return builder;
         }

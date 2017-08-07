@@ -19,8 +19,17 @@ using Microsoft.Extensions.Options;
 
 namespace Microsoft.AspNetCore.Identity
 {
+    /// <summary>
+    /// Application extensions for <see cref="IdentityBuilder"/>.
+    /// </summary>
     public static class ApplicationServiceCollectionExtensions
     {
+        /// <summary>
+        /// Adds application extensions to Identity.
+        /// </summary>
+        /// <typeparam name="TApplication">The application type.</typeparam>
+        /// <param name="builder">The <see cref="IdentityBuilder"/> to chain to.</param>
+        /// <returns>An <see cref="IIdentityClientApplicationsBuilder"/>.</returns>
         public static IIdentityClientApplicationsBuilder AddApplications<TApplication>(this IdentityBuilder builder)
             where TApplication : class
         {
@@ -84,6 +93,12 @@ namespace Microsoft.AspNetCore.Identity
             yield return ServiceDescriptor.Singleton<IHttpContextAccessor, HttpContextAccessor>();
         }
 
+        /// <summary>
+        /// Adds application extensions to Identity.
+        /// </summary>
+        /// <typeparam name="TApplication">The application type.</typeparam>
+        /// <param name="builder">The <see cref="IdentityBuilder"/> to chain to.</param>
+        /// <returns>An <see cref="IdentityBuilder"/>.</returns>
         public static IdentityBuilder AddApplications<TApplication>(
             this IdentityBuilder builder,
             Action<ApplicationOptions> configure) where TApplication : class
@@ -93,16 +108,18 @@ namespace Microsoft.AspNetCore.Identity
             return builder;
         }
 
+        /// <summary>
+        /// Adds application extensions to Identity.
+        /// </summary>
+        /// <param name="builder">The <see cref="IdentityBuilder"/> to chain to.</param>
+        /// <param name="configure">An <see cref="Action{ApplicationOptions}"/> to configure the <see cref="ApplicationOptions"/>.
+        /// </param>
+        /// <returns>An <see cref="IdentityBuilder"/>.</returns>
         public static IdentityBuilder AddApplications(
             this IdentityBuilder builder,
             Action<ApplicationOptions> configure)
         {
             builder.Services.Configure(configure);
-            return builder;
-        }
-
-        public static IdentityBuilder AddApplications(this IdentityBuilder builder)
-        {
             return builder;
         }
     }

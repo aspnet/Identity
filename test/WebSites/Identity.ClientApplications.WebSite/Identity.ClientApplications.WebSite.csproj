@@ -3,7 +3,7 @@
   <Import Project="..\..\..\build\common.props" />
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.0;net461</TargetFrameworks>
+    <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
     <TargetFrameworks Condition=" '$(OS)' != 'Windows_NT' ">netcoreapp2.0</TargetFrameworks>
     <UserSecretsId>aspnet-IdentityWebApplicationSample-71B323EE-A696-4709-9EA5-C93EFCD9E6FB</UserSecretsId>
   </PropertyGroup>

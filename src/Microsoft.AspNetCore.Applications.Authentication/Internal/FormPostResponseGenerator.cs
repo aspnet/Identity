@@ -10,6 +10,9 @@ using Microsoft.AspNetCore.Http;
 
 namespace Microsoft.AspNetCore.Applications.Authentication.Internal
 {
+    /// <summary>
+    /// Generator for Open ID Connect form post responses.
+    /// </summary>
     public class FormPostResponseGenerator
     {
         private const string FormPostHeaderFormat = @"<!doctype html>
@@ -31,11 +34,24 @@ namespace Microsoft.AspNetCore.Applications.Authentication.Internal
 
         private readonly HtmlEncoder _encoder;
 
+        /// <summary>
+        /// Creates a new instance of <see cref="FormPostResponseGenerator"/>.
+        /// </summary>
+        /// <param name="encoder">The <see cref="HtmlEncoder"/> used to encode the form parameters.</param>
         public FormPostResponseGenerator(HtmlEncoder encoder)
         {
             _encoder = encoder;
         }
 
+        /// <summary>
+        /// Generates an HTML document with a <c>POST</c> form to <paramref name="redirectUri"/> and the
+        /// <paramref name="parameters"/> as form values.
+        /// </summary>
+        /// <param name="context">The <see cref="HttpContext"/></param>
+        /// <param name="redirectUri">The <see cref="Uri"/> for the action of the form.</param>
+        /// <param name="parameters">The values to include as inputs on the form.</param>
+        /// <returns>A <see cref="Task"/> that when completed will have written the form into the <see cref="HttpResponse"/>.
+        /// </returns>
         public async Task GenerateResponseAsync(
             HttpContext context,
             string redirectUri,

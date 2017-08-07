@@ -11,6 +11,10 @@ using Microsoft.Extensions.Options;
 
 namespace Microsoft.AspNetCore.Applications.Authentication
 {
+    /// <summary>
+    /// Validates concerns related to applications on authentication and token requests.
+    /// </summary>
+    /// <typeparam name="TApplication">The type of the application.</typeparam>
     public class ClientApplicationValidator<TApplication> : IClientIdValidator, IRedirectUriResolver, IScopeResolver
         where TApplication : class
     {
@@ -19,6 +23,13 @@ namespace Microsoft.AspNetCore.Applications.Authentication
         private readonly ApplicationManager<TApplication> _applicationManager;
         private readonly ProtocolErrorProvider _errorProvider;
 
+        /// <summary>
+        /// Creates a new instance of <see cref="ClientApplicationValidator{TApplication}"/>.
+        /// </summary>
+        /// <param name="options">The <see cref="IOptions{ApplicationTokenOptions}"/> options.</param>
+        /// <param name="loginManager">The <see cref="LoginManager"/>.</param>
+        /// <param name="applicationManager">The <see cref="ApplicationManager{TApplication}"/>.</param>
+        /// <param name="errorProvider">The <see cref="ProtocolErrorProvider"/>.</param>
         public ClientApplicationValidator(
             IOptions<ApplicationTokenOptions> options,
             LoginManager loginManager,
@@ -31,16 +42,19 @@ namespace Microsoft.AspNetCore.Applications.Authentication
             _errorProvider = errorProvider;
         }
 
+        /// <inheritdoc />
         public Task<bool> ValidateClientCredentialsAsync(string clientId, string clientSecret)
         {
             return _applicationManager.ValidateClientCredentialsAsync(clientId, clientSecret);
         }
 
+        /// <inheritdoc />
         public async Task<bool> ValidateClientIdAsync(string clientId)
         {
             return await _applicationManager.FindByClientIdAsync(clientId) != null;
         }
 
+        /// <inheritdoc />
         public async Task<RedirectUriResolutionResult> ResolveLogoutUriAsync(string clientId, string logoutUrl)
         {
             if (logoutUrl == null)
@@ -74,6 +88,7 @@ namespace Microsoft.AspNetCore.Applications.Authentication
             return RedirectUriResolutionResult.Invalid(_errorProvider.InvalidLogoutRedirectUri(logoutUrl));
         }
 
+        /// <inheritdoc />
         public async Task<RedirectUriResolutionResult> ResolveRedirectUriAsync(string clientId, string redirectUrl)
         {
             if (clientId == null)
@@ -104,6 +119,7 @@ namespace Microsoft.AspNetCore.Applications.Authentication
             return RedirectUriResolutionResult.Invalid(_errorProvider.InvalidRedirectUri(redirectUrl));
         }
 
+        /// <inheritdoc />
         public async Task<ScopeResolutionResult> ResolveScopesAsync(string clientId, IEnumerable<string> scopes)
         {
             var authorizedParty = await _applicationManager.FindByClientIdAsync(clientId);

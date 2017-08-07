@@ -6,6 +6,7 @@
     <Description>ASP.NET Core Applications is the authentication and authorization solution for building ASP.NET Core web applications that relay on a centralized identity for one or more applications.</Description>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <PackageTags>aspnetcore;identity;applications</PackageTags>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <EnableApiCheck>false</EnableApiCheck>
   </PropertyGroup>
 
@@ -23,6 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.AspNetCore.Identity.Service\Microsoft.AspNetCore.Identity.Service.csproj" />
+    <ProjectReference Include="..\Microsoft.Extensions.Identity.Core\Microsoft.Extensions.Identity.Core.csproj" />
   </ItemGroup>
 
 </Project>

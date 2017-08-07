@@ -6,15 +6,17 @@ using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.Net.Http.Headers;
 using Xunit;
+using Microsoft.AspNetCore.Testing.xunit;
 
 namespace Microsoft.AspNetCore.Identity.ClientApplications.FunctionalTest
 {
     public class TraditionalWebApplicationTests
     {
-        [Fact]
+        [ConditionalFact]
+        [FrameworkSkipCondition(RuntimeFrameworks.CLR, SkipReason = "https://github.com/aspnet/Identity/issues/1346")]
         public async Task CanPerform_AuthorizationCode_Flow()
         {
-            // Arrange          
+            // Arrange   
             var clientId = Guid.NewGuid().ToString();
             var resourceId = Guid.NewGuid().ToString();
 
@@ -106,7 +108,8 @@ namespace Microsoft.AspNetCore.Identity.ClientApplications.FunctionalTest
             };
         }
 
-        [Fact]
+        [ConditionalFact]
+        [FrameworkSkipCondition(RuntimeFrameworks.CLR, SkipReason = "https://github.com/aspnet/Identity/issues/1346")]
         public async Task CanPerform_IdToken_Flow()
         {
             // Arrange          

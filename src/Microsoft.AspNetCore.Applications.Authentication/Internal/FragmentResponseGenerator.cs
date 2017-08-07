@@ -10,15 +10,32 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
 namespace Microsoft.AspNetCore.Applications.Authentication.Internal
 {
+    /// <summary>
+    /// Generator for Open ID Connect fragment response types.
+    /// </summary>
     public class FragmentResponseGenerator
     {
         private readonly UrlEncoder _urlEncoder;
 
+        /// <summary>
+        /// Creates anew instance of <see cref="FragmentResponseGenerator"/>.
+        /// </summary>
+        /// <param name="urlEncoder">The <see cref="UrlEncoder"/>used to encode parameter values on the fragment.</param>
         public FragmentResponseGenerator(UrlEncoder urlEncoder)
         {
             _urlEncoder = urlEncoder;
         }
 
+        /// <summary>
+        /// Generates an <see cref="StatusCodes.Status302Found"/> response to <paramref name="redirectUri"/> with the
+        /// <paramref name="parameters"/> encoded in the fragment of the location URI as URL encoded name value pairs.
+        /// </summary>
+        /// <param name="context">The <see cref="HttpContext"/></param>
+        /// <param name="redirectUri">The <see cref="Uri"/> for the location header.</param>
+        /// <param name="parameters">The values to include as URL encoded name value pairs on the fragment.</param>
+        /// <returns>A <see cref="Task"/> that when completed will have created a <see cref="StatusCodes.Status302Found"/>
+        /// <see cref="HttpResponse"/>.
+        /// </returns>
         public void GenerateResponse(
             HttpContext context,
             string redirectUri,

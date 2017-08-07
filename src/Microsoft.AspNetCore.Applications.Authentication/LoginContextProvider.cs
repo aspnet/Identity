@@ -14,6 +14,9 @@ using Microsoft.Extensions.Internal;
 
 namespace Microsoft.AspNetCore.Identity.Service
 {
+    /// <summary>
+    /// Manages user sessions within applications.
+    /// </summary>
     public class LoginContextProvider : ILoginContextProvider
     {
         private readonly ILoginFactory _loginFactory;
@@ -23,6 +26,13 @@ namespace Microsoft.AspNetCore.Identity.Service
 
         private HttpContext _context;
 
+        /// <summary>
+        /// Creates a new instance of <see cref="LoginContextProvider"/>.
+        /// </summary>
+        /// <param name="loginFactory">The <see cref="ILoginFactory"/>for users and applications.</param>
+        /// <param name="policyProvider">The <see cref="IAuthorizationPolicyProvider"/>.</param>
+        /// <param name="contextAccessor">The <see cref="IHttpContextAccessor"/>.</param>
+        /// <param name="errorProvider">The <see cref="ProtocolErrorProvider"/>.</param>
         public LoginContextProvider(
             ILoginFactory loginFactory,
             IAuthorizationPolicyProvider policyProvider,
@@ -35,6 +45,9 @@ namespace Microsoft.AspNetCore.Identity.Service
             _errorProvider = errorProvider;
         }
 
+        /// <summary>
+        /// The current <see cref="HttpContext"/> of the request.
+        /// </summary>
         public HttpContext Context
         {
             get
@@ -56,34 +69,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             }
         }
 
-        private async Task<ClaimsPrincipal> GetPrincipal(string policyName)
-        {
-            var policy = await _policyProvider.GetPolicyAsync(policyName);
-            ClaimsPrincipal newPrincipal = null;
-            for (var i = 0; i < policy.AuthenticationSchemes.Count; i++)
-            {
-                var scheme = policy.AuthenticationSchemes[i];
-                var result = await Context.AuthenticateAsync(scheme);
-                if (result != null)
-                {
-                    newPrincipal = SecurityHelper.MergeUserPrincipal(newPrincipal, result.Principal);
-                }
-            }
-
-            return newPrincipal;
-        }
-
-        public async Task<LoginContext> GetLoginContextAsync()
-        {
-            var loginPrincipal = await GetPrincipal(ApplicationsAuthenticationDefaults.LoginPolicyName);
-            var loginSchemes = loginPrincipal.Identities.Select(i => i.AuthenticationType);
-            var applicationsPrincipal = await GetPrincipal(ApplicationsAuthenticationDefaults.SessionPolicyName);
-            var appIdentities = applicationsPrincipal.Identities
-                .Where(i => !loginSchemes.Contains(i.AuthenticationType, StringComparer.Ordinal));
-
-            return new LoginContext(loginPrincipal, new ClaimsPrincipal(appIdentities));
-        }
-
+        /// <inheritdoc />
         public async Task LogInAsync(ClaimsPrincipal user, ClaimsPrincipal application)
         {
             var context = await GetLoginContextAsync();
@@ -113,6 +99,46 @@ namespace Microsoft.AspNetCore.Identity.Service
             }
         }
 
+        /// <inheritdoc />
+        public async Task LogOutAsync(ClaimsPrincipal user, ClaimsPrincipal application)
+        {
+            var policy = await _policyProvider.GetPolicyAsync(ApplicationsAuthenticationDefaults.SessionPolicyName);
+            for (var i = 0; i < policy.AuthenticationSchemes.Count; i++)
+            {
+                var scheme = policy.AuthenticationSchemes[i];
+                await Context.SignOutAsync(scheme);
+            }
+        }
+
+        /// <inheritdoc />
+        public async Task<LoginContext> GetLoginContextAsync()
+        {
+            var loginPrincipal = await GetPrincipal(ApplicationsAuthenticationDefaults.LoginPolicyName);
+            var loginSchemes = loginPrincipal.Identities.Select(i => i.AuthenticationType);
+            var applicationsPrincipal = await GetPrincipal(ApplicationsAuthenticationDefaults.SessionPolicyName);
+            var appIdentities = applicationsPrincipal.Identities
+                .Where(i => !loginSchemes.Contains(i.AuthenticationType, StringComparer.Ordinal));
+
+            return new LoginContext(loginPrincipal, new ClaimsPrincipal(appIdentities));
+        }
+
+        private async Task<ClaimsPrincipal> GetPrincipal(string policyName)
+        {
+            var policy = await _policyProvider.GetPolicyAsync(policyName);
+            ClaimsPrincipal newPrincipal = null;
+            for (var i = 0; i < policy.AuthenticationSchemes.Count; i++)
+            {
+                var scheme = policy.AuthenticationSchemes[i];
+                var result = await Context.AuthenticateAsync(scheme);
+                if (result != null)
+                {
+                    newPrincipal = SecurityHelper.MergeUserPrincipal(newPrincipal, result.Principal);
+                }
+            }
+
+            return newPrincipal;
+        }
+
         private ClaimsIdentity CreateApplicationIdentity(ClaimsPrincipal user, ClaimsPrincipal application)
         {
             var identity = new ClaimsIdentity(ApplicationsAuthenticationDefaults.CookieAuthenticationScheme);
@@ -123,16 +149,6 @@ namespace Microsoft.AspNetCore.Identity.Service
             identity.AddClaims(application.FindAll(TokenClaimTypes.LogoutRedirectUri));
 
             return identity;
-        }
-
-        public async Task LogOutAsync(ClaimsPrincipal user, ClaimsPrincipal application)
-        {
-            var policy = await _policyProvider.GetPolicyAsync(ApplicationsAuthenticationDefaults.SessionPolicyName);
-            for (var i = 0; i < policy.AuthenticationSchemes.Count; i++)
-            {
-                var scheme = policy.AuthenticationSchemes[i];
-                await Context.SignOutAsync(scheme);
-            }
         }
     }
 }

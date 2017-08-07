@@ -7,15 +7,23 @@ using Microsoft.Extensions.Options;
 
 namespace Microsoft.AspNetCore.Applications.Authentication.Internal
 {
+    /// <summary>
+    /// Setup <see cref="IOptions{ApplicationTokenOptions}"/>.
+    /// </summary>
     public class TokenOptionsSetup : IConfigureOptions<ApplicationTokenOptions>
     {
         private readonly IOptions<IdentityOptions> _options;
 
+        /// <summary>
+        /// Creates a new instance of <see cref="TokenOptionsSetup"/>.
+        /// </summary>
+        /// <param name="options"></param>
         public TokenOptionsSetup(IOptions<IdentityOptions> options)
         {
             _options = options;
         }
 
+        /// <inheritdoc />
         public void Configure(ApplicationTokenOptions options)
         {
             options.IdTokenOptions.UserClaims
