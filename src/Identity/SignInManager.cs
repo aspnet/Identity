@@ -346,6 +346,11 @@ namespace Microsoft.AspNetCore.Identity
             var userId = await UserManager.GetUserIdAsync(user);
             var rememberBrowserIdentity = new ClaimsIdentity(IdentityConstants.TwoFactorRememberMeScheme);
             rememberBrowserIdentity.AddClaim(new Claim(ClaimTypes.Name, userId));
+            if (UserManager.SupportsUserSecurityStamp)
+            {
+                var stamp = await UserManager.GetSecurityStampAsync(user);
+                rememberBrowserIdentity.AddClaim(new Claim(Options.ClaimsIdentity.SecurityStampClaimType, stamp));
+            }
             await Context.SignInAsync(IdentityConstants.TwoFactorRememberMeScheme,
                 new ClaimsPrincipal(rememberBrowserIdentity),
                 new AuthenticationProperties { IsPersistent = true });
