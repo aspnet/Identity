@@ -69,7 +69,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 options.DefaultChallengeScheme = IdentityConstants.ApplicationScheme;
                 options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
             })
-			.AddCookie(IdentityConstants.ApplicationScheme, o =>
+            .AddCookie(IdentityConstants.ApplicationScheme, o =>
             {
                 o.LoginPath = new PathString("/Account/Login");
                 o.Events = new CookieAuthenticationEvents
@@ -77,13 +77,19 @@ namespace Microsoft.Extensions.DependencyInjection
                     OnValidatePrincipal = SecurityStampValidator.ValidatePrincipalAsync
                 };
             })
-			.AddCookie(IdentityConstants.ExternalScheme, o =>
+            .AddCookie(IdentityConstants.ExternalScheme, o =>
             {
                 o.Cookie.Name = IdentityConstants.ExternalScheme;
                 o.ExpireTimeSpan = TimeSpan.FromMinutes(5);
             })
-			.AddCookie(IdentityConstants.TwoFactorRememberMeScheme,
-                o => o.Cookie.Name = IdentityConstants.TwoFactorRememberMeScheme)
+            .AddCookie(IdentityConstants.TwoFactorRememberMeScheme, o =>
+            {
+                o.Cookie.Name = IdentityConstants.TwoFactorRememberMeScheme;
+                o.Events = new CookieAuthenticationEvents
+                {
+                    OnValidatePrincipal = SecurityStampValidator.ValidateAsync<ITwoFactorSecurityStampValidator>
+                };
+            })
             .AddCookie(IdentityConstants.TwoFactorUserIdScheme, o =>
             {
                 o.Cookie.Name = IdentityConstants.TwoFactorUserIdScheme;
@@ -101,6 +107,7 @@ namespace Microsoft.Extensions.DependencyInjection
             // No interface for the error describer so we can add errors without rev'ing the interface
             services.TryAddScoped<IdentityErrorDescriber>();
             services.TryAddScoped<ISecurityStampValidator, SecurityStampValidator<TUser>>();
+            services.TryAddScoped<ITwoFactorSecurityStampValidator, TwoFactorSecurityStampValidator<TUser>>();
             services.TryAddScoped<IUserClaimsPrincipalFactory<TUser>, UserClaimsPrincipalFactory<TUser, TRole>>();
             services.TryAddScoped<UserManager<TUser>, AspNetUserManager<TUser>>();
             services.TryAddScoped<SignInManager<TUser>, SignInManager<TUser>>();

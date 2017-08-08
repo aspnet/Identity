@@ -105,19 +105,30 @@ namespace Microsoft.AspNetCore.Identity
     {
         /// <summary>
         /// Validates a principal against a user's stored security stamp.
-        /// the identity.
         /// </summary>
         /// <param name="context">The context containing the <see cref="System.Security.Claims.ClaimsPrincipal"/>
-        /// and <see cref="Http.Authentication.AuthenticationProperties"/> to validate.</param>
+        /// and <see cref="AuthenticationProperties"/> to validate.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous validation operation.</returns>
         public static Task ValidatePrincipalAsync(CookieValidatePrincipalContext context)
+            => ValidateAsync<ISecurityStampValidator>(context);
+
+        /// <summary>
+        /// Used to validate the <see cref="IdentityConstants.TwoFactorUserIdScheme"/> and 
+        /// <see cref="IdentityConstants.TwoFactorRememberMeScheme"/> cookies against the user's 
+        /// stored security stamp.
+        /// </summary>
+        /// <param name="context">The context containing the <see cref="System.Security.Claims.ClaimsPrincipal"/>
+        /// and <see cref="AuthenticationProperties"/> to validate.</param>
+        /// <returns></returns>
+
+        public static Task ValidateAsync<TValidator>(CookieValidatePrincipalContext context) where TValidator : ISecurityStampValidator
         {
             if (context.HttpContext.RequestServices == null)
             {
                 throw new InvalidOperationException("RequestServices is null.");
             }
 
-            var validator = context.HttpContext.RequestServices.GetRequiredService<ISecurityStampValidator>();
+            var validator = context.HttpContext.RequestServices.GetRequiredService<TValidator>();
             return validator.ValidateAsync(context);
         }
     }
