@@ -13,16 +13,26 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Microsoft.AspNetCore.Applications.Authentication.Internal
 {
+    /// <summary>
+    /// Produces a <c>sub</c> claim that is unique per user and application.
+    /// </summary>
     public class PairwiseSubClaimProvider : ITokenClaimsProvider
     {
         private readonly IdentityOptions _options;
 
+        /// <summary>
+        /// Creates a new instance of <see cref="PairwiseSubClaimProvider"/>.
+        /// </summary>
+        /// <param name="options"></param>
         public PairwiseSubClaimProvider(IOptions<IdentityOptions> options)
         {
             _options = options.Value;
         }
+
+        /// <inheritdoc />
         public int Order => 200;
 
+        /// <inheritdoc />
         public Task OnGeneratingClaims(TokenGeneratingContext context)
         {
             if (context.CurrentToken.Equals(TokenTypes.IdToken) ||

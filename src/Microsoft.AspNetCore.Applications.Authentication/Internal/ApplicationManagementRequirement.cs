@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Microsoft.AspNetCore.Applications.Authentication.Internal
 {
+    /// <summary>
+    /// Requirement for managing applications.
+    /// </summary>
     public class ApplicationManagementRequirement : IAuthorizationRequirement
     {
     }

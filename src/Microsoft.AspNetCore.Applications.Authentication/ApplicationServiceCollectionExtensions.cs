@@ -98,6 +98,7 @@ namespace Microsoft.AspNetCore.Identity
         /// </summary>
         /// <typeparam name="TApplication">The application type.</typeparam>
         /// <param name="builder">The <see cref="IdentityBuilder"/> to chain to.</param>
+        /// <param name="configure">The configuration action for the <see cref="ApplicationOptions"/>.</param>
         /// <returns>An <see cref="IdentityBuilder"/>.</returns>
         public static IdentityBuilder AddApplications<TApplication>(
             this IdentityBuilder builder,

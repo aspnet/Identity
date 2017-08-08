@@ -9,8 +9,8 @@ namespace Microsoft.AspNetCore.Applications.Authentication
     /// <summary>
     /// Factory for Users and Applications.
     /// </summary>
-    /// <typeparam name="TUser">The <see cref="TUser"/>.</typeparam>
-    /// <typeparam name="TApplication">The <see cref="TApplication"/></typeparam>
+    /// <typeparam name="TUser">The <typeparamref name="TUser"/>.</typeparam>
+    /// <typeparam name="TApplication">The <typeparamref name="TApplication"/>.</typeparam>
     public class LoginContextFactory<TUser, TApplication> : ILoginFactory
         where TUser : class
         where TApplication : class

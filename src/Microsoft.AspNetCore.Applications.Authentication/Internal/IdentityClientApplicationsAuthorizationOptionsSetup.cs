@@ -8,15 +8,23 @@ using Microsoft.Extensions.Options;
 
 namespace Microsoft.AspNetCore.Applications.Authentication.Internal
 {
+    /// <summary>
+    /// Setup for <see cref="AuthorizationOptions"/>.
+    /// </summary>
     public class IdentityClientApplicationsAuthorizationOptionsSetup : IConfigureOptions<AuthorizationOptions>
     {
         private readonly IOptions<ApplicationTokenOptions> tokenOptions;
 
+        /// <summary>
+        /// Creates a new instance of <see cref="IdentityClientApplicationsAuthorizationOptionsSetup"/>.
+        /// </summary>
+        /// <param name="tokenOptions"></param>
         public IdentityClientApplicationsAuthorizationOptionsSetup(IOptions<ApplicationTokenOptions> tokenOptions)
         {
             this.tokenOptions = tokenOptions;
         }
 
+        /// <inheritdoc />
         public void Configure(AuthorizationOptions options)
         {
             var loginPolicy = new AuthorizationPolicyBuilder()

@@ -22,7 +22,7 @@ namespace Microsoft.AspNetCore.Identity.Service
         private readonly ILoginFactory _loginFactory;
         private readonly IAuthorizationPolicyProvider _policyProvider;
         private readonly IHttpContextAccessor _contextAccessor;
-        protected readonly ProtocolErrorProvider _errorProvider;
+        private readonly ProtocolErrorProvider _errorProvider;
 
         private HttpContext _context;
 
