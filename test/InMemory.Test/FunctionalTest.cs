@@ -302,15 +302,6 @@ namespace Microsoft.AspNetCore.Identity.InMemory
                             var result = await signInManager.PasswordSignInAsync("hao", TestPassword, isPersistent, false);
                             res.StatusCode = result.Succeeded ? 200 : 500;
                         }
-                        else if (req.Path == new PathString("/twofactorHalf"))
-                        {
-                            var user = await userManager.FindByNameAsync("hao");
-                            user.Email = "whatever";
-                            user.EmailConfirmed = true;
-                            user.TwoFactorEnabled = true;
-                            var result = await signInManager.PasswordSignInAsync("hao", TestPassword, false, false);
-                            res.StatusCode = result.RequiresTwoFactor ? 200 : 500;
-                        }
                         else if (req.Path == new PathString("/twofactorRememeber"))
                         {
                             var user = await userManager.FindByNameAsync("hao");
