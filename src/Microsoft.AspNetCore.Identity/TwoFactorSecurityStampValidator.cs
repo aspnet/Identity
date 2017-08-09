@@ -45,8 +45,8 @@ namespace Microsoft.AspNetCore.Identity
         /// Validates a security stamp of an identity as an asynchronous operation, and rebuilds the identity if the validation succeeds, otherwise rejects
         /// the identity.
         /// </summary>
-        /// <param name="context">The context containing the <see cref="System.Security.Claims.ClaimsPrincipal"/>
-        /// and <see cref="Http.Authentication.AuthenticationProperties"/> to validate.</param>
+        /// <param name="context">The context containing the <see cref="ClaimsPrincipal"/>
+        /// and <see cref="AuthenticationProperties"/> to validate.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous validation operation.</returns>
         public virtual async Task ValidateAsync(CookieValidatePrincipalContext context)
         {
