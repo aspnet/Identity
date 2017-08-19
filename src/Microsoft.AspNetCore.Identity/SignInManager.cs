@@ -129,7 +129,7 @@ namespace Microsoft.AspNetCore.Identity
                     try{
                       return i.AuthenticationType == IdentityConstants.ApplicationScheme;                        
                     }
-                    catch(UnauthorizedAccessException e){
+                    catch(UnauthorizedAccessException){
                         return false;
                     }
                 });
