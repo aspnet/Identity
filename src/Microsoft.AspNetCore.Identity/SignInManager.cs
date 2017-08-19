@@ -124,7 +124,15 @@ namespace Microsoft.AspNetCore.Identity
                 throw new ArgumentNullException(nameof(principal));
             }
             return principal?.Identities != null &&
-                principal.Identities.Any(i => i.AuthenticationType == IdentityConstants.ApplicationScheme);
+                principal.Identities.Any((i) => 
+                {
+                    try{
+                      return i.AuthenticationType == IdentityConstants.ApplicationScheme;                        
+                    }
+                    catch(UnauthorizedAccessException e){
+                        return false;
+                    }
+                });
         }
 
         /// <summary>
