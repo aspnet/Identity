@@ -8,11 +8,11 @@
   },
   "dependencies": {
     "dotnet-test-xunit": "1.0.0-rc3-000000-01",
-    "Microsoft.AspNetCore.Authentication": "1.0.3",
-    "Microsoft.AspNetCore.Authentication.Cookies": "1.0.3",
+    "Microsoft.AspNetCore.Authentication": "1.0.4",
+    "Microsoft.AspNetCore.Authentication.Cookies": "1.0.4",
     "Microsoft.AspNetCore.Hosting": "1.0.3",
     "Microsoft.AspNetCore.Http": "1.0.3",
-    "Microsoft.AspNetCore.Identity": "1.0.3",
+    "Microsoft.AspNetCore.Identity": "1.0.4",
     "Microsoft.AspNetCore.TestHost": "1.0.3",
     "Microsoft.AspNetCore.Testing": "1.0.1",
     "xunit": "2.1.0"
