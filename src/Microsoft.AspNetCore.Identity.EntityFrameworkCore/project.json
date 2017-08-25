@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "Microsoft.AspNetCore.Identity": "1.0.4",
-    "Microsoft.EntityFrameworkCore.Relational": "1.0.4"
+    "Microsoft.EntityFrameworkCore.Relational": "1.0.5"
   },
   "frameworks": {
     "net451": {},
