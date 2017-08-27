@@ -90,7 +90,6 @@ namespace Microsoft.AspNetCore.Identity.Service
 
         public static string GetAlgorithm(SigningCredentials credentials)
         {
-            RSA algorithm = null;
             if (credentials.Key is X509SecurityKey x509SecurityKey && x509SecurityKey.PublicKey is RSA)
             {
                 return JsonWebAlgorithmsKeyTypes.RSA;
@@ -101,11 +100,6 @@ namespace Microsoft.AspNetCore.Identity.Service
             // one of the RSA parameters are initialized to consider the key "valid".
             if (rsaSecurityKey != null &&
                 (rsaSecurityKey.Rsa != null || rsaSecurityKey.Parameters.Modulus != null))
-            {
-                return JsonWebAlgorithmsKeyTypes.RSA;
-            }
-
-            if (algorithm != null)
             {
                 return JsonWebAlgorithmsKeyTypes.RSA;
             }
