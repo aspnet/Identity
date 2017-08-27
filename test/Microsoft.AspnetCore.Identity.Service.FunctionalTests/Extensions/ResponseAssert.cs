@@ -198,7 +198,7 @@ namespace Microsoft.AspNetCore.Mvc.Testing
 
         public bool Equals(SetCookieHeaderValue expected, SetCookieHeaderValue candidate)
         {
-            bool matchesAllCriteria;
+            var matchesAllCriteria = true;
             if (_comparisonCriteria.HasFlag(CookieComparison.NameStartsWith))
             {
                 matchesAllCriteria = candidate.Name.StartsWith(expected.Name.ToString(), StringComparison.Ordinal);
