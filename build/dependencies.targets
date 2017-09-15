@@ -1,0 +1,16 @@
+﻿<Project>
+  <ItemGroup>
+    <PackageReference Update="Microsoft.EntityFrameworkCore" Version="2.0.1-rtm-*" />
+    <PackageReference Update="Microsoft.EntityFrameworkCore.Design" Version="2.0.1-rtm-*" />
+    <PackageReference Update="Microsoft.EntityFrameworkCore.InMemory" Version="2.0.1-rtm-*" />
+    <PackageReference Update="Microsoft.EntityFrameworkCore.Relational" Version="2.0.1-rtm-*" />
+    <PackageReference Update="Microsoft.EntityFrameworkCore.Relational.Design.Specification.Tests" Version="2.0.1-rtm-*" />
+    <PackageReference Update="Microsoft.EntityFrameworkCore.Relational.Specification.Tests" Version="2.0.1-rtm-*" />
+    <PackageReference Update="Microsoft.EntityFrameworkCore.Specification.Tests" Version="2.0.1-rtm-*" />
+    <PackageReference Update="Microsoft.EntityFrameworkCore.Sqlite" Version="2.0.1-rtm-*" />
+    <PackageReference Update="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="2.0.1-rtm-*" />
+    <PackageReference Update="Microsoft.EntityFrameworkCore.SqlServer" Version="2.0.1-rtm-*" />
+    <PackageReference Update="Microsoft.EntityFrameworkCore.Tools" Version="2.0.1-rtm-*" />
+    <PackageReference Update="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.1-rtm-*" />
+  </ItemGroup>
+</Project>
