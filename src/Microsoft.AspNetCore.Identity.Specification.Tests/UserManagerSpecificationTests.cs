@@ -429,7 +429,7 @@ namespace Microsoft.AspNetCore.Identity.Test
         [Theory]
         [InlineData("")]
         [InlineData(null)]
-        public async Task UserValidatorBlocksShortEmailsWhenRequiresUniqueEmail(string email)
+        public async Task UserValidatorBlocksShortEmails(string email)
         {
             if (ShouldSkipDbTests())
             {
@@ -438,6 +438,8 @@ namespace Microsoft.AspNetCore.Identity.Test
             var manager = CreateManager();
             var user = CreateTestUser();
             manager.Options.User.RequireUniqueEmail = true;
+            IdentityResultAssert.IsFailure(await manager.CreateAsync(user), _errorDescriber.InvalidEmail(email));
+            manager.Options.User.RequireUniqueEmail = false;
             IdentityResultAssert.IsFailure(await manager.CreateAsync(user), _errorDescriber.InvalidEmail(email));
         }
 

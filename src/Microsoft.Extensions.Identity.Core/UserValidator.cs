@@ -48,10 +48,7 @@ namespace Microsoft.AspNetCore.Identity
             }
             var errors = new List<IdentityError>();
             await ValidateUserName(manager, user, errors);
-            if (manager.Options.User.RequireUniqueEmail)
-            {
-                await ValidateEmail(manager, user, errors);
-            }
+            await ValidateEmail(manager, user, errors);
             return errors.Count > 0 ? IdentityResult.Failed(errors.ToArray()) : IdentityResult.Success;
         }
 
@@ -92,11 +89,14 @@ namespace Microsoft.AspNetCore.Identity
                 errors.Add(Describer.InvalidEmail(email));
                 return;
             }
-            var owner = await manager.FindByEmailAsync(email);
-            if (owner != null && 
-                !string.Equals(await manager.GetUserIdAsync(owner), await manager.GetUserIdAsync(user)))
+            if (manager.Options.User.RequireUniqueEmail)
             {
-                errors.Add(Describer.DuplicateEmail(email));
+                var owner = await manager.FindByEmailAsync(email);
+                if (owner != null && 
+                    !string.Equals(await manager.GetUserIdAsync(owner), await manager.GetUserIdAsync(user)))
+                {
+                    errors.Add(Describer.DuplicateEmail(email));
+                }
             }
         }
     }
