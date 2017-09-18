@@ -75,14 +75,17 @@ namespace Microsoft.AspNetCore.Identity
             }
         }
 
-        // make sure email is not empty, valid, and unique
+        // make sure email is not empty, valid, and unique if required
         private async Task ValidateEmail(UserManager<TUser> manager, TUser user, List<IdentityError> errors)
         {
             var email = await manager.GetEmailAsync(user);
             if (string.IsNullOrWhiteSpace(email))
             {
-                errors.Add(Describer.InvalidEmail(email));
-                return;
+                if (manager.Options.User.RequireUniqueEmail)
+                {
+                    errors.Add(Describer.InvalidEmail(email));
+                    return;
+                }
             }
             if (!new EmailAddressAttribute().IsValid(email))
             {
