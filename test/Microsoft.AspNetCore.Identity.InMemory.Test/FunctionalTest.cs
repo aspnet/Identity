@@ -26,11 +26,13 @@ namespace Microsoft.AspNetCore.Identity.InMemory
     {
         const string TestPassword = "1qaz!QAZ";
 
-        [Fact]
-        public async Task CanChangePasswordOptions()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task CanChangePasswordOptions(bool legacy)
         {
             var clock = new TestClock();
-            var server = CreateServer(services => services.Configure<IdentityOptions>(options =>
+            var server = CreateServer(legacy, services => services.Configure<IdentityOptions>(options =>
             {
                 options.Password.RequireUppercase = false;
                 options.Password.RequireNonAlphanumeric = false;
@@ -44,11 +46,13 @@ namespace Microsoft.AspNetCore.Identity.InMemory
             Assert.Null(transaction1.SetCookie);
         }
 
-        [Fact]
-        public async Task CanCreateMeLoginAndCookieStopsWorkingAfterExpiration()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task CanCreateMeLoginAndCookieStopsWorkingAfterExpiration(bool legacy)
         {
             var clock = new TestClock();
-            var server = CreateServer(services =>
+            var server = CreateServer(legacy, services =>
             {
                 services.ConfigureApplicationCookie(options =>
                 {
@@ -85,12 +89,14 @@ namespace Microsoft.AspNetCore.Identity.InMemory
         }
 
         [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public async Task CanCreateMeLoginAndSecurityStampExtendsExpiration(bool rememberMe)
+        [InlineData(true, true)]
+        [InlineData(false, true)]
+        [InlineData(true, false)]
+        [InlineData(false, false)]
+        public async Task CanCreateMeLoginAndSecurityStampExtendsExpiration(bool legacy, bool rememberMe)
         {
             var clock = new TestClock();
-            var server = CreateServer(services => services.AddSingleton<ISystemClock>(clock));
+            var server = CreateServer(legacy, services => services.AddSingleton<ISystemClock>(clock));
 
             var transaction1 = await SendAsync(server, "http://example.com/createMe");
             Assert.Equal(HttpStatusCode.OK, transaction1.Response.StatusCode);
@@ -130,11 +136,13 @@ namespace Microsoft.AspNetCore.Identity.InMemory
             Assert.Equal("hao", FindClaimValue(transaction6, ClaimTypes.Name));
         }
 
-        [Fact]
-        public async Task CanAccessOldPrincipalDuringSecurityStampReplacement()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task CanAccessOldPrincipalDuringSecurityStampReplacement(bool legacy)
         {
             var clock = new TestClock();
-            var server = CreateServer(services =>
+            var server = CreateServer(legacy, services =>
             {
                 services.Configure<SecurityStampValidatorOptions>(options =>
                 {
@@ -181,10 +189,12 @@ namespace Microsoft.AspNetCore.Identity.InMemory
             Assert.Equal("hao", FindClaimValue(transaction6, ClaimTypes.Name));
         }
 
-        [Fact]
-        public async Task TwoFactorRememberCookieVerification()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task TwoFactorRememberCookieVerification(bool legacy)
         {
-            var server = CreateServer();
+            var server = CreateServer(legacy);
 
             var transaction1 = await SendAsync(server, "http://example.com/createMe");
             Assert.Equal(HttpStatusCode.OK, transaction1.Response.StatusCode);
@@ -222,7 +232,7 @@ namespace Microsoft.AspNetCore.Identity.InMemory
             return me;
         }
 
-        private static TestServer CreateServer(Action<IServiceCollection> configureServices = null, Func<HttpContext, Task> testpath = null, Uri baseAddress = null)
+        private static TestServer CreateServer(bool legacy = true, Action<IServiceCollection> configureServices = null, Func<HttpContext, Task> testpath = null, Uri baseAddress = null)
         {
             var builder = new WebHostBuilder()
                 .Configure(app =>
@@ -295,7 +305,16 @@ namespace Microsoft.AspNetCore.Identity.InMemory
                 })
                 .ConfigureServices(services =>
                 {
-                    services.AddIdentity<TestUser, TestRole>();
+                    if (legacy)
+                    {
+                        services.AddIdentity<TestUser, TestRole>();
+                    }
+                    else
+                    {
+                        services.AddIdentityCore<TestUser>()
+                            .AddCookieAuthentication()
+                            .AddSignInManager();
+                    }
                     services.AddSingleton<IUserStore<TestUser>, InMemoryStore<TestUser, TestRole>>();
                     services.AddSingleton<IRoleStore<TestRole>, InMemoryStore<TestUser, TestRole>>();
                     configureServices?.Invoke(services);
