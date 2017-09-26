@@ -8,7 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\EF\Microsoft.AspNetCore.Identity.EntityFrameworkCore.csproj" />
-    <ProjectReference Include="..\..\src\Microsoft.AspNetCore.Identity.SignIn\Microsoft.AspNetCore.Identity.SignIn.csproj" />
+    <ProjectReference Include="..\..\src\Microsoft.AspNetCore.Identity.SignIn.Cookies\Microsoft.AspNetCore.Identity.SignIn.Cookies.csproj" />
   </ItemGroup>
 
   <ItemGroup>

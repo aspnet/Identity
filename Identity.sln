@@ -92,6 +92,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.AspNetCore.Identity.FunctionalTests", "test\Identity.FunctionalTests\Microsoft.AspNetCore.Identity.FunctionalTests.csproj", "{B3616029-7DA6-4FB3-8722-D5AC69884B3F}"
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.AspNetCore.Identity.SignIn", "src\Microsoft.AspNetCore.Identity.SignIn\Microsoft.AspNetCore.Identity.SignIn.csproj", "{F22BB721-A98C-429F-895E-E70AAB48D70E}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.AspNetCore.Identity.SignIn.Cookies", "src\Microsoft.AspNetCore.Identity.SignIn.Cookies\Microsoft.AspNetCore.Identity.SignIn.Cookies.csproj", "{1CBD20D5-C203-4A67-8535-A5630ACC30F5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -930,6 +932,14 @@ Global
 		{F22BB721-A98C-429F-895E-E70AAB48D70E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F22BB721-A98C-429F-895E-E70AAB48D70E}.ReleaseNoWPF|Any CPU.ActiveCfg = Release|Any CPU
 		{F22BB721-A98C-429F-895E-E70AAB48D70E}.ReleaseNoWPF|Any CPU.Build.0 = Release|Any CPU
+		{1CBD20D5-C203-4A67-8535-A5630ACC30F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1CBD20D5-C203-4A67-8535-A5630ACC30F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1CBD20D5-C203-4A67-8535-A5630ACC30F5}.DebugNoWPF|Any CPU.ActiveCfg = Debug|Any CPU
+		{1CBD20D5-C203-4A67-8535-A5630ACC30F5}.DebugNoWPF|Any CPU.Build.0 = Debug|Any CPU
+		{1CBD20D5-C203-4A67-8535-A5630ACC30F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1CBD20D5-C203-4A67-8535-A5630ACC30F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1CBD20D5-C203-4A67-8535-A5630ACC30F5}.ReleaseNoWPF|Any CPU.ActiveCfg = Release|Any CPU
+		{1CBD20D5-C203-4A67-8535-A5630ACC30F5}.ReleaseNoWPF|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -971,6 +981,7 @@ Global
 		{CAE02AD2-F941-4ACB-B469-13EFF551BB74} = {1F83D453-E094-4D28-BCFA-9E537ABB5AD6}
 		{B3616029-7DA6-4FB3-8722-D5AC69884B3F} = {52D59F18-62D2-4D17-8CF2-BE192445AF8E}
 		{F22BB721-A98C-429F-895E-E70AAB48D70E} = {0F647068-6602-4E24-B1DC-8ED91481A50A}
+		{1CBD20D5-C203-4A67-8535-A5630ACC30F5} = {0F647068-6602-4E24-B1DC-8ED91481A50A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B3F2A592-CCE0-40C2-8CA4-7B1293DED874}

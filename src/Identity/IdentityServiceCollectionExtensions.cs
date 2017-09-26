@@ -32,24 +32,6 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
-        /// Configures the application cookie.
-        /// </summary>
-        /// <param name="services">The services available in the application.</param>
-        /// <param name="configure">An action to configure the <see cref="CookieAuthenticationOptions"/>.</param>
-        /// <returns>The services.</returns>
-        public static IServiceCollection ConfigureApplicationCookie(this IServiceCollection services, Action<CookieAuthenticationOptions> configure)
-            => services.Configure(IdentityConstants.ApplicationScheme, configure);
-
-        /// <summary>
-        /// Configure the external cookie.
-        /// </summary>
-        /// <param name="services">The services available in the application.</param>
-        /// <param name="configure">An action to configure the <see cref="CookieAuthenticationOptions"/>.</param>
-        /// <returns>The services.</returns>
-        public static IServiceCollection ConfigureExternalCookie(this IServiceCollection services, Action<CookieAuthenticationOptions> configure)
-            => services.Configure(IdentityConstants.ExternalScheme, configure);
-
-        /// <summary>
         /// Adds and configures the identity system for the specified User and Role types.
         /// </summary>
         /// <typeparam name="TUser">The type representing a User in the system.</typeparam>

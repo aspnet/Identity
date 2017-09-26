@@ -4,33 +4,6 @@
 namespace Microsoft.AspNetCore.Identity
 {
     /// <summary>
-    /// Represents all the options you can use to configure the sign in options used by the identity system.
-    /// </summary>
-    public class IdentitySignInOptions
-    {
-        /// <summary>
-        /// The scheme used to identify application authentication cookies.
-        /// </summary>
-        public string ApplicationScheme { get; set; } = "Identity.Application";
-
-        /// <summary>
-        /// The scheme used to identify external authentication cookies.
-        /// </summary>
-        public string ExternalScheme { get; set; } = "Identity.External";
-
-        /// <summary>
-        /// The scheme used to identify Two Factor authentication cookies for saving the Remember Me state.
-        /// </summary>
-        public string TwoFactorRememberMeScheme { get; set; } = "Identity.TwoFactorRememberMe";
-
-        /// <summary>
-        /// The scheme used to identify Two Factor authentication cookies for round tripping user identities.
-        /// </summary>
-        public string TwoFactorUserIdScheme { get; set; } = "Identity.TwoFactorUserId";
-
-    }
-
-    /// <summary>
     /// Represents all the options you can use to configure the cookies middleware uesd by the identity system.
     /// </summary>
     public class IdentityConstants
