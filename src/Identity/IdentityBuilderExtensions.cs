@@ -34,6 +34,18 @@ namespace Microsoft.AspNetCore.Identity
         /// <summary>
         /// Adds a <see cref="SignInManager{TUser}"/> for the <seealso cref="IdentityBuilder.UserType"/>.
         /// </summary>
+        /// <param name="builder">The current <see cref="IdentityBuilder"/> instance.</param>
+        /// <returns>The current <see cref="IdentityBuilder"/> instance.</returns>
+        public static IdentityBuilder AddSignInManager(this IdentityBuilder builder)
+        {
+            var managerType = typeof(SignInManager<>).MakeGenericType(builder.UserType);
+            builder.Services.AddScoped(managerType);
+            return builder;
+        }
+
+        /// <summary>
+        /// Adds a <see cref="SignInManager{TUser}"/> for the <seealso cref="IdentityBuilder.UserType"/>.
+        /// </summary>
         /// <typeparam name="TSignInManager">The type of the sign in manager to add.</typeparam>
         /// <param name="builder">The current <see cref="IdentityBuilder"/> instance.</param>
         /// <returns>The current <see cref="IdentityBuilder"/> instance.</returns>
