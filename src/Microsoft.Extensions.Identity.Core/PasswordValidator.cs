@@ -95,7 +95,7 @@ namespace Microsoft.AspNetCore.Identity
         /// <returns>True if the character is a lower case ASCII letter, otherwise false.</returns>
         public virtual bool IsLower(char c)
         {
-            return c >= 'a' && c <= 'z';
+            return (c >= 'a' && c <= 'z') || (c >= 'à' && c <= 'ö') || (c >= 'ø' && c <= 'ÿ');
         }
 
         /// <summary>
@@ -105,7 +105,7 @@ namespace Microsoft.AspNetCore.Identity
         /// <returns>True if the character is an upper case ASCII letter, otherwise false.</returns>
         public virtual bool IsUpper(char c)
         {
-            return c >= 'A' && c <= 'Z';
+            return (c >= 'A' && c <= 'Z') || (c >= 'À' && c <= 'Ö') || (c >= 'Ø' && c <= 'Ý');
         }
 
         /// <summary>
