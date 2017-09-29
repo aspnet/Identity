@@ -8,6 +8,12 @@ namespace Microsoft.AspNetCore.Identity
     /// </summary>
     public class IdentityConstants
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        public static readonly string ApplicationPolicy = "Identity.Application";
+
+
         private static readonly string CookiePrefix = "Identity";
         /// <summary>
         /// The scheme used to identify application authentication cookies.

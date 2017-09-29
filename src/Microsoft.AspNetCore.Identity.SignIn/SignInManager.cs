@@ -14,6 +14,39 @@ using Microsoft.Extensions.Options;
 namespace Microsoft.AspNetCore.Identity
 {
     /// <summary>
+    /// Used to provide authentication using policies.
+    /// </summary>
+    public interface IAuthenticationPolicyEvaluator
+    {
+        /// <summary>
+        /// Authenticate for the specified authentication policy.
+        /// </summary>
+        /// <param name="context">The <see cref="HttpContext"/>.</param>
+        /// <param name="policyName">The name of the authentication policy.</param>
+        /// <returns>The result.</returns>
+        Task<AuthenticateResult> AuthenticateAsync(HttpContext context, string policyName);
+
+        /// <summary>
+        /// Challenge the specified authentication policy.
+        /// </summary>
+        /// <param name="context">The <see cref="HttpContext"/>.</param>
+        /// <param name="policyName">The name of the authentication policy.</param>
+        /// <param name="properties">The <see cref="AuthenticationProperties"/>.</param>
+        /// <returns>A task.</returns>
+        Task ChallengeAsync(HttpContext context, string policyName, AuthenticationProperties properties);
+
+        /// <summary>
+        /// Forbids the specified authentication scheme.
+        /// </summary>
+        /// <param name="context">The <see cref="HttpContext"/>.</param>
+        /// <param name="policyName">The name of the authentication policy.</param>
+        /// <param name="properties">The <see cref="AuthenticationProperties"/>.</param>
+        /// <returns>A task.</returns>
+        Task ForbidAsync(HttpContext context, string policyName, AuthenticationProperties properties);
+    }
+
+
+    /// <summary>
     /// Provides the APIs for user sign in.
     /// </summary>
     /// <typeparam name="TUser">The type encapsulating a user.</typeparam>
@@ -57,9 +90,11 @@ namespace Microsoft.AspNetCore.Identity
             Options = optionsAccessor?.Value ?? new IdentityOptions();
             Logger = logger;
             _schemes = schemes;
+            //_authentication = authentication;
         }
 
         private readonly IHttpContextAccessor _contextAccessor;
+        private readonly IAuthenticationPolicyEvaluator _authentication;
         private HttpContext _context;
         private IAuthenticationSchemeProvider _schemes;
 
@@ -159,7 +194,8 @@ namespace Microsoft.AspNetCore.Identity
         /// <returns>The task object representing the asynchronous operation.</returns>
         public virtual async Task RefreshSignInAsync(TUser user)
         {
-            var auth = await Context.AuthenticateAsync(IdentityConstants.ApplicationScheme);
+            var auth = await _authentication.AuthenticateAsync(Context, IdentityConstants.ApplicationPolicy);
+            //var auth = await Context.AuthenticateAsync(IdentityConstants.ApplicationScheme);
             var authenticationMethod = auth?.Principal?.FindFirstValue(ClaimTypes.AuthenticationMethod);
             await SignInAsync(user, auth?.Properties, authenticationMethod);
         }
