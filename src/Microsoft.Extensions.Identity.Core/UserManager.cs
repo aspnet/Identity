@@ -816,8 +816,7 @@ namespace Microsoft.AspNetCore.Identity
         /// </summary>
         /// <param name="user">The user whose security stamp should be regenerated.</param>
         /// <returns>
-        /// The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="IdentityResult"/>
-        /// of the operation.
+        /// The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="IdentityResult"/>        /// of the operation.
         /// </returns>
         /// <remarks>
         /// Regenerating a security stamp will sign out any saved login for the user.
@@ -854,7 +853,7 @@ namespace Microsoft.AspNetCore.Identity
         /// </summary>
         /// <param name="user">The user whose password should be reset.</param>
         /// <param name="token">The password reset token to verify.</param>
-        /// <param name="newPassword">The new password to set if reset token verification fails.</param>
+        /// <param name="newPassword">The new password to set if reset token verification succeeds.</param>
         /// <returns>
         /// The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="IdentityResult"/>
         /// of the operation.
