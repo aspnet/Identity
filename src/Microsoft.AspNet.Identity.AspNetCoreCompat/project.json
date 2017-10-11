@@ -1,5 +1,5 @@
 {
-  "version": "0.1.4",
+  "version": "0.1.5",
   "buildOptions": {
     "warningsAsErrors": true,
     "keyFile": "../../tools/Key.snk",
@@ -23,7 +23,7 @@
   "dependencies": {
     "Microsoft.AspNet.Identity.EntityFramework": "2.2.1",
     "Microsoft.Owin.Security.Cookies": "3.0.1",
-    "Microsoft.Owin.Security.Interop": "1.0.4"
+    "Microsoft.Owin.Security.Interop": "1.0.5"
   },
   "frameworks": {
     "net451": {
