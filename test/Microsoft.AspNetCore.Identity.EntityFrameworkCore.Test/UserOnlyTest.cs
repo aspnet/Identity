@@ -15,7 +15,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
     public class UserOnlyTest : IClassFixture<ScratchDatabaseFixture>
     {
         private readonly ApplicationBuilder _builder;
-        private const string DatabaseName = nameof(DefaultPocoTest);
+        private const string DatabaseName = nameof(UserOnlyTest);
 
         public class TestUserDbContext : IdentityUserContext<IdentityUser>
         {
