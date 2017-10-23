@@ -9,13 +9,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="$(MicrosoftAspNetCoreAuthenticationCookiesPackageVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="$(MicrosoftAspNetCoreCryptographyKeyDerivationPackageVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="$(MicrosoftAspNetCoreHostingAbstractionsPackageVersion)" />
   </ItemGroup>
 
   <ItemGroup>
+<<<<<<< HEAD:src/Microsoft.AspNetCore.Identity.SignIn.Cookies/Microsoft.AspNetCore.Identity.SignIn.Cookies.csproj
     <ProjectReference Include="..\Microsoft.AspNetCore.Identity.SignIn\Microsoft.AspNetCore.Identity.SignIn.csproj" />
+=======
+    <ProjectReference Include="..\Microsoft.Extensions.Identity.Core\Microsoft.Extensions.Identity.Core.csproj" />
+    <ProjectReference Include="..\Microsoft.AspNetCore.Identity.SignIn.Cookies\Microsoft.AspNetCore.Identity.SignIn.Cookies.csproj" />
+>>>>>>> Move security stamp stuff to SignIn.Cookies:src/Microsoft.AspNetCore.Identity/Microsoft.AspNetCore.Identity.csproj
   </ItemGroup>
 
 </Project>
