@@ -47,7 +47,7 @@ namespace Microsoft.AspNetCore.Identity.SignIn
                 o.LoginPath = new PathString("/Account/Login");
                 o.Events = new CookieAuthenticationEvents
                 {
-                    //OnValidatePrincipal = SecurityStampValidator.ValidatePrincipalAsync
+                    OnValidatePrincipal = SecurityStampValidator.ValidatePrincipalAsync
                 };
                 configure?.Invoke(o);
             });
