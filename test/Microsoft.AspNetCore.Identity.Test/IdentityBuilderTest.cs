@@ -199,6 +199,24 @@ namespace Microsoft.AspNetCore.Identity.Test
             Assert.Throws<InvalidOperationException>(() => builder.AddTokenProvider("whatevs", typeof(object)));
         }
 
+        [Fact]
+        public void AddPasswordValidatorWithWrongTypesThrows()
+        {
+            var services = new ServiceCollection()
+                .AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+            var builder = services.AddIdentity<TestUser, TestRole>();
+            Assert.Throws<InvalidOperationException>(() => builder.AddPasswordValidator<object>());
+        }
+
+        [Fact]
+        public void AddUserStoreWithWrongTypesThrows()
+        {
+            var services = new ServiceCollection()
+                .AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+            var builder = services.AddIdentity<TestUser, TestRole>();
+            Assert.Throws<InvalidOperationException>(() => builder.AddUserStore<object>());
+        }
+
         private class MyUberThingy : IUserValidator<TestUser>, IPasswordValidator<TestUser>, IRoleValidator<TestRole>, IUserStore<TestUser>, IRoleStore<TestRole>
         {
             public Task<IdentityResult> CreateAsync(TestRole role, CancellationToken cancellationToken = default(CancellationToken))

@@ -98,7 +98,15 @@ namespace Microsoft.AspNetCore.Identity
         /// <typeparam name="TValidator">The validator type used to validate passwords.</typeparam>
         /// <returns>The current <see cref="IdentityBuilder"/> instance.</returns>
         public virtual IdentityBuilder AddPasswordValidator<TValidator>() where TValidator : class
-            => AddScoped(typeof(IPasswordValidator<>).MakeGenericType(UserType), typeof(TValidator));
+        {
+            var passwordValidatorType = typeof(IPasswordValidator<>).MakeGenericType(UserType);
+            if (!passwordValidatorType.GetTypeInfo().IsAssignableFrom(typeof(TValidator)))
+            {
+                throw new InvalidOperationException(Resources.FormatInvalidManagerType(nameof(TValidator), "IPasswordValidator", UserType.Name));
+            }
+            AddScoped(passwordValidatorType, typeof(TValidator));
+            return this;
+        }
 
         /// <summary>
         /// Adds an <see cref="IUserStore{TUser}"/> for the <seealso cref="UserType"/>.
@@ -106,7 +114,15 @@ namespace Microsoft.AspNetCore.Identity
         /// <typeparam name="TStore">The user store type.</typeparam>
         /// <returns>The current <see cref="IdentityBuilder"/> instance.</returns>
         public virtual IdentityBuilder AddUserStore<TStore>() where TStore : class
-            => AddScoped(typeof(IUserStore<>).MakeGenericType(UserType), typeof(TStore));
+        {
+            var userStoreType = typeof(IUserStore<>).MakeGenericType(UserType);
+            if (!userStoreType.GetTypeInfo().IsAssignableFrom(typeof(TStore)))
+            {
+                throw new InvalidOperationException(Resources.FormatInvalidManagerType(nameof(TStore), "IUserStore", UserType.Name));
+            }
+            AddScoped(userStoreType, typeof(TStore));
+            return this;
+        }
 
         /// <summary>
         /// Adds a token provider.
