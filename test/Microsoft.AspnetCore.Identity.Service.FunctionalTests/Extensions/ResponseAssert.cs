@@ -204,7 +204,7 @@ namespace Microsoft.AspNetCore.Mvc.Testing
             var matchesAllCriteria = true;
             if (_comparisonCriteria.HasFlag(CookieComparison.NameStartsWith))
             {
-                matchesAllCriteria = matchesAllCriteria && candidate.Name.StartsWith(expected.Name.ToString(), StringComparison.Ordinal);
+                matchesAllCriteria = candidate.Name.StartsWith(expected.Name.ToString(), StringComparison.Ordinal);
             }
 
             if (_comparisonCriteria.HasFlag(CookieComparison.NameEquals))

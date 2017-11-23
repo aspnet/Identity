@@ -29,7 +29,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             PasswordHasher = passwordHasher;
             ApplicationValidators = applicationValidators;
             ErrorDescriber = errorDescriber;
-            Logger = Logger;
+            Logger = logger;
         }
 
         public ApplicationOptions Options { get; }
