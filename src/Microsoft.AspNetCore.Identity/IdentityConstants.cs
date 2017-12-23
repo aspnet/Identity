@@ -8,25 +8,25 @@ namespace Microsoft.AspNetCore.Identity
     /// </summary>
     public class IdentityConstants
     {
-        private static readonly string CookiePrefix = "Identity";
+        private const string CookiePrefix = "Identity";
         /// <summary>
         /// The scheme used to identify application authentication cookies.
         /// </summary>
-        public static readonly string ApplicationScheme = CookiePrefix + ".Application";
+        public const string ApplicationScheme = CookiePrefix + ".Application";
 
         /// <summary>
         /// The scheme used to identify external authentication cookies.
         /// </summary>
-        public static readonly string ExternalScheme = CookiePrefix + ".External";
+        public const string ExternalScheme = CookiePrefix + ".External";
 
         /// <summary>
         /// The scheme used to identify Two Factor authentication cookies for saving the Remember Me state.
         /// </summary>
-        public static readonly string TwoFactorRememberMeScheme = CookiePrefix + ".TwoFactorRememberMe";
+        public const string TwoFactorRememberMeScheme = CookiePrefix + ".TwoFactorRememberMe";
 
         /// <summary>
         /// The scheme used to identify Two Factor authentication cookies for round tripping user identities.
         /// </summary>
-        public static readonly string TwoFactorUserIdScheme = CookiePrefix + ".TwoFactorUserId";
+        public const string TwoFactorUserIdScheme = CookiePrefix + ".TwoFactorUserId";
     }
 }
