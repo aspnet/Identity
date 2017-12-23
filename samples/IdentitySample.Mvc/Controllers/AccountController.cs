@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using IdentitySample.Models;
 using IdentitySample.Models.AccountViewModels;
+using IdentitySample.Mvc.Models.AccountViewModels;
 using IdentitySample.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -60,8 +61,16 @@ namespace IdentitySample.Controllers
                 var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation(1, "User logged in.");
-                    return RedirectToLocal(returnUrl);
+                    if (User.HasClaim("RegistrationCompleted", "true"))
+                    {
+                        _logger.LogInformation(1, "User logged in.");
+                        return RedirectToLocal(returnUrl);
+                    }
+                    else
+                    {
+                        _logger.LogInformation(1, "Missing some profile details");
+                        return RedirectToAction(nameof(CompleteRegistration), new { ReturnUrl = returnUrl });
+                    }
                 }
                 if (result.RequiresTwoFactor)
                 {
@@ -81,6 +90,56 @@ namespace IdentitySample.Controllers
 
             // If we got this far, something failed, redisplay form
             return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult CompleteRegistration(string returnUrl = null)
+        {
+            if (User.HasClaim("RegistrationCompleted", "true"))
+            {
+                return LocalRedirect(returnUrl ?? "~/");
+            }
+            else
+            {
+                ViewData["ReturnUrl"] = returnUrl;
+                return View();
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CompleteRegistration(
+            [FromForm] ProfileDataViewModel profileData, string returnUrl = null)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View();
+            }
+            if (User.HasClaim("RegistrationCompleted", "true"))
+            {
+                return BadRequest("Registration for this user was already completed");
+            }
+            else
+            {
+                var user = await _userManager.GetUserAsync(User);
+                user.FirstName = profileData.FirstName;
+                user.LastName = profileData.LastName;
+                user.AvatarUrl = profileData.AvatarUrl;
+                user.Birthdate = profileData.Birthdate;
+                user.Telephone = profileData.Telephone;
+                user.Address = new Address
+                {
+                    Street = profileData.Street,
+                    ZipCode = profileData.ZipCode,
+                    City = profileData.City,
+                    State = profileData.State,
+                    Country = profileData.Country,
+                };
+
+                await _userManager.UpdateAsync(user);
+                await _userManager.AddClaimAsync(user, new Claim("RegistrationCompleted", "true"));
+
+                return LocalRedirect(returnUrl);
+            }
         }
 
         //

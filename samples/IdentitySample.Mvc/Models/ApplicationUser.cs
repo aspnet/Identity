@@ -20,7 +20,7 @@ namespace IdentitySample.Models
         public string AvatarUrl { get; set; }
 
         [UserClaim(Format = "YYYY-MM-DD")]
-        public DateTime Birthdate { get; set; }
+        public DateTimeOffset Birthdate { get; set; }
 
         [UserClaim("phone_number")]
         public string Telephone { get; set; }
