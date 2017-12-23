@@ -152,8 +152,13 @@ namespace Microsoft.AspNetCore.Identity
         /// <param name="userManager">The <see cref="UserManager{TUser}"/> to retrieve user information from.</param>
         /// <param name="roleManager">The <see cref="RoleManager{TRole}"/> to retrieve a user's roles from.</param>
         /// <param name="options">The configured <see cref="IdentityOptions"/>.</param>
-        public UserClaimsPrincipalFactory(UserManager<TUser> userManager, RoleManager<TRole> roleManager, IOptions<IdentityOptions> options)
-            : base(userManager, options)
+        /// <param name="userClaimsMapper">The <see cref="IUserClaimsMapper{TUser}"/> used to map properties to claims.</param>
+        public UserClaimsPrincipalFactory(
+            UserManager<TUser> userManager,
+            RoleManager<TRole> roleManager,
+            IOptions<IdentityOptions> options,
+            IUserClaimsMapper<TUser> userClaimsMapper)
+            : base(userManager, options, userClaimsMapper)
         {
             if (roleManager == null)
             {

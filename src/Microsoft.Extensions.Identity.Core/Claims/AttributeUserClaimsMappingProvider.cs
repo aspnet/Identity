@@ -33,6 +33,11 @@ namespace Microsoft.Extensions.Identity.Claims
             var mappings = GenerateMappings(
                 typeof(TUser),
                 valueFormatter);
+
+            foreach (var mapping in mappings)
+            {
+                claimMappings.Mappings.Add(mapping);
+            }
         }
 
         private IList<ClaimsMapping> GenerateMappings(
@@ -73,8 +78,11 @@ namespace Microsoft.Extensions.Identity.Claims
             IClaimMappingMetadata metadata,
             Formatter formatter)
         {
-            if (propertyInfo.PropertyType.IsPrimitive &&
-                !propertyInfo.PropertyType.IsPointer)
+            if ((propertyInfo.PropertyType.IsPrimitive || 
+                propertyInfo.PropertyType.Equals(typeof(string))) ||
+                propertyInfo.PropertyType.Equals(typeof(DateTime)) ||
+                propertyInfo.PropertyType.Equals(typeof(DateTimeOffset)) &&
+                    !propertyInfo.PropertyType.IsPointer)
             {
                 return new PropertyClaimsMapping(
                     propertyInfo,

@@ -3,7 +3,6 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using IdentitySample.Models;
 using IdentitySample.Models.AccountViewModels;
-using IdentitySample.Mvc.Models.AccountViewModels;
 using IdentitySample.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -138,7 +137,7 @@ namespace IdentitySample.Controllers
                 await _userManager.UpdateAsync(user);
                 await _userManager.AddClaimAsync(user, new Claim("RegistrationCompleted", "true"));
 
-                return LocalRedirect(returnUrl);
+                return LocalRedirect(returnUrl ?? "~/");
             }
         }
 
@@ -166,15 +165,9 @@ namespace IdentitySample.Controllers
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                    // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=532713
-                    // Send an email with this link
-                    //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    //var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
-                    //await _emailSender.SendEmailAsync(model.Email, "Confirm your account",
-                    //    "Please confirm your account by clicking this link: <a href=\"" + callbackUrl + "\">link</a>");
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     _logger.LogInformation(3, "User created a new account with password.");
-                    return RedirectToLocal(returnUrl);
+                    return RedirectToAction(nameof(CompleteRegistration), new { ReturnUrl = returnUrl });
                 }
                 AddErrors(result);
             }

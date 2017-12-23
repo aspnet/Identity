@@ -15,13 +15,13 @@ namespace Microsoft.Extensions.Identity.Claims
         /// <summary>
         /// The list of claim formats supported.
         /// </summary>
-        public IList<IClaimValueFormatter> ClaimFormats { get; }
+        public IList<IClaimValueFormatter> ClaimFormats { get; } = new List<IClaimValueFormatter>();
 
         /// <summary>
         /// Gets the list of mappings of properties from the
         /// <typeparamref name="TUser"/> into <see cref="Claim"/>.
         /// </summary>
-        public IList<ClaimsMapping> Mappings { get; }
+        public IList<ClaimsMapping> Mappings { get; } = new List<ClaimsMapping>();
 
         /// <summary>
         /// Configures a custom mapping.

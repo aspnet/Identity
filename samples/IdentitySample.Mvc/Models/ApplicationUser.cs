@@ -19,14 +19,13 @@ namespace IdentitySample.Models
         [UserClaim("picture")]
         public string AvatarUrl { get; set; }
 
-        [UserClaim(Format = "YYYY-MM-DD")]
+        [UserClaim("birth_date")]
         public DateTimeOffset Birthdate { get; set; }
 
         [UserClaim("phone_number")]
         public string Telephone { get; set; }
 
-        [UserClaim]
-        public Address Address { get; set; }
+        public Address Address { get; set; } = new Address();
     }
 
     public class Address
