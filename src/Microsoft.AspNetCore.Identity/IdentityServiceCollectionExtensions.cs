@@ -5,8 +5,10 @@ using System;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.Claims;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Identity.Claims;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -102,6 +104,9 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddScoped<IdentityErrorDescriber>();
             services.TryAddScoped<ISecurityStampValidator, SecurityStampValidator<TUser>>();
             services.TryAddScoped<IUserClaimsPrincipalFactory<TUser>, UserClaimsPrincipalFactory<TUser, TRole>>();
+            services.TryAddSingleton<IUserClaimsMapper<TUser>, UserClaimsMapper<TUser>>();
+            services.TryAddSingleton<IUserClaimsMappingsProvider<TUser>, AttributeUserClaimsMappingProvider<TUser>>();
+            services.TryAddSingleton<IClaimNameFormatter, DefaultClaimNameFormatter>();
             services.TryAddScoped<UserManager<TUser>, AspNetUserManager<TUser>>();
             services.TryAddScoped<SignInManager<TUser>, SignInManager<TUser>>();
             services.TryAddScoped<RoleManager<TRole>, AspNetRoleManager<TRole>>();

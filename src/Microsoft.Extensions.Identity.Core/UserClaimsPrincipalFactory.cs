@@ -4,6 +4,7 @@
 using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity.Claims;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.AspNetCore.Identity
@@ -37,12 +38,48 @@ namespace Microsoft.AspNetCore.Identity
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="UserClaimsPrincipalFactory{TUser}"/> class.
+        /// </summary>
+        /// <param name="userManager">The <see cref="UserManager{TUser}"/> to retrieve user information from.</param>
+        /// <param name="optionsAccessor">The configured <see cref="IdentityOptions"/>.</param>
+        /// <param name="userClaimsMapper">The <see cref="IUserClaimsMapper{TUser}"/> used to map properties to claims.</param>
+        public UserClaimsPrincipalFactory(
+            UserManager<TUser> userManager,
+            IOptions<IdentityOptions> optionsAccessor,
+            IUserClaimsMapper<TUser> userClaimsMapper)
+        {
+            if (userManager == null)
+            {
+                throw new ArgumentNullException(nameof(userManager));
+            }
+
+            if (optionsAccessor == null || optionsAccessor.Value == null)
+            {
+                throw new ArgumentNullException(nameof(optionsAccessor));
+            }
+
+            if (userClaimsMapper == null)
+            {
+                throw new ArgumentNullException(nameof(userClaimsMapper));
+            }
+
+            UserManager = userManager;
+            Options = optionsAccessor.Value;
+            UserClaimsMapper = userClaimsMapper;
+        }
+
+        /// <summary>
         /// Gets the <see cref="UserManager{TUser}"/> for this factory.
         /// </summary>
         /// <value>
         /// The current <see cref="UserManager{TUser}"/> for this factory instance.
         /// </value>
         public UserManager<TUser> UserManager { get; private set; }
+
+        /// <summary>
+        /// Gets the <see cref="IUserClaimsMapper{TUser}"/> for this factory.
+        /// </summary>
+        public IUserClaimsMapper<TUser> UserClaimsMapper { get; }
 
         /// <summary>
         /// Gets the <see cref="IdentityOptions"/> for this factory.
@@ -90,6 +127,12 @@ namespace Microsoft.AspNetCore.Identity
             {
                 id.AddClaims(await UserManager.GetClaimsAsync(user));
             }
+
+            if (UserClaimsMapper != null)
+            {
+                UserClaimsMapper.Map(user, id);
+            }
+
             return id;
         }
     }
