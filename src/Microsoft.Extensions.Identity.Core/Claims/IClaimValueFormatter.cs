@@ -5,10 +5,10 @@
     /// a <see cref="string"/> that can be used as the value for
     /// a Claim.
     /// </summary>
-    public interface IClaimFormatter
+    public interface IClaimValueFormatter
     {
         /// <summary>
-        /// Whether or not a given format is supported by this <see cref="IClaimFormatter"/>.
+        /// Whether or not a given format is supported by this <see cref="IClaimValueFormatter"/>.
         /// </summary>
         /// <param name="formatName">The name of the format.</param>
         /// <returns>true if the format is supported.</returns>

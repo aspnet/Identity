@@ -15,7 +15,7 @@ namespace Microsoft.Extensions.Identity.Claims
         /// <summary>
         /// The list of claim formats supported.
         /// </summary>
-        public IList<IClaimFormatter> ClaimFormats { get; }
+        public IList<IClaimValueFormatter> ClaimFormats { get; }
 
         /// <summary>
         /// Gets the list of mappings of properties from the
