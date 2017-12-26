@@ -22,20 +22,17 @@ namespace Microsoft.AspNetCore.Diagnostics.Identity.Service
         private readonly IHostingEnvironment _environment;
         private readonly IOptions<DeveloperCertificateOptions> _options;
         private readonly ITimeStampManager _timeStampManager;
-        private readonly IConfiguration _configuration;
 
         public DeveloperCertificateMiddleware(
             RequestDelegate next,
             IOptions<DeveloperCertificateOptions> options,
             ITimeStampManager timeStampManager,
-            IHostingEnvironment environment,
-            IConfiguration configuration)
+            IHostingEnvironment environment)
         {
             _next = next;
             _options = options;
             _environment = environment;
             _timeStampManager = timeStampManager;
-            _configuration = configuration;
         }
 
         public async Task InvokeAsync(HttpContext context)
