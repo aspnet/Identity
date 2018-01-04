@@ -16,7 +16,7 @@
   <ItemGroup>
     <ProjectReference Include="../Identity/Microsoft.AspNetCore.Identity.csproj" />
     <ProjectReference Include="../Service/Microsoft.AspNetCore.Identity.Service.csproj" />
-    <ProjectReference Include="../Service.EntityFrameworkCore/Microsoft.AspNetCore.Identity.Service.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="../Service.EF/Microsoft.AspNetCore.Identity.Service.EntityFrameworkCore.csproj" />
     <ProjectReference Include="../Service.Mvc/Microsoft.AspNetCore.Identity.Service.Mvc.csproj" />
   </ItemGroup>
 

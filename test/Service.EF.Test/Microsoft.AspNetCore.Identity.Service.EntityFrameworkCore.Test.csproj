@@ -6,13 +6,16 @@
 
   <ItemGroup>
     <Compile Include="..\Shared\*.cs" />
-    <Content Include="config.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="config.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Identity\Microsoft.AspNetCore.Identity.csproj" />
-    <ProjectReference Include="..\..\src\EntityFrameworkCore\Microsoft.AspNetCore.Identity.EntityFrameworkCore.csproj" />
-    <ProjectReference Include="..\..\src\Specification.Tests\Microsoft.AspNetCore.Identity.Specification.Tests.csproj" />
+    <ProjectReference Include="..\..\src\Service\Microsoft.AspNetCore.Identity.Service.csproj" />
+    <ProjectReference Include="..\..\src\Service.EF\Microsoft.AspNetCore.Identity.Service.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\src\Service.Specification.Tests\Microsoft.AspNetCore.Identity.Service.Specification.Tests.csproj" />
   </ItemGroup>
 
   <ItemGroup>

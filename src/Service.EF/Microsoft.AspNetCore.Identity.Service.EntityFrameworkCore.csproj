@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EntityFrameworkCore\Microsoft.AspNetCore.Identity.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\EF\Microsoft.AspNetCore.Identity.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\Service\Microsoft.AspNetCore.Identity.Service.csproj" />
   </ItemGroup>
 

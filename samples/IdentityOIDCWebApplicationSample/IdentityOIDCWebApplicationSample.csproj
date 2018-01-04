@@ -32,8 +32,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Diagnostics.Identity.Service\Microsoft.AspNetCore.Diagnostics.Identity.Service.csproj" />
-    <ProjectReference Include="..\..\src\Service.EntityFrameworkCore\Microsoft.AspNetCore.Identity.Service.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\src\Service.Diagnostics\Microsoft.AspNetCore.Diagnostics.Identity.Service.csproj" />
+    <ProjectReference Include="..\..\src\Service.EF\Microsoft.AspNetCore.Identity.Service.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Service.IntegratedWebClient\Microsoft.AspNetCore.Identity.Service.IntegratedWebClient.csproj" />
     <ProjectReference Include="..\..\src\Service.AzureKeyVault\Microsoft.AspNetCore.Identity.Service.AzureKeyVault.csproj" />
   </ItemGroup>

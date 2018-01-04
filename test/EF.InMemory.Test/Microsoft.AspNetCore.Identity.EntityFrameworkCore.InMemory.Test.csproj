@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Identity\Microsoft.AspNetCore.Identity.csproj" />
-    <ProjectReference Include="..\..\src\EntityFrameworkCore\Microsoft.AspNetCore.Identity.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\src\EF\Microsoft.AspNetCore.Identity.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Specification.Tests\Microsoft.AspNetCore.Identity.Specification.Tests.csproj" />
   </ItemGroup>
 

@@ -11,7 +11,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\EntityFrameworkCore\Microsoft.AspNetCore.Identity.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Service\Microsoft.AspNetCore.Identity.Service.csproj" />
-    <ProjectReference Include="..\..\src\Service.EntityFrameworkCore\Microsoft.AspNetCore.Identity.Service.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\src\Service.EF\Microsoft.AspNetCore.Identity.Service.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Service.Specification.Tests\Microsoft.AspNetCore.Identity.Service.Specification.Tests.csproj" />
   </ItemGroup>
 
