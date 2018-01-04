@@ -4,7 +4,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Service.EntityFrameworkCore\Microsoft.AspNetCore.Identity.Service.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\src\Service.EF\Microsoft.AspNetCore.Identity.Service.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Service\Microsoft.AspNetCore.Identity.Service.csproj" />
   </ItemGroup>
 
