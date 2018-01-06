@@ -1,6 +1,10 @@
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Identity.Core;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -10,10 +14,6 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Identity.Core;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace Microsoft.AspNetCore.Identity
 {
@@ -104,8 +104,8 @@ namespace Microsoft.AspNetCore.Identity
                 foreach (var providerName in Options.Tokens.ProviderMap.Keys)
                 {
                     var description = Options.Tokens.ProviderMap[providerName];
-                    
-                    var provider = (description.ProviderInstance ?? services.GetRequiredService(description.ProviderType)) 
+
+                    var provider = (description.ProviderInstance ?? services.GetRequiredService(description.ProviderType))
                         as IUserTwoFactorTokenProvider<TUser>;
                     if (provider != null)
                     {
@@ -127,7 +127,7 @@ namespace Microsoft.AspNetCore.Identity
         /// <value>
         /// The <see cref="ILogger"/> used to log messages from the manager.
         /// </value>
-        public virtual ILogger Logger { get; set; }
+        public ILogger Logger { get; set; }
 
         /// <summary>
         /// The <see cref="IPasswordHasher{TUser}"/> used to hash passwords.
@@ -1605,7 +1605,7 @@ namespace Microsoft.AspNetCore.Identity
             }
 
             // Make sure the token is valid and the stamp matches
-            return VerifyUserTokenAsync(user, Options.Tokens.ChangePhoneNumberTokenProvider, ChangePhoneNumberTokenPurpose+":"+ phoneNumber, token);
+            return VerifyUserTokenAsync(user, Options.Tokens.ChangePhoneNumberTokenProvider, ChangePhoneNumberTokenPurpose + ":" + phoneNumber, token);
         }
 
         /// <summary>
