@@ -48,10 +48,7 @@ namespace Microsoft.AspNetCore.Identity
             }
             var errors = new List<IdentityError>();
             await ValidateUserName(manager, user, errors);
-            if (manager.Options.User.RequireUniqueEmail)
-            {
-                await ValidateEmail(manager, user, errors);
-            }
+            await ValidateEmail(manager, user, errors);
             return errors.Count > 0 ? IdentityResult.Failed(errors.ToArray()) : IdentityResult.Success;
         }
 
@@ -78,25 +75,31 @@ namespace Microsoft.AspNetCore.Identity
             }
         }
 
-        // make sure email is not empty, valid, and unique
+        // make sure email is not empty, valid, and unique if required
         private async Task ValidateEmail(UserManager<TUser> manager, TUser user, List<IdentityError> errors)
         {
             var email = await manager.GetEmailAsync(user);
             if (string.IsNullOrWhiteSpace(email))
             {
-                errors.Add(Describer.InvalidEmail(email));
-                return;
+                if (manager.Options.User.RequireUniqueEmail)
+                {
+                    errors.Add(Describer.InvalidEmail(email));
+                    return;
+                }
             }
             if (!new EmailAddressAttribute().IsValid(email))
             {
                 errors.Add(Describer.InvalidEmail(email));
                 return;
             }
-            var owner = await manager.FindByEmailAsync(email);
-            if (owner != null && 
-                !string.Equals(await manager.GetUserIdAsync(owner), await manager.GetUserIdAsync(user)))
+            if (manager.Options.User.RequireUniqueEmail)
             {
-                errors.Add(Describer.DuplicateEmail(email));
+                var owner = await manager.FindByEmailAsync(email);
+                if (owner != null && 
+                    !string.Equals(await manager.GetUserIdAsync(owner), await manager.GetUserIdAsync(user)))
+                {
+                    errors.Add(Describer.DuplicateEmail(email));
+                }
             }
         }
     }

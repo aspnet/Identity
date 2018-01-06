@@ -429,7 +429,7 @@ namespace Microsoft.AspNetCore.Identity.Test
         [Theory]
         [InlineData("")]
         [InlineData(null)]
-        public async Task UserValidatorBlocksShortEmailsWhenRequiresUniqueEmail(string email)
+        public async Task UserValidatorBlocksShortEmailsOnlyWhenRequireEmail(string email)
         {
             if (ShouldSkipDbTests())
             {
@@ -439,6 +439,8 @@ namespace Microsoft.AspNetCore.Identity.Test
             var user = CreateTestUser();
             manager.Options.User.RequireUniqueEmail = true;
             IdentityResultAssert.IsFailure(await manager.CreateAsync(user), _errorDescriber.InvalidEmail(email));
+            manager.Options.User.RequireUniqueEmail = false;
+            IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
         }
 
         /// <summary>
@@ -448,7 +450,7 @@ namespace Microsoft.AspNetCore.Identity.Test
         [Theory]
         [InlineData("@@afd")]
         [InlineData("bogus")]
-        public async Task UserValidatorBlocksInvalidEmailsWhenRequiresUniqueEmail(string email)
+        public async Task UserValidatorAlwaysBlocksInvalidEmails(string email)
         {
             if (ShouldSkipDbTests())
             {
@@ -457,6 +459,8 @@ namespace Microsoft.AspNetCore.Identity.Test
             var manager = CreateManager();
             var user = CreateTestUser("UpdateBlocked", email);
             manager.Options.User.RequireUniqueEmail = true;
+            IdentityResultAssert.IsFailure(await manager.CreateAsync(user), _errorDescriber.InvalidEmail(email));
+            manager.Options.User.RequireUniqueEmail = false;
             IdentityResultAssert.IsFailure(await manager.CreateAsync(user), _errorDescriber.InvalidEmail(email));
         }
 
