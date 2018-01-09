@@ -38,7 +38,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
             }
         }
 
-        [Fact]
+        [ConditionalFact]
         [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         [OSSkipCondition(OperatingSystems.Linux)]
         [OSSkipCondition(OperatingSystems.MacOSX)]
