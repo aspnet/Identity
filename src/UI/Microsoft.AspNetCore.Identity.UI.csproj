@@ -25,6 +25,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Areas\Identity\Pages\Account\Manage\DownloadPersonalData.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Identity\Microsoft.AspNetCore.Identity.csproj" />
     <ProjectReference Include="..\Stores\Microsoft.Extensions.Identity.Stores.csproj" />
   </ItemGroup>

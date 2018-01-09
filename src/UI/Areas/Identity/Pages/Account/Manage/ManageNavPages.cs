@@ -12,7 +12,13 @@ namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Manage
 
         public static string ChangePassword => "ChangePassword";
 
+        public static string DownloadPersonalData => "DownloadPersonalData";
+
+        public static string DeletePersonalData => "DeletePersonalData";
+
         public static string ExternalLogins => "ExternalLogins";
+
+        public static string Privacy => "Privacy";
 
         public static string TwoFactorAuthentication => "TwoFactorAuthentication";
 
@@ -20,7 +26,13 @@ namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Manage
 
         public static string ChangePasswordNavClass(ViewContext viewContext) => PageNavClass(viewContext, ChangePassword);
 
+        public static string DownloadPersonalDataNavClass(ViewContext viewContext) => PageNavClass(viewContext, DownloadPersonalData);
+
+        public static string DeletePersonalDataNavClass(ViewContext viewContext) => PageNavClass(viewContext, DeletePersonalData);
+
         public static string ExternalLoginsNavClass(ViewContext viewContext) => PageNavClass(viewContext, ExternalLogins);
+
+        public static string PrivacyNavClass(ViewContext viewContext) => PageNavClass(viewContext, Privacy);
 
         public static string TwoFactorAuthenticationNavClass(ViewContext viewContext) => PageNavClass(viewContext, TwoFactorAuthentication);
     
