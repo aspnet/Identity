@@ -11,7 +11,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
 {
     public static class DbUtil
     {
-        public static IServiceCollection ConfigureDbServices<TContext>(string connectionString, IServiceCollection services = null, int maxKeyLength = 0) where TContext : DbContext
+        public static IServiceCollection ConfigureDbServices<TContext>(string connectionString, IServiceCollection services = null) where TContext : DbContext
         {
             if (services == null)
             {
@@ -22,13 +22,12 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
             {
                 options.UseSqlServer(connectionString);
             });
-            services.Configure<IdentityOptions>(o => o.Stores.MaxLengthForKeys = maxKeyLength);
             return services;
         }
 
-        public static TContext Create<TContext>(string connectionString, int maxLengthKey = 0) where TContext : DbContext
+        public static TContext Create<TContext>(string connectionString) where TContext : DbContext
         {
-            var serviceProvider = ConfigureDbServices<TContext>(connectionString, null, maxLengthKey).BuildServiceProvider();
+            var serviceProvider = ConfigureDbServices<TContext>(connectionString).BuildServiceProvider();
             return serviceProvider.GetRequiredService<TContext>();
         }
 

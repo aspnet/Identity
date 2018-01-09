@@ -86,9 +86,9 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
 
         protected override Expression<Func<TUser, bool>> UserNameStartsWithPredicate(string userName) => u => u.UserName.StartsWith(userName);
 
-        public TestDbContext CreateContext(int maxKeyLength = 0)
+        public TestDbContext CreateContext()
         {
-            var db = DbUtil.Create<TestDbContext>(_fixture.ConnectionString, maxKeyLength);
+            var db = DbUtil.Create<TestDbContext>(_fixture.ConnectionString);
             db.Database.EnsureCreated();
             return db;
         }
@@ -113,27 +113,16 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
             user.PasswordHash = hashedPassword;
         }
 
-        [ConditionalTheory]
+        [Fact]
         [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         [OSSkipCondition(OperatingSystems.Linux)]
         [OSSkipCondition(OperatingSystems.MacOSX)]
-        [InlineData(0)]
-        [InlineData(50)]
-        [InlineData(128)]
-        public void EnsureDefaultSchema(int maxKeyLength)
+        public void EnsureDefaultSchema()
         {
-            var db = CreateContext(maxKeyLength);
-            try
-            {
-                VerifyDefaultSchema(db, maxKeyLength);
-            }
-            finally
-            {
-                db.Database.EnsureDeleted();
-            }
+            VerifyDefaultSchema(CreateContext());
         }
 
-        internal static void VerifyDefaultSchema(TestDbContext dbContext, int maxKeyLength = 0)
+        internal static void VerifyDefaultSchema(TestDbContext dbContext)
         {
             var sqlConn = dbContext.Database.GetDbConnection();
 
@@ -152,19 +141,12 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
                 Assert.True(DbUtil.VerifyMaxLength(db, "AspNetUsers", 256, "UserName", "Email", "NormalizedUserName", "NormalizedEmail"));
                 Assert.True(DbUtil.VerifyMaxLength(db, "AspNetRoles", 256, "Name", "NormalizedName"));
 
-                if (maxKeyLength > 0)
-                {
-                    Assert.True(DbUtil.VerifyMaxLength(db, "AspNetUserLogins", maxKeyLength, "LoginProvider", "ProviderKey"));
-                    Assert.True(DbUtil.VerifyMaxLength(db, "AspNetUserTokens", maxKeyLength, "LoginProvider", "Name"));
-                }
-
                 DbUtil.VerifyIndex(db, "AspNetRoles", "RoleNameIndex", isUnique: true);
                 DbUtil.VerifyIndex(db, "AspNetUsers", "UserNameIndex", isUnique: true);
                 DbUtil.VerifyIndex(db, "AspNetUsers", "EmailIndex");
                 db.Close();
             }
         }
-
 
         [ConditionalFact]
         [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
