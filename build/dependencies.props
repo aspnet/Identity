@@ -4,12 +4,15 @@
   </PropertyGroup>
   <PropertyGroup Label="Package Versions">
     <InternalAspNetCoreSdkPackageVersion>2.1.0-preview1-15651</InternalAspNetCoreSdkPackageVersion>
+<<<<<<< HEAD
     <MicrosoftAspNetCoreAuthenticationCookiesPackageVersion>2.1.0-preview1-28061</MicrosoftAspNetCoreAuthenticationCookiesPackageVersion>
     <MicrosoftAspNetCoreAuthenticationFacebookPackageVersion>2.1.0-preview1-28061</MicrosoftAspNetCoreAuthenticationFacebookPackageVersion>
     <MicrosoftAspNetCoreAuthenticationGooglePackageVersion>2.1.0-preview1-28061</MicrosoftAspNetCoreAuthenticationGooglePackageVersion>
     <MicrosoftAspNetCoreAuthenticationOpenIdConnectPackageVersion>2.1.0-preview1-28061</MicrosoftAspNetCoreAuthenticationOpenIdConnectPackageVersion>
     <MicrosoftAspNetCoreAuthenticationTwitterPackageVersion>2.1.0-preview1-28061</MicrosoftAspNetCoreAuthenticationTwitterPackageVersion>
     <MicrosoftAspNetCoreAuthorizationPackageVersion>2.1.0-preview1-28061</MicrosoftAspNetCoreAuthorizationPackageVersion>
+    <MicrosoftAspNetCoreCookiePolicyPackageVersion>2.1.0-preview1-28061</MicrosoftAspNetCoreCookiePolicyPackageVersion>
+    <MicrosoftAspNetCoreHttpsPolicyPackageVersion>2.1.0-preview1-28061</MicrosoftAspNetCoreHttpsPolicyPackageVersion>
     <MicrosoftAspNetCoreCryptographyKeyDerivationPackageVersion>2.1.0-preview1-28061</MicrosoftAspNetCoreCryptographyKeyDerivationPackageVersion>
     <MicrosoftAspNetCoreDataProtectionExtensionsPackageVersion>2.1.0-preview1-28061</MicrosoftAspNetCoreDataProtectionExtensionsPackageVersion>
     <MicrosoftAspNetCoreDiagnosticsEntityFrameworkCorePackageVersion>2.1.0-preview1-28061</MicrosoftAspNetCoreDiagnosticsEntityFrameworkCorePackageVersion>
@@ -28,6 +31,32 @@
     <MicrosoftAspNetCoreStaticFilesPackageVersion>2.1.0-preview1-28061</MicrosoftAspNetCoreStaticFilesPackageVersion>
     <MicrosoftAspNetCoreTestHostPackageVersion>2.1.0-preview1-28061</MicrosoftAspNetCoreTestHostPackageVersion>
     <MicrosoftAspNetCoreTestingPackageVersion>2.1.0-preview1-28061</MicrosoftAspNetCoreTestingPackageVersion>
+=======
+    <MicrosoftAspNetCoreAuthenticationCookiesPackageVersion>2.1.0-preview1-27965</MicrosoftAspNetCoreAuthenticationCookiesPackageVersion>
+    <MicrosoftAspNetCoreAuthenticationFacebookPackageVersion>2.1.0-preview1-27965</MicrosoftAspNetCoreAuthenticationFacebookPackageVersion>
+    <MicrosoftAspNetCoreAuthenticationGooglePackageVersion>2.1.0-preview1-27965</MicrosoftAspNetCoreAuthenticationGooglePackageVersion>
+    <MicrosoftAspNetCoreAuthenticationOpenIdConnectPackageVersion>2.1.0-preview1-27965</MicrosoftAspNetCoreAuthenticationOpenIdConnectPackageVersion>
+    <MicrosoftAspNetCoreAuthenticationTwitterPackageVersion>2.1.0-preview1-27965</MicrosoftAspNetCoreAuthenticationTwitterPackageVersion>
+    <MicrosoftAspNetCoreAuthorizationPackageVersion>2.1.0-preview1-27965</MicrosoftAspNetCoreAuthorizationPackageVersion>
+    <MicrosoftAspNetCoreCryptographyKeyDerivationPackageVersion>2.1.0-preview1-27965</MicrosoftAspNetCoreCryptographyKeyDerivationPackageVersion>
+    <MicrosoftAspNetCoreDataProtectionExtensionsPackageVersion>2.1.0-preview1-27965</MicrosoftAspNetCoreDataProtectionExtensionsPackageVersion>
+    <MicrosoftAspNetCoreDiagnosticsEntityFrameworkCorePackageVersion>2.1.0-preview1-27965</MicrosoftAspNetCoreDiagnosticsEntityFrameworkCorePackageVersion>
+    <MicrosoftAspNetCoreDiagnosticsPackageVersion>2.1.0-preview1-27965</MicrosoftAspNetCoreDiagnosticsPackageVersion>
+    <MicrosoftAspNetCoreHostingAbstractionsPackageVersion>2.1.0-preview1-27965</MicrosoftAspNetCoreHostingAbstractionsPackageVersion>
+    <MicrosoftAspNetCoreHostingPackageVersion>2.1.0-preview1-27965</MicrosoftAspNetCoreHostingPackageVersion>
+    <MicrosoftAspNetCoreHttpAbstractionsPackageVersion>2.1.0-preview1-27965</MicrosoftAspNetCoreHttpAbstractionsPackageVersion>
+    <MicrosoftAspNetCoreHttpPackageVersion>2.1.0-preview1-27965</MicrosoftAspNetCoreHttpPackageVersion>
+    <MicrosoftAspNetCoreMvcPackageVersion>2.1.0-preview1-27965</MicrosoftAspNetCoreMvcPackageVersion>
+    <MicrosoftAspNetCoreMvcRazorViewCompilationPackageVersion>2.1.0-preview1-27965</MicrosoftAspNetCoreMvcRazorViewCompilationPackageVersion>
+    <MicrosoftAspNetCoreMvcTestingPackageVersion>2.1.0-preview1-27965</MicrosoftAspNetCoreMvcTestingPackageVersion>
+    <MicrosoftAspNetCoreRewritePackageVersion>2.1.0-preview1-27965</MicrosoftAspNetCoreRewritePackageVersion>
+    <MicrosoftAspNetCoreServerIISIntegrationPackageVersion>2.1.0-preview1-27965</MicrosoftAspNetCoreServerIISIntegrationPackageVersion>
+    <MicrosoftAspNetCoreServerKestrelHttpsPackageVersion>2.1.0-preview1-27965</MicrosoftAspNetCoreServerKestrelHttpsPackageVersion>
+    <MicrosoftAspNetCoreServerKestrelPackageVersion>2.1.0-preview1-27965</MicrosoftAspNetCoreServerKestrelPackageVersion>
+    <MicrosoftAspNetCoreStaticFilesPackageVersion>2.1.0-preview1-27965</MicrosoftAspNetCoreStaticFilesPackageVersion>
+    <MicrosoftAspNetCoreTestHostPackageVersion>2.1.0-preview1-27965</MicrosoftAspNetCoreTestHostPackageVersion>
+    <MicrosoftAspNetCoreTestingPackageVersion>2.1.0-preview1-27965</MicrosoftAspNetCoreTestingPackageVersion>
+>>>>>>> Initial project check-in
     <MicrosoftAspNetIdentityEntityFrameworkPackageVersion>2.2.1</MicrosoftAspNetIdentityEntityFrameworkPackageVersion>
     <MicrosoftAzureKeyVaultPackageVersion>2.3.2</MicrosoftAzureKeyVaultPackageVersion>
     <MicrosoftEntityFrameworkCoreInMemoryPackageVersion>2.1.0-preview1-28061</MicrosoftEntityFrameworkCoreInMemoryPackageVersion>
