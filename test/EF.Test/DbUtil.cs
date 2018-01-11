@@ -25,9 +25,9 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
             return services;
         }
 
-        public static TContext Create<TContext>(string connectionString) where TContext : DbContext
+        public static TContext Create<TContext>(string connectionString, IServiceCollection services = null) where TContext : DbContext
         {
-            var serviceProvider = ConfigureDbServices<TContext>(connectionString).BuildServiceProvider();
+            var serviceProvider = ConfigureDbServices<TContext>(connectionString, services).BuildServiceProvider();
             return serviceProvider.GetRequiredService<TContext>();
         }
 

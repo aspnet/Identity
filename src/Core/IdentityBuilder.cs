@@ -184,6 +184,17 @@ namespace Microsoft.AspNetCore.Identity
             return AddScoped(typeof(IRoleValidator<>).MakeGenericType(RoleType), typeof(TRole));
         }
 
+        /// <summary>
+        /// Adds an <see cref="IPersonalDataEncryptor"/>.
+        /// </summary>
+        /// <typeparam name="TEncryptor">The personal data encryptor type.</typeparam>
+        /// <returns>The current <see cref="IdentityBuilder"/> instance.</returns>
+        public virtual IdentityBuilder AddPersonalDataEncryptor<TEncryptor>() where TEncryptor : class,IPersonalDataEncryptor
+        {
+            Services.AddScoped<IPersonalDataEncryptor, TEncryptor>();
+            return this;
+        }
+
 
         /// <summary>
         /// Adds a <see cref="IRoleStore{TRole}"/> for the <seealso cref="RoleType"/>.

@@ -113,6 +113,18 @@ namespace Microsoft.AspNetCore.Identity
                     }
                 }
             }
+
+            if (Options.Stores.EncryptPersonalData)
+            {
+                if (!(Store is IEncryptedUserStore<TUser>))
+                {
+                    throw new InvalidOperationException(Resources.StoreNotIEncryptedUserStore);
+                }
+                if (services.GetService<IPersonalDataEncryptor>() == null)
+                {
+                    throw new InvalidOperationException(Resources.NoPersonalDataEncryptor);
+                }
+            }
         }
 
         /// <summary>
