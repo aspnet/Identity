@@ -99,11 +99,6 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
         /// </summary>
         public DbSet<TUserToken> UserTokens { get; set; }
 
-        /// <summary>
-        /// Gets or sets whether to encrypt personal data.
-        /// </summary>
-        public bool? EncryptPersonalData { get; set; }
-
         private StoreOptions GetStoreOptions() => this.GetService<IDbContextOptions>()
                             .Extensions.OfType<CoreOptionsExtension>()
                             .FirstOrDefault()?.ApplicationServiceProvider
@@ -126,7 +121,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
         {
             var storeOptions = GetStoreOptions();
             var maxKeyLength = storeOptions?.MaxLengthForKeys ?? 0;
-            var encryptPersonalData = EncryptPersonalData ?? storeOptions?.EncryptPersonalData ?? false;
+            var encryptPersonalData = storeOptions?.EncryptPersonalData ?? false;
 
             builder.Entity<TUser>(b =>
             {
