@@ -13,12 +13,12 @@ namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Manage
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
-        private readonly ILogger<PrivacyModel> _logger;
+        private readonly ILogger<DeletePersonalDataModel> _logger;
 
         public DeletePersonalDataModel(
             UserManager<IdentityUser> userManager,
             SignInManager<IdentityUser> signInManager,
-            ILogger<PrivacyModel> logger)
+            ILogger<DeletePersonalDataModel> logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -47,7 +47,7 @@ namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Manage
             var result = await _userManager.DeleteAsync(user);
             if (!result.Succeeded)
             {
-                throw new ApplicationException($"Unexpected error occurred deleteing user with ID '{user.Id}'.");
+                throw new InvalidOperationException($"Unexpected error occurred deleteing user with ID '{user.Id}'.");
             }
 
             await _signInManager.SignOutAsync();

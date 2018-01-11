@@ -2,7 +2,7 @@
 @model PrivacyModel
 @{
     ViewData["Title"] = "Privacy";
-    ViewData["ActivePage"] = "Privacy";
+    ViewData["ActivePage"] = ManageNavPages.Privacy;
 }
 
 <h4>@ViewData["Title"] - Your Personal Data</h4>
@@ -19,5 +19,5 @@
 </div>
 
 @section Scripts {
-    @await Html.PartialAsync("_ValidationScriptsPartial")
+    <partial name="_ValidationScriptsPartial" />
 }
