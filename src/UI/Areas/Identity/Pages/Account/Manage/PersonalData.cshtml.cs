@@ -8,14 +8,14 @@ using Microsoft.Extensions.Logging;
 
 namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Manage
 {
-    public class PrivacyModel : PageModel
+    public class PersonalDataModel : PageModel
     {
         private readonly UserManager<IdentityUser> _userManager;
-        private readonly ILogger<PrivacyModel> _logger;
+        private readonly ILogger<PersonalDataModel> _logger;
 
-        public PrivacyModel(
+        public PersonalDataModel(
             UserManager<IdentityUser> userManager,
-            ILogger<PrivacyModel> logger)
+            ILogger<PersonalDataModel> logger)
         {
             _userManager = userManager;
             _logger = logger;

@@ -18,7 +18,7 @@ namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Manage
 
         public static string ExternalLogins => "ExternalLogins";
 
-        public static string Privacy => "Privacy";
+        public static string PersonalData => "PersonalData";
 
         public static string TwoFactorAuthentication => "TwoFactorAuthentication";
 
@@ -32,7 +32,7 @@ namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Manage
 
         public static string ExternalLoginsNavClass(ViewContext viewContext) => PageNavClass(viewContext, ExternalLogins);
 
-        public static string PrivacyNavClass(ViewContext viewContext) => PageNavClass(viewContext, Privacy);
+        public static string PersonalDataNavClass(ViewContext viewContext) => PageNavClass(viewContext, PersonalData);
 
         public static string TwoFactorAuthenticationNavClass(ViewContext viewContext) => PageNavClass(viewContext, TwoFactorAuthentication);
     
