@@ -44,7 +44,7 @@ namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Manage
             personalData.Add("PhoneNumber", await _userManager.GetPhoneNumberAsync(user));
             personalData.Add("PhoneNumberConfirmed", (await _userManager.IsEmailConfirmedAsync(user)).ToString());
 
-            // REVIEW: do we want to set a force download header?
+            Response.Headers.Add("Content-Disposition", "attachment; filename=PersonalData.json");
             return new FileContentResult(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(personalData)), "text/json");
         }
     }
