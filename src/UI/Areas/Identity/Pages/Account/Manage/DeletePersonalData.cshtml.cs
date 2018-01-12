@@ -36,9 +36,6 @@ namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Manage
             public string Password { get; set; }
         }
 
-        [TempData]
-        public string StatusMessage { get; set; }
-
         public bool RequirePassword { get; set; }
 
         public async Task<IActionResult> OnGet()
