@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -34,8 +35,17 @@ namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Manage
 
             _logger.LogInformation("User with ID '{UserId}' asked for their personal data.", _userManager.GetUserId(User));
 
+            // Only include personal data for download
+            var personalData = new Dictionary<string, string>();
+            personalData.Add("UserId", await _userManager.GetUserIdAsync(user));
+            personalData.Add("UserName", await _userManager.GetUserNameAsync(user));
+            personalData.Add("Email", await _userManager.GetEmailAsync(user));
+            personalData.Add("EmailConfirmed", (await _userManager.IsEmailConfirmedAsync(user)).ToString());
+            personalData.Add("PhoneNumber", await _userManager.GetPhoneNumberAsync(user));
+            personalData.Add("PhoneNumberConfirmed", (await _userManager.IsEmailConfirmedAsync(user)).ToString());
+
             // REVIEW: do we want to set a force download header?
-            return new FileContentResult(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(user)), "text/json");
+            return new FileContentResult(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(personalData)), "text/json");
         }
     }
 }

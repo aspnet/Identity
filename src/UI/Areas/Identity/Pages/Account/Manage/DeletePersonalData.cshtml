@@ -6,6 +6,7 @@
 }
 
 <h4>@ViewData["Title"]</h4>
+@Html.Partial("_StatusMessage", Model.StatusMessage)
 
 <div class="alert alert-warning" role="alert">
     <p>
@@ -16,6 +17,15 @@
 
 <div>
     <form method="post" class="form-group">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        @if (Model.RequirePassword)
+        {
+            <div class="form-group">
+                <label asp-for="Input.Password"></label>
+                <input asp-for="Input.Password" class="form-control" />
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+            </div>
+        }       
         <button class="btn btn-danger" type="submit">Delete data and close my account</button>
     </form>
 </div>

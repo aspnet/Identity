@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -25,6 +26,21 @@ namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Manage
             _logger = logger;
         }
 
+        [BindProperty]
+        public InputModel Input { get; set; }
+
+        public class InputModel
+        {
+            [Required]
+            [DataType(DataType.Password)]
+            public string Password { get; set; }
+        }
+
+        [TempData]
+        public string StatusMessage { get; set; }
+
+        public bool RequirePassword { get; set; }
+
         public async Task<IActionResult> OnGet()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -33,6 +49,7 @@ namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Manage
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
 
+            RequirePassword = await _userManager.HasPasswordAsync(user);
             return Page();
         }
 
@@ -42,6 +59,16 @@ namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Manage
             if (user == null)
             {
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+            }
+
+            RequirePassword = await _userManager.HasPasswordAsync(user);
+            if (RequirePassword)
+            {
+                if (!await _userManager.CheckPasswordAsync(user, Input.Password))
+                {
+                    ModelState.AddModelError(string.Empty, "Password not correct.");
+                    return Page();
+                }
             }
 
             var result = await _userManager.DeleteAsync(user);
