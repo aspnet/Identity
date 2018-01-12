@@ -78,8 +78,7 @@ namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Manage
 
             _logger.LogInformation("User with ID '{UserId}' deleted themselves.", _userManager.GetUserId(User));
 
-            // REVIEW: should this redirect to somewhere that says user was deleted?
-            return RedirectToPage("./");
+            return Redirect("~/");
         }
     }
 }
