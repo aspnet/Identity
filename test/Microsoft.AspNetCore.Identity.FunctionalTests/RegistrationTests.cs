@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using AngleSharp.Dom.Html;
 using Identity.DefaultUI.WebSite;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.TestHost;
 using Xunit;
 
@@ -18,9 +19,15 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
         public async Task CanRegisterAUser()
         {
             // Arrange
+            var addresses = new ServerAddressesFeature();
+            addresses.Addresses.Add("https://localhost");
+            addresses.Addresses.Add("http://localhost");
+            addresses.PreferHostingUrls = true;
+
             var builder = WebHostBuilderFactory
                 .CreateFromTypesAssemblyEntryPoint<Startup>(new string[] { })
-                .UseSolutionRelativeContentRoot(Path.Combine("test","WebSites","Identity.DefaultUI.WebSite"));
+                .UseSolutionRelativeContentRoot(Path.Combine("test","WebSites","Identity.DefaultUI.WebSite"))
+                .Configure(app => app.ServerFeatures.Set<IServerAddressesFeature>(addresses));
 
             var server = new TestServer(builder);
             var client = server.CreateClient();
@@ -49,8 +56,11 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             confirmPasswordInput.Value = password;
 
             var submit = registerForm.GetSubmission();
-            var submision = new HttpRequestMessage(new HttpMethod(submit.Method.ToString()), submit.Target);
-            submision.Content = new StreamContent(submit.Body);
+            var submision = new HttpRequestMessage(new HttpMethod(submit.Method.ToString()), submit.Target)
+            {
+                Content = new StreamContent(submit.Body)
+            };
+
             foreach (var header in submit.Headers)
             {
                 submision.Headers.TryAddWithoutValidation(header.Key, header.Value);
@@ -58,6 +68,9 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             }
 
             var registered = await client.SendAsync(submision);
+            var registeredLocation = ResponseAssert.IsRedirect(registered);
+            var index2 = await client.GetAsync(registeredLocation);
+            ResponseAssert.IsOK(index2);
         }
     }
 }

@@ -28,6 +28,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Extensions.Identity.Stores", "src\Stores\Microsoft.Extensions.Identity.Stores.csproj", "{FADA11FC-DC06-4832-A569-7B2374A6CD42}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WebSites", "WebSites", "{1F83D453-E094-4D28-BCFA-9E537ABB5AD6}"
+	ProjectSection(SolutionItems) = preProject
+		test\WebSites\Directory.Build.props = test\WebSites\Directory.Build.props
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{42F5B772-1D61-4C18-9457-412DE8E170A5}"
 	ProjectSection(SolutionItems) = preProject
