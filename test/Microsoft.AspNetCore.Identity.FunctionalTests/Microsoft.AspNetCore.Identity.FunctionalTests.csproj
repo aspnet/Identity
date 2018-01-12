@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="Extensions\" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\WebSites\Identity.DefaultUI.WebSite\Identity.DefaultUI.WebSite.csproj" />
   </ItemGroup>
 
@@ -14,6 +18,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="$(MicrosoftAspNetCoreMvcTestingPackageVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging.Testing" Version="$(MicrosoftExtensionsLoggingTestingPackageVersion)" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="$(MicrosoftEntityFrameworkCoreInMemoryPackageVersion)" />
+    <PackageReference Include="AngleSharp" Version="$(AngleSharpPackageVersion)" />
   </ItemGroup>
 
 </Project>

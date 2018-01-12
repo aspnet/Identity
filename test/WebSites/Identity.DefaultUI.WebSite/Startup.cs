@@ -46,8 +46,8 @@ namespace Identity.DefaultUI.WebSite
             services.AddMvc()
                 .AddRazorPagesOptions(options =>
                 {
-                    options.Conventions.AuthorizeFolder("/Account/Manage");
-                    options.Conventions.AuthorizePage("/Account/Logout");
+                    options.Conventions.AuthorizeFolder("/Areas/Identity/Pages/Account/Manage");
+                    options.Conventions.AuthorizePage("/Areas/Identity/Pages/Account/Logout");
                 });
 
         }
