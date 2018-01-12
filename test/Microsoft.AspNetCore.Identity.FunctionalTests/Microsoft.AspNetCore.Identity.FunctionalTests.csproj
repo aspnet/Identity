@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Extensions\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\WebSites\Identity.DefaultUI.WebSite\Identity.DefaultUI.WebSite.csproj" />
   </ItemGroup>
 
