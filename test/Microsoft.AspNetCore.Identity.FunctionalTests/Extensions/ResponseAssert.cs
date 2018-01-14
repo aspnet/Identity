@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using AngleSharp;
+using AngleSharp.Extensions;
 using AngleSharp.Dom.Html;
 using AngleSharp.Parser.Html;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Primitives;
 using Xunit;
+using AngleSharp.Network;
+using System.Threading;
 
 namespace Microsoft.AspNetCore.Identity.FunctionalTests
 {
@@ -120,7 +124,17 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             Assert.True(response.IsSuccessStatusCode);
             Assert.Equal("text/html", response.Content.Headers.ContentType.MediaType);
 
-            return new HtmlParser().Parse(response.Content.ReadAsStreamAsync().Result);
+            var document = BrowsingContext.New()
+                .OpenAsync(MapResponse(), CancellationToken.None).Result;
+            return Assert.IsAssignableFrom<IHtmlDocument>(document);
+
+            IResponse MapResponse() =>
+                VirtualResponse.Create(r =>
+                    r.Address(response.RequestMessage.RequestUri)
+                        .Content(response.Content.ReadAsStreamAsync().Result)
+                        .Status(response.StatusCode)
+                        .Headers(response.Headers.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.First()))
+                        .Headers(response.Content.Headers.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.First())));
         }
     }
 }

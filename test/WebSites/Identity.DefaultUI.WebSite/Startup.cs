@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace Identity.DefaultUI.WebSite
 {
@@ -49,12 +50,18 @@ namespace Identity.DefaultUI.WebSite
                     options.Conventions.AuthorizeFolder("/Areas/Identity/Pages/Account/Manage");
                     options.Conventions.AuthorizePage("/Areas/Identity/Pages/Account/Logout");
                 });
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            app.Use(async (ctx, nxt) =>
+            {
+                await nxt();
+                var rsp = ctx.Response;
+                var headers = rsp.Headers;
+            });
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -66,7 +73,7 @@ namespace Identity.DefaultUI.WebSite
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
 

@@ -15,12 +15,6 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
         /// Initializes a new instance of <see cref="IdentityDbContext"/>.
         /// </summary>
         /// <param name="options">The options to be used by a <see cref="DbContext"/>.</param>
-        public IdentityDbContext(DbContextOptions<IdentityDbContext> options) : base(options) { }
-
-        /// <summary>
-        /// Initializes a new instance of <see cref="IdentityDbContext"/>.
-        /// </summary>
-        /// <param name="options">The options to be used by a <see cref="DbContext"/>.</param>
         public IdentityDbContext(DbContextOptions options) : base(options) { }
 
         /// <summary>

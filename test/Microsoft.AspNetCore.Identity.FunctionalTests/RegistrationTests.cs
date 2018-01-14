@@ -1,14 +1,20 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using AngleSharp.Dom.Html;
 using Identity.DefaultUI.WebSite;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Xunit;
 
 namespace Microsoft.AspNetCore.Identity.FunctionalTests
@@ -19,18 +25,12 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
         public async Task CanRegisterAUser()
         {
             // Arrange
-            var addresses = new ServerAddressesFeature();
-            addresses.Addresses.Add("https://localhost");
-            addresses.Addresses.Add("http://localhost");
-            addresses.PreferHostingUrls = true;
-
             var builder = WebHostBuilderFactory
                 .CreateFromTypesAssemblyEntryPoint<Startup>(new string[] { })
-                .UseSolutionRelativeContentRoot(Path.Combine("test","WebSites","Identity.DefaultUI.WebSite"))
-                .Configure(app => app.ServerFeatures.Set<IServerAddressesFeature>(addresses));
+                .UseSolutionRelativeContentRoot(Path.Combine("test", "WebSites", "Identity.DefaultUI.WebSite"));
 
             var server = new TestServer(builder);
-            var client = server.CreateClient();
+            var client = new HttpClient(new CookieContainerHandler(server.CreateHandler()));
             client.BaseAddress = new Uri("https://localhost");
 
             // Act & Assert
@@ -47,15 +47,15 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             var userName = $"{Guid.NewGuid()}@example.com";
             var password = $"{Guid.NewGuid()}";
 
-            var userNameInput = (IHtmlInputElement)registerForm.QuerySelector("input#Input_Email");
-            var passwordInput = (IHtmlInputElement)registerForm.QuerySelector("input#Input_Password");
-            var confirmPasswordInput = (IHtmlInputElement)registerForm.QuerySelector("input#Input_ConfirmPassword");
-
+            var userNameInput = (IHtmlInputElement)registerForm["Input_Email"];
+            var passwordInput = (IHtmlInputElement)registerForm["Input_Password"];
+            var confirmPasswordInput = (IHtmlInputElement)registerForm["Input_ConfirmPassword"];
+            var submitButton = (IHtmlButtonElement)registerForm["register"];
             userNameInput.Value = userName;
             passwordInput.Value = password;
             confirmPasswordInput.Value = password;
 
-            var submit = registerForm.GetSubmission();
+            var submit = registerForm.GetSubmission(submitButton);
             var submision = new HttpRequestMessage(new HttpMethod(submit.Method.ToString()), submit.Target)
             {
                 Content = new StreamContent(submit.Body)
