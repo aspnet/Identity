@@ -7,16 +7,18 @@
     <PackageTags>aspnetcore;identity;membership;razorpages</PackageTags>
     <EnableApiCheck>false</EnableApiCheck>
     <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
+    <RazorCompileOnBuild>true</RazorCompileOnBuild>
   </PropertyGroup>
   
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="$(MicrosoftAspNetCoreMvcPackageVersion)" />
-    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="$(MicrosoftExtensionsFileProvidersEmbeddedPackageVersion)" />
+    <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="$(MicrosoftAspNetCoreRazorDesignPackageVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="$(MicrosoftAspNetCoreStaticFilesPackageVersion)" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="$(MicrosoftExtensionsFileProvidersEmbeddedPackageVersion)" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Areas/**/*.cshtml" />
+    <Content Include="Areas/**/*.cshtml" />
     <EmbeddedResource Include="wwwroot/**/*" />
     <EmbeddedResource Remove="wwwroot/**/.bower.json" />
     <EmbeddedResource Remove="wwwroot/**/LICENSE*" />

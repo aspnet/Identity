@@ -15,7 +15,6 @@ namespace Microsoft.AspNetCore.Identity.UI
 {
     internal class IdentityDefaultUIConfigureOptions :
         IConfigureOptions<RazorPagesOptions>,
-        IConfigureOptions<RazorViewEngineOptions>,
         IConfigureOptions<StaticFileOptions>,
         IConfigureNamedOptions<CookieAuthenticationOptions>
     {
@@ -27,9 +26,6 @@ namespace Microsoft.AspNetCore.Identity.UI
         public IHostingEnvironment Environment { get; }
 
         public void Configure(RazorPagesOptions options) => options.AllowAreas = true;
-
-        public void Configure(RazorViewEngineOptions options) => 
-            options.FileProviders.Add(new ManifestEmbeddedFileProvider(GetType().Assembly));
 
         public void Configure(StaticFileOptions options)
         {
