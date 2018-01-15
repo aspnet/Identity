@@ -12,6 +12,18 @@
   <ItemGroup>
     <None Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
+  
+  <Target 
+      Name="AddContentRootForProjectReferences"
+      BeforeTargets="BeforeCompile"
+      DependsOnTargets="PrepareForBuild;GetReferenceAssemblyPaths">
+    <ItemGroup>
+      <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+        <_Parameter1>Microsoft.AspNetCore.Testing.ContentRoot[$([System.IO.Path]::GetFileName(%(_ResolvedProjectReferencePaths.FullPath)))]</_Parameter1>
+        <_Parameter2>$([System.IO.Path]::GetDirectoryName(%(_ResolvedProjectReferencePaths.MSBuildSourceProjectFile)))</_Parameter2>
+      </AssemblyAttribute>
+    </ItemGroup>
+  </Target>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="$(MicrosoftAspNetCoreMvcTestingPackageVersion)" />
