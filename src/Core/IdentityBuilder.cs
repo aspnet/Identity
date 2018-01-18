@@ -191,7 +191,7 @@ namespace Microsoft.AspNetCore.Identity
         /// <returns>The current <see cref="IdentityBuilder"/> instance.</returns>
         public virtual IdentityBuilder AddPersonalDataEncryptor<TEncryptor>() where TEncryptor : class,IPersonalDataEncryptor
         {
-            Services.AddScoped<IPersonalDataEncryptor, TEncryptor>();
+            Services.AddSingleton<IPersonalDataEncryptor, TEncryptor>();
             return this;
         }
 
