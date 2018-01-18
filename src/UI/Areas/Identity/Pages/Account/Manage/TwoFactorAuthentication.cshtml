@@ -29,6 +29,12 @@
         </div>
     }
 
+    if (Model.IsMachineRemembered)
+    {
+        <form method="post" style="display: inline-block">
+            <button type="submit" class="btn btn-default">Forget machine</button>
+        </form>
+    }
     <a asp-page="./Disable2fa" class="btn btn-default">Disable 2FA</a>
     <a asp-page="./GenerateRecoveryCodes" class="btn btn-default">Reset recovery codes</a>
 }

@@ -32,6 +32,9 @@ namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Manage
         [BindProperty]
         public bool Is2faEnabled { get; set; }
 
+        [BindProperty]
+        public bool IsMachineRemembered { get; set; }
+
         public async Task<IActionResult> OnGet()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -42,6 +45,25 @@ namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Manage
 
             HasAuthenticator = await _userManager.GetAuthenticatorKeyAsync(user) != null;
             Is2faEnabled = await _userManager.GetTwoFactorEnabledAsync(user);
+            IsMachineRemembered = await _signInManager.IsTwoFactorClientRememberedAsync(user);
+            RecoveryCodesLeft = await _userManager.CountRecoveryCodesAsync(user);
+
+            return Page();
+        }
+
+        public async Task<IActionResult> OnPost()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+            }
+
+            await _signInManager.ForgetTwoFactorClientAsync();
+
+            HasAuthenticator = await _userManager.GetAuthenticatorKeyAsync(user) != null;
+            Is2faEnabled = await _userManager.GetTwoFactorEnabledAsync(user);
+            IsMachineRemembered = false;
             RecoveryCodesLeft = await _userManager.CountRecoveryCodesAsync(user);
 
             return Page();
