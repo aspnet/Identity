@@ -49,7 +49,7 @@ namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Manage
 
             StatusMessage = "Your authenticator app key has been reset, you will need to configure your authenticator app using the new key.";
 
-            return RedirectToPage("./TwoFactorAuthentication");
+            return RedirectToPage("./EnableAuthenticator");
         }
     }
 }
