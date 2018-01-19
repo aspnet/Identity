@@ -29,10 +29,8 @@ namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Manage
 
         public int RecoveryCodesLeft { get; set; }
 
-        [BindProperty]
         public bool Is2faEnabled { get; set; }
 
-        [BindProperty]
         public bool IsMachineRemembered { get; set; }
 
         public async Task<IActionResult> OnGet()
@@ -60,13 +58,7 @@ namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Manage
             }
 
             await _signInManager.ForgetTwoFactorClientAsync();
-
-            HasAuthenticator = await _userManager.GetAuthenticatorKeyAsync(user) != null;
-            Is2faEnabled = await _userManager.GetTwoFactorEnabledAsync(user);
-            IsMachineRemembered = false;
-            RecoveryCodesLeft = await _userManager.CountRecoveryCodesAsync(user);
-
-            return Page();
+            return RedirectToPage();
         }
     }
 }
