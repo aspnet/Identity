@@ -1,7 +1,6 @@
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -33,6 +32,9 @@ namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Manage
 
         public bool IsMachineRemembered { get; set; }
 
+        [TempData]
+        public string StatusMessage { get; set; }
+
         public async Task<IActionResult> OnGet()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -58,6 +60,7 @@ namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Manage
             }
 
             await _signInManager.ForgetTwoFactorClientAsync();
+            StatusMessage = "The current browser has been forgotten. When you login again from this browser you will be prompted for your 2fa code.";
             return RedirectToPage();
         }
     }
