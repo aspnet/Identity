@@ -114,7 +114,7 @@ namespace Microsoft.AspNetCore.Identity
                 }
             }
 
-            if (Options.Stores.EncryptPersonalData)
+            if (Options.Stores.ProtectPersonalData)
             {
                 if (!(Store is IEncryptedUserStore<TUser>))
                 {

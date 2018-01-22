@@ -104,7 +104,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
 
         private class PersonalDataConverter : ValueConverter<string, string>
         {
-            public PersonalDataConverter(IPersonalDataEncryptor encryptor) : base(s => encryptor.Encrypt(s), s => encryptor.Decrypt(s), default)
+            public PersonalDataConverter(IPersonalDataProtector protector) : base(s => protector.Protect(s), s => protector.Unprotect(s), default)
             { }
         }
 
@@ -118,7 +118,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
         {
             var storeOptions = GetStoreOptions();
             var maxKeyLength = storeOptions?.MaxLengthForKeys ?? 0;
-            var encryptPersonalData = storeOptions?.EncryptPersonalData ?? false;
+            var encryptPersonalData = storeOptions?.ProtectPersonalData ?? false;
 
             builder.Entity<TUser>(b =>
             {
@@ -135,7 +135,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
 
                 if (encryptPersonalData)
                 {
-                    var converter = new PersonalDataConverter(this.GetService<IPersonalDataEncryptor>());
+                    var converter = new PersonalDataConverter(this.GetService<IPersonalDataProtector>());
                     b.Property(e => e.Email).HasConversion(converter);
                     b.Property(e => e.NormalizedEmail).HasConversion(converter);
                     b.Property(e => e.UserName).HasConversion(converter);

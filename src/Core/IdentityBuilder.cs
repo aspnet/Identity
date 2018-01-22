@@ -185,16 +185,20 @@ namespace Microsoft.AspNetCore.Identity
         }
 
         /// <summary>
-        /// Adds an <see cref="IPersonalDataEncryptor"/>.
+        /// Adds an <see cref="IPersonalDataEncryptor"/> and <see cref="IPersonalDataEncryptorKeyRing"/>.
         /// </summary>
         /// <typeparam name="TEncryptor">The personal data encryptor type.</typeparam>
+        /// <typeparam name="TKeyRing">The personal data encryption key ring type.</typeparam>
         /// <returns>The current <see cref="IdentityBuilder"/> instance.</returns>
-        public virtual IdentityBuilder AddPersonalDataEncryptor<TEncryptor>() where TEncryptor : class,IPersonalDataEncryptor
+        public virtual IdentityBuilder AddPersonalDataEncryption<TEncryptor, TKeyRing>() 
+            where TEncryptor : class,IPersonalDataEncryptor
+            where TKeyRing : class, IPersonalDataEncryptorKeyRing
         {
+            Services.AddSingleton<IPersonalDataProtector, DefaultPersonalDataProtector>();
             Services.AddSingleton<IPersonalDataEncryptor, TEncryptor>();
+            Services.AddSingleton<IPersonalDataEncryptorKeyRing, TKeyRing>();
             return this;
         }
-
 
         /// <summary>
         /// Adds a <see cref="IRoleStore{TRole}"/> for the <seealso cref="RoleType"/>.

@@ -703,7 +703,7 @@ namespace Microsoft.AspNetCore.Identity.Test
         {
             var services = new ServiceCollection()
                     .AddLogging();
-            services.AddIdentity<TestUser, TestRole>(o => o.Stores.EncryptPersonalData = true)
+            services.AddIdentity<TestUser, TestRole>(o => o.Stores.ProtectPersonalData = true)
                 .AddUserStore<NoopUserStore>();
             var e = Assert.Throws<InvalidOperationException>(() => services.BuildServiceProvider().GetService<UserManager<TestUser>>());
             Assert.Contains("Store does not implement IEncryptedUserStore", e.Message);
@@ -714,7 +714,7 @@ namespace Microsoft.AspNetCore.Identity.Test
         {
             var services = new ServiceCollection()
                     .AddLogging();
-            services.AddIdentity<TestUser, TestRole>(o => o.Stores.EncryptPersonalData = true)
+            services.AddIdentity<TestUser, TestRole>(o => o.Stores.ProtectPersonalData = true)
                 .AddUserStore<EncryptedStore>();
             var e = Assert.Throws<InvalidOperationException>(() => services.BuildServiceProvider().GetService<UserManager<TestUser>>());
             Assert.Contains("No IPersonalDataEncryptor service was registered", e.Message);

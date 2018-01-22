@@ -1026,6 +1026,7 @@ namespace Microsoft.AspNetCore.Identity.Test
             {
                 return;
             }
+
             var mgr = CreateManager();
             if (mgr.SupportsQueryableUsers)
             {

@@ -18,6 +18,6 @@ namespace Microsoft.AspNetCore.Identity
         /// If set to true, the store must encrypt all personally identifying data for a user. 
         /// This will be enforced by requiring the store to implement IEncryptedUserStore.
         /// </summary>
-        public bool EncryptPersonalData { get; set; }
+        public bool ProtectPersonalData { get; set; }
     }
 }
