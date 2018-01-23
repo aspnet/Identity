@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 
 namespace Microsoft.AspNetCore.Identity
 {
@@ -89,6 +90,12 @@ namespace Microsoft.AspNetCore.Identity
         /// <param name="keyId">The id of the key to fetch.</param>
         /// <returns>The key ring.</returns>
         string this[string keyId] { get; }
+
+        /// <summary>
+        /// Return all of the key ids.
+        /// </summary>
+        /// <returns>All of the key ids.</returns>
+        IEnumerable<string> GetAllKeyIds();
     }
 
     /// <summary>

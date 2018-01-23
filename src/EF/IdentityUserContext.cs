@@ -137,9 +137,9 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
                 {
                     var converter = new PersonalDataConverter(this.GetService<IPersonalDataProtector>());
                     b.Property(e => e.Email).HasConversion(converter);
-                    b.Property(e => e.NormalizedEmail).HasConversion(converter);
+                    //b.Property(e => e.NormalizedEmail).HasConversion(converter);
                     b.Property(e => e.UserName).HasConversion(converter);
-                    b.Property(e => e.NormalizedUserName).HasConversion(converter);
+                    //b.Property(e => e.NormalizedUserName).HasConversion(converter);
                     b.Property(e => e.PhoneNumber).HasConversion(converter);
                 }
 
