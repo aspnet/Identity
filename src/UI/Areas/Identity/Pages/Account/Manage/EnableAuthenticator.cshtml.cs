@@ -97,8 +97,8 @@ namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Manage
 
             StatusMessage = "Your authenticator app has been verified.";
 
-            // Only generate recovery codes the first time
-            if (await _userManager.CountRecoveryCodesAsync(user) == 0) {
+            if (await _userManager.CountRecoveryCodesAsync(user) == 0)
+            {
                 var recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10);
                 RecoveryCodes = recoveryCodes.ToArray();
                 return RedirectToPage("./ShowRecoveryCodes");
