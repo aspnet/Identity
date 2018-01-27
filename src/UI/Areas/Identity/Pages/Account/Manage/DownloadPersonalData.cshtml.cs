@@ -1,7 +1,6 @@
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -48,7 +47,7 @@ namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Manage.Internal
             personalData.Add("Email", await _userManager.GetEmailAsync(user));
             personalData.Add("EmailConfirmed", (await _userManager.IsEmailConfirmedAsync(user)).ToString());
             personalData.Add("PhoneNumber", await _userManager.GetPhoneNumberAsync(user));
-            personalData.Add("PhoneNumberConfirmed", (await _userManager.IsEmailConfirmedAsync(user)).ToString());
+            personalData.Add("PhoneNumberConfirmed", (await _userManager.IsPhoneNumberConfirmedAsync(user)).ToString());
 
             Response.Headers.Add("Content-Disposition", "attachment; filename=PersonalData.json");
             return new FileContentResult(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(personalData)), "text/json");

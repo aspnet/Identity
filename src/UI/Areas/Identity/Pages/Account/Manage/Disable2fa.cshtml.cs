@@ -12,6 +12,9 @@ namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Manage.Internal
     [IdentityDefaultUI(typeof(Disable2faModel<>))]
     public abstract class Disable2faModel : PageModel
     {
+        [TempData]
+        public string StatusMessage { get; set; }
+
         public virtual Task<IActionResult> OnGet() => throw new NotImplementedException();
 
         public virtual Task<IActionResult> OnPostAsync() => throw new NotImplementedException();
@@ -61,7 +64,7 @@ namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Manage.Internal
             }
 
             _logger.LogInformation("User with ID '{UserId}' has disabled 2fa.", _userManager.GetUserId(User));
-
+            StatusMessage = "2fa has been disabled. You can reenable 2fa when you setup an authenticator app";
             return RedirectToPage("./TwoFactorAuthentication");
         }
     }
