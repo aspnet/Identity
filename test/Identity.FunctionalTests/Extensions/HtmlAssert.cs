@@ -2,41 +2,26 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using AngleSharp.Dom.Html;
 using Xunit;
 
 namespace Microsoft.AspNetCore.Identity.FunctionalTests
 {
-    class HtmlAssert
+    public class HtmlAssert
     {
-        internal static IHtmlAnchorElement HasLinkWithText(IHtmlDocument document, string linkText)
+        public static IHtmlFormElement HasForm(IHtmlDocument element)
         {
-            return HasLinkWithText(document, linkText, StringComparison.Ordinal);
+            var form = Assert.Single(element.QuerySelectorAll("form"));
+            return Assert.IsAssignableFrom<IHtmlFormElement>(form);
         }
 
-        private static IHtmlAnchorElement HasLinkWithText(IHtmlDocument document, string linkText, StringComparison comparison)
+        public static IHtmlAnchorElement HasLink(string selector, IHtmlDocument index)
         {
-            IHtmlAnchorElement result = null;
-            for (int i = 0; i < document.Links.Length; i++)
-            {
-                var link = document.Links[i];
-                if (link is IHtmlAnchorElement anchor && link.InnerHtml.Equals(linkText, comparison))
-                {
-                    result = anchor;
-                    break;
-                }
-            }
+            var element = index.QuerySelectorAll(selector);
+            Assert.Equal(1, element.Length);
+            var link = Assert.IsAssignableFrom<IHtmlAnchorElement>(element[0]);
 
-            Assert.NotNull(result);
-            return result;
-        }
-
-        public static IHtmlFormElement HasForm(IHtmlDocument register)
-        {
-            Assert.Equal(1, register.Forms.Length);
-            return register.Forms[0];
+            return link;
         }
     }
 }
