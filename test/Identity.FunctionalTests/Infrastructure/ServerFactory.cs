@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using System.Net.Http;
 using Identity.DefaultUI.WebSite;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -20,7 +21,7 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests.Infrastructure
             var builder = WebHostBuilderFactory
                 .CreateFromTypesAssemblyEntryPoint<Startup>(new string[] { })
                 .UseSolutionRelativeContentRoot(Path.Combine("test", "WebSites", "Identity.DefaultUI.WebSite"))
-                .ConfigureServices(sc => sc.AddSingleton<EnsureDatabaseStartupFilter>());
+                .ConfigureServices(sc => sc.SetupTestDatabase());
 
             var server = new TestServer(builder);
             return server;
