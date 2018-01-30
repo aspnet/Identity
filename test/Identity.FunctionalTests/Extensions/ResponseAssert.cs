@@ -24,7 +24,7 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
 
         public static IHtmlDocument IsHtmlDocument(HttpResponseMessage response)
         {
-            Assert.True(response.IsSuccessStatusCode);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.Equal("text/html", response.Content.Headers.ContentType.MediaType);
 
             var document = BrowsingContext.New()
