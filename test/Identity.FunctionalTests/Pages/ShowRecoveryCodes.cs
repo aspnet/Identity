@@ -8,17 +8,13 @@ using AngleSharp.Dom.Html;
 
 namespace Microsoft.AspNetCore.Identity.FunctionalTests.Pages
 {
-    internal class ShowRecoveryCodes
+    internal class ShowRecoveryCodes : HtmlPage
     {
-        private readonly HttpClient _client;
-        private readonly IHtmlDocument _showRecoveryCodes;
         private readonly IEnumerable<IHtmlElement> _recoveryCodeElements;
 
-        public ShowRecoveryCodes(HttpClient client, IHtmlDocument showRecoveryCodes)
+        public ShowRecoveryCodes(HttpClient client, IHtmlDocument showRecoveryCodes, GlobalContext context)
+            : base(client, showRecoveryCodes, context)
         {
-            _client = client;
-            _showRecoveryCodes = showRecoveryCodes;
-
             _recoveryCodeElements = HtmlAssert.HasElements(".recovery-code", showRecoveryCodes);
         }
 

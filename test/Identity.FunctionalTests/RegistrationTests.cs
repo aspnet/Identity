@@ -21,7 +21,7 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             var password = $"!Test.Password1$";
 
             // Act & Assert
-            await AuthenticationFlow.RegisterNewUserAsync(client, userName, password);
+            await UserStories.RegisterNewUserAsync(client, userName, password);
         }
     }
 }

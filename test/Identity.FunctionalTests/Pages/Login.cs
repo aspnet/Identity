@@ -9,33 +9,46 @@ using Xunit;
 
 namespace Microsoft.AspNetCore.Identity.FunctionalTests.Pages
 {
-    public class Login
+    public class Login : HtmlPage
     {
-        private readonly HttpClient _client;
-        private readonly IHtmlDocument _login;
         private readonly IHtmlFormElement _loginForm;
 
-        public Login(HttpClient client, IHtmlDocument login)
+        public Login(HttpClient client, IHtmlDocument login, GlobalContext context)
+            : base(client, login, context)
         {
-            _client = client;
-            _login = login;
             _loginForm = HtmlAssert.HasForm(login);
         }
 
         public async Task<Index> LoginValidUserAsync(string userName, string password)
         {
-            var loggedIn = await _client.SendAsync(_loginForm, new Dictionary<string, string>()
+            var loggedIn = await SendLoginForm(userName, password);
+
+            var loggedInLocation = ResponseAssert.IsRedirect(loggedIn);
+            Assert.Equal(Index.Path, loggedInLocation.ToString());
+            var indexResponse = await Client.GetAsync(loggedInLocation);
+            var index = ResponseAssert.IsHtmlDocument(indexResponse);
+            return new Index(Client, index, Context, authenticated: true);
+        }
+
+        private async Task<HttpResponseMessage> SendLoginForm(string userName, string password)
+        {
+            return await Client.SendAsync(_loginForm, new Dictionary<string, string>()
             {
                 ["Input_Email"] = userName,
                 ["Input_Password"] = password
             });
+        }
+
+        public async Task<LoginWithTwoFactor> PasswordLoginValidUserWith2FaAsync(string userName, string password)
+        {
+            var loggedIn = await SendLoginForm(userName, password);
 
             var loggedInLocation = ResponseAssert.IsRedirect(loggedIn);
-            Assert.Equal(Index.Path, loggedInLocation.ToString());
-            var indexResponse = await _client.GetAsync(loggedInLocation);
-            var index = ResponseAssert.IsHtmlDocument(indexResponse);
+            Assert.StartsWith(LoginWithTwoFactor.Path, loggedInLocation.ToString());
+            var loginWithTwoFactorResponse = await Client.GetAsync(loggedInLocation);
+            var loginWithTwoFactor = ResponseAssert.IsHtmlDocument(loginWithTwoFactorResponse);
 
-            return new Index(_client, index, authenticated: true);
+            return new LoginWithTwoFactor(Client, loginWithTwoFactor, Context);
         }
     }
 }

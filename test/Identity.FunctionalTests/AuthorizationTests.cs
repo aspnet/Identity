@@ -48,20 +48,20 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
         public static TheoryData<string> RouteableAuthorizedPages =>
             new TheoryData<string>
             {
-                        "/Identity/Account/Manage/ChangePassword",
-                        "/Identity/Account/Manage/DeletePersonalData",
-                        //"/Identity/Account/Manage/Disable2fa",
-                        "/Identity/Account/Manage/DownloadPersonalData",
-                        "/Identity/Account/Manage/EnableAuthenticator",
-                        "/Identity/Account/Manage/ExternalLogins",
-                        //"/Identity/Account/Manage/GenerateRecoveryCodes",
-                        "/Identity/Account/Manage/Index",
-                        "/Identity/Account/Manage/PersonalData",
-                        "/Identity/Account/Manage/ResetAuthenticator",
-                        //"/Identity/Account/Manage/SetPassword",
-                        //"/Identity/Account/Manage/ShowRecoveryCodes",
-                        "/Identity/Account/Manage/TwoFactorAuthentication",
-                        "/Identity/Account/Logout",
+                "/Identity/Account/Manage/ChangePassword",
+                "/Identity/Account/Manage/DeletePersonalData",
+                //"/Identity/Account/Manage/Disable2fa",
+                "/Identity/Account/Manage/DownloadPersonalData",
+                "/Identity/Account/Manage/EnableAuthenticator",
+                "/Identity/Account/Manage/ExternalLogins",
+                //"/Identity/Account/Manage/GenerateRecoveryCodes",
+                "/Identity/Account/Manage/Index",
+                "/Identity/Account/Manage/PersonalData",
+                "/Identity/Account/Manage/ResetAuthenticator",
+                //"/Identity/Account/Manage/SetPassword",
+                //"/Identity/Account/Manage/ShowRecoveryCodes",
+                "/Identity/Account/Manage/TwoFactorAuthentication",
+                "/Identity/Account/Logout",
             };
 
         [Theory]
@@ -70,7 +70,7 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
         {
             // Arrange
             var client = ServerFactory.CreateDefaultClient();
-            await AuthenticationFlow.RegisterNewUserAsync(client);
+            await UserStories.RegisterNewUserAsync(client);
             
             // Act
             var response = await client.GetAsync(url);

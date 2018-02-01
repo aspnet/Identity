@@ -8,17 +8,14 @@ using Xunit;
 
 namespace Microsoft.AspNetCore.Identity.FunctionalTests.Pages
 {
-    public class TwoFactor
+    public class TwoFactor : HtmlPage
     {
-        private readonly HttpClient _client;
-        private readonly IHtmlDocument _twoFactor;
         private readonly bool _twoFactorEnabled;
         private readonly IHtmlAnchorElement _enableAuthenticatorLink;
 
-        public TwoFactor(HttpClient client, IHtmlDocument twoFactor, bool twoFactorEnabled)
+        public TwoFactor(HttpClient client, IHtmlDocument twoFactor, GlobalContext context, bool twoFactorEnabled)
+            : base(client, twoFactor, context)
         {
-            _client = client;
-            _twoFactor = twoFactor;
             _twoFactorEnabled = twoFactorEnabled;
             if (!_twoFactorEnabled)
             {
@@ -30,10 +27,10 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests.Pages
         {
             Assert.False(_twoFactorEnabled);
 
-            var goToEnableAuthenticator = await _client.GetAsync(_enableAuthenticatorLink.Href);
+            var goToEnableAuthenticator = await Client.GetAsync(_enableAuthenticatorLink.Href);
             var enableAuthenticator = ResponseAssert.IsHtmlDocument(goToEnableAuthenticator);
 
-            return new EnableAuthenticator(_client, enableAuthenticator);
+            return new EnableAuthenticator(Client, enableAuthenticator, Context);
         }
     }
 }

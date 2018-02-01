@@ -10,39 +10,39 @@ using AngleSharp.Dom.Html;
 
 namespace Microsoft.AspNetCore.Identity.FunctionalTests.Pages
 {
-    internal class EnableAuthenticator
+    internal class EnableAuthenticator : HtmlPage
     {
-        private readonly HttpClient _client;
-        private readonly IHtmlDocument _enableAuthenticator;
+        public const string AuthenticatorKey = nameof(EnableAuthenticator) + ".AuthenticatorKey";
+
         private readonly IHtmlElement _codeElement;
         private readonly IHtmlFormElement _sendCodeForm;
 
-        public EnableAuthenticator(HttpClient client, IHtmlDocument enableAuthenticator)
+        public EnableAuthenticator(HttpClient client, IHtmlDocument enableAuthenticator, GlobalContext context)
+            : base(client, enableAuthenticator, context)
         {
-            _client = client;
-            _enableAuthenticator = enableAuthenticator;
             _codeElement = HtmlAssert.HasElement("kbd", enableAuthenticator);
             _sendCodeForm = HtmlAssert.HasForm("#send-code", enableAuthenticator);
         }
 
         internal async Task<ShowRecoveryCodes> SendValidCodeAsync()
         {
-            var code = _codeElement.TextContent.Replace(" ", "");
-            var verificationCode = ComputeCode(code);
+            var authenticatorKey = _codeElement.TextContent.Replace(" ", "");
+            Context[AuthenticatorKey] = authenticatorKey;
+            var verificationCode = ComputeCode(authenticatorKey);
 
-            var sendCodeResponse = await _client.SendAsync(_sendCodeForm, new Dictionary<string, string>
+            var sendCodeResponse = await Client.SendAsync(_sendCodeForm, new Dictionary<string, string>
             {
                 ["Input_Code"] = verificationCode
             });
 
             var goToShowRecoveryCodes = ResponseAssert.IsRedirect(sendCodeResponse);
-            var showRecoveryCodesResponse = await _client.GetAsync(goToShowRecoveryCodes);
+            var showRecoveryCodesResponse = await Client.GetAsync(goToShowRecoveryCodes);
             var showRecoveryCodes = ResponseAssert.IsHtmlDocument(showRecoveryCodesResponse);
 
-            return new ShowRecoveryCodes(_client, showRecoveryCodes);
+            return new ShowRecoveryCodes(Client, showRecoveryCodes, Context);
         }
 
-        private string ComputeCode(string key)
+        public static string ComputeCode(string key)
         {
             var hash = new HMACSHA1(Base32.FromBase32(key));
             var unixTimestamp = Convert.ToInt64(Math.Round((DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0)).TotalSeconds));

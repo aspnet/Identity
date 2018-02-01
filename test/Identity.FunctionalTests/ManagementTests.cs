@@ -20,13 +20,10 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             var userName = $"{Guid.NewGuid()}@example.com";
             var password = $"!Test.Password1$";
 
-            var index = await AuthenticationFlow.RegisterNewUserAsync(client, userName, password);
+            var index = await UserStories.RegisterNewUserAsync(client, userName, password);
 
             // Act & Assert
-            var manage = await index.ClickManageLinkAsync();
-            var twoFactor = await manage.ClickTwoFactorLinkAsync(twoFactorEnabled: false);
-            var enableAuthenticator = await twoFactor.ClickEnableAuthenticatorLinkAsync();
-            var shoCodes = await enableAuthenticator.SendValidCodeAsync();
+            await UserStories.EnableTwoFactorAuthentication(index, twoFactorEnabled: false);
         }
     }
 }

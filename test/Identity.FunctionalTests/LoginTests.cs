@@ -5,6 +5,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.FunctionalTests.Flows;
 using Microsoft.AspNetCore.Identity.FunctionalTests.Infrastructure;
+using Microsoft.AspNetCore.Identity.FunctionalTests.Pages;
 using Xunit;
 
 namespace Microsoft.AspNetCore.Identity.FunctionalTests
@@ -23,10 +24,31 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             var password = $"!Test.Password1$";
 
             // Act & Assert
-            await AuthenticationFlow.RegisterNewUserAsync(client, userName, password);
+            await UserStories.RegisterNewUserAsync(client, userName, password);
 
             // Use a new client to simulate a new browser session.
-            await AuthenticationFlow.LoginExistingUserAsync(newClient, userName, password);
+            await UserStories.LoginExistingUserAsync(newClient, userName, password);
+        }
+
+        [Fact]
+        public async Task CanLogInWithTwoFactorAuthentication()
+        {
+            // Arrange
+            var server = ServerFactory.CreateDefaultServer();
+            var client = ServerFactory.CreateDefaultClient(server);
+            var newClient = ServerFactory.CreateDefaultClient(server);
+
+            var userName = $"{Guid.NewGuid()}@example.com";
+            var password = $"!Test.Password1$";
+
+            var loggedIn = await UserStories.RegisterNewUserAsync(client, userName, password);
+            var recoveryCodes = await UserStories.EnableTwoFactorAuthentication(loggedIn, twoFactorEnabled: false);
+
+            var twoFactorKey = recoveryCodes.Context[EnableAuthenticator.AuthenticatorKey];
+
+            // Act & Assert
+            // Use a new client to simulate a new browser session.
+            var loginWith2fa = await UserStories.LoginExistingUser2FaAsync(newClient, userName, password, twoFactorKey);
         }
     }
 }

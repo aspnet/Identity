@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Identity.FunctionalTests.Pages;
 
 namespace Microsoft.AspNetCore.Identity.FunctionalTests.Flows
 {
-    public class AuthenticationFlow
+    public class UserStories
     {
         internal static async Task<Index> RegisterNewUserAsync(HttpClient client, string userName = null, string password = null)
         {
@@ -28,6 +28,27 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests.Flows
             var login = await index.ClickLoginLinkAsync();
 
             return await login.LoginValidUserAsync(userName, password);
+        }
+
+        internal static async Task<Index> LoginExistingUser2FaAsync(HttpClient client, string userName, string password, string twoFactorKey)
+        {
+            var index = await Index.CreateAsync(client);
+
+            var loginWithPassword = await index.ClickLoginLinkAsync();
+
+            var login2Fa = await loginWithPassword.PasswordLoginValidUserWith2FaAsync(userName, password);
+
+            return await login2Fa.Send2FACodeAsync(twoFactorKey);
+        }
+
+        internal static async Task<ShowRecoveryCodes> EnableTwoFactorAuthentication(
+            Index index,
+            bool twoFactorEnabled)
+        {
+            var manage = await index.ClickManageLinkAsync();
+            var twoFactor = await manage.ClickTwoFactorLinkAsync(twoFactorEnabled);
+            var enableAuthenticator = await twoFactor.ClickEnableAuthenticatorLinkAsync();
+            return await enableAuthenticator.SendValidCodeAsync();
         }
     }
 }
