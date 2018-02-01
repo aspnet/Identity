@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading;
 using AngleSharp;
 using AngleSharp.Dom.Html;
@@ -26,18 +27,32 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
         {
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.Equal("text/html", response.Content.Headers.ContentType.MediaType);
-
+            var content = response.Content.ReadAsStringAsync().Result;
             var document = BrowsingContext.New()
-                .OpenAsync(MapResponse(), CancellationToken.None).Result;
+                .OpenAsync(ResponseFactory, CancellationToken.None).Result;
             return Assert.IsAssignableFrom<IHtmlDocument>(document);
 
-            IResponse MapResponse() =>
-                VirtualResponse.Create(r =>
-                    r.Address(response.RequestMessage.RequestUri)
-                        .Content(response.Content.ReadAsStreamAsync().Result)
-                        .Status(response.StatusCode)
-                        .Headers(response.Headers.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.First()))
-                        .Headers(response.Content.Headers.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.First())));
+            void ResponseFactory(VirtualResponse htmlResponse)
+            {
+                htmlResponse
+                    .Address(response.RequestMessage.RequestUri)
+                    .Status(response.StatusCode);
+
+                MapHeaders(response.Headers);
+                MapHeaders(response.Content.Headers);
+
+                htmlResponse.Content(content);
+
+                void MapHeaders(HttpHeaders headers){
+                    foreach (var header in headers)
+                    {
+                        foreach (var value in header.Value)
+                        {
+                            htmlResponse.Header(header.Key, value);
+                        }
+                    }
+                }
+            }
         }
     }
 }

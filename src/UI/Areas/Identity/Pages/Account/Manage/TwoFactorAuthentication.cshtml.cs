@@ -25,6 +25,8 @@ namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Manage.Internal
         public string StatusMessage { get; set; }
 
         public virtual Task<IActionResult> OnGet() => throw new NotImplementedException();
+
+        public virtual Task<IActionResult> OnPost() => throw new NotImplementedException();
     }
 
     internal class TwoFactorAuthenticationModel<TUser> : TwoFactorAuthenticationModel where TUser : IdentityUser
@@ -57,7 +59,7 @@ namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Manage.Internal
             return Page();
         }
 
-        public async Task<IActionResult> OnPost()
+        public override async Task<IActionResult> OnPost()
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)

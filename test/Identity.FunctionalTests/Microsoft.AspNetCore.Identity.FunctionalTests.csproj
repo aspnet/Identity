@@ -6,6 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\..\src\Core\Base32.cs" Link="Infrastructure\Base32.cs" />
+    <Compile Include="..\..\src\Core\Rfc6238AuthenticationService.cs" Link="Infrastructure\Rfc6238AuthenticationService.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\WebSites\Identity.DefaultUI.WebSite\Identity.DefaultUI.WebSite.csproj" />
   </ItemGroup>
 
