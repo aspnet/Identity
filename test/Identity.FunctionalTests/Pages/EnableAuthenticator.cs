@@ -12,7 +12,7 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests.Pages
 {
     internal class EnableAuthenticator : HtmlPage
     {
-        public const string AuthenticatorKey = nameof(EnableAuthenticator) + ".AuthenticatorKey";
+        public const string AuthenticatorKey = nameof(EnableAuthenticator) + "." + nameof(AuthenticatorKey);
 
         private readonly IHtmlElement _codeElement;
         private readonly IHtmlFormElement _sendCodeForm;
@@ -47,7 +47,8 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests.Pages
             var hash = new HMACSHA1(Base32.FromBase32(key));
             var unixTimestamp = Convert.ToInt64(Math.Round((DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0)).TotalSeconds));
             var timestep = Convert.ToInt64(unixTimestamp / 30);
-            return Rfc6238AuthenticationService.ComputeTotp(hash, (ulong)timestep, modifier: null).ToString();
+            var topt = Rfc6238AuthenticationService.ComputeTotp(hash, (ulong)timestep, modifier: null);
+            return topt.ToString("D6");
         }
     }
 }

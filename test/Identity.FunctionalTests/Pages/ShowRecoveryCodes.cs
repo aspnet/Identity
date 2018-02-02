@@ -10,12 +10,15 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests.Pages
 {
     internal class ShowRecoveryCodes : HtmlPage
     {
+        public const string RecoveryCodes = nameof(ShowRecoveryCodes) + "." + nameof(RecoveryCodes);
+
         private readonly IEnumerable<IHtmlElement> _recoveryCodeElements;
 
         public ShowRecoveryCodes(HttpClient client, IHtmlDocument showRecoveryCodes, GlobalContext context)
             : base(client, showRecoveryCodes, context)
         {
             _recoveryCodeElements = HtmlAssert.HasElements(".recovery-code", showRecoveryCodes);
+            Context[RecoveryCodes] = string.Join(" ", Codes);
         }
 
         public IEnumerable<string> Codes => _recoveryCodeElements.Select(rc => rc.TextContent);

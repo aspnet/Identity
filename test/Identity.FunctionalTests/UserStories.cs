@@ -50,5 +50,22 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests.Flows
             var enableAuthenticator = await twoFactor.ClickEnableAuthenticatorLinkAsync();
             return await enableAuthenticator.SendValidCodeAsync();
         }
+
+        internal static async Task<Index> LoginExistingUserRecoveryCodeAsync(
+            HttpClient client,
+            string userName,
+            string password,
+            string recoveryCode)
+        {
+            var index = await Index.CreateAsync(client);
+
+            var loginWithPassword = await index.ClickLoginLinkAsync();
+
+            var login2Fa = await loginWithPassword.PasswordLoginValidUserWith2FaAsync(userName, password);
+
+            var loginRecoveryCode =  await login2Fa.ClickRecoveryCodeLinkAsync();
+
+            return await loginRecoveryCode.SendRecoveryCodeAsync(recoveryCode);
+        }
     }
 }
