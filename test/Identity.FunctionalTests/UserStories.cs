@@ -4,9 +4,9 @@
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity.FunctionalTests.Pages;
+using Microsoft.AspNetCore.Identity.FunctionalTests.Account.Manage;
 
-namespace Microsoft.AspNetCore.Identity.FunctionalTests.Flows
+namespace Microsoft.AspNetCore.Identity.FunctionalTests
 {
     public class UserStories
     {

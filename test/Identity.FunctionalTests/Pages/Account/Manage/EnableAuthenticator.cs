@@ -8,7 +8,7 @@ using System.Security.Cryptography;
 using System.Threading.Tasks;
 using AngleSharp.Dom.Html;
 
-namespace Microsoft.AspNetCore.Identity.FunctionalTests.Pages
+namespace Microsoft.AspNetCore.Identity.FunctionalTests.Account.Manage
 {
     internal class EnableAuthenticator : HtmlPage
     {
@@ -17,7 +17,7 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests.Pages
         private readonly IHtmlElement _codeElement;
         private readonly IHtmlFormElement _sendCodeForm;
 
-        public EnableAuthenticator(HttpClient client, IHtmlDocument enableAuthenticator, GlobalContext context)
+        public EnableAuthenticator(HttpClient client, IHtmlDocument enableAuthenticator, HtmlPageContext context)
             : base(client, enableAuthenticator, context)
         {
             _codeElement = HtmlAssert.HasElement("kbd", enableAuthenticator);

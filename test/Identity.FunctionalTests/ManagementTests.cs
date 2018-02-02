@@ -3,8 +3,6 @@
 
 using System;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity.FunctionalTests.Flows;
-using Microsoft.AspNetCore.Identity.FunctionalTests.Infrastructure;
 using Xunit;
 
 namespace Microsoft.AspNetCore.Identity.FunctionalTests

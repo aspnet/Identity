@@ -6,7 +6,7 @@ using System.Linq;
 using System.Net.Http;
 using AngleSharp.Dom.Html;
 
-namespace Microsoft.AspNetCore.Identity.FunctionalTests.Pages
+namespace Microsoft.AspNetCore.Identity.FunctionalTests.Account.Manage
 {
     internal class ShowRecoveryCodes : HtmlPage
     {
@@ -14,7 +14,7 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests.Pages
 
         private readonly IEnumerable<IHtmlElement> _recoveryCodeElements;
 
-        public ShowRecoveryCodes(HttpClient client, IHtmlDocument showRecoveryCodes, GlobalContext context)
+        public ShowRecoveryCodes(HttpClient client, IHtmlDocument showRecoveryCodes, HtmlPageContext context)
             : base(client, showRecoveryCodes, context)
         {
             _recoveryCodeElements = HtmlAssert.HasElements(".recovery-code", showRecoveryCodes);

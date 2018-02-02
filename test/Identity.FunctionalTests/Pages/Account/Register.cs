@@ -1,20 +1,19 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AngleSharp.Dom.Html;
 using Xunit;
 
-namespace Microsoft.AspNetCore.Identity.FunctionalTests.Pages
+namespace Microsoft.AspNetCore.Identity.FunctionalTests.Account
 {
     public class Register : HtmlPage
     {
         private IHtmlFormElement _registerForm;
 
-        public Register(HttpClient client, IHtmlDocument register, GlobalContext context)
+        public Register(HttpClient client, IHtmlDocument register, HtmlPageContext context)
             : base(client, register, context)
         {
             _registerForm = HtmlAssert.HasForm(register);

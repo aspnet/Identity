@@ -2,8 +2,6 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity.FunctionalTests.Flows;
-using Microsoft.AspNetCore.Identity.FunctionalTests.Infrastructure;
 using Xunit;
 
 namespace Microsoft.AspNetCore.Identity.FunctionalTests
@@ -43,8 +41,9 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             ResponseAssert.IsRedirect(response);
         }
 
-        // Pages that are not part of a flow and can be accessed directly by
-        // typing the url in the browser.
+        // The routes commented below are not directly accessible by
+        // typing the URL in the browser. They have to be accessed as
+        // part of a more complex interation. (like login with 2fa).
         public static TheoryData<string> RouteableAuthorizedPages =>
             new TheoryData<string>
             {
@@ -79,6 +78,9 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             ResponseAssert.IsHtmlDocument(response);
         }
 
+        // The routes commented below are not directly accessible by
+        // typing the URL in the browser. They have to be accessed as
+        // part of a more complex interation. (like login with 2fa).
         public static TheoryData<string> UnauthorizedPages =>
             new TheoryData<string> {
                 "/Identity/Account/ResetPassword",

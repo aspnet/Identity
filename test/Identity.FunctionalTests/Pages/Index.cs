@@ -1,13 +1,13 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AngleSharp.Dom.Html;
+using Microsoft.AspNetCore.Identity.FunctionalTests.Account;
 using Xunit;
 
-namespace Microsoft.AspNetCore.Identity.FunctionalTests.Pages
+namespace Microsoft.AspNetCore.Identity.FunctionalTests
 {
     public class Index : HtmlPage
     {
@@ -18,7 +18,7 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests.Pages
         private readonly IHtmlAnchorElement _manageLink;
         public static readonly string Path = "/";
 
-        public Index(HttpClient client, IHtmlDocument index, GlobalContext context, bool authenticated)
+        public Index(HttpClient client, IHtmlDocument index, HtmlPageContext context, bool authenticated)
             : base(client, index, context)
         {
             _authenticated = authenticated;
@@ -39,7 +39,7 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests.Pages
             var goToIndex = await client.GetAsync("/");
             var index = ResponseAssert.IsHtmlDocument(goToIndex);
 
-            return new Index(client, index, new GlobalContext(), authenticated);
+            return new Index(client, index, new HtmlPageContext(), authenticated);
         }
 
         public async Task<Register> ClickRegisterLinkAsync()
@@ -62,14 +62,14 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests.Pages
             return new Login(Client, login, Context);
         }
 
-        internal async Task<Manage> ClickManageLinkAsync()
+        internal async Task<Account.Manage.Index> ClickManageLinkAsync()
         {
             Assert.True(_authenticated);
 
             var goToManage = await Client.GetAsync(_manageLink.Href);
             var manage = ResponseAssert.IsHtmlDocument(goToManage);
 
-            return new Manage(Client, manage, Context);
+            return new Account.Manage.Index(Client, manage, Context);
         }
     }
 }

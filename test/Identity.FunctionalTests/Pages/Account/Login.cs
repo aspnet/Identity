@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 using AngleSharp.Dom.Html;
 using Xunit;
 
-namespace Microsoft.AspNetCore.Identity.FunctionalTests.Pages
+namespace Microsoft.AspNetCore.Identity.FunctionalTests.Account
 {
     public class Login : HtmlPage
     {
         private readonly IHtmlFormElement _loginForm;
 
-        public Login(HttpClient client, IHtmlDocument login, GlobalContext context)
+        public Login(HttpClient client, IHtmlDocument login, HtmlPageContext context)
             : base(client, login, context)
         {
             _loginForm = HtmlAssert.HasForm(login);
@@ -39,16 +39,16 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests.Pages
             });
         }
 
-        public async Task<LoginWithTwoFactor> PasswordLoginValidUserWith2FaAsync(string userName, string password)
+        public async Task<LoginWith2fa> PasswordLoginValidUserWith2FaAsync(string userName, string password)
         {
             var loggedIn = await SendLoginForm(userName, password);
 
             var loggedInLocation = ResponseAssert.IsRedirect(loggedIn);
-            Assert.StartsWith(LoginWithTwoFactor.Path, loggedInLocation.ToString());
+            Assert.StartsWith(LoginWith2fa.Path, loggedInLocation.ToString());
             var loginWithTwoFactorResponse = await Client.GetAsync(loggedInLocation);
             var loginWithTwoFactor = ResponseAssert.IsHtmlDocument(loginWithTwoFactorResponse);
 
-            return new LoginWithTwoFactor(Client, loginWithTwoFactor, Context);
+            return new LoginWith2fa(Client, loginWithTwoFactor, Context);
         }
     }
 }

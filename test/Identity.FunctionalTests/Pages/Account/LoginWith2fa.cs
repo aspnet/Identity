@@ -1,23 +1,23 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AngleSharp.Dom.Html;
+using Microsoft.AspNetCore.Identity.FunctionalTests.Account.Manage;
 using Xunit;
 
-namespace Microsoft.AspNetCore.Identity.FunctionalTests.Pages
+namespace Microsoft.AspNetCore.Identity.FunctionalTests.Account
 {
-    public class LoginWithTwoFactor : HtmlPage
+    public class LoginWith2fa : HtmlPage
     {
         public const string Path = "/Identity/Account/LoginWith2fa";
 
         private readonly IHtmlFormElement _twoFactorForm;
         private readonly IHtmlAnchorElement _loginWithRecoveryCodeLink;
 
-        public LoginWithTwoFactor(HttpClient client, IHtmlDocument loginWithTwoFactor, GlobalContext context)
+        public LoginWith2fa(HttpClient client, IHtmlDocument loginWithTwoFactor, HtmlPageContext context)
             : base(client, loginWithTwoFactor, context)
         {
             _twoFactorForm = HtmlAssert.HasForm(loginWithTwoFactor);

@@ -3,9 +3,9 @@
 
 using System.Collections.Generic;
 
-namespace Microsoft.AspNetCore.Identity.FunctionalTests.Pages
+namespace Microsoft.AspNetCore.Identity.FunctionalTests
 {
-    public class GlobalContext
+    public class HtmlPageContext
     {
         private readonly IDictionary<string, string> _properties = 
             new Dictionary<string, string>();

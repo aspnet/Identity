@@ -6,13 +6,13 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using AngleSharp.Dom.Html;
 
-namespace Microsoft.AspNetCore.Identity.FunctionalTests.Pages
+namespace Microsoft.AspNetCore.Identity.FunctionalTests.Account
 {
     public class LoginWithRecoveryCode : HtmlPage
     {
         private readonly IHtmlFormElement _loginWithRecoveryCodeForm;
 
-        public LoginWithRecoveryCode(HttpClient client, IHtmlDocument loginWithRecoveryCode, GlobalContext context)
+        public LoginWithRecoveryCode(HttpClient client, IHtmlDocument loginWithRecoveryCode, HtmlPageContext context)
             : base(client, loginWithRecoveryCode, context)
         {
             _loginWithRecoveryCodeForm = HtmlAssert.HasForm(loginWithRecoveryCode);

@@ -10,13 +10,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Microsoft.AspNetCore.Identity.FunctionalTests.Infrastructure
+namespace Microsoft.AspNetCore.Identity.FunctionalTests
 {
     public class ServerFactory
     {
-        public static HttpClient CreateDefaultClient() =>
-            CreateDefaultClient(CreateDefaultServer());
-
         public static TestServer CreateServer(Action<IWebHostBuilder> configureBuilder, [CallerMemberName]string isolationKey = "")
         {
             var builder = WebHostBuilderFactory
@@ -46,5 +43,8 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests.Infrastructure
 
             return client;
         }
+
+        public static HttpClient CreateDefaultClient() =>
+            CreateDefaultClient(CreateDefaultServer());
     }
 }

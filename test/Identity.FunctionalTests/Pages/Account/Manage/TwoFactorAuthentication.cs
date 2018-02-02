@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 using AngleSharp.Dom.Html;
 using Xunit;
 
-namespace Microsoft.AspNetCore.Identity.FunctionalTests.Pages
+namespace Microsoft.AspNetCore.Identity.FunctionalTests.Account.Manage
 {
-    public class TwoFactor : HtmlPage
+    public class TwoFactorAuthentication : HtmlPage
     {
         private readonly bool _twoFactorEnabled;
         private readonly IHtmlAnchorElement _enableAuthenticatorLink;
 
-        public TwoFactor(HttpClient client, IHtmlDocument twoFactor, GlobalContext context, bool twoFactorEnabled)
+        public TwoFactorAuthentication(HttpClient client, IHtmlDocument twoFactor, HtmlPageContext context, bool twoFactorEnabled)
             : base(client, twoFactor, context)
         {
             _twoFactorEnabled = twoFactorEnabled;

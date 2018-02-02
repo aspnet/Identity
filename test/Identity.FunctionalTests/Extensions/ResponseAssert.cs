@@ -2,14 +2,12 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using AngleSharp;
 using AngleSharp.Dom.Html;
-using AngleSharp.Extensions;
 using AngleSharp.Network;
 using Xunit;
 
