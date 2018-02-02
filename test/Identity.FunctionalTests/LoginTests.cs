@@ -4,10 +4,14 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using AngleSharp.Dom.Html;
 using Microsoft.AspNetCore.Identity.FunctionalTests.Flows;
 using Microsoft.AspNetCore.Identity.FunctionalTests.Infrastructure;
 using Microsoft.AspNetCore.Identity.FunctionalTests.Pages;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
+using Xunit.Sdk;
 
 namespace Microsoft.AspNetCore.Identity.FunctionalTests
 {
@@ -73,6 +77,77 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             // Act & Assert
             // Use a new client to simulate a new browser session.
             var loginWith2fa = await UserStories.LoginExistingUserRecoveryCodeAsync(newClient, userName, password, recoveryCode);
+        }
+
+        [Fact]
+        public async Task CannotLogInWithoutRequiredEmailConfirmation()
+        {
+            // Arrange
+            var testEmailSender = new TestEmailSender();
+            var server = ServerFactory.CreateServer(builder =>
+            {
+                builder.ConfigureServices(services => services
+                    .AddSingleton<IEmailSender>(testEmailSender)
+                    .Configure<IdentityOptions>(opt => opt.SignIn.RequireConfirmedEmail = true));
+            });
+
+            var client = ServerFactory.CreateDefaultClient(server);
+            var newClient = ServerFactory.CreateDefaultClient(server);
+
+            var userName = $"{Guid.NewGuid()}@example.com";
+            var password = $"!Test.Password1$";
+
+            var loggedIn = await UserStories.RegisterNewUserAsync(client, userName, password);
+
+            // Act & Assert
+            // Use a new client to simulate a new browser session.
+            await Assert.ThrowsAnyAsync<XunitException>(() => UserStories.LoginExistingUserAsync(newClient, userName, password));
+        }
+
+        [Fact]
+        public async Task CanLogInAfterConfirmingEmail()
+        {
+            // Arrange
+            TestEmailSender testEmailSender = new TestEmailSender();
+            var server = ServerFactory.CreateServer(builder =>
+            {
+                builder.ConfigureServices(services => services
+                    .AddSingleton<IEmailSender>(testEmailSender)
+                    .Configure<IdentityOptions>(opt => opt.SignIn.RequireConfirmedEmail = true));
+            });
+
+            var client = ServerFactory.CreateDefaultClient(server);
+            var newClient = ServerFactory.CreateDefaultClient(server);
+
+            var userName = $"{Guid.NewGuid()}@example.com";
+            var password = $"!Test.Password1$";
+
+            var loggedIn = await UserStories.RegisterNewUserAsync(client, userName, password);
+
+            // Act & Assert
+            // Use a new client to simulate a new browser session.
+            var emailBody = HtmlAssert.IsHtmlFragment(testEmailSender.HtmlMessage);
+            var linkElement = HtmlAssert.HasElement("a", emailBody);
+            var link = Assert.IsAssignableFrom<IHtmlAnchorElement>(linkElement);
+            var response = await newClient.GetAsync(link.Href);
+
+            await UserStories.LoginExistingUserAsync(newClient, userName, password);
+        }
+    }
+
+    class TestEmailSender : IEmailSender
+    {
+        public string Email { get; private set; }
+        public string Subject { get; private set; }
+        public string HtmlMessage { get; private set; }
+
+        public Task SendEmailAsync(string email, string subject, string htmlMessage)
+        {
+            Email = email;
+            Subject = subject;
+            HtmlMessage = htmlMessage;
+
+            return Task.CompletedTask;
         }
     }
 }

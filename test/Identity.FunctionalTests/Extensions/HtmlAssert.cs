@@ -5,7 +5,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using AngleSharp.Dom;
 using AngleSharp.Dom.Html;
+using AngleSharp.Parser.Html;
 using Xunit;
 
 namespace Microsoft.AspNetCore.Identity.FunctionalTests
@@ -36,16 +38,23 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             return elements;
         }
 
-        public static IHtmlElement HasElement(string selector, IHtmlDocument document)
+        public static IHtmlElement HasElement(string selector, IParentNode document)
         {
             var element = Assert.Single(document.QuerySelectorAll(selector));
             return Assert.IsAssignableFrom<IHtmlElement>(element);
         }
 
-        public static IHtmlFormElement HasForm(string selector, IHtmlDocument document)
+        public static IHtmlFormElement HasForm(string selector, IParentNode document)
         {
             var form = Assert.Single(document.QuerySelectorAll(selector));
             return Assert.IsAssignableFrom<IHtmlFormElement>(form);
+        }
+
+        internal static IHtmlHtmlElement IsHtmlFragment(string htmlMessage)
+        {
+            var synteticNode = $"<div>{htmlMessage}</div>";
+            var fragment = Assert.Single(new HtmlParser().ParseFragment(htmlMessage, context: null));
+            return Assert.IsAssignableFrom<IHtmlHtmlElement>(fragment);
         }
     }
 }

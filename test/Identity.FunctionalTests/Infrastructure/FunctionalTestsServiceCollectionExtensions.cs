@@ -10,10 +10,10 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests.Infrastructure
 {
     public static class FunctionalTestsServiceCollectionExtensions
     {
-        public static IServiceCollection SetupTestDatabase(this IServiceCollection services)
+        public static IServiceCollection SetupTestDatabase(this IServiceCollection services, string databaseName)
         {
             services.AddDbContext<IdentityDbContext>(options =>
-                options.UseInMemoryDatabase("test", memoryOptions => { }));
+                options.UseInMemoryDatabase(databaseName, memoryOptions => { }));
 
             return services;
         }
