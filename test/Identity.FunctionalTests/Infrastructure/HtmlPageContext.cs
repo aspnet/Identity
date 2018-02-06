@@ -12,14 +12,8 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
 
         public string this[string key]
         {
-            get
-            {
-                return _properties[key];
-            }
-            set
-            {
-                _properties[key] = value;
-            }
+            get => _properties[key];
+            set => _properties[key] = value;
         }
     }
 }

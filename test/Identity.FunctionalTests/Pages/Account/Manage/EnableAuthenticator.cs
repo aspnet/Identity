@@ -37,7 +37,7 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests.Account.Manage
 
             var goToShowRecoveryCodes = ResponseAssert.IsRedirect(sendCodeResponse);
             var showRecoveryCodesResponse = await Client.GetAsync(goToShowRecoveryCodes);
-            var showRecoveryCodes = ResponseAssert.IsHtmlDocument(showRecoveryCodesResponse);
+            var showRecoveryCodes = await ResponseAssert.IsHtmlDocumentAsync(showRecoveryCodesResponse);
 
             return new ShowRecoveryCodes(Client, showRecoveryCodes, Context);
         }

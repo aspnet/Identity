@@ -13,7 +13,7 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
 {
     public static class HttpClientExtensions
     {
-        public static async Task<HttpResponseMessage> SendAsync(
+        public static Task<HttpResponseMessage> SendAsync(
             this HttpClient client,
             IHtmlFormElement form,
             IEnumerable<KeyValuePair<string,string>> formValues)
@@ -39,7 +39,7 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
                 submision.Content.Headers.TryAddWithoutValidation(header.Key, header.Value);
             }
 
-            return await client.SendAsync(submision);
+            return client.SendAsync(submision);
         }
     }
 }

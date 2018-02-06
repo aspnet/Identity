@@ -26,7 +26,7 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests.Account.Manage
         public async Task<TwoFactorAuthentication> ClickTwoFactorLinkAsync(bool twoFactorEnabled)
         {
             var goToTwoFactor = await Client.GetAsync(_twoFactorLink.Href);
-            var twoFactor = ResponseAssert.IsHtmlDocument(goToTwoFactor);
+            var twoFactor = await ResponseAssert.IsHtmlDocumentAsync(goToTwoFactor);
 
             return new TwoFactorAuthentication(Client, twoFactor, Context, twoFactorEnabled);
         }

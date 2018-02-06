@@ -51,7 +51,7 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
 
             // Act & Assert
             // Use a new client to simulate a new browser session.
-            var loginWith2fa = await UserStories.LoginExistingUser2FaAsync(newClient, userName, password, twoFactorKey);
+            await UserStories.LoginExistingUser2FaAsync(newClient, userName, password, twoFactorKey);
         }
 
         [Fact]
@@ -74,7 +74,7 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
 
             // Act & Assert
             // Use a new client to simulate a new browser session.
-            var loginWith2fa = await UserStories.LoginExistingUserRecoveryCodeAsync(newClient, userName, password, recoveryCode);
+            await UserStories.LoginExistingUserRecoveryCodeAsync(newClient, userName, password, recoveryCode);
         }
 
         [Fact]

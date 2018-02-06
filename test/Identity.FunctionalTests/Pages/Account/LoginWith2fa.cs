@@ -36,7 +36,7 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests.Account
             var goToIndex = ResponseAssert.IsRedirect(response);
             Assert.Equal(Index.Path, goToIndex.ToString());
             var indexResponse = await Client.GetAsync(goToIndex);
-            var index = ResponseAssert.IsHtmlDocument(indexResponse);
+            var index = await ResponseAssert.IsHtmlDocumentAsync(indexResponse);
 
             return new Index(Client, index, Context, true);
         }
@@ -44,7 +44,7 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests.Account
         internal async Task<LoginWithRecoveryCode> ClickRecoveryCodeLinkAsync()
         {
             var goToLoginWithRecoveryCode = await Client.GetAsync(_loginWithRecoveryCodeLink.Href);
-            var loginWithRecoveryCode = ResponseAssert.IsHtmlDocument(goToLoginWithRecoveryCode);
+            var loginWithRecoveryCode = await ResponseAssert.IsHtmlDocumentAsync(goToLoginWithRecoveryCode);
 
             return new LoginWithRecoveryCode(Client, loginWithRecoveryCode, Context);
         }

@@ -31,7 +31,7 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
                 .OfType<IHtmlElement>()
                 .ToArray();
 
-            Assert.True(elements.Length > 0);
+            Assert.NotEmpty(elements);
 
             return elements;
         }

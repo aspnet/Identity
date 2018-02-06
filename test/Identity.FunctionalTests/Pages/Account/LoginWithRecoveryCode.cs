@@ -27,7 +27,7 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests.Account
 
             var goToIndex = ResponseAssert.IsRedirect(response);
             var indexPage = await Client.GetAsync(goToIndex);
-            var index = ResponseAssert.IsHtmlDocument(indexPage);
+            var index = await ResponseAssert.IsHtmlDocumentAsync(indexPage);
 
             return new Index(Client, index, Context, authenticated: true);
         }

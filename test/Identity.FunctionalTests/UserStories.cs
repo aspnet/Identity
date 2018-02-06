@@ -18,7 +18,7 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             var index = await Index.CreateAsync(client);
             var register = await index.ClickRegisterLinkAsync();
 
-            return await register.CreateValidUser(userName, password);
+            return await register.SubmitRegisterFormForValidUserAsync(userName, password);
         }
 
         internal static async Task<Index> LoginExistingUserAsync(HttpClient client, string userName, string password)

@@ -26,7 +26,7 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests.Account
             var loggedInLocation = ResponseAssert.IsRedirect(loggedIn);
             Assert.Equal(Index.Path, loggedInLocation.ToString());
             var indexResponse = await Client.GetAsync(loggedInLocation);
-            var index = ResponseAssert.IsHtmlDocument(indexResponse);
+            var index = await ResponseAssert.IsHtmlDocumentAsync(indexResponse);
             return new Index(Client, index, Context, authenticated: true);
         }
 
@@ -46,7 +46,7 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests.Account
             var loggedInLocation = ResponseAssert.IsRedirect(loggedIn);
             Assert.StartsWith(LoginWith2fa.Path, loggedInLocation.ToString());
             var loginWithTwoFactorResponse = await Client.GetAsync(loggedInLocation);
-            var loginWithTwoFactor = ResponseAssert.IsHtmlDocument(loginWithTwoFactorResponse);
+            var loginWithTwoFactor = await ResponseAssert.IsHtmlDocumentAsync(loginWithTwoFactorResponse);
 
             return new LoginWith2fa(Client, loginWithTwoFactor, Context);
         }

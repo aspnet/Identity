@@ -14,7 +14,6 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
         private readonly bool _authenticated;
         private readonly IHtmlAnchorElement _registerLink;
         private readonly IHtmlAnchorElement _loginLink;
-        //private readonly IHtmlAnchorElement _logout;
         private readonly IHtmlAnchorElement _manageLink;
         public static readonly string Path = "/";
 
@@ -29,7 +28,6 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             }
             else
             {
-                //_logout = HtmlAssert.HasLink("#logout", _index);
                 _manageLink = HtmlAssert.HasLink("#manage", Document);
             }
         }
@@ -37,7 +35,7 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
         public static async Task<Index> CreateAsync(HttpClient client, bool authenticated = false)
         {
             var goToIndex = await client.GetAsync("/");
-            var index = ResponseAssert.IsHtmlDocument(goToIndex);
+            var index = await ResponseAssert.IsHtmlDocumentAsync(goToIndex);
 
             return new Index(client, index, new HtmlPageContext(), authenticated);
         }
@@ -47,7 +45,7 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             Assert.False(_authenticated);
 
             var goToRegister = await Client.GetAsync(_registerLink.Href);
-            var register = ResponseAssert.IsHtmlDocument(goToRegister);
+            var register = await ResponseAssert.IsHtmlDocumentAsync(goToRegister);
 
             return new Register(Client, register, Context);
         }
@@ -57,7 +55,7 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             Assert.False(_authenticated);
 
             var goToLogin = await Client.GetAsync(_loginLink.Href);
-            var login = ResponseAssert.IsHtmlDocument(goToLogin);
+            var login = await ResponseAssert.IsHtmlDocumentAsync(goToLogin);
 
             return new Login(Client, login, Context);
         }
@@ -67,7 +65,7 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             Assert.True(_authenticated);
 
             var goToManage = await Client.GetAsync(_manageLink.Href);
-            var manage = ResponseAssert.IsHtmlDocument(goToManage);
+            var manage = await ResponseAssert.IsHtmlDocumentAsync(goToManage);
 
             return new Account.Manage.Index(Client, manage, Context);
         }

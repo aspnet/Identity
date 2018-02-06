@@ -28,7 +28,7 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests.Account.Manage
             Assert.False(_twoFactorEnabled);
 
             var goToEnableAuthenticator = await Client.GetAsync(_enableAuthenticatorLink.Href);
-            var enableAuthenticator = ResponseAssert.IsHtmlDocument(goToEnableAuthenticator);
+            var enableAuthenticator = await ResponseAssert.IsHtmlDocumentAsync(goToEnableAuthenticator);
 
             return new EnableAuthenticator(Client, enableAuthenticator, Context);
         }

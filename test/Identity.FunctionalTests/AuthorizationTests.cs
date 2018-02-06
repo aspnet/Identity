@@ -38,27 +38,28 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             var response = await client.GetAsync(url);
 
             // Assert
-            ResponseAssert.IsRedirect(response);
+            var location = ResponseAssert.IsRedirect(response);
+            Assert.StartsWith("/Identity/Account/Login?", location.PathAndQuery);
         }
 
         // The routes commented below are not directly accessible by
         // typing the URL in the browser. They have to be accessed as
-        // part of a more complex interation. (like login with 2fa).
+        // part of a more complex interation. (like disable 2fa).
+        // /Identity/Account/Manage/Disable2fa
+        // /Identity/Account/Manage/GenerateRecoveryCodes
+        // /Identity/Account/Manage/SetPassword
+        // /Identity/Account/Manage/ShowRecoveryCodes
         public static TheoryData<string> RouteableAuthorizedPages =>
             new TheoryData<string>
             {
                 "/Identity/Account/Manage/ChangePassword",
                 "/Identity/Account/Manage/DeletePersonalData",
-                //"/Identity/Account/Manage/Disable2fa",
                 "/Identity/Account/Manage/DownloadPersonalData",
                 "/Identity/Account/Manage/EnableAuthenticator",
                 "/Identity/Account/Manage/ExternalLogins",
-                //"/Identity/Account/Manage/GenerateRecoveryCodes",
                 "/Identity/Account/Manage/Index",
                 "/Identity/Account/Manage/PersonalData",
                 "/Identity/Account/Manage/ResetAuthenticator",
-                //"/Identity/Account/Manage/SetPassword",
-                //"/Identity/Account/Manage/ShowRecoveryCodes",
                 "/Identity/Account/Manage/TwoFactorAuthentication",
                 "/Identity/Account/Logout",
             };
@@ -75,23 +76,23 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             var response = await client.GetAsync(url);
 
             // Assert
-            ResponseAssert.IsHtmlDocument(response);
+            await ResponseAssert.IsHtmlDocumentAsync(response);
         }
 
         // The routes commented below are not directly accessible by
         // typing the URL in the browser. They have to be accessed as
         // part of a more complex interation. (like login with 2fa).
+        // /Identity/Account/LoginWithRecoveryCode
+        // /Identity/Account/LoginWith2fa
+        // /Identity/Account/ExternalLogin
+        // /Identity/Account/ConfirmEmail
         public static TheoryData<string> UnauthorizedPages =>
             new TheoryData<string> {
                 "/Identity/Account/ResetPassword",
-                //"/Identity/Account/LoginWithRecoveryCode",
-                //"/Identity/Account/LoginWith2fa",
                 "/Identity/Account/Login",
                 "/Identity/Account/Lockout",
                 "/Identity/Account/ForgotPasswordConfirmation",
                 "/Identity/Account/ForgotPassword",
-                //"/Identity/Account/ExternalLogin",
-                //"/Identity/Account/ConfirmEmail",
                 "/Identity/Account/AccessDenied",
             };
 
@@ -106,7 +107,7 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             var response = await client.GetAsync(url);
 
             // Assert
-            ResponseAssert.IsHtmlDocument(response);
+            await ResponseAssert.IsHtmlDocumentAsync(response);
         }
     }
 }

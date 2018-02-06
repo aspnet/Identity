@@ -19,7 +19,7 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests.Account
             _registerForm = HtmlAssert.HasForm(register);
         }
 
-        public async Task<Index> CreateValidUser(string userName, string password)
+        public async Task<Index> SubmitRegisterFormForValidUserAsync(string userName, string password)
         {
             var registered = await Client.SendAsync(_registerForm, new Dictionary<string, string>()
             {
@@ -31,7 +31,7 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests.Account
             var registeredLocation = ResponseAssert.IsRedirect(registered);
             Assert.Equal(Index.Path, registeredLocation.ToString());
             var indexResponse = await Client.GetAsync(registeredLocation);
-            var index = ResponseAssert.IsHtmlDocument(indexResponse);
+            var index = await ResponseAssert.IsHtmlDocumentAsync(indexResponse);
 
             return new Index(Client, index, Context, authenticated: true);
         }

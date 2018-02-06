@@ -14,7 +14,9 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
 {
     public class ServerFactory
     {
-        public static TestServer CreateServer(Action<IWebHostBuilder> configureBuilder, [CallerMemberName]string isolationKey = "")
+        public static TestServer CreateServer(
+            Action<IWebHostBuilder> configureBuilder, 
+            [CallerMemberName] string isolationKey = "")
         {
             var builder = WebHostBuilderFactory
                 .CreateFromTypesAssemblyEntryPoint<Startup>(new string[] { })
@@ -31,7 +33,7 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             return server;
         }
 
-        public static TestServer CreateDefaultServer([CallerMemberName]string isolationKey = "") =>
+        public static TestServer CreateDefaultServer([CallerMemberName] string isolationKey = "") =>
             CreateServer(b => { }, isolationKey);
 
         public static HttpClient CreateDefaultClient(TestServer server)

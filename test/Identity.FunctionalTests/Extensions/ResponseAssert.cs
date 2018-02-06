@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
+using System.Threading.Tasks;
 using AngleSharp;
 using AngleSharp.Dom.Html;
 using AngleSharp.Network;
@@ -21,13 +22,13 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             return responseMessage.Headers.Location;
         }
 
-        public static IHtmlDocument IsHtmlDocument(HttpResponseMessage response)
+        public static async Task<IHtmlDocument> IsHtmlDocumentAsync(HttpResponseMessage response)
         {
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.Equal("text/html", response.Content.Headers.ContentType.MediaType);
-            var content = response.Content.ReadAsStringAsync().Result;
-            var document = BrowsingContext.New()
-                .OpenAsync(ResponseFactory, CancellationToken.None).Result;
+            var content = await response.Content.ReadAsStringAsync();
+            var document = await BrowsingContext.New()
+                .OpenAsync(ResponseFactory, CancellationToken.None);
             return Assert.IsAssignableFrom<IHtmlDocument>(document);
 
             void ResponseFactory(VirtualResponse htmlResponse)
