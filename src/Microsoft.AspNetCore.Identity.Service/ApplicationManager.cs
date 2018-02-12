@@ -19,7 +19,7 @@ namespace Microsoft.AspNetCore.Identity.Service
         public ApplicationManager(
             IOptions<ApplicationOptions> options,
             IApplicationStore<TApplication> store,
-            IPasswordHasher<TApplication> passwordHasher,
+            IPasswordHasher passwordHasher,
             IEnumerable<IApplicationValidator<TApplication>> applicationValidators,
             ILogger<ApplicationManager<TApplication>> logger,
             ApplicationErrorDescriber errorDescriber)
@@ -34,7 +34,7 @@ namespace Microsoft.AspNetCore.Identity.Service
 
         public ApplicationOptions Options { get; }
         public IApplicationStore<TApplication> Store { get; set; }
-        public IPasswordHasher<TApplication> PasswordHasher { get; set; }
+        public IPasswordHasher PasswordHasher { get; set; }
         public IEnumerable<IApplicationValidator<TApplication>> ApplicationValidators { get; set; }
         public ApplicationErrorDescriber ErrorDescriber { get; }
         public ILogger<ApplicationManager<TApplication>> Logger { get; set; }
@@ -270,7 +270,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             TApplication application,
             string clientSecret)
         {
-            var hash = clientSecret == null ? null : PasswordHasher.HashPassword(application, clientSecret);
+            var hash = clientSecret == null ? null : PasswordHasher.HashPassword(clientSecret);
             await clientSecretStore.SetClientSecretHashAsync(application, hash, CancellationToken);
             return IdentityServiceResult.Success;
         }
@@ -286,7 +286,7 @@ namespace Microsoft.AspNetCore.Identity.Service
                 return PasswordVerificationResult.Failed;
             }
 
-            return PasswordHasher.VerifyHashedPassword(application, hash, clientSecret);
+            return PasswordHasher.VerifyHashedPassword(hash, clientSecret);
         }
 
         public Task<IEnumerable<string>> FindRegisteredUrisAsync(TApplication application)

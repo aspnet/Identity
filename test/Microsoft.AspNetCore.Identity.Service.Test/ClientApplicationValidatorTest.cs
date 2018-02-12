@@ -30,7 +30,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             var manager = new ApplicationManager<IdentityServiceApplication>(
                 Options.Create(new ApplicationOptions()),
                 store.Object,
-                Mock.Of<IPasswordHasher<IdentityServiceApplication>>(),
+                Mock.Of<IPasswordHasher>(),
                 Array.Empty<IApplicationValidator<IdentityServiceApplication>>(),
                 Mock.Of<ILogger<ApplicationManager<IdentityServiceApplication>>>(),
                 new ApplicationErrorDescriber());
@@ -63,7 +63,7 @@ namespace Microsoft.AspNetCore.Identity.Service
             var manager = new ApplicationManager<IdentityServiceApplication>(
                 Options.Create(new ApplicationOptions()),
                 store.Object,
-                Mock.Of<IPasswordHasher<IdentityServiceApplication>>(),
+                Mock.Of<IPasswordHasher>(),
                 Array.Empty<IApplicationValidator<IdentityServiceApplication>>(),
                 Mock.Of<ILogger<ApplicationManager<IdentityServiceApplication>>>(),
                 new ApplicationErrorDescriber());

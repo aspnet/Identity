@@ -75,7 +75,7 @@ namespace Microsoft.AspNetCore.Identity.Test
             userValidators.Add(validator.Object);
             var pwdValidators = new List<PasswordValidator<TUser>>();
             pwdValidators.Add(new PasswordValidator<TUser>());
-            var userManager = new UserManager<TUser>(store, options.Object, new PasswordHasher<TUser>(),
+            var userManager = new UserManager<TUser>(store, options.Object, new PasswordHasher(),
                 userValidators, pwdValidators, new UpperInvariantLookupNormalizer(),
                 new IdentityErrorDescriber(), null,
                 new Mock<ILogger<UserManager<TUser>>>().Object);

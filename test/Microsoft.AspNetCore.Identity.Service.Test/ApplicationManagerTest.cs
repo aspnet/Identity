@@ -1411,11 +1411,11 @@ namespace Microsoft.AspNetCore.Identity.Service
             IApplicationValidator<TestApplication> validator = null,
             PasswordVerificationResult hashResult = PasswordVerificationResult.Success)
         {
-            var hasher = new Mock<IPasswordHasher<TestApplication>>();
-            hasher.Setup(s => s.HashPassword(application, "client-secret"))
+            var hasher = new Mock<IPasswordHasher>();
+            hasher.Setup(s => s.HashPassword("client-secret"))
                 .Returns("new-hash");
 
-            hasher.Setup(s => s.VerifyHashedPassword(application, It.IsAny<string>(), It.IsAny<string>()))
+            hasher.Setup(s => s.VerifyHashedPassword(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(hashResult);
 
             return new ApplicationManager<TestApplication>(

@@ -461,7 +461,7 @@ namespace Microsoft.AspNetCore.Identity.Test
         {
             // Setup
             var store = new Mock<IUserPasswordStore<TestUser>>();
-            var hasher = new Mock<IPasswordHasher<TestUser>>();
+            var hasher = new Mock<IPasswordHasher>();
             var user = new TestUser { UserName = "Foo" };
             var pwd = "password";
             var hashed = "hashed";
@@ -473,8 +473,8 @@ namespace Microsoft.AspNetCore.Identity.Test
             store.Setup(s => s.SetPasswordHashAsync(user, It.IsAny<string>(), CancellationToken.None)).Returns(Task.FromResult(0)).Verifiable();
             store.Setup(x => x.UpdateAsync(It.IsAny<TestUser>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(IdentityResult.Success));
 
-            hasher.Setup(s => s.VerifyHashedPassword(user, hashed, pwd)).Returns(PasswordVerificationResult.SuccessRehashNeeded).Verifiable();
-            hasher.Setup(s => s.HashPassword(user, pwd)).Returns(rehashed).Verifiable();
+            hasher.Setup(s => s.VerifyHashedPassword(hashed, pwd)).Returns(PasswordVerificationResult.SuccessRehashNeeded).Verifiable();
+            hasher.Setup(s => s.HashPassword(pwd)).Returns(rehashed).Verifiable();
             var userManager = MockHelpers.TestUserManager(store.Object);
             userManager.PasswordHasher = hasher.Object;
 

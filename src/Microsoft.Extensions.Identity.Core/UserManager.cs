@@ -65,7 +65,7 @@ namespace Microsoft.AspNetCore.Identity
         /// <param name="logger">The logger used to log messages, warnings and errors.</param>
         public UserManager(IUserStore<TUser> store,
             IOptions<IdentityOptions> optionsAccessor,
-            IPasswordHasher<TUser> passwordHasher,
+            IPasswordHasher passwordHasher,
             IEnumerable<IUserValidator<TUser>> userValidators,
             IEnumerable<IPasswordValidator<TUser>> passwordValidators,
             ILookupNormalizer keyNormalizer,
@@ -130,9 +130,9 @@ namespace Microsoft.AspNetCore.Identity
         public virtual ILogger Logger { get; set; }
 
         /// <summary>
-        /// The <see cref="IPasswordHasher{TUser}"/> used to hash passwords.
+        /// The <see cref="IPasswordHasher"/> used to hash passwords.
         /// </summary>
-        public IPasswordHasher<TUser> PasswordHasher { get; set; }
+        public IPasswordHasher PasswordHasher { get; set; }
 
         /// <summary>
         /// The <see cref="IUserValidator{TUser}"/> used to validate users.
@@ -792,7 +792,7 @@ namespace Microsoft.AspNetCore.Identity
             {
                 return PasswordVerificationResult.Failed;
             }
-            return PasswordHasher.VerifyHashedPassword(user, hash, password);
+            return PasswordHasher.VerifyHashedPassword(hash, password);
         }
 
         /// <summary>
@@ -2323,7 +2323,7 @@ namespace Microsoft.AspNetCore.Identity
                     return validate;
                 }
             }
-            var hash = newPassword != null ? PasswordHasher.HashPassword(user, newPassword) : null;
+            var hash = newPassword != null ? PasswordHasher.HashPassword(newPassword) : null;
             await passwordStore.SetPasswordHashAsync(user, hash, CancellationToken);
             await UpdateSecurityStampInternal(user);
             return IdentityResult.Success;

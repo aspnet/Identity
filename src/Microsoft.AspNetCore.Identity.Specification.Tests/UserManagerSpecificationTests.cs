@@ -337,7 +337,7 @@ namespace Microsoft.AspNetCore.Identity.Test
             Assert.True(await manager.CheckPasswordAsync(user, "password"));
             var userId = await manager.GetUserIdAsync(user);
 
-            SetUserPasswordHash(user, manager.PasswordHasher.HashPassword(user, "New"));
+            SetUserPasswordHash(user, manager.PasswordHasher.HashPassword("New"));
             IdentityResultAssert.IsSuccess(await manager.UpdateAsync(user));
             Assert.False(await manager.CheckPasswordAsync(user, "password"));
             IdentityResultAssert.VerifyLogMessage(manager.Logger, $"Invalid password for user {await manager.GetUserIdAsync(user)}.");

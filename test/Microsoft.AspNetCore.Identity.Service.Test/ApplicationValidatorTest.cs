@@ -484,7 +484,7 @@ namespace Microsoft.AspNetCore.Identity.Service.Test
             return new ApplicationManager<TestApplication>(
                 Options.Create(new ApplicationOptions()),
                 store.Object,
-                Mock.Of<IPasswordHasher<TestApplication>>(),
+                Mock.Of<IPasswordHasher>(),
                 Enumerable.Empty<IApplicationValidator<TestApplication>>(),
                 Mock.Of<ILogger<ApplicationManager<TestApplication>>>(),
                 new ApplicationErrorDescriber());

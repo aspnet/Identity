@@ -33,7 +33,7 @@ namespace Microsoft.AspNetCore.Identity
         /// <param name="logger">The logger used to log messages, warnings and errors.</param>
         public AspNetUserManager(IUserStore<TUser> store,
             IOptions<IdentityOptions> optionsAccessor,
-            IPasswordHasher<TUser> passwordHasher,
+            IPasswordHasher passwordHasher,
             IEnumerable<IUserValidator<TUser>> userValidators,
             IEnumerable<IPasswordValidator<TUser>> passwordValidators,
             ILookupNormalizer keyNormalizer,

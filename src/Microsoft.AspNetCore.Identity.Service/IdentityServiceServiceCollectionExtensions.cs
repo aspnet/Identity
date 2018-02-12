@@ -90,7 +90,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<ISigningCredentialsSource, DeveloperCertificateSigningCredentialsSource>();
             services.AddSingleton<DeveloperCertificateSigningCredentialsSource>();
 
-            services.AddSingleton<IPasswordHasher<TApplication>, PasswordHasher<TApplication>>();
+            services.AddSingleton<IPasswordHasher, PasswordHasher>();
             services.AddScoped<ISigningCredentialsPolicyProvider, DefaultSigningCredentialsPolicyProvider>();
             services.AddScoped<ISigningCredentialsSource, DefaultSigningCredentialsSource>();
             services.AddSingleton<IApplicationValidator<TApplication>, ApplicationValidator<TApplication>>();
