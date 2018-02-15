@@ -33,14 +33,20 @@ namespace IdentitySample
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
+            services.AddMvc();
+
             services.AddIdentityCore<ApplicationUser>()
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddSignIn() // Adds SignInManager (works against IdentityConstant schemes)
-                .AddDefaultCookies() // Adds and configures default cookie auth
+                .AddSignInManager()
                 .AddDefaultTokenProviders();
 
-            services.AddMvc();
+            services.AddAuthentication(o =>
+            {
+                o.DefaultScheme = IdentityConstants.ApplicationScheme;
+                o.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+            })
+            .AddIdentityCookies(o => { });
 
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();

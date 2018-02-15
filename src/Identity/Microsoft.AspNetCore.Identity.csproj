@@ -9,7 +9,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SignIn.Cookies\Microsoft.AspNetCore.Identity.SignIn.Cookies.csproj" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="$(MicrosoftAspNetCoreAuthenticationPackageVersion)" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="$(MicrosoftAspNetCoreAuthenticationCookiesPackageVersion)" />
+    <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="$(MicrosoftAspNetCoreCryptographyKeyDerivationPackageVersion)" />
+    <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="$(MicrosoftAspNetCoreHostingAbstractionsPackageVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Core\Microsoft.Extensions.Identity.Core.csproj" />
   </ItemGroup>
 
 </Project>
