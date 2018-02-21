@@ -185,18 +185,18 @@ namespace Microsoft.AspNetCore.Identity
         }
 
         /// <summary>
-        /// Adds an <see cref="IPersonalDataEncryptor"/> and <see cref="IPersonalDataEncryptorKeyRing"/>.
+        /// Adds an <see cref="ILookupProtector"/> and <see cref="ILookupProtectorKeyRing"/>.
         /// </summary>
         /// <typeparam name="TEncryptor">The personal data encryptor type.</typeparam>
         /// <typeparam name="TKeyRing">The personal data encryption key ring type.</typeparam>
         /// <returns>The current <see cref="IdentityBuilder"/> instance.</returns>
         public virtual IdentityBuilder AddPersonalDataEncryption<TEncryptor, TKeyRing>() 
-            where TEncryptor : class,IPersonalDataEncryptor
-            where TKeyRing : class, IPersonalDataEncryptorKeyRing
+            where TEncryptor : class,ILookupProtector
+            where TKeyRing : class, ILookupProtectorKeyRing
         {
             Services.AddSingleton<IPersonalDataProtector, DefaultPersonalDataProtector>();
-            Services.AddSingleton<IPersonalDataEncryptor, TEncryptor>();
-            Services.AddSingleton<IPersonalDataEncryptorKeyRing, TKeyRing>();
+            Services.AddSingleton<ILookupProtector, TEncryptor>();
+            Services.AddSingleton<ILookupProtectorKeyRing, TKeyRing>();
             return this;
         }
 

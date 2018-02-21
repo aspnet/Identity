@@ -122,7 +122,7 @@ namespace Microsoft.AspNetCore.Identity
                     throw new InvalidOperationException(Resources.StoreNotIEncryptedUserStore);
                 }
                 // REVIEW: should look for protector?
-                if (services.GetService<IPersonalDataEncryptor>() == null)
+                if (services.GetService<ILookupProtector>() == null)
                 {
                     throw new InvalidOperationException(Resources.NoPersonalDataEncryptor);
                 }
@@ -555,13 +555,13 @@ namespace Microsoft.AspNetCore.Identity
             // Need to potentially check all keys
             if (user == null && Options.Stores.ProtectPersonalData)
             {
-                var keyRing = _services.GetService<IPersonalDataEncryptorKeyRing>();
-                var encryptor = _services.GetService<IPersonalDataEncryptor>();
+                var keyRing = _services.GetService<ILookupProtectorKeyRing>();
+                var encryptor = _services.GetService<ILookupProtector>();
                 if (keyRing != null && encryptor != null)
                 {
                     foreach (var key in keyRing.GetAllKeyIds())
                     {
-                        var oldKey = encryptor.Encrypt(key, userName);
+                        var oldKey = encryptor.Protect(key, userName);
                         user = await Store.FindByNameAsync(oldKey, CancellationToken);
                         if (user != null)
                         {
@@ -617,9 +617,9 @@ namespace Microsoft.AspNetCore.Identity
         {
             if (Options.Stores.ProtectPersonalData)
             {
-                var keyRing = _services.GetService<IPersonalDataEncryptorKeyRing>();
-                var encryptor = _services.GetService<IPersonalDataEncryptor>();
-                return encryptor.Encrypt(keyRing.CurrentKeyId, data);
+                var keyRing = _services.GetService<ILookupProtectorKeyRing>();
+                var encryptor = _services.GetService<ILookupProtector>();
+                return encryptor.Protect(keyRing.CurrentKeyId, data);
             }
             return data;
         }
@@ -1414,13 +1414,13 @@ namespace Microsoft.AspNetCore.Identity
             // Need to potentially check all keys
             if (user == null && Options.Stores.ProtectPersonalData)
             {
-                var keyRing = _services.GetService<IPersonalDataEncryptorKeyRing>();
-                var encryptor = _services.GetService<IPersonalDataEncryptor>();
+                var keyRing = _services.GetService<ILookupProtectorKeyRing>();
+                var encryptor = _services.GetService<ILookupProtector>();
                 if (keyRing != null && encryptor != null)
                 {
                     foreach (var key in keyRing.GetAllKeyIds())
                     {
-                        var oldKey = encryptor.Encrypt(key, email);
+                        var oldKey = encryptor.Protect(key, email);
                         user = await store.FindByEmailAsync(oldKey, CancellationToken);
                         if (user != null)
                         {

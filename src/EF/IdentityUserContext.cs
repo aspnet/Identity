@@ -136,11 +136,16 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
                 if (encryptPersonalData)
                 {
                     var converter = new PersonalDataConverter(this.GetService<IPersonalDataProtector>());
-                    b.Property(e => e.Email).HasConversion(converter);
-                    //b.Property(e => e.NormalizedEmail).HasConversion(converter);
-                    b.Property(e => e.UserName).HasConversion(converter);
-                    //b.Property(e => e.NormalizedUserName).HasConversion(converter);
-                    b.Property(e => e.PhoneNumber).HasConversion(converter);
+                    var personalDataProps = typeof(TUser).GetProperties().Where(
+                                    prop => Attribute.IsDefined(prop, typeof(ProtectedPersonalDataAttribute)));
+                    foreach (var p in personalDataProps)
+                    {
+                        if (p.PropertyType != typeof(string))
+                        {
+                            throw new InvalidOperationException(Resources.CanOnlyProtectStrings);
+                        }
+                        b.Property(typeof(string), p.Name).HasConversion(converter);
+                    }
                 }
 
                 b.HasMany<TUserClaim>().WithOne().HasForeignKey(uc => uc.UserId).IsRequired();
