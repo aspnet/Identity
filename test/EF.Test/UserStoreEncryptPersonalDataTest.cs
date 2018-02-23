@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.Test;
 using Microsoft.EntityFrameworkCore;
@@ -34,7 +35,6 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
             .AddEntityFrameworkStores<TestDbContext>()
             .AddPersonalDataEncryption<SillyEncryptor, DefaultKeyRing>();
         }
-
 
         public class DefaultKeyRing : ILookupProtectorKeyRing
         {
@@ -103,7 +103,6 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
 
         private class InkProtector : ILookupProtector
         {
-
             public InkProtector() { }
 
             public string Unprotect(string keyId, string data)
@@ -123,6 +122,19 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
             public string NonPersonalData2 { get; set; }
             [PersonalData]
             public string SafePersonalData { get; set; }
+        }
+
+        private bool FindInk(DbConnection conn, string column, string id)
+        {
+            var command = conn.CreateCommand();
+            command.CommandText = $"SELECT u.{column} FROM AspNetUsers u WHERE u.Id = '{id}'";
+            command.CommandType = System.Data.CommandType.Text;
+            var reader = command.ExecuteReader();
+            if (reader.Read())
+            {
+                return reader.GetString(0) == "Default:ink";
+            }
+            return false;
         }
 
         /// <summary>
@@ -149,7 +161,6 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
                     .AddEntityFrameworkStores<IdentityDbContext<CustomUser>>()
                     .AddPersonalDataEncryption<InkProtector, DefaultKeyRing>();
 
-
                 var dbOptions = new DbContextOptionsBuilder().UseSqlServer(scratch.ConnectionString)
                     .UseApplicationServiceProvider(services.BuildServiceProvider())
                     .Options;
@@ -174,28 +185,30 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
                 user.PhoneNumber = "12345678";
                 IdentityResultAssert.IsSuccess(await manager.UpdateAsync(user));
 
-                await manager.SetEmailAsync(user, "test2@test.com");
-                await manager.SetPhoneNumberAsync(user, "22");
-
+                var conn = dbContext.Database.GetDbConnection();
+                conn.Open();
                 if (protect)
                 {
-                    Assert.Equal("ink", user.PhoneNumber);
-                    Assert.Equal("ink", user.Email);
-                    Assert.Equal("ink", user.UserName);
-                    Assert.Equal("ink", user.PersonalData1);
-                    Assert.Equal("ink", user.PersonalData2);
+                    Assert.True(FindInk(conn, "PhoneNumber", guid));
+                    Assert.True(FindInk(conn, "Email", guid));
+                    Assert.True(FindInk(conn, "UserName", guid));
+                    Assert.True(FindInk(conn, "PersonalData1", guid));
+                    Assert.True(FindInk(conn, "PersonalData2", guid));
                 }
                 else
                 {
-                    Assert.Equal("test@test.com", user.Email);
-                    Assert.Equal(guid, user.UserName);
-                    Assert.Equal("p1", user.PersonalData1);
-                    Assert.Equal("p2", user.PersonalData2);
-                    Assert.Equal("12345678", user.PhoneNumber);
+                    Assert.False(FindInk(conn, "PhoneNumber", guid));
+                    Assert.False(FindInk(conn, "Email", guid));
+                    Assert.False(FindInk(conn, "UserName", guid));
+                    Assert.False(FindInk(conn, "PersonalData1", guid));
+                    Assert.False(FindInk(conn, "PersonalData2", guid));
+
                 }
-                Assert.Equal("np1", user.NonPersonalData1);
-                Assert.Equal("np2", user.NonPersonalData2);
-                Assert.Equal("safe", user.SafePersonalData);
+                Assert.False(FindInk(conn, "NonPersonalData1", guid));
+                Assert.False(FindInk(conn, "NonPersonalData2", guid));
+                Assert.False(FindInk(conn, "SafePersonalData", guid));
+
+                conn.Close();
             }
         }
 
