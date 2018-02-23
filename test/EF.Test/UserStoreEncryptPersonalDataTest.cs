@@ -100,7 +100,6 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
             Assert.Equal("123-456-7890", await manager.GetPhoneNumberAsync(user));
         }
 
-
         private class InkProtector : ILookupProtector
         {
             public InkProtector() { }
@@ -126,13 +125,17 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
 
         private bool FindInk(DbConnection conn, string column, string id)
         {
-            var command = conn.CreateCommand();
-            command.CommandText = $"SELECT u.{column} FROM AspNetUsers u WHERE u.Id = '{id}'";
-            command.CommandType = System.Data.CommandType.Text;
-            var reader = command.ExecuteReader();
-            if (reader.Read())
+            using (var command = conn.CreateCommand())
             {
-                return reader.GetString(0) == "Default:ink";
+                command.CommandText = $"SELECT u.{column} FROM AspNetUsers u WHERE u.Id = '{id}'";
+                command.CommandType = System.Data.CommandType.Text;
+                using (var reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        return reader.GetString(0) == "Default:ink";
+                    }
+                }
             }
             return false;
         }
@@ -212,7 +215,6 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
             }
         }
 
-
         private class InvalidUser : IdentityUser
         {
             [ProtectedPersonalData]
@@ -233,14 +235,20 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
             using (var scratch = new ScratchDatabaseFixture())
             {
                 var services = new ServiceCollection().AddLogging();
+                services.AddIdentity<CustomUser, IdentityRole>(options =>
+                {
+                    options.Stores.ProtectPersonalData = true;
+                })
+                    .AddEntityFrameworkStores<IdentityDbContext<CustomUser>>()
+                    .AddPersonalDataEncryption<InkProtector, DefaultKeyRing>();
                 var dbOptions = new DbContextOptionsBuilder().UseSqlServer(scratch.ConnectionString)
+                    .UseApplicationServiceProvider(services.BuildServiceProvider())
                     .Options;
                 var dbContext = new IdentityDbContext<InvalidUser>(dbOptions);
                 var e = Assert.Throws<InvalidOperationException>(() => dbContext.Database.EnsureCreated());
                 Assert.Equal("[ProtectedPersonalData] only works strings by default.", e.Message);
             }
         }
-
 
         /// <summary>
         /// Skipped because encryption causes this to fail.

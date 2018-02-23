@@ -30,7 +30,7 @@ namespace Microsoft.AspNetCore.Identity
         /// </summary>
         /// <param name="data">The data to unprotect.</param>
         /// <returns>The unprotected data.</returns>
-        public string Unprotect(string data)
+        public virtual string Unprotect(string data)
         {
             var split = data.IndexOf(':');
             if (split == -1 || split == data.Length-1)
@@ -47,7 +47,7 @@ namespace Microsoft.AspNetCore.Identity
         /// </summary>
         /// <param name="data">The data to protect.</param>
         /// <returns>The protected data.</returns>
-        public string Protect(string data)
+        public virtual string Protect(string data)
         {
             var current = _keyRing.CurrentKeyId;
             return current + ":" + _encryptor.Protect(current, data);
