@@ -52,5 +52,36 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             var email = emails.SentEmails[1];
             await UserStories.ConfirmEmailAsync(email, client);
         }
+
+        [Fact]
+        public async Task CanDownloadPersonalData()
+        {
+            // Arrange
+            var client = ServerFactory.CreateDefaultClient();
+
+            var userName = $"{Guid.NewGuid()}@example.com";
+            var password = $"!Test.Password1$";
+
+            var index = await UserStories.RegisterNewUserAsync(client, userName, password);
+
+            // Act & Assert
+            await UserStories.DownloadPersonalData(index, userName);
+        }
+
+        [Fact]
+        public async Task CanDeleteUser()
+        {
+            // Arrange
+            var client = ServerFactory.CreateDefaultClient();
+
+            var userName = $"{Guid.NewGuid()}@example.com";
+            var password = $"!Test.Password1$";
+
+            var index = await UserStories.RegisterNewUserAsync(client, userName, password);
+
+            // Act & Assert
+            await UserStories.DeleteUser(index, password);
+        }
+
     }
 }

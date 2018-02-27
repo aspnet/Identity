@@ -57,6 +57,7 @@ namespace Microsoft.AspNetCore.Identity
         /// <summary>
         /// Gets or sets the primary key for this user.
         /// </summary>
+        [PersonalData]
         public virtual TKey Id { get; set; }
 
         /// <summary>
