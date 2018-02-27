@@ -65,7 +65,14 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             var index = await UserStories.RegisterNewUserAsync(client, userName, password);
 
             // Act & Assert
-            await UserStories.DownloadPersonalData(index, userName);
+            var jsonData = await UserStories.DownloadPersonalData(index, userName);
+            Assert.Contains($"\"Id\":\"", jsonData);
+            Assert.Contains($"\"UserName\":\"{userName}\"", jsonData);
+            Assert.Contains($"\"Email\":\"{userName}\"", jsonData);
+            Assert.Contains($"\"EmailConfirmed\":\"False\"", jsonData);
+            Assert.Contains($"\"PhoneNumber\":\"null\"", jsonData);
+            Assert.Contains($"\"PhoneNumberConfirmed\":\"False\"", jsonData);
+            Assert.Contains($"\"TwoFactorEnabled\":\"False\"", jsonData);
         }
 
         [Fact]
@@ -82,6 +89,5 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             // Act & Assert
             await UserStories.DeleteUser(index, password);
         }
-
     }
 }

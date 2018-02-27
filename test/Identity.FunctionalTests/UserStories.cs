@@ -144,19 +144,12 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             return await deleteUser.Delete(password);
         }
 
-        internal static async Task DownloadPersonalData(Index index, string userName)
+        internal static async Task<string> DownloadPersonalData(Index index, string userName)
         {
             var manage = await index.ClickManageLinkAsync();
             var personalData = await manage.ClickPersonalDataLinkAsync();
             var download = await personalData.SubmitDownloadForm();
-
-            var jsonData = await download.Content.ReadAsStringAsync();
-            Assert.Contains($"\"UserName\":\"{userName}\"", jsonData);
-            Assert.Contains($"\"Email\":\"{userName}\"", jsonData);
-            Assert.Contains($"\"EmailConfirmed\":\"False\"", jsonData);
-            Assert.Contains($"\"PhoneNumber\":\"null\"", jsonData);
-            Assert.Contains($"\"PhoneNumberConfirmed\":\"False\"", jsonData);
-            Assert.Contains($"\"TwoFactorEnabled\":\"False\"", jsonData);
+            return await download.Content.ReadAsStringAsync();
         }
     }
 }
