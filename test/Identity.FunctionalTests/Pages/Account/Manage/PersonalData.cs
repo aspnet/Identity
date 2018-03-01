@@ -8,12 +8,12 @@ using AngleSharp.Dom.Html;
 
 namespace Microsoft.AspNetCore.Identity.FunctionalTests.Account.Manage
 {
-    public class PersonalData : HtmlPage
+    public class PersonalData : DefaultUIPage
     {
         private readonly IHtmlAnchorElement _deleteLink;
         private readonly IHtmlFormElement _downloadForm;
 
-        public PersonalData(HttpClient client, IHtmlDocument personalData, HtmlPageContext context)
+        public PersonalData(HttpClient client, IHtmlDocument personalData, DefaultUIContext context)
             : base(client, personalData, context)
         {
             _deleteLink = HtmlAssert.HasLink("#delete", personalData);
@@ -24,7 +24,7 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests.Account.Manage
         {
             var goToDelete = await Client.GetAsync(_deleteLink.Href);
             var delete = await ResponseAssert.IsHtmlDocumentAsync(goToDelete);
-            return new DeleteUser(Client, delete, Context);
+            return new DeleteUser(Client, delete, Context.WithAnonymousUser());
         }
 
         internal async Task<HttpResponseMessage> SubmitDownloadForm()

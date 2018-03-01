@@ -9,11 +9,11 @@ using Xunit;
 
 namespace Microsoft.AspNetCore.Identity.FunctionalTests.Account.Manage
 {
-    public class DeleteUser : HtmlPage
+    public class DeleteUser : DefaultUIPage
     {
         private readonly IHtmlFormElement _deleteForm;
 
-        public DeleteUser(HttpClient client, IHtmlDocument deleteUser, HtmlPageContext context)
+        public DeleteUser(HttpClient client, IHtmlDocument deleteUser, DefaultUIContext context)
             : base(client, deleteUser, context)
         {
             _deleteForm = HtmlAssert.HasForm("#delete-user", deleteUser);
@@ -27,7 +27,7 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests.Account.Manage
             Assert.Equal(Index.Path, deleteLocation.ToString());
             var indexResponse = await Client.GetAsync(deleteLocation);
             var index = await ResponseAssert.IsHtmlDocumentAsync(indexResponse);
-            return new FunctionalTests.Index(Client, index, Context, authenticated: false);
+            return new FunctionalTests.Index(Client, index, Context);
         }
 
         private async Task<HttpResponseMessage> SendDeleteForm(string password)
