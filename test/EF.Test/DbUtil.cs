@@ -6,9 +6,6 @@ using System.Data.SqlClient;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Console;
-using Microsoft.Extensions.Logging.Debug;
 using Xunit;
 
 namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
@@ -22,15 +19,8 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
                 services = new ServiceCollection();
             }
             services.AddHttpContextAccessor();
-            var myLoggerFactory = new LoggerFactory(new[] { new DebugLoggerProvider((_, __) => true) });
-            var consoleLoggerFactory = new LoggerFactory(new[] { new ConsoleLoggerProvider((_, __) => true, true) });
-
-            System.Diagnostics.Debug.WriteLine("DbUtil Hello");
-            Console.WriteLine("Console hello");
-
             services.AddDbContext<TContext>(options =>
             {
-                options.UseLoggerFactory(myLoggerFactory);
                 options.UseSqlServer(connectionString);
             });
             return services;
