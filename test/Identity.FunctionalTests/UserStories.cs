@@ -136,6 +136,11 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             return await resetPassword.SendNewPasswordAsync(email, newPassword);
         }
 
+        internal static async Task<ChangePassword> ChangePasswordAsync(ChangePassword changePassword)
+        {
+            return await changePassword.ChangePasswordAsync($"!Test.Password1$", $"!Test.Password2$");
+        }
+        
         internal static async Task<Index> DeleteUser(Index index, string password)
         {
             var manage = await index.ClickManageLinkAsync();

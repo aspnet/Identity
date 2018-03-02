@@ -4,6 +4,10 @@
 using System;
 using System.Threading.Tasks;
 using Identity.DefaultUI.WebSite;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace Microsoft.AspNetCore.Identity.FunctionalTests
@@ -51,6 +55,26 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             Assert.Equal(2, emails.SentEmails.Count);
             var email = emails.SentEmails[1];
             await UserStories.ConfirmEmailAsync(email, client);
+        }
+
+        [Fact]
+        public async Task CanChangePassword()
+        {
+            // Arrange
+            var server = ServerFactory.CreateDefaultServer();
+
+            var client = ServerFactory.CreateDefaultClient(server);
+            var newClient = ServerFactory.CreateDefaultClient(server);
+
+            var userName = $"{Guid.NewGuid()}@example.com";
+            var password = $"!Test.Password1$";
+
+            var index = await UserStories.RegisterNewUserAsync(client, userName, password);
+            var manage = await index.ClickManageLinkAsync();
+            var changePassword = await manage.ClickChangePasswordLinkAsync();
+
+            var changedPassword = await UserStories.ChangePasswordAsync(changePassword);
+            await UserStories.LoginExistingUserAsync(newClient, userName, $"!Test.Password2$");
         }
 
         [Fact]
