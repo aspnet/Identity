@@ -2,12 +2,12 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Identity.DefaultUI.WebSite;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace Microsoft.AspNetCore.Identity.FunctionalTests
@@ -61,7 +61,9 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
         public async Task CanChangePassword()
         {
             // Arrange
-            var server = ServerFactory.CreateDefaultServer();
+            var principals = new List<ClaimsPrincipal>();
+            var server = ServerFactory.CreateServer(builder =>
+                builder.ConfigureTestServices(s => s.SetupGetUserClaimsPrincipal(user => principals.Add(user))));
 
             var client = ServerFactory.CreateDefaultClient(server);
             var newClient = ServerFactory.CreateDefaultClient(server);
@@ -73,8 +75,24 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             var manage = await index.ClickManageLinkAsync();
             var changePassword = await manage.ClickChangePasswordLinkAsync();
 
+            // Act 1
             var changedPassword = await UserStories.ChangePasswordAsync(changePassword);
+
+            // Assert 1
+            // RefreshSignIn regenerates a new ClaimsPrincipal
+            Assert.NotEqual(GetClaimValue(principals[0]), GetClaimValue(principals[1]));
+
+            // Act 2
             await UserStories.LoginExistingUserAsync(newClient, userName, $"!Test.Password2$");
+
+            // Assert 2
+            // Signing in again with a different client uses the same ClaimsPrincipal
+            Assert.Equal(GetClaimValue(principals[1]), GetClaimValue(principals[2]));
+        }
+
+        private string GetClaimValue(ClaimsPrincipal principal)
+        {
+            return principal.Identities.First().Claims.Last().Value;
         }
 
         [Fact]
