@@ -37,6 +37,7 @@ namespace Microsoft.AspNetCore.Identity
             cookieBuilder.ExternalCookie = builder.AddExternalCookie();
             cookieBuilder.TwoFactorRememberMeCookie = builder.AddTwoFactorRememberMeCookie();
             cookieBuilder.TwoFactorUserIdCookie = builder.AddTwoFactorUserIdCookie();
+            configureCookies?.Invoke(cookieBuilder);
             return cookieBuilder;
         }
 
@@ -96,7 +97,7 @@ namespace Microsoft.AspNetCore.Identity
                 o.Cookie.Name = IdentityConstants.TwoFactorUserIdScheme;
                 o.ExpireTimeSpan = TimeSpan.FromMinutes(5);
             });
-            return new OptionsBuilder<CookieAuthenticationOptions>(builder.Services, IdentityConstants.TwoFactorRememberMeScheme);
+            return new OptionsBuilder<CookieAuthenticationOptions>(builder.Services, IdentityConstants.TwoFactorUserIdScheme);
         }
     }
 }
