@@ -92,7 +92,7 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
 
         private string GetClaimValue(ClaimsPrincipal principal)
         {
-            return principal.Identities.First().Claims.Last().Value;
+            return principal.Identities.Single().Claims.Single(c => c.Type == "AspNet.Identity.SecurityStamp").Value;
         }
 
         [Fact]
