@@ -699,28 +699,28 @@ namespace Microsoft.AspNetCore.Identity.Test
         }
 
         [Fact]
-        public void UserManagerThrowsIfStoreDoesNotSupportEncryption()
+        public void UserManagerThrowsIfStoreDoesNotSupportProtection()
         {
             var services = new ServiceCollection()
                     .AddLogging();
             services.AddIdentity<TestUser, TestRole>(o => o.Stores.ProtectPersonalData = true)
                 .AddUserStore<NoopUserStore>();
             var e = Assert.Throws<InvalidOperationException>(() => services.BuildServiceProvider().GetService<UserManager<TestUser>>());
-            Assert.Contains("Store does not implement IEncryptedUserStore", e.Message);
+            Assert.Contains("Store does not implement IProtectedUserStore", e.Message);
         }
 
         [Fact]
-        public void UserManagerThrowsIfMissingPersonalDataEncryptor()
+        public void UserManagerThrowsIfMissingPersonalDataProtection()
         {
             var services = new ServiceCollection()
                     .AddLogging();
             services.AddIdentity<TestUser, TestRole>(o => o.Stores.ProtectPersonalData = true)
-                .AddUserStore<EncryptedStore>();
+                .AddUserStore<ProtectedStore>();
             var e = Assert.Throws<InvalidOperationException>(() => services.BuildServiceProvider().GetService<UserManager<TestUser>>());
-            Assert.Contains("No IPersonalDataEncryptor service was registered", e.Message);
+            Assert.Contains("No IPersonalDataProtector service was registered", e.Message);
         }
 
-        private class EncryptedStore : IEncryptedUserStore<TestUser>
+        private class ProtectedStore : IProtectedUserStore<TestUser>
         {
             public Task<IdentityResult> CreateAsync(TestUser user, CancellationToken cancellationToken)
             {

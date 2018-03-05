@@ -12,11 +12,11 @@ using Xunit;
 
 namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
 {
-    public class UserStoreEncryptPersonalDataTest : SqlStoreTestBase<IdentityUser, IdentityRole, string>
+    public class ProtectedUserStoreTest : SqlStoreTestBase<IdentityUser, IdentityRole, string>
     {
         private DefaultKeyRing _keyRing = new DefaultKeyRing();
 
-        public UserStoreEncryptPersonalDataTest(ScratchDatabaseFixture fixture)
+        public ProtectedUserStoreTest(ScratchDatabaseFixture fixture)
             : base(fixture)
         { }
 
@@ -33,7 +33,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
             })
             .AddDefaultTokenProviders()
             .AddEntityFrameworkStores<TestDbContext>()
-            .AddPersonalDataEncryption<SillyEncryptor, DefaultKeyRing>();
+            .AddPersonalDataProtection<SillyEncryptor, DefaultKeyRing>();
         }
 
         public class DefaultKeyRing : ILookupProtectorKeyRing
@@ -162,7 +162,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
                     options.Stores.ProtectPersonalData = protect;
                 })
                     .AddEntityFrameworkStores<IdentityDbContext<CustomUser>>()
-                    .AddPersonalDataEncryption<InkProtector, DefaultKeyRing>();
+                    .AddPersonalDataProtection<InkProtector, DefaultKeyRing>();
 
                 var dbOptions = new DbContextOptionsBuilder().UseSqlServer(scratch.ConnectionString)
                     .UseApplicationServiceProvider(services.BuildServiceProvider())
@@ -240,7 +240,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
                     options.Stores.ProtectPersonalData = true;
                 })
                     .AddEntityFrameworkStores<IdentityDbContext<CustomUser>>()
-                    .AddPersonalDataEncryption<InkProtector, DefaultKeyRing>();
+                    .AddPersonalDataProtection<InkProtector, DefaultKeyRing>();
                 var dbOptions = new DbContextOptionsBuilder().UseSqlServer(scratch.ConnectionString)
                     .UseApplicationServiceProvider(services.BuildServiceProvider())
                     .Options;

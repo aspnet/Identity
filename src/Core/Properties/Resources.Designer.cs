@@ -683,32 +683,32 @@ namespace Microsoft.Extensions.Identity.Core
             => GetString("NoRoleType");
 
         /// <summary>
-        /// Store does not implement IEncryptedUserStore&lt;TUser&gt; which is required when EncryptPersonalData = true.
+        /// Store does not implement IProtectedUserStore&lt;TUser&gt; which is required when ProtectPersonalData = true.
         /// </summary>
-        internal static string StoreNotIEncryptedUserStore
+        internal static string StoreNotIProtectedUserStore
         {
-            get => GetString("StoreNotIEncryptedUserStore");
+            get => GetString("StoreNotIProtectedUserStore");
         }
 
         /// <summary>
-        /// Store does not implement IEncryptedUserStore&lt;TUser&gt; which is required when EncryptPersonalData = true.
+        /// Store does not implement IProtectedUserStore&lt;TUser&gt; which is required when ProtectPersonalData = true.
         /// </summary>
-        internal static string FormatStoreNotIEncryptedUserStore()
-            => GetString("StoreNotIEncryptedUserStore");
+        internal static string FormatStoreNotIProtectedUserStore()
+            => GetString("StoreNotIProtectedUserStore");
 
         /// <summary>
-        /// No IPersonalDataEncryptor service was registered, this is required when EncryptPersonalData = true.
+        /// No IPersonalDataProtector service was registered, this is required when ProtectPersonalData = true.
         /// </summary>
-        internal static string NoPersonalDataEncryptor
+        internal static string NoPersonalDataProtector
         {
-            get => GetString("NoPersonalDataEncryptor");
+            get => GetString("NoPersonalDataProtector");
         }
 
         /// <summary>
-        /// No IPersonalDataEncryptor service was registered, this is required when EncryptPersonalData = true.
+        /// No IPersonalDataProtector service was registered, this is required when ProtectPersonalData = true.
         /// </summary>
-        internal static string FormatNoPersonalDataEncryptor()
-            => GetString("NoPersonalDataEncryptor");
+        internal static string FormatNoPersonalDataProtector()
+            => GetString("NoPersonalDataProtector");
 
         private static string GetString(string name, params string[] formatterNames)
         {

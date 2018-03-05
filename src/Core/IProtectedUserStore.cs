@@ -7,6 +7,6 @@ namespace Microsoft.AspNetCore.Identity
     /// Marker interface used to signal that the store supports the <see cref="StoreOptions.ProtectPersonalData"/> flag.
     /// </summary>
     /// <typeparam name="TUser">The type that represents a user.</typeparam>
-    public interface IEncryptedUserStore<TUser> : IUserStore<TUser> where TUser : class
+    public interface IProtectedUserStore<TUser> : IUserStore<TUser> where TUser : class
     { }
 }

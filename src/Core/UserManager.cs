@@ -117,14 +117,13 @@ namespace Microsoft.AspNetCore.Identity
 
             if (Options.Stores.ProtectPersonalData)
             {
-                if (!(Store is IEncryptedUserStore<TUser>))
+                if (!(Store is IProtectedUserStore<TUser>))
                 {
-                    throw new InvalidOperationException(Resources.StoreNotIEncryptedUserStore);
+                    throw new InvalidOperationException(Resources.StoreNotIProtectedUserStore);
                 }
-                // REVIEW: should look for protector?
                 if (services.GetService<ILookupProtector>() == null)
                 {
-                    throw new InvalidOperationException(Resources.NoPersonalDataEncryptor);
+                    throw new InvalidOperationException(Resources.NoPersonalDataProtector);
                 }
             }
         }
@@ -556,12 +555,12 @@ namespace Microsoft.AspNetCore.Identity
             if (user == null && Options.Stores.ProtectPersonalData)
             {
                 var keyRing = _services.GetService<ILookupProtectorKeyRing>();
-                var encryptor = _services.GetService<ILookupProtector>();
-                if (keyRing != null && encryptor != null)
+                var protector = _services.GetService<ILookupProtector>();
+                if (keyRing != null && protector != null)
                 {
                     foreach (var key in keyRing.GetAllKeyIds())
                     {
-                        var oldKey = encryptor.Protect(key, userName);
+                        var oldKey = protector.Protect(key, userName);
                         user = await Store.FindByNameAsync(oldKey, CancellationToken);
                         if (user != null)
                         {
@@ -618,8 +617,8 @@ namespace Microsoft.AspNetCore.Identity
             if (Options.Stores.ProtectPersonalData)
             {
                 var keyRing = _services.GetService<ILookupProtectorKeyRing>();
-                var encryptor = _services.GetService<ILookupProtector>();
-                return encryptor.Protect(keyRing.CurrentKeyId, data);
+                var protector = _services.GetService<ILookupProtector>();
+                return protector.Protect(keyRing.CurrentKeyId, data);
             }
             return data;
         }
@@ -1415,12 +1414,12 @@ namespace Microsoft.AspNetCore.Identity
             if (user == null && Options.Stores.ProtectPersonalData)
             {
                 var keyRing = _services.GetService<ILookupProtectorKeyRing>();
-                var encryptor = _services.GetService<ILookupProtector>();
-                if (keyRing != null && encryptor != null)
+                var protector = _services.GetService<ILookupProtector>();
+                if (keyRing != null && protector != null)
                 {
                     foreach (var key in keyRing.GetAllKeyIds())
                     {
-                        var oldKey = encryptor.Protect(key, email);
+                        var oldKey = protector.Protect(key, email);
                         user = await store.FindByEmailAsync(oldKey, CancellationToken);
                         if (user != null)
                         {
