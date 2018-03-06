@@ -29,8 +29,8 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
         public static IServiceCollection SetupTestEmailSender(this IServiceCollection services, IEmailSender sender) =>
             services.AddSingleton(sender);
 
-        public static IServiceCollection SetupGetUserClaimsPrincipal(this IServiceCollection services, Action<ClaimsPrincipal> captureUser) =>
-            services.Configure<CookieAuthenticationOptions>(IdentityConstants.ApplicationScheme, o => o.Events.OnSigningIn = context =>
+        public static IServiceCollection SetupGetUserClaimsPrincipal(this IServiceCollection services, Action<ClaimsPrincipal> captureUser, string schemeName) =>
+            services.Configure<CookieAuthenticationOptions>(schemeName, o => o.Events.OnSigningIn = context =>
             {
                 captureUser(context.Principal);
                 return Task.CompletedTask;

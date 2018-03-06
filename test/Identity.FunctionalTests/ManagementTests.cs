@@ -63,36 +63,70 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             // Arrange
             var principals = new List<ClaimsPrincipal>();
             var server = ServerFactory.CreateServer(builder =>
-                builder.ConfigureTestServices(s => s.SetupGetUserClaimsPrincipal(user => principals.Add(user))));
+                builder.ConfigureTestServices(s => s.SetupGetUserClaimsPrincipal(user => principals.Add(user), IdentityConstants.ApplicationScheme)));
 
             var client = ServerFactory.CreateDefaultClient(server);
             var newClient = ServerFactory.CreateDefaultClient(server);
 
             var userName = $"{Guid.NewGuid()}@example.com";
-            var password = $"!Test.Password1$";
+            var password = "!Test.Password1";
 
             var index = await UserStories.RegisterNewUserAsync(client, userName, password);
-            var manage = await index.ClickManageLinkAsync();
-            var changePassword = await manage.ClickChangePasswordLinkAsync();
 
             // Act 1
-            var changedPassword = await UserStories.ChangePasswordAsync(changePassword);
+            var changedPassword = await UserStories.ChangePasswordAsync(index, "!Test.Password1", "!Test.Password2");
 
             // Assert 1
-            // RefreshSignIn regenerates a new ClaimsPrincipal
-            Assert.NotEqual(GetClaimValue(principals[0]), GetClaimValue(principals[1]));
+            // RefreshSignIn generates a new security stamp claim
+            Assert.NotEqual(GetSecurityStampClaimValue(principals[0]), GetSecurityStampClaimValue(principals[1]));
 
             // Act 2
-            await UserStories.LoginExistingUserAsync(newClient, userName, $"!Test.Password2$");
+            await UserStories.LoginExistingUserAsync(newClient, userName, "!Test.Password2");
 
             // Assert 2
-            // Signing in again with a different client uses the same ClaimsPrincipal
-            Assert.Equal(GetClaimValue(principals[1]), GetClaimValue(principals[2]));
+            // Signing in again with a different client uses the same security stamp claim
+            Assert.Equal(GetSecurityStampClaimValue(principals[1]), GetSecurityStampClaimValue(principals[2]));
         }
 
-        private string GetClaimValue(ClaimsPrincipal principal)
+        [Fact]
+        public async Task CanChangePasswordWithExternalLogin()
+        {
+            // Arrange
+            var principals = new List<ClaimsPrincipal>();
+            var server = ServerFactory.CreateServer(builder =>
+                builder.ConfigureTestServices(s => s.SetupTestThirdPartyLogin().SetupGetUserClaimsPrincipal(user => principals.Add(user), IdentityConstants.ExternalScheme)));
+
+            var client = ServerFactory.CreateDefaultClient(server);
+            var newClient = ServerFactory.CreateDefaultClient(server);
+
+            var guid = Guid.NewGuid();
+            var userName = $"{guid}";
+            var email = $"{guid}@example.com";
+
+            // Act 1
+            var index = await UserStories.RegisterNewUserWithSocialLoginAsync(client, userName, email);
+            var claim = GetNameIdentifierClaimValue(principals[0]);
+
+            // Assert 1
+            Assert.NotNull(claim);
+
+            // Act 2
+            var changedPassword = await UserStories.ChangePasswordExternalLoginAsync(index, "!Test.Password2");
+            await UserStories.LoginExistingUserAsync(newClient, email, "!Test.Password2");
+
+            // Assert 2
+            // Signing in again with a different client uses the same name identifier claim
+            Assert.Equal(claim, GetNameIdentifierClaimValue(principals[0]));
+        }
+
+        private string GetSecurityStampClaimValue(ClaimsPrincipal principal)
         {
             return principal.Identities.Single().Claims.Single(c => c.Type == "AspNet.Identity.SecurityStamp").Value;
+        }
+
+        private string GetNameIdentifierClaimValue(ClaimsPrincipal principal)
+        {
+            return principal.Identities.Single().Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value;
         }
 
         [Fact]

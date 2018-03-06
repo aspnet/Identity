@@ -61,6 +61,15 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests.Account.Manage
             return new ChangePassword(Client, changePasswordDocument, Context);
         }
 
+        public async Task<SetPassword> ClickChangePasswordLinkExternalLoginAsync()
+        {
+            var response = await Client.GetAsync(_changePasswordLink.Href);
+            var goToSetPassword = ResponseAssert.IsRedirect(response);
+            var setPasswordResponse = await Client.GetAsync(goToSetPassword);
+            var setPasswordDocument = await ResponseAssert.IsHtmlDocumentAsync(setPasswordResponse);
+            return new SetPassword(Client, setPasswordDocument, Context);
+        }
+        
         public async Task<PersonalData> ClickPersonalDataLinkAsync()
         {
             var goToPersonalData = await Client.GetAsync(_personalDataLink.Href);

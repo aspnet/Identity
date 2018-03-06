@@ -136,9 +136,20 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             return await resetPassword.SendNewPasswordAsync(email, newPassword);
         }
 
-        internal static async Task<ChangePassword> ChangePasswordAsync(ChangePassword changePassword)
+        internal static async Task<ChangePassword> ChangePasswordAsync(Index index, string oldPassword, string newPassword)
         {
-            return await changePassword.ChangePasswordAsync($"!Test.Password1$", $"!Test.Password2$");
+            var manage = await index.ClickManageLinkAsync();
+            var changePassword = await manage.ClickChangePasswordLinkAsync();
+
+            return await changePassword.ChangePasswordAsync(oldPassword, newPassword);
+        }
+
+        internal static async Task<SetPassword> ChangePasswordExternalLoginAsync(Index index, string newPassword)
+        {
+            var manage = await index.ClickManageLinkAsync();
+            var setPassword = await manage.ClickChangePasswordLinkExternalLoginAsync();
+
+            return await setPassword.SetPasswordAsync(newPassword);
         }
         
         internal static async Task<Index> DeleteUser(Index index, string password)
