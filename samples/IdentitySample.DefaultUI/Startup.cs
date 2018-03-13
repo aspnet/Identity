@@ -34,16 +34,11 @@ namespace IdentitySample.DefaultUI
 
             services.AddMvc();
 
-            ConfigureAuthentication(services);
-        }
-
-        public void ConfigureAuthentication(IServiceCollection services)
-        {
             services.AddIdentityCore<ApplicationUser>(o => o.Stores.MaxLengthForKeys = 128)
-                .AddRoles<IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultUI()
-                .AddDefaultTokenProviders();
+                 .AddRoles<IdentityRole>()
+                 .AddEntityFrameworkStores<ApplicationDbContext>()
+                 .AddDefaultUI()
+                 .AddDefaultTokenProviders();
 
             services.AddAuthentication(o =>
             {
@@ -53,6 +48,7 @@ namespace IdentitySample.DefaultUI
             .AddIdentityCookies(o => { });
         }
 
+ 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
