@@ -89,12 +89,13 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
         }
 
         [Fact]
-        public async Task CanChangePasswordWithExternalLogin()
+        public async Task CanSetPasswordWithExternalLogin()
         {
             // Arrange
             var principals = new List<ClaimsPrincipal>();
             var server = ServerFactory.CreateServer(builder =>
-                builder.ConfigureTestServices(s => s.SetupTestThirdPartyLogin().SetupGetUserClaimsPrincipal(user => principals.Add(user), IdentityConstants.ExternalScheme)));
+                builder.ConfigureTestServices(s => s.SetupTestThirdPartyLogin()
+                .SetupGetUserClaimsPrincipal(user => principals.Add(user), IdentityConstants.ApplicationScheme)));
 
             var client = ServerFactory.CreateDefaultClient(server);
             var newClient = ServerFactory.CreateDefaultClient(server);
@@ -105,18 +106,17 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
 
             // Act 1
             var index = await UserStories.RegisterNewUserWithSocialLoginAsync(client, userName, email);
-            var claim = GetNameIdentifierClaimValue(principals[0]);
+            index = await UserStories.LoginWithSocialLoginAsync(newClient, userName);
 
             // Assert 1
-            Assert.NotNull(claim);
+            Assert.NotNull(GetAuthenticationMethodIdentifierClaimValue(principals[1]));
 
             // Act 2
-            var changedPassword = await UserStories.ChangePasswordExternalLoginAsync(index, "!Test.Password2");
-            await UserStories.LoginExistingUserAsync(newClient, email, "!Test.Password2");
+            var changedPassword = await UserStories.SetPasswordAsync(index, "!Test.Password2");
 
             // Assert 2
-            // Signing in again with a different client uses the same name identifier claim
-            Assert.Equal(claim, GetNameIdentifierClaimValue(principals[0]));
+            // RefreshSignIn uses the same AuthenticationMethod claim value
+            Assert.Equal(GetAuthenticationMethodIdentifierClaimValue(principals[1]), GetAuthenticationMethodIdentifierClaimValue(principals[2]));
         }
 
         private string GetSecurityStampClaimValue(ClaimsPrincipal principal)
@@ -124,9 +124,9 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             return principal.Identities.Single().Claims.Single(c => c.Type == "AspNet.Identity.SecurityStamp").Value;
         }
 
-        private string GetNameIdentifierClaimValue(ClaimsPrincipal principal)
+        private string GetAuthenticationMethodIdentifierClaimValue(ClaimsPrincipal principal)
         {
-            return principal.Identities.Single().Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value;
+            return principal.Identities.Single().Claims.Single(c => c.Type == ClaimTypes.AuthenticationMethod).Value;
         }
 
         [Fact]
