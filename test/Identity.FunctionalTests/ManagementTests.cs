@@ -78,14 +78,14 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
 
             // Assert 1
             // RefreshSignIn generates a new security stamp claim
-            Assert.NotEqual(GetSecurityStampClaimValue(principals[0]), GetSecurityStampClaimValue(principals[1]));
+            AssertClaimsNotEqual(principals[0], principals[1], "AspNet.Identity.SecurityStamp");
 
             // Act 2
             await UserStories.LoginExistingUserAsync(newClient, userName, "!Test.Password2");
 
             // Assert 2
             // Signing in again with a different client uses the same security stamp claim
-            Assert.Equal(GetSecurityStampClaimValue(principals[1]), GetSecurityStampClaimValue(principals[2]));
+            AssertClaimsEqual(principals[1], principals[2], "AspNet.Identity.SecurityStamp");
         }
 
         [Fact]
@@ -109,24 +109,70 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             index = await UserStories.LoginWithSocialLoginAsync(newClient, userName);
 
             // Assert 1
-            Assert.NotNull(GetAuthenticationMethodIdentifierClaimValue(principals[1]));
+            Assert.NotNull(principals[1].Identities.Single().Claims.Single(c => c.Type == ClaimTypes.AuthenticationMethod).Value);
 
             // Act 2
-            var changedPassword = await UserStories.SetPasswordAsync(index, "!Test.Password2");
+            await UserStories.SetPasswordAsync(index, "!Test.Password2");
 
             // Assert 2
             // RefreshSignIn uses the same AuthenticationMethod claim value
-            Assert.Equal(GetAuthenticationMethodIdentifierClaimValue(principals[1]), GetAuthenticationMethodIdentifierClaimValue(principals[2]));
+            AssertClaimsEqual(principals[1], principals[2], ClaimTypes.AuthenticationMethod);
+
+            // Act & Assert 3
+            // Can log in with the password set above
+            await UserStories.LoginExistingUserAsync(ServerFactory.CreateDefaultClient(server), email, "!Test.Password2");
         }
 
-        private string GetSecurityStampClaimValue(ClaimsPrincipal principal)
+        [Fact]
+        public async Task CanRemoveExternalLogin()
         {
-            return principal.Identities.Single().Claims.Single(c => c.Type == "AspNet.Identity.SecurityStamp").Value;
+            // Arrange
+            var principals = new List<ClaimsPrincipal>();
+            var server = ServerFactory.CreateServer(builder =>
+                builder.ConfigureTestServices(s => s.SetupTestThirdPartyLogin()
+                .SetupGetUserClaimsPrincipal(user => principals.Add(user), IdentityConstants.ApplicationScheme)));
+
+            var client = ServerFactory.CreateDefaultClient(server);
+
+            var guid = Guid.NewGuid();
+            var userName = $"{guid}";
+            var email = $"{guid}@example.com";
+
+            // Act
+            var index = await UserStories.RegisterNewUserAsync(client, email, "!TestPassword1");
+            var linkLogin = await UserStories.LinkExternalLoginAsync(index, email);
+            await UserStories.RemoveExternalLoginAsync(linkLogin, email);
+
+            // RefreshSignIn generates a new security stamp claim
+            AssertClaimsNotEqual(principals[0], principals[1], "AspNet.Identity.SecurityStamp");
         }
 
-        private string GetAuthenticationMethodIdentifierClaimValue(ClaimsPrincipal principal)
+        [Fact]
+        public async Task CanResetAuthenticator()
         {
-            return principal.Identities.Single().Claims.Single(c => c.Type == ClaimTypes.AuthenticationMethod).Value;
+            // Arrange
+            var principals = new List<ClaimsPrincipal>();
+            var server = ServerFactory.CreateServer(builder =>
+                builder.ConfigureTestServices(s => s.SetupTestThirdPartyLogin()
+                .SetupGetUserClaimsPrincipal(user => principals.Add(user), IdentityConstants.ApplicationScheme)));
+
+            var client = ServerFactory.CreateDefaultClient(server);
+            var newClient = ServerFactory.CreateDefaultClient(server);
+
+            var userName = $"{Guid.NewGuid()}@example.com";
+            var password = $"!Test.Password1$";
+
+            // Act
+            var loggedIn = await UserStories.RegisterNewUserAsync(client, userName, password);
+            var showRecoveryCodes = await UserStories.EnableTwoFactorAuthentication(loggedIn);
+            var twoFactorKey = showRecoveryCodes.Context.AuthenticatorKey;
+
+            // Use a new client to simulate a new browser session.
+            var index = await UserStories.LoginExistingUser2FaAsync(newClient, userName, password, twoFactorKey);
+            await UserStories.ResetAuthenticator(index);
+
+            // RefreshSignIn generates a new security stamp claim
+            AssertClaimsNotEqual(principals[1], principals[2], "AspNet.Identity.SecurityStamp");
         }
 
         [Fact]
@@ -164,6 +210,20 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
 
             // Act & Assert
             await UserStories.DeleteUser(index, password);
+        }
+
+        private void AssertClaimsEqual(ClaimsPrincipal expectedPrincipal, ClaimsPrincipal actualPrincipal, string claimType)
+        {
+            var expectedPrincipalClaim = expectedPrincipal.Identities.Single().Claims.Single(c => c.Type == claimType).Value;
+            var actualPrincipalClaim = actualPrincipal.Identities.Single().Claims.Single(c => c.Type == claimType).Value;
+            Assert.Equal(expectedPrincipalClaim, actualPrincipalClaim);
+        }
+
+        private void AssertClaimsNotEqual(ClaimsPrincipal expectedPrincipal, ClaimsPrincipal actualPrincipal, string claimType)
+        {
+            var expectedPrincipalClaim = expectedPrincipal.Identities.Single().Claims.Single(c => c.Type == claimType).Value;
+            var actualPrincipalClaim = actualPrincipal.Identities.Single().Claims.Single(c => c.Type == claimType).Value;
+            Assert.NotEqual(expectedPrincipalClaim, actualPrincipalClaim);
         }
     }
 }
