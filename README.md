@@ -14,11 +14,12 @@ This project is part of ASP.NET Core. You can find samples, documentation and ge
 The previous versions of Identity for MVC5 and lower, previously available on CodePlex, are available at https://github.com/aspnet/AspNetIdentity
 
 ## Community Maintained Store Providers
-
- - [ASP.NET Identity MongoDB Provider](https://github.com/tugberkugurlu/AspNetCore.Identity.MongoDB)
+ - ASP.NET Identity MongoDB Providers:
+    - [By Tugberk Ugurlu](https://github.com/tugberkugurlu/AspNetCore.Identity.MongoDB)
+    - [By Alexandre Spieser](https://github.com/alexandre-spieser/AspNetCore.Identity.MongoDbCore)
  - [ASP.NET Identity LinqToDB Provider](https://github.com/ili/LinqToDB.Identity)
  - [ASP.NET Identity DynamoDB Provider](https://github.com/miltador/AspNetCore.Identity.DynamoDB)
- - ASP.NET Identity RavenDB Provider:
+ - ASP.NET Identity RavenDB Providers:
     - [By Judah Gabriel Himango](https://github.com/JudahGabriel/RavenDB.Identity)
     - [By Iskandar Rafiev](https://github.com/maqduni/AspNetCore.Identity.RavenDB)
  - [ASP.NET Identity Cassandra Provider](https://github.com/lkubis/AspNetCore.Identity.Cassandra)
