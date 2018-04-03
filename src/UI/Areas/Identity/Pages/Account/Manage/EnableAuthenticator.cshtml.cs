@@ -45,14 +45,14 @@ namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Manage.Internal
 
     internal class EnableAuthenticatorModel<TUser> : EnableAuthenticatorModel where TUser : class
     {
-        private readonly UserManager<TUser> _userManager;
+        private readonly IUserManager<TUser> _userManager;
         private readonly ILogger<EnableAuthenticatorModel> _logger;
         private readonly UrlEncoder _urlEncoder;
 
         private const string AuthenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&issuer={0}&digits=6";
 
         public EnableAuthenticatorModel(
-            UserManager<TUser> userManager,
+            IUserManager<TUser> userManager,
             ILogger<EnableAuthenticatorModel> logger,
             UrlEncoder urlEncoder)
         {

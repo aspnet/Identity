@@ -15,14 +15,14 @@ namespace IdentitySample.Controllers
     [Authorize]
     public class AccountController : Controller
     {
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IUserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
         private readonly ISmsSender _smsSender;
         private readonly ILogger _logger;
 
         public AccountController(
-            UserManager<ApplicationUser> userManager,
+            IUserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IEmailSender emailSender,
             ISmsSender smsSender,

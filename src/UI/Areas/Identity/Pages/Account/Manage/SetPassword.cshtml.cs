@@ -39,11 +39,11 @@ namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Manage.Internal
 
     internal class SetPasswordModel<TUser> : SetPasswordModel where TUser : class
     {
-        private readonly UserManager<TUser> _userManager;
+        private readonly IUserManager<TUser> _userManager;
         private readonly SignInManager<TUser> _signInManager;
 
         public SetPasswordModel(
-            UserManager<TUser> userManager,
+            IUserManager<TUser> userManager,
             SignInManager<TUser> signInManager)
         {
             _userManager = userManager;

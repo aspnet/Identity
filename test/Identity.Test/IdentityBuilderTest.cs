@@ -115,7 +115,7 @@ namespace Microsoft.AspNetCore.Identity.Test
             services.AddIdentity<TestUser, TestRole>()
                 .AddUserStore<NoopUserStore>()
                 .AddUserManager<MyUserManager>();
-            var myUserManager = services.BuildServiceProvider().GetRequiredService(typeof(UserManager<TestUser>)) as MyUserManager;
+            var myUserManager = services.BuildServiceProvider().GetRequiredService(typeof(IUserManager<TestUser>)) as MyUserManager;
             Assert.NotNull(myUserManager);
         }
 
@@ -301,12 +301,12 @@ namespace Microsoft.AspNetCore.Identity.Test
                 throw new NotImplementedException();
             }
 
-            public Task<IdentityResult> ValidateAsync(UserManager<TestUser> manager, TestUser user)
+            public Task<IdentityResult> ValidateAsync(IUserManager<TestUser> manager, TestUser user)
             {
                 throw new NotImplementedException();
             }
 
-            public Task<IdentityResult> ValidateAsync(UserManager<TestUser> manager, TestUser user, string password)
+            public Task<IdentityResult> ValidateAsync(IUserManager<TestUser> manager, TestUser user, string password)
             {
                 throw new NotImplementedException();
             }
@@ -324,7 +324,7 @@ namespace Microsoft.AspNetCore.Identity.Test
 
         private class MySignInManager : SignInManager<TestUser>
         {
-            public MySignInManager(UserManager<TestUser> manager, IHttpContextAccessor context, IUserClaimsPrincipalFactory<TestUser> claimsFactory) : base(manager, context, claimsFactory, null, null, null) { }
+            public MySignInManager(IUserManager<TestUser> manager, IHttpContextAccessor context, IUserClaimsPrincipalFactory<TestUser> claimsFactory) : base(manager, context, claimsFactory, null, null, null) { }
         }
 
         private class MyUserManager : UserManager<TestUser>
@@ -334,7 +334,7 @@ namespace Microsoft.AspNetCore.Identity.Test
 
         private class MyClaimsPrincipalFactory : UserClaimsPrincipalFactory<TestUser, TestRole>
         {
-            public MyClaimsPrincipalFactory(UserManager<TestUser> userManager, RoleManager<TestRole> roleManager, IOptions<IdentityOptions> optionsAccessor) : base(userManager, roleManager, optionsAccessor)
+            public MyClaimsPrincipalFactory(IUserManager<TestUser> userManager, RoleManager<TestRole> roleManager, IOptions<IdentityOptions> optionsAccessor) : base(userManager, roleManager, optionsAccessor)
             {
             }
         }

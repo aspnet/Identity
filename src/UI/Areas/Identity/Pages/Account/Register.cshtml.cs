@@ -50,12 +50,12 @@ namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Internal
     {
         private readonly SignInManager<TUser> _signInManager;
         private readonly IUserFactory<TUser> _userFactory;
-        private readonly UserManager<TUser> _userManager;
+        private readonly IUserManager<TUser> _userManager;
         private readonly ILogger<LoginModel> _logger;
         private readonly IEmailSender _emailSender;
 
         public RegisterModel(
-            UserManager<TUser> userManager,
+            IUserManager<TUser> userManager,
             SignInManager<TUser> signInManager,
             IUserFactory<TUser> userFactory,
             ILogger<LoginModel> logger,

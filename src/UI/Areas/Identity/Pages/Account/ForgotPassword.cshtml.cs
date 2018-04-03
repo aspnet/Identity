@@ -31,10 +31,10 @@ namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Internal
 
     internal class ForgotPasswordModel<TUser> : ForgotPasswordModel where TUser : class
     {
-        private readonly UserManager<TUser> _userManager;
+        private readonly IUserManager<TUser> _userManager;
         private readonly IEmailSender _emailSender;
 
-        public ForgotPasswordModel(UserManager<TUser> userManager, IEmailSender emailSender)
+        public ForgotPasswordModel(IUserManager<TUser> userManager, IEmailSender emailSender)
         {
             _userManager = userManager;
             _emailSender = emailSender;

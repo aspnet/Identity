@@ -16,9 +16,9 @@ namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Internal
 
     internal class ConfirmEmailModel<TUser> : ConfirmEmailModel where TUser : class
     {
-        private readonly UserManager<TUser> _userManager;
+        private readonly IUserManager<TUser> _userManager;
 
-        public ConfirmEmailModel(UserManager<TUser> userManager)
+        public ConfirmEmailModel(IUserManager<TUser> userManager)
         {
             _userManager = userManager;
         }

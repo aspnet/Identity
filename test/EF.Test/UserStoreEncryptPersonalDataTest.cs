@@ -172,7 +172,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
                 dbContext.Database.EnsureCreated();
 
                 var sp = services.BuildServiceProvider();
-                var manager = sp.GetService<UserManager<CustomUser>>();
+                var manager = sp.GetService<IUserManager<CustomUser>>();
 
                 var guid = Guid.NewGuid().ToString();
                 var user = new CustomUser();

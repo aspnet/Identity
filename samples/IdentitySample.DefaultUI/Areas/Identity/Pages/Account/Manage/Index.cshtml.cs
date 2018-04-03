@@ -15,12 +15,12 @@ namespace IdentitySample.DefaultUI
 {
     public class IndexModel : PageModel
     {
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IUserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
 
         public IndexModel(
-            UserManager<ApplicationUser> userManager,
+            IUserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IEmailSender emailSender)
         {

@@ -21,7 +21,7 @@ namespace Microsoft.AspNetCore.Identity
     /// Provides the APIs for managing user in a persistence store.
     /// </summary>
     /// <typeparam name="TUser">The type encapsulating a user.</typeparam>
-    public class UserManager<TUser> : IDisposable where TUser : class
+    public class UserManager<TUser> : IUserManager<TUser> where TUser : class
     {
         /// <summary>
         /// The data protection purpose used for the reset password related methods.
@@ -52,7 +52,7 @@ namespace Microsoft.AspNetCore.Identity
         protected virtual CancellationToken CancellationToken => CancellationToken.None;
 
         /// <summary>
-        /// Constructs a new instance of <see cref="UserManager{TUser}"/>.
+        /// Constructs a new instance of <see cref="IUserManager{TUser}"/>.
         /// </summary>
         /// <param name="store">The persistence store the manager will operate over.</param>
         /// <param name="optionsAccessor">The accessor used to access the <see cref="IdentityOptions"/>.</param>

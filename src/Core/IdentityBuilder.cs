@@ -138,17 +138,17 @@ namespace Microsoft.AspNetCore.Identity
         }
 
         /// <summary>
-        /// Adds a <see cref="UserManager{TUser}"/> for the <seealso cref="UserType"/>.
+        /// Adds a <see cref="IUserManager{TUser}"/> for the <seealso cref="UserType"/>.
         /// </summary>
         /// <typeparam name="TUserManager">The type of the user manager to add.</typeparam>
         /// <returns>The current <see cref="IdentityBuilder"/> instance.</returns>
         public virtual IdentityBuilder AddUserManager<TUserManager>() where TUserManager : class
         {
-            var userManagerType = typeof(UserManager<>).MakeGenericType(UserType);
+            var userManagerType = typeof(IUserManager<>).MakeGenericType(UserType);
             var customType = typeof(TUserManager);
             if (!userManagerType.GetTypeInfo().IsAssignableFrom(customType.GetTypeInfo()))
             {
-                throw new InvalidOperationException(Resources.FormatInvalidManagerType(customType.Name, "UserManager", UserType.Name));
+                throw new InvalidOperationException(Resources.FormatInvalidManagerType(customType.Name, "IUserManager", UserType.Name));
             }
             if (userManagerType != customType)
             {

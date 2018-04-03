@@ -83,7 +83,7 @@ namespace Microsoft.AspNetCore.Identity.Test
         /// <param name="services">The service collection to use, optional.</param>
         /// <param name="configureServices">Delegate used to configure the services, optional.</param>
         /// <returns>The user manager to use for tests.</returns>
-        protected virtual UserManager<TUser> CreateManager(object context = null, IServiceCollection services = null, Action<IServiceCollection> configureServices = null)
+        protected virtual IUserManager<TUser> CreateManager(object context = null, IServiceCollection services = null, Action<IServiceCollection> configureServices = null)
         {
             if (services == null)
             {
@@ -95,7 +95,7 @@ namespace Microsoft.AspNetCore.Identity.Test
             }
             SetupIdentityServices(services, context);
             configureServices?.Invoke(services);
-            return services.BuildServiceProvider().GetService<UserManager<TUser>>();
+            return services.BuildServiceProvider().GetService<IUserManager<TUser>>();
         }
 
         /// <summary>
@@ -150,12 +150,12 @@ namespace Microsoft.AspNetCore.Identity.Test
         {
             public static readonly IdentityError ErrorMessage = new IdentityError { Description = "I'm Bad.", Code = "BadValidator" };
 
-            public Task<IdentityResult> ValidateAsync(UserManager<TUser> manager, TUser user, string password)
+            public Task<IdentityResult> ValidateAsync(IUserManager<TUser> manager, TUser user, string password)
             {
                 return Task.FromResult(IdentityResult.Failed(ErrorMessage));
             }
 
-            public Task<IdentityResult> ValidateAsync(UserManager<TUser> manager, TUser user)
+            public Task<IdentityResult> ValidateAsync(IUserManager<TUser> manager, TUser user)
             {
                 return Task.FromResult(IdentityResult.Failed(ErrorMessage));
             }
@@ -1059,17 +1059,17 @@ namespace Microsoft.AspNetCore.Identity.Test
 
         private class StaticTokenProvider : IUserTwoFactorTokenProvider<TUser>
         {
-            public async Task<string> GenerateAsync(string purpose, UserManager<TUser> manager, TUser user)
+            public async Task<string> GenerateAsync(string purpose, IUserManager<TUser> manager, TUser user)
             {
                 return MakeToken(purpose, await manager.GetUserIdAsync(user));
             }
 
-            public async Task<bool> ValidateAsync(string purpose, string token, UserManager<TUser> manager, TUser user)
+            public async Task<bool> ValidateAsync(string purpose, string token, IUserManager<TUser> manager, TUser user)
             {
                 return token == MakeToken(purpose, await manager.GetUserIdAsync(user));
             }
 
-            public Task<bool> CanGenerateTwoFactorTokenAsync(UserManager<TUser> manager, TUser user)
+            public Task<bool> CanGenerateTwoFactorTokenAsync(IUserManager<TUser> manager, TUser user)
             {
                 return Task.FromResult(true);
             }
@@ -1597,13 +1597,13 @@ namespace Microsoft.AspNetCore.Identity.Test
 
         private class YesPhoneNumberProvider : IUserTwoFactorTokenProvider<TUser>
         {
-            public Task<bool> CanGenerateTwoFactorTokenAsync(UserManager<TUser> manager, TUser user)
+            public Task<bool> CanGenerateTwoFactorTokenAsync(IUserManager<TUser> manager, TUser user)
                 => Task.FromResult(true);
 
-            public Task<string> GenerateAsync(string purpose, UserManager<TUser> manager, TUser user)
+            public Task<string> GenerateAsync(string purpose, IUserManager<TUser> manager, TUser user)
                 => Task.FromResult(purpose);
 
-            public Task<bool> ValidateAsync(string purpose, string token, UserManager<TUser> manager, TUser user)
+            public Task<bool> ValidateAsync(string purpose, string token, IUserManager<TUser> manager, TUser user)
                 => Task.FromResult(true);
         }
 

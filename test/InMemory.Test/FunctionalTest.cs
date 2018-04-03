@@ -273,7 +273,7 @@ namespace Microsoft.AspNetCore.Identity.InMemory
                     {
                         var req = context.Request;
                         var res = context.Response;
-                        var userManager = context.RequestServices.GetRequiredService<UserManager<TestUser>>();
+                        var userManager = context.RequestServices.GetRequiredService<IUserManager<TestUser>>();
                         var signInManager = context.RequestServices.GetRequiredService<SignInManager<TestUser>>();
                         PathString remainder;
                         if (req.Path == new PathString("/normal"))

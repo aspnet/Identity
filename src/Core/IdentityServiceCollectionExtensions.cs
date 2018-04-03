@@ -43,8 +43,9 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddScoped<IdentityErrorDescriber>();
             services.TryAddScoped<IUserClaimsPrincipalFactory<TUser>, UserClaimsPrincipalFactory<TUser>>();
             services.TryAddScoped<UserManager<TUser>, UserManager<TUser>>();
+			services.TryAddScoped<IUserManager<TUser>>(s=>s.GetService<UserManager<TUser>>());
 
-            if (setupAction != null)
+			if (setupAction != null)
             {
                 services.Configure(setupAction);
             }

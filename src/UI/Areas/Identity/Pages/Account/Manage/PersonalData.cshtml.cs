@@ -17,11 +17,11 @@ namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Manage.Internal
 
     internal class PersonalDataModel<TUser> : PersonalDataModel where TUser : class
     {
-        private readonly UserManager<TUser> _userManager;
+        private readonly IUserManager<TUser> _userManager;
         private readonly ILogger<PersonalDataModel> _logger;
 
         public PersonalDataModel(
-            UserManager<TUser> userManager,
+            IUserManager<TUser> userManager,
             ILogger<PersonalDataModel> logger)
         {
             _userManager = userManager;

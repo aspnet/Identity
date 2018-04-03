@@ -166,7 +166,7 @@ namespace Microsoft.AspNetCore.Identity.Test
             manager.Verify();
         }
 
-        private static Mock<UserManager<TestUser>> SetupUserManager(TestUser user)
+        private static Mock<IUserManager<TestUser>> SetupUserManager(TestUser user)
         {
             var manager = MockHelpers.MockUserManager<TestUser>();
             manager.Setup(m => m.FindByNameAsync(user.UserName)).ReturnsAsync(user);
@@ -176,7 +176,7 @@ namespace Microsoft.AspNetCore.Identity.Test
             return manager;
         }
 
-        private static SignInManager<TestUser> SetupSignInManager(UserManager<TestUser> manager, HttpContext context, StringBuilder logStore = null, IdentityOptions identityOptions = null)
+        private static SignInManager<TestUser> SetupSignInManager(IUserManager<TestUser> manager, HttpContext context, StringBuilder logStore = null, IdentityOptions identityOptions = null)
         {
             var contextAccessor = new Mock<IHttpContextAccessor>();
             contextAccessor.Setup(a => a.HttpContext).Returns(context);
@@ -353,7 +353,7 @@ namespace Microsoft.AspNetCore.Identity.Test
 
         private class GoodTokenProvider : AuthenticatorTokenProvider<TestUser>
         {
-            public override Task<bool> ValidateAsync(string purpose, string token, UserManager<TestUser> manager, TestUser user)
+            public override Task<bool> ValidateAsync(string purpose, string token, IUserManager<TestUser> manager, TestUser user)
             {
                 return Task.FromResult(true);
             }

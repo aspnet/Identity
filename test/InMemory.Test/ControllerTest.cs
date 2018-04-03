@@ -47,7 +47,7 @@ namespace Microsoft.AspNetCore.Identity.InMemory.Test
                 UserName = "Yolo"
             };
             const string password = "Yol0Sw@g!";
-            var userManager = app.ApplicationServices.GetRequiredService<UserManager<TestUser>>();
+            var userManager = app.ApplicationServices.GetRequiredService<IUserManager<TestUser>>();
             var signInManager = app.ApplicationServices.GetRequiredService<SignInManager<TestUser>>();
 
             IdentityResultAssert.IsSuccess(await userManager.CreateAsync(user, password));
@@ -97,7 +97,7 @@ namespace Microsoft.AspNetCore.Identity.InMemory.Test
             {
                 UserName = "Yolo"
             };
-            var userManager = app.ApplicationServices.GetRequiredService<UserManager<TestUser>>();
+            var userManager = app.ApplicationServices.GetRequiredService<IUserManager<TestUser>>();
             var signInManager = app.ApplicationServices.GetRequiredService<SignInManager<TestUser>>();
 
             IdentityResultAssert.IsSuccess(await userManager.CreateAsync(user));

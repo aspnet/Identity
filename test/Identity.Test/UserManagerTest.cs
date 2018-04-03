@@ -27,7 +27,7 @@ namespace Microsoft.AspNetCore.Identity.Test
             services.AddIdentity<TestUser, TestRole>();
             services.AddHttpContextAccessor();
             services.AddLogging();
-            var manager = services.BuildServiceProvider().GetRequiredService<UserManager<TestUser>>();
+            var manager = services.BuildServiceProvider().GetRequiredService<IUserManager<TestUser>>();
             Assert.NotNull(manager.PasswordHasher);
             Assert.NotNull(manager.Options);
         }
@@ -47,7 +47,7 @@ namespace Microsoft.AspNetCore.Identity.Test
                 .AddUserManager<CustomUserManager>()
                 .AddRoleManager<CustomRoleManager>();
             var provider = services.BuildServiceProvider();
-            Assert.Same(provider.GetRequiredService<UserManager<TestUser>>(),
+            Assert.Same(provider.GetRequiredService<IUserManager<TestUser>>(),
                 provider.GetRequiredService<CustomUserManager>());
             Assert.Same(provider.GetRequiredService<RoleManager<TestRole>>(),
                 provider.GetRequiredService<CustomRoleManager>());
@@ -665,17 +665,17 @@ namespace Microsoft.AspNetCore.Identity.Test
 
         private class ATokenProvider : IUserTwoFactorTokenProvider<TestUser>
         {
-            public Task<bool> CanGenerateTwoFactorTokenAsync(UserManager<TestUser> manager, TestUser user)
+            public Task<bool> CanGenerateTwoFactorTokenAsync(IUserManager<TestUser> manager, TestUser user)
             {
                 throw new NotImplementedException();
             }
 
-            public Task<string> GenerateAsync(string purpose, UserManager<TestUser> manager, TestUser user)
+            public Task<string> GenerateAsync(string purpose, IUserManager<TestUser> manager, TestUser user)
             {
                 throw new NotImplementedException();
             }
 
-            public Task<bool> ValidateAsync(string purpose, string token, UserManager<TestUser> manager, TestUser user)
+            public Task<bool> ValidateAsync(string purpose, string token, IUserManager<TestUser> manager, TestUser user)
             {
                 throw new NotImplementedException();
             }
@@ -694,7 +694,7 @@ namespace Microsoft.AspNetCore.Identity.Test
             {
                 ProviderInstance = provider
             })).AddUserStore<NoopUserStore>();
-            var manager = services.BuildServiceProvider().GetService<UserManager<TestUser>>();
+            var manager = services.BuildServiceProvider().GetService<IUserManager<TestUser>>();
             Assert.ThrowsAsync<NotImplementedException>(() => manager.GenerateUserTokenAsync(new TestUser(), "A", "purpose"));
         }
 
@@ -705,7 +705,7 @@ namespace Microsoft.AspNetCore.Identity.Test
                     .AddLogging();
             services.AddIdentity<TestUser, TestRole>(o => o.Stores.ProtectPersonalData = true)
                 .AddUserStore<NoopUserStore>();
-            var e = Assert.Throws<InvalidOperationException>(() => services.BuildServiceProvider().GetService<UserManager<TestUser>>());
+            var e = Assert.Throws<InvalidOperationException>(() => services.BuildServiceProvider().GetService<IUserManager<TestUser>>());
             Assert.Contains("Store does not implement IProtectedUserStore", e.Message);
         }
 
@@ -716,7 +716,7 @@ namespace Microsoft.AspNetCore.Identity.Test
                     .AddLogging();
             services.AddIdentity<TestUser, TestRole>(o => o.Stores.ProtectPersonalData = true)
                 .AddUserStore<ProtectedStore>();
-            var e = Assert.Throws<InvalidOperationException>(() => services.BuildServiceProvider().GetService<UserManager<TestUser>>());
+            var e = Assert.Throws<InvalidOperationException>(() => services.BuildServiceProvider().GetService<IUserManager<TestUser>>());
             Assert.Contains("No IPersonalDataProtector service was registered", e.Message);
         }
 
@@ -791,7 +791,7 @@ namespace Microsoft.AspNetCore.Identity.Test
                 {
                     ProviderInstance = provider
                 })).AddUserStore<NoopUserStore>().AddDefaultTokenProviders();
-            var manager = services.BuildServiceProvider().GetService<UserManager<TestUser>>();
+            var manager = services.BuildServiceProvider().GetService<IUserManager<TestUser>>();
             Assert.ThrowsAsync<NotImplementedException>(() => manager.GenerateUserTokenAsync(new TestUser(), TokenOptions.DefaultProvider, "purpose"));
         }
 
@@ -1075,7 +1075,7 @@ namespace Microsoft.AspNetCore.Identity.Test
         {
             public static readonly IdentityError ErrorMessage = new IdentityError { Description = "I'm Bad." };
 
-            public Task<IdentityResult> ValidateAsync(UserManager<TUser> manager, TUser user, string password)
+            public Task<IdentityResult> ValidateAsync(IUserManager<TUser> manager, TUser user, string password)
             {
                 return Task.FromResult(IdentityResult.Failed(ErrorMessage));
             }
@@ -1346,17 +1346,17 @@ namespace Microsoft.AspNetCore.Identity.Test
         {
             public string Name { get; } = "Noop";
 
-            public Task<string> GenerateAsync(string purpose, UserManager<TestUser> manager, TestUser user)
+            public Task<string> GenerateAsync(string purpose, IUserManager<TestUser> manager, TestUser user)
             {
                 return Task.FromResult("Test");
             }
 
-            public Task<bool> ValidateAsync(string purpose, string token, UserManager<TestUser> manager, TestUser user)
+            public Task<bool> ValidateAsync(string purpose, string token, IUserManager<TestUser> manager, TestUser user)
             {
                 return Task.FromResult(true);
             }
 
-            public Task<bool> CanGenerateTwoFactorTokenAsync(UserManager<TestUser> manager, TestUser user)
+            public Task<bool> CanGenerateTwoFactorTokenAsync(IUserManager<TestUser> manager, TestUser user)
             {
                 return Task.FromResult(true);
             }
@@ -1628,7 +1628,7 @@ namespace Microsoft.AspNetCore.Identity.Test
 
             services.AddIdentity<TestUser, TestRole>();
 
-            var manager = services.BuildServiceProvider().GetRequiredService<UserManager<TestUser>>();
+            var manager = services.BuildServiceProvider().GetRequiredService<IUserManager<TestUser>>();
 
             manager.Options.User.RequireUniqueEmail = true;
             var user = new TestUser() { UserName = "dupeEmail", Email = "dupe@email.com" };

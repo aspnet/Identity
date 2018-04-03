@@ -22,11 +22,11 @@ namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Manage.Internal
 
     internal class Disable2faModel<TUser> : Disable2faModel where TUser : class
     {
-        private readonly UserManager<TUser> _userManager;
+        private readonly IUserManager<TUser> _userManager;
         private readonly ILogger<Disable2faModel> _logger;
 
         public Disable2faModel(
-            UserManager<TUser> userManager,
+            IUserManager<TUser> userManager,
             ILogger<Disable2faModel> logger)
         {
             _userManager = userManager;

@@ -32,12 +32,12 @@ namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Manage.Internal
 
     internal class DeletePersonalDataModel<TUser> : DeletePersonalDataModel where TUser: class
     {
-        private readonly UserManager<TUser> _userManager;
+        private readonly IUserManager<TUser> _userManager;
         private readonly SignInManager<TUser> _signInManager;
         private readonly ILogger<DeletePersonalDataModel> _logger;
 
         public DeletePersonalDataModel(
-            UserManager<TUser> userManager,
+            IUserManager<TUser> userManager,
             SignInManager<TUser> signInManager,
             ILogger<DeletePersonalDataModel> logger)
         {

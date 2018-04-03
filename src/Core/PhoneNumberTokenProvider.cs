@@ -15,7 +15,7 @@ namespace Microsoft.AspNetCore.Identity
         /// Returns a flag indicating whether the token provider can generate a token suitable for two factor authentication token for
         /// the specified <paramref name="user"/>.
         /// </summary>
-        /// <param name="manager">The <see cref="UserManager{TUser}"/> that can be used to retrieve user properties.</param>
+        /// <param name="manager">The <see cref="IUserManager{TUser}"/> that can be used to retrieve user properties.</param>
         /// <param name="user">The user a token could be generated for.</param>
         /// <returns>
         /// The <see cref="Task"/> that represents the asynchronous operation, containing the a flag indicating if a two
@@ -23,7 +23,7 @@ namespace Microsoft.AspNetCore.Identity
         /// The task will return true if a two factor authentication token could be generated as the user has
         /// a telephone number, otherwise false.
         /// </returns>
-        public override async Task<bool> CanGenerateTwoFactorTokenAsync(UserManager<TUser> manager, TUser user)
+        public override async Task<bool> CanGenerateTwoFactorTokenAsync(IUserManager<TUser> manager, TUser user)
         {
             if (manager == null)
             {
@@ -37,13 +37,13 @@ namespace Microsoft.AspNetCore.Identity
         /// Returns a constant, provider and user unique modifier used for entropy in generated tokens from user information.
         /// </summary>
         /// <param name="purpose">The purpose the token will be generated for.</param>
-        /// <param name="manager">The <see cref="UserManager{TUser}"/> that can be used to retrieve user properties.</param>
+        /// <param name="manager">The <see cref="IUserManager{TUser}"/> that can be used to retrieve user properties.</param>
         /// <param name="user">The user a token should be generated for.</param>
         /// <returns>
         /// The <see cref="Task"/> that represents the asynchronous operation, containing a constant modifier for the specified 
         /// <paramref name="user"/> and <paramref name="purpose"/>.
         /// </returns>
-        public override async Task<string> GetUserModifierAsync(string purpose, UserManager<TUser> manager, TUser user)
+        public override async Task<string> GetUserModifierAsync(string purpose, IUserManager<TUser> manager, TUser user)
         {
             if (manager == null)
             {
