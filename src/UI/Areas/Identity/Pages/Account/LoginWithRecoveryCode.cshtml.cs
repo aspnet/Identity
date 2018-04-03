@@ -37,12 +37,12 @@ namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Internal
     internal class LoginWithRecoveryCodeModel<TUser> : LoginWithRecoveryCodeModel where TUser: class
     {
         private readonly SignInManager<TUser> _signInManager;
-        private readonly UserManager<TUser> _userManager;
+        private readonly IUserManager<TUser> _userManager;
         private readonly ILogger<LoginWithRecoveryCodeModel> _logger;
 
         public LoginWithRecoveryCodeModel(
             SignInManager<TUser> signInManager,
-            UserManager<TUser> userManager,
+            IUserManager<TUser> userManager,
             ILogger<LoginWithRecoveryCodeModel> logger)
         {
             _signInManager = signInManager;

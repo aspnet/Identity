@@ -35,12 +35,12 @@ namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Manage.Internal
 
     internal class ExternalLoginsModel<TUser> : ExternalLoginsModel where TUser : class
     {
-        private readonly UserManager<TUser> _userManager;
+        private readonly IUserManager<TUser> _userManager;
         private readonly SignInManager<TUser> _signInManager;
         private readonly IUserStore<TUser> _userStore;
 
         public ExternalLoginsModel(
-            UserManager<TUser> userManager,
+            IUserManager<TUser> userManager,
             SignInManager<TUser> signInManager,
             IUserStore<TUser> userStore)
         {

@@ -55,7 +55,7 @@ namespace Microsoft.AspNetCore.Identity.Test
             AddRoleStore(services, context);
             services.AddLogging();
             services.AddSingleton<ILogger<UserManager<TUser>>>(new TestLogger<UserManager<TUser>>());
-            services.AddSingleton<ILogger<RoleManager<TRole>>>(new TestLogger<RoleManager<TRole>>());
+			services.AddSingleton<ILogger<RoleManager<TRole>>>(new TestLogger<RoleManager<TRole>>());
         }
 
         /// <summary>
@@ -146,7 +146,7 @@ namespace Microsoft.AspNetCore.Identity.Test
         {
             public static readonly IdentityError ErrorMessage = new IdentityError { Description = "I'm Bad.", Code = "BadValidator" };
 
-            public Task<IdentityResult> ValidateAsync(UserManager<TUser> manager, TUser user, string password)
+            public Task<IdentityResult> ValidateAsync(IUserManager<TUser> manager, TUser user, string password)
             {
                 return Task.FromResult(IdentityResult.Failed(ErrorMessage));
             }
@@ -156,7 +156,7 @@ namespace Microsoft.AspNetCore.Identity.Test
                 return Task.FromResult(IdentityResult.Failed(ErrorMessage));
             }
 
-            public Task<IdentityResult> ValidateAsync(UserManager<TUser> manager, TUser user)
+            public Task<IdentityResult> ValidateAsync(IUserManager<TUser> manager, TUser user)
             {
                 return Task.FromResult(IdentityResult.Failed(ErrorMessage));
             }

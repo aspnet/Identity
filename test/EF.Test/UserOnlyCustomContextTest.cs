@@ -90,7 +90,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore.Test
         public async Task EnsureStartupUsageWorks()
         {
             var userStore = _builder.ApplicationServices.GetRequiredService<IUserStore<IdentityUser>>();
-            var userManager = _builder.ApplicationServices.GetRequiredService<UserManager<IdentityUser>>();
+            var userManager = _builder.ApplicationServices.GetRequiredService<IUserManager<IdentityUser>>();
 
             Assert.NotNull(userStore);
             Assert.NotNull(userManager);

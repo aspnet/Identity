@@ -31,7 +31,7 @@ namespace Microsoft.AspNetCore.Identity
         /// <param name="optionsAccessor">The accessor used to access the <see cref="IdentityOptions"/>.</param>
         /// <param name="logger">The logger used to log messages, warnings and errors.</param>
         /// <param name="schemes">The scheme provider that is used enumerate the authentication schemes.</param>
-        public SignInManager(UserManager<TUser> userManager,
+        public SignInManager(IUserManager<TUser> userManager,
             IHttpContextAccessor contextAccessor,
             IUserClaimsPrincipalFactory<TUser> claimsFactory,
             IOptions<IdentityOptions> optionsAccessor,
@@ -72,9 +72,9 @@ namespace Microsoft.AspNetCore.Identity
         public virtual ILogger Logger { get; set; }
 
         /// <summary>
-        /// The <see cref="UserManager{TUser}"/> used.
+        /// The <see cref="IUserManager{TUser}"/> used.
         /// </summary>
-        public UserManager<TUser> UserManager { get; set; }
+        public IUserManager<TUser> UserManager { get; set; }
 
         /// <summary>
         /// The <see cref="IUserClaimsPrincipalFactory{TUser}"/> used.

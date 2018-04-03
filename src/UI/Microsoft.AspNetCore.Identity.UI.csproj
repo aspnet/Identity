@@ -1,6 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk;Microsoft.NET.Sdk.Razor">
-  
-  <PropertyGroup>
+<Project Sdk="Microsoft.NET.Sdk">
+	<!--<Project Sdk="Microsoft.NET.Sdk;Microsoft.NET.Sdk.Razor">-->
+
+		<PropertyGroup>
     <Description>ASP.NET Core Identity UI is the default Razor Pages built-in UI for the ASP.NET Core Identity framework.</Description>
     <ViewAssemblyDescription>Compiled Razor views assembly for the ASP.NET Core Identity UI package.</ViewAssemblyDescription>
     <TargetFramework>netstandard2.0</TargetFramework>

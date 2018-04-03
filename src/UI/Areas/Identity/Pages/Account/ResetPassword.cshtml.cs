@@ -42,9 +42,9 @@ namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Internal
 
     internal class ResetPasswordModel<TUser> : ResetPasswordModel where TUser : class
     {
-        private readonly UserManager<TUser> _userManager;
+        private readonly IUserManager<TUser> _userManager;
 
-        public ResetPasswordModel(UserManager<TUser> userManager)
+        public ResetPasswordModel(IUserManager<TUser> userManager)
         {
             _userManager = userManager;
         }

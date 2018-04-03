@@ -33,10 +33,10 @@ namespace Microsoft.AspNetCore.Identity
         /// <summary>
         /// Validates the specified <paramref name="user"/> as an asynchronous operation.
         /// </summary>
-        /// <param name="manager">The <see cref="UserManager{TUser}"/> that can be used to retrieve user properties.</param>
+        /// <param name="manager">The <see cref="IUserManager{TUser}"/> that can be used to retrieve user properties.</param>
         /// <param name="user">The user to validate.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="IdentityResult"/> of the validation operation.</returns>
-        public virtual async Task<IdentityResult> ValidateAsync(UserManager<TUser> manager, TUser user)
+        public virtual async Task<IdentityResult> ValidateAsync(IUserManager<TUser> manager, TUser user)
         {
             if (manager == null)
             {
@@ -55,7 +55,7 @@ namespace Microsoft.AspNetCore.Identity
             return errors.Count > 0 ? IdentityResult.Failed(errors.ToArray()) : IdentityResult.Success;
         }
 
-        private async Task ValidateUserName(UserManager<TUser> manager, TUser user, ICollection<IdentityError> errors)
+        private async Task ValidateUserName(IUserManager<TUser> manager, TUser user, ICollection<IdentityError> errors)
         {
             var userName = await manager.GetUserNameAsync(user);
             if (string.IsNullOrWhiteSpace(userName))
@@ -79,7 +79,7 @@ namespace Microsoft.AspNetCore.Identity
         }
 
         // make sure email is not empty, valid, and unique
-        private async Task ValidateEmail(UserManager<TUser> manager, TUser user, List<IdentityError> errors)
+        private async Task ValidateEmail(IUserManager<TUser> manager, TUser user, List<IdentityError> errors)
         {
             var email = await manager.GetEmailAsync(user);
             if (string.IsNullOrWhiteSpace(email))

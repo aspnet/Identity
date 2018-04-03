@@ -32,12 +32,12 @@ namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Manage.Internal
 
     internal class TwoFactorAuthenticationModel<TUser> : TwoFactorAuthenticationModel where TUser : class
     {
-        private readonly UserManager<TUser> _userManager;
+        private readonly IUserManager<TUser> _userManager;
         private readonly SignInManager<TUser> _signInManager;
         private readonly ILogger<TwoFactorAuthenticationModel> _logger;
 
         public TwoFactorAuthenticationModel(
-            UserManager<TUser> userManager, SignInManager<TUser> signInManager, ILogger<TwoFactorAuthenticationModel> logger)
+            IUserManager<TUser> userManager, SignInManager<TUser> signInManager, ILogger<TwoFactorAuthenticationModel> logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;

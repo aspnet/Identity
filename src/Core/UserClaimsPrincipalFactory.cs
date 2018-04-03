@@ -18,10 +18,10 @@ namespace Microsoft.AspNetCore.Identity
         /// <summary>
         /// Initializes a new instance of the <see cref="UserClaimsPrincipalFactory{TUser}"/> class.
         /// </summary>
-        /// <param name="userManager">The <see cref="UserManager{TUser}"/> to retrieve user information from.</param>
+        /// <param name="userManager">The <see cref="IUserManager{TUser}"/> to retrieve user information from.</param>
         /// <param name="optionsAccessor">The configured <see cref="IdentityOptions"/>.</param>
         public UserClaimsPrincipalFactory(
-            UserManager<TUser> userManager,
+            IUserManager<TUser> userManager,
             IOptions<IdentityOptions> optionsAccessor)
         {
             if (userManager == null)
@@ -37,12 +37,12 @@ namespace Microsoft.AspNetCore.Identity
         }
 
         /// <summary>
-        /// Gets the <see cref="UserManager{TUser}"/> for this factory.
+        /// Gets the <see cref="IUserManager{TUser}"/> for this factory.
         /// </summary>
         /// <value>
-        /// The current <see cref="UserManager{TUser}"/> for this factory instance.
+        /// The current <see cref="IUserManager{TUser}"/> for this factory instance.
         /// </value>
-        public UserManager<TUser> UserManager { get; private set; }
+        public IUserManager<TUser> UserManager { get; private set; }
 
         /// <summary>
         /// Gets the <see cref="IdentityOptions"/> for this factory.
@@ -106,10 +106,10 @@ namespace Microsoft.AspNetCore.Identity
         /// <summary>
         /// Initializes a new instance of the <see cref="UserClaimsPrincipalFactory{TUser, TRole}"/> class.
         /// </summary>
-        /// <param name="userManager">The <see cref="UserManager{TUser}"/> to retrieve user information from.</param>
+        /// <param name="userManager">The <see cref="IUserManager{TUser}"/> to retrieve user information from.</param>
         /// <param name="roleManager">The <see cref="RoleManager{TRole}"/> to retrieve a user's roles from.</param>
         /// <param name="options">The configured <see cref="IdentityOptions"/>.</param>
-        public UserClaimsPrincipalFactory(UserManager<TUser> userManager, RoleManager<TRole> roleManager, IOptions<IdentityOptions> options)
+        public UserClaimsPrincipalFactory(IUserManager<TUser> userManager, RoleManager<TRole> roleManager, IOptions<IdentityOptions> options)
             : base(userManager, options)
         {
             if (roleManager == null)

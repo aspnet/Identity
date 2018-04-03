@@ -1,6 +1,6 @@
 @using IdentitySample.DefaultUI.Data
 @inject SignInManager<ApplicationUser> SignInManager
-@inject UserManager<ApplicationUser> UserManager
+@inject IUserManager<ApplicationUser> userManager
 
 @if (SignInManager.IsSignedIn(User))
 {

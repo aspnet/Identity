@@ -42,12 +42,12 @@ namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Internal
     internal class LoginWith2faModel<TUser> : LoginWith2faModel where TUser : class
     {
         private readonly SignInManager<TUser> _signInManager;
-        private readonly UserManager<TUser> _userManager;
+        private readonly IUserManager<TUser> _userManager;
         private readonly ILogger<LoginWith2faModel> _logger;
 
         public LoginWith2faModel(
             SignInManager<TUser> signInManager,
-            UserManager<TUser> userManager,
+            IUserManager<TUser> userManager,
             ILogger<LoginWith2faModel> logger)
         {
             _signInManager = signInManager;

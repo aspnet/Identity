@@ -22,12 +22,12 @@ namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Manage.Internal
 
     internal class ResetAuthenticatorModel<TUser> : ResetAuthenticatorModel where TUser : class
     {
-        UserManager<TUser> _userManager;
+        private readonly IUserManager<TUser> _userManager;
         private readonly SignInManager<TUser> _signInManager;
         ILogger<ResetAuthenticatorModel> _logger;
 
         public ResetAuthenticatorModel(
-            UserManager<TUser> userManager,
+            IUserManager<TUser> userManager,
             SignInManager<TUser> signInManager,
             ILogger<ResetAuthenticatorModel> logger)
         {

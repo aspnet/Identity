@@ -43,13 +43,13 @@ namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Internal
     internal class ExternalLoginModel<TUser> : ExternalLoginModel where TUser : class
     {
         private readonly SignInManager<TUser> _signInManager;
-        private readonly UserManager<TUser> _userManager;
+        private readonly IUserManager<TUser> _userManager;
         private readonly IUserFactory<TUser> _userFactory;
         private readonly ILogger<ExternalLoginModel> _logger;
 
         public ExternalLoginModel(
             SignInManager<TUser> signInManager,
-            UserManager<TUser> userManager,
+            IUserManager<TUser> userManager,
             IUserFactory<TUser> userFactory,
             ILogger<ExternalLoginModel> logger)
         {
