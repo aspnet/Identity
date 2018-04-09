@@ -44,13 +44,13 @@ namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Internal
     {
         private readonly SignInManager<TUser> _signInManager;
         private readonly UserManager<TUser> _userManager;
-        private readonly IUserFactory<TUser> _userFactory;
+        private readonly UserFactory<TUser> _userFactory;
         private readonly ILogger<ExternalLoginModel> _logger;
 
         public ExternalLoginModel(
             SignInManager<TUser> signInManager,
             UserManager<TUser> userManager,
-            IUserFactory<TUser> userFactory,
+            UserFactory<TUser> userFactory,
             ILogger<ExternalLoginModel> logger)
         {
             _signInManager = signInManager;
@@ -127,7 +127,7 @@ namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Internal
 
             if (ModelState.IsValid)
             {
-                var user = _userFactory.CreateUser(email: Input.Email, userName: Input.Email);
+                var user = _userFactory.CreateUser(userName: Input.Email, email: Input.Email);
                 var result = await _userManager.CreateAsync(user);
                 if (result.Succeeded)
                 {
