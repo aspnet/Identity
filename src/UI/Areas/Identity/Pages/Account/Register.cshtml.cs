@@ -49,7 +49,7 @@ namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Internal
     internal class RegisterModel<TUser> : RegisterModel where TUser : class
     {
         private readonly SignInManager<TUser> _signInManager;
-        private readonly IUserFactory<TUser> _userFactory;
+        private readonly UserFactory<TUser> _userFactory;
         private readonly UserManager<TUser> _userManager;
         private readonly ILogger<LoginModel> _logger;
         private readonly IEmailSender _emailSender;
@@ -57,7 +57,7 @@ namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Internal
         public RegisterModel(
             UserManager<TUser> userManager,
             SignInManager<TUser> signInManager,
-            IUserFactory<TUser> userFactory,
+            UserFactory<TUser> userFactory,
             ILogger<LoginModel> logger,
             IEmailSender emailSender)
         {
@@ -78,7 +78,7 @@ namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Internal
             returnUrl = returnUrl ?? Url.Content("~/");
             if (ModelState.IsValid)
             {
-                var user = _userFactory.CreateUser(email: Input.Email, userName: Input.Email);
+                var user = _userFactory.CreateUser(userName: Input.Email, email: Input.Email);
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {

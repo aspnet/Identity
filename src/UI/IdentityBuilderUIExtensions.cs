@@ -37,10 +37,11 @@ namespace Microsoft.AspNetCore.Identity
                     .MakeGenericType(builder.UserType));
             builder.Services.TryAddTransient<IEmailSender, EmailSender>();
 
+            // Hookup the UserFactory for IdentityUser based user types
             if (TryGetIdentityUserType(builder.UserType, out var primaryKeyType))
             {
-                var userFactoryType = typeof(IUserFactory<>).MakeGenericType(builder.UserType);
-                var defaultUserFactoryType = typeof(UserFactory<,>).MakeGenericType(builder.UserType, primaryKeyType);
+                var userFactoryType = typeof(UserFactory<>).MakeGenericType(builder.UserType);
+                var defaultUserFactoryType = typeof(IdentityUserFactory<,>).MakeGenericType(builder.UserType, primaryKeyType);
                 builder.Services.TryAddSingleton(userFactoryType, defaultUserFactoryType);
             }
 
