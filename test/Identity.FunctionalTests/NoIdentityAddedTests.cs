@@ -4,6 +4,7 @@
 using System.Net;
 using System.Threading.Tasks;
 using Identity.DefaultUI.WebSite;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Testing;
 using Xunit;
@@ -11,14 +12,14 @@ using Xunit.Abstractions;
 
 namespace Microsoft.AspNetCore.Identity.FunctionalTests
 {
-    public class NoIdentityAddedTests : LoggedTest, IClassFixture<ServerFactory<NoIdentityStartup>>
+    public class NoIdentityAddedTests : LoggedTest, IClassFixture<ServerFactory<NoIdentityStartup, IdentityDbContext>>
     {
-        public NoIdentityAddedTests(ServerFactory<NoIdentityStartup> serverFactory, ITestOutputHelper output) : base(output)
+        public NoIdentityAddedTests(ServerFactory<NoIdentityStartup, IdentityDbContext> serverFactory, ITestOutputHelper output) : base(output)
         {
             ServerFactory = serverFactory;
         }
 
-        public ServerFactory<NoIdentityStartup> ServerFactory { get; }
+        public ServerFactory<NoIdentityStartup, IdentityDbContext> ServerFactory { get; }
 
         [Theory]
         [MemberData(nameof(IdentityEndpoints))]

@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Identity.DefaultUI.WebSite;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Testing;
 using Xunit;
@@ -13,14 +14,16 @@ using Xunit.Sdk;
 
 namespace Microsoft.AspNetCore.Identity.FunctionalTests
 {
-    public abstract class LoginTests<TStartup> : LoggedTest, IClassFixture<ServerFactory<TStartup>> where TStartup : class
+    public abstract class LoginTests<TStartup, TContext> : LoggedTest, IClassFixture<ServerFactory<TStartup, TContext>>
+        where TStartup : class
+        where TContext : DbContext
     {
-        public LoginTests(ServerFactory<TStartup> serverFactory, ITestOutputHelper output) : base(output)
+        public LoginTests(ServerFactory<TStartup, TContext> serverFactory, ITestOutputHelper output) : base(output)
         {
             ServerFactory = serverFactory;
         }
 
-        public ServerFactory<TStartup> ServerFactory { get; }
+        public ServerFactory<TStartup, TContext> ServerFactory { get; }
 
         [Fact]
         public async Task CanLogInWithAPreviouslyRegisteredUser()

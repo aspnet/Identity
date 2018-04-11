@@ -6,6 +6,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\..\InMemory.Test\InMemoryUserStore.cs" Link="Services\InMemoryUserStore.cs" />
+    <Compile Include="..\..\Shared\TestRole.cs" Link="Data\TestRole.cs" />
+    <Compile Include="..\..\Shared\TestRoleClaim.cs" Link="Data\TestRoleClaim.cs" />
+    <Compile Include="..\..\Shared\TestUser.cs" Link="Data\TestUser.cs" />
+    <Compile Include="..\..\Shared\TestUserClaim.cs" Link="Data\TestUserClaim.cs" />
+    <Compile Include="..\..\Shared\TestUserLogin.cs" Link="Data\TestUserLogin.cs" />
+    <Compile Include="..\..\Shared\TestUserRole.cs" Link="Data\TestUserRole.cs" />
+    <Compile Include="..\..\Shared\TestUserToken.cs" Link="Data\TestUserToken.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="$(MicrosoftAspNetCoreAuthenticationCookiesPackageVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="$(MicrosoftAspNetCoreAuthenticationFacebookPackageVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="$(MicrosoftAspNetCoreAuthenticationGooglePackageVersion)" />

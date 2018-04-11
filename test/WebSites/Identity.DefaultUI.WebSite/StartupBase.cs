@@ -11,7 +11,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Identity.DefaultUI.WebSite
 {
-    public class StartupBase<TUser> where TUser : class
+    public class StartupBase<TUser,TContext> 
+        where TUser : class
+        where TContext : DbContext
     {
         public StartupBase(IConfiguration configuration)
         {
@@ -21,7 +23,7 @@ namespace Identity.DefaultUI.WebSite
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        public virtual void ConfigureServices(IServiceCollection services)
         {
             services.Configure<CookiePolicyOptions>(options =>
             {
@@ -29,22 +31,17 @@ namespace Identity.DefaultUI.WebSite
                 options.CheckConsentNeeded = context => true;
             });
 
-            services.AddDbContext<IdentityDbContext>(options =>
+            services.AddDbContext<TContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection"),
                     sqlOptions => sqlOptions.MigrationsAssembly("Identity.DefaultUI.WebSite")
                 ));
 
-            services.AddDefaultIdentity<IdentityUser>()
+            services.AddDefaultIdentity<TUser>()
                 .AddRoles<IdentityRole>()
-                .AddEntityFrameworkStores<IdentityDbContext>();
+                .AddEntityFrameworkStores<TContext>();
 
-            services.AddMvc()
-                .AddRazorPagesOptions(options =>
-                {
-                    options.Conventions.AuthorizeFolder("/Areas/Identity/Pages/Account/Manage");
-                    options.Conventions.AuthorizePage("/Areas/Identity/Pages/Account/Logout");
-                });
+            services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

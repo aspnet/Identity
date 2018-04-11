@@ -8,7 +8,9 @@ using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Identity.DefaultUI.WebSite;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Testing;
 using Xunit;
@@ -16,14 +18,16 @@ using Xunit.Abstractions;
 
 namespace Microsoft.AspNetCore.Identity.FunctionalTests
 {
-    public abstract class ManagementTests<TStartup> : LoggedTest, IClassFixture<ServerFactory<TStartup>> where TStartup : class
+    public abstract class ManagementTests<TStartup, TContext> : LoggedTest, IClassFixture<ServerFactory<TStartup, TContext>>
+        where TStartup : class
+        where TContext : DbContext
     {
-        public ManagementTests(ServerFactory<TStartup> serverFactory, ITestOutputHelper output) : base(output)
+        public ManagementTests(ServerFactory<TStartup, TContext> serverFactory, ITestOutputHelper output) : base(output)
         {
             ServerFactory = serverFactory;
         }
 
-        public ServerFactory<TStartup> ServerFactory { get; }
+        public ServerFactory<TStartup, TContext> ServerFactory { get; }
 
         [Fact]
         public async Task CanEnableTwoFactorAuthentication()
@@ -257,15 +261,38 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
 
                 // Act & Assert
                 var jsonData = await UserStories.DownloadPersonalData(index, userName);
-                Assert.Contains($"\"Id\":\"", jsonData);
-                Assert.Contains($"\"UserName\":\"{userName}\"", jsonData);
-                Assert.Contains($"\"Email\":\"{userName}\"", jsonData);
-                Assert.Contains($"\"EmailConfirmed\":\"False\"", jsonData);
-                Assert.Contains($"\"PhoneNumber\":\"null\"", jsonData);
-                Assert.Contains($"\"PhoneNumberConfirmed\":\"False\"", jsonData);
-                Assert.Contains($"\"TwoFactorEnabled\":\"{twoFactor}\"", jsonData);
-                Assert.Equal(twoFactor, jsonData.Contains($"\"Authenticator Key\":\""));
-                Assert.Equal(social, jsonData.Contains($"\"Contoso external login provider key\":\"{userName}\""));
+                Assert.NotNull(jsonData);
+                Assert.True(jsonData.ContainsKey("Id"));
+                Assert.NotNull(jsonData["Id"]);
+                Assert.True(jsonData.ContainsKey("UserName"));
+                Assert.Equal(userName, (string)jsonData["UserName"]);
+                Assert.True(jsonData.ContainsKey("Email"));
+                Assert.Equal(userName, (string)jsonData["Email"]);
+                Assert.True(jsonData.ContainsKey("EmailConfirmed"));
+                Assert.False((bool)jsonData["EmailConfirmed"]);
+                Assert.True(jsonData.ContainsKey("PhoneNumber"));
+                Assert.Equal("null", (string)jsonData["PhoneNumber"]);
+                Assert.True(jsonData.ContainsKey("PhoneNumberConfirmed"));
+                Assert.False((bool)jsonData["PhoneNumberConfirmed"]);
+                Assert.Equal(twoFactor, (bool)jsonData["TwoFactorEnabled"]);
+
+                if (twoFactor)
+                {
+                    Assert.NotNull(jsonData["Authenticator Key"]);
+                }
+                else
+                {
+                    Assert.Null((string)jsonData["Authenticator Key"]);
+                }
+                
+                if (social)
+                {
+                    Assert.Equal(userName, (string)jsonData["Contoso external login provider key"]);
+                }
+                else
+                {
+                    Assert.Null((string)jsonData["Contoso external login provider key"]);
+                }                
             }
         }
 

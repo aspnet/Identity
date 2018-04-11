@@ -52,11 +52,13 @@ namespace Microsoft.AspNetCore.Identity.Test
         /// <summary>
         /// Id
         /// </summary>
+        [PersonalData]
         public virtual TKey Id { get; set; }
 
         /// <summary>
         /// Name
         /// </summary>
+        [PersonalData]
         public virtual string UserName { get; set; }
 
         /// <summary>
@@ -67,6 +69,7 @@ namespace Microsoft.AspNetCore.Identity.Test
         /// <summary>
         ///     Email
         /// </summary>
+        [PersonalData]
         public virtual string Email { get; set; }
 
         /// <summary>
@@ -77,6 +80,7 @@ namespace Microsoft.AspNetCore.Identity.Test
         /// <summary>
         ///     True if the email is confirmed, default is false
         /// </summary>
+        [PersonalData]
         public virtual bool EmailConfirmed { get; set; }
 
         /// <summary>
@@ -97,16 +101,19 @@ namespace Microsoft.AspNetCore.Identity.Test
         /// <summary>
         ///     PhoneNumber for the user
         /// </summary>
+        [PersonalData]
         public virtual string PhoneNumber { get; set; }
 
         /// <summary>
         ///     True if the phone number is confirmed, default is false
         /// </summary>
+        [PersonalData]
         public virtual bool PhoneNumberConfirmed { get; set; }
 
         /// <summary>
         ///     Is two factor enabled for the user
         /// </summary>
+        [PersonalData]
         public virtual bool TwoFactorEnabled { get; set; }
 
         /// <summary>
