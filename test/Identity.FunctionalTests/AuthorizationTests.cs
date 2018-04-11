@@ -3,6 +3,7 @@
 
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Testing;
 using Xunit;
 using Xunit.Abstractions;
@@ -43,7 +44,8 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             using (StartLog(out var loggerFactory, $"{nameof(AnonymousUserCantAccessAuthorizedPages)}_{WebUtility.UrlEncode(url)}"))
             {
                 // Arrange
-                var client = ServerFactory.CreateDefaultClient(loggerFactory);
+                var client = ServerFactory.WithWebHostBuilder(whb => whb.ConfigureServices(s => s.AddSingleton(loggerFactory)))
+                    .CreateClient();
 
                 // Act
                 var response = await client.GetAsync(url);
@@ -82,7 +84,9 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             using (StartLog(out var loggerFactory, $"{nameof(AuthenticatedUserCanAccessAuthorizedPages)}_{WebUtility.UrlEncode(url)}"))
             {
                 // Arrange
-                var client = ServerFactory.CreateDefaultClient(loggerFactory);
+                var client = ServerFactory.WithWebHostBuilder(whb => whb.ConfigureServices(s => s.AddSingleton(loggerFactory)))
+                    .CreateClient();
+
                 await UserStories.RegisterNewUserAsync(client);
 
                 // Act
@@ -118,7 +122,8 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             using (StartLog(out var loggerFactory, $"{nameof(AnonymousUserCanAccessNotAuthorizedPages)}_{WebUtility.UrlEncode(url)}"))
             {
                 // Arrange
-                var client = ServerFactory.CreateDefaultClient(loggerFactory);
+                var client = ServerFactory.WithWebHostBuilder(whb => whb.ConfigureServices(s => s.AddSingleton(loggerFactory)))
+                    .CreateClient();
 
                 // Act
                 var response = await client.GetAsync(url);
@@ -145,9 +150,11 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             using (StartLog(out var loggerFactory, $"{nameof(AnonymousUserAllowedAccessToPages_WithGlobalAuthorizationFilter)}_{WebUtility.UrlEncode(url)}"))
             {
                 // Arrange
-                var server = ServerFactory.CreateServer(loggerFactory, builder =>
-                   builder.ConfigureServices(services => services.SetupGlobalAuthorizeFilter()));
-                var client = ServerFactory.CreateDefaultClient(server);
+                void TestServicesConfiguration(IServiceCollection services) =>
+                    services.SetupGlobalAuthorizeFilter().AddSingleton(loggerFactory);
+
+                var client = ServerFactory.WithWebHostBuilder(whb => whb.ConfigureServices(TestServicesConfiguration))
+                    .CreateClient();
 
                 // Act
                 var response = await client.GetAsync(url);

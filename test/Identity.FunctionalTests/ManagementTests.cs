@@ -9,6 +9,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Identity.DefaultUI.WebSite;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Testing;
 using Xunit;
 using Xunit.Abstractions;
@@ -30,7 +31,8 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             using (StartLog(out var loggerFactory))
             {
                 // Arrange
-                var client = ServerFactory.CreateDefaultClient(loggerFactory);
+                var client = ServerFactory.WithWebHostBuilder(whb => whb.ConfigureServices(s => s.AddSingleton(loggerFactory)))
+                    .CreateClient();
 
                 var userName = $"{Guid.NewGuid()}@example.com";
                 var password = $"!Test.Password1$";
@@ -49,9 +51,14 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             {
                 // Arrange
                 var emails = new ContosoEmailSender();
-                var server = ServerFactory.CreateServer(loggerFactory, builder =>
-                    builder.ConfigureServices(s => s.SetupTestEmailSender(emails)));
-                var client = ServerFactory.CreateDefaultClient(server);
+                void ConfigureTestServices(IServiceCollection services) =>
+                    services
+                        .SetupTestEmailSender(emails)
+                        .AddSingleton(loggerFactory);
+
+                var client = ServerFactory
+                    .WithWebHostBuilder(whb => whb.ConfigureServices(ConfigureTestServices))
+                    .CreateClient();
 
                 var userName = $"{Guid.NewGuid()}@example.com";
                 var password = $"!Test.Password1$";
@@ -73,11 +80,16 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             {
                 // Arrange
                 var principals = new List<ClaimsPrincipal>();
-                var server = ServerFactory.CreateServer(loggerFactory, builder =>
-                    builder.ConfigureTestServices(s => s.SetupGetUserClaimsPrincipal(user => principals.Add(user), IdentityConstants.ApplicationScheme)));
+                void ConfigureTestServices(IServiceCollection services) =>
+                    services
+                        .SetupGetUserClaimsPrincipal(user => principals.Add(user), IdentityConstants.ApplicationScheme)
+                        .AddSingleton(loggerFactory);
 
-                var client = ServerFactory.CreateDefaultClient(server);
-                var newClient = ServerFactory.CreateDefaultClient(server);
+                var server = ServerFactory
+                    .WithWebHostBuilder(whb => whb.ConfigureTestServices(ConfigureTestServices));
+
+                var client = server.CreateClient();
+                var newClient = server.CreateClient();
 
                 var userName = $"{Guid.NewGuid()}@example.com";
                 var password = "!Test.Password1";
@@ -107,12 +119,18 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             {
                 // Arrange
                 var principals = new List<ClaimsPrincipal>();
-                var server = ServerFactory.CreateServer(loggerFactory, builder =>
-                    builder.ConfigureTestServices(s => s.SetupTestThirdPartyLogin()
-                    .SetupGetUserClaimsPrincipal(user => principals.Add(user), IdentityConstants.ApplicationScheme)));
+                void ConfigureTestServices(IServiceCollection services) =>
+                    services
+                        .SetupTestThirdPartyLogin()
+                        .SetupGetUserClaimsPrincipal(user => principals.Add(user), IdentityConstants.ApplicationScheme)
+                        .AddSingleton(loggerFactory);
 
-                var client = ServerFactory.CreateDefaultClient(server);
-                var newClient = ServerFactory.CreateDefaultClient(server);
+                var server = ServerFactory
+                    .WithWebHostBuilder(whb => whb.ConfigureTestServices(ConfigureTestServices));
+
+                var client = server.CreateClient();
+                var newClient = server.CreateClient();
+                var loginAfterSetPasswordClient = server.CreateClient();
 
                 var guid = Guid.NewGuid();
                 var userName = $"{guid}";
@@ -134,7 +152,7 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
 
                 // Act & Assert 3
                 // Can log in with the password set above
-                await UserStories.LoginExistingUserAsync(ServerFactory.CreateDefaultClient(server), email, "!Test.Password2");
+                await UserStories.LoginExistingUserAsync(loginAfterSetPasswordClient, email, "!Test.Password2");
             }
         }
 
@@ -145,11 +163,16 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             {
                 // Arrange
                 var principals = new List<ClaimsPrincipal>();
-                var server = ServerFactory.CreateServer(loggerFactory, builder =>
-                    builder.ConfigureTestServices(s => s.SetupTestThirdPartyLogin()
-                    .SetupGetUserClaimsPrincipal(user => principals.Add(user), IdentityConstants.ApplicationScheme)));
+                void ConfigureTestServices(IServiceCollection services) =>
+                    services
+                        .SetupTestThirdPartyLogin()
+                        .SetupGetUserClaimsPrincipal(user => principals.Add(user), IdentityConstants.ApplicationScheme)
+                        .AddSingleton(loggerFactory);
 
-                var client = ServerFactory.CreateDefaultClient(server);
+                var server = ServerFactory
+                    .WithWebHostBuilder(whb => whb.ConfigureTestServices(ConfigureTestServices));
+
+                var client = server.CreateClient();
 
                 var guid = Guid.NewGuid();
                 var userName = $"{guid}";
@@ -172,12 +195,17 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             {
                 // Arrange
                 var principals = new List<ClaimsPrincipal>();
-                var server = ServerFactory.CreateServer(loggerFactory, builder =>
-                    builder.ConfigureTestServices(s => s.SetupTestThirdPartyLogin()
-                    .SetupGetUserClaimsPrincipal(user => principals.Add(user), IdentityConstants.ApplicationScheme)));
+                void ConfigureTestServices(IServiceCollection services) =>
+                    services
+                        .SetupTestThirdPartyLogin()
+                        .SetupGetUserClaimsPrincipal(user => principals.Add(user), IdentityConstants.ApplicationScheme)
+                        .AddSingleton(loggerFactory);
 
-                var client = ServerFactory.CreateDefaultClient(server);
-                var newClient = ServerFactory.CreateDefaultClient(server);
+                var server = ServerFactory
+                    .WithWebHostBuilder(whb => whb.ConfigureTestServices(ConfigureTestServices));
+
+                var client = server.CreateClient();
+                var newClient = server.CreateClient();
 
                 var userName = $"{Guid.NewGuid()}@example.com";
                 var password = $"!Test.Password1$";
@@ -206,10 +234,13 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             using (StartLog(out var loggerFactory))
             {
                 // Arrange
-                var server = ServerFactory.CreateServer(loggerFactory, builder =>
-                    builder.ConfigureTestServices(s => s.SetupTestThirdPartyLogin()));
+                void ConfigureTestServices(IServiceCollection services) =>
+                    services.SetupTestThirdPartyLogin()
+                        .AddSingleton(loggerFactory);
 
-                var client = ServerFactory.CreateDefaultClient(server);
+                var client = ServerFactory
+                    .WithWebHostBuilder(whb => whb.ConfigureTestServices(ConfigureTestServices))
+                    .CreateClient();
 
                 var userName = $"{Guid.NewGuid()}@example.com";
                 var guid = Guid.NewGuid();
@@ -244,7 +275,13 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             using (StartLog(out var loggerFactory))
             {
                 // Arrange
-                var client = ServerFactory.CreateDefaultClient(loggerFactory);
+                void ConfigureTestServices(IServiceCollection services) =>
+                    services.AddSingleton(loggerFactory);
+
+                var client = ServerFactory
+                    .WithWebHostBuilder(whb => whb.ConfigureTestServices(ConfigureTestServices))
+                    .CreateClient();
+
                 await UserStories.RegisterNewUserAsync(client);
 
                 // Act
@@ -261,7 +298,12 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             using (StartLog(out var loggerFactory))
             {
                 // Arrange
-                var client = ServerFactory.CreateDefaultClient(loggerFactory);
+                void ConfigureTestServices(IServiceCollection services) =>
+                    services.AddSingleton(loggerFactory);
+
+                var client = ServerFactory
+                    .WithWebHostBuilder(whb => whb.ConfigureTestServices(ConfigureTestServices))
+                    .CreateClient();
 
                 var userName = $"{Guid.NewGuid()}@example.com";
                 var password = $"!Test.Password1$";

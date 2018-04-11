@@ -3,6 +3,7 @@
 
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Testing;
 using Xunit;
 using Xunit.Abstractions;
@@ -24,7 +25,12 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             using (StartLog(out var loggerFactory))
             {
                 // Arrange
-                var client = ServerFactory.CreateDefaultClient(loggerFactory);
+                void ConfigureTestServices(IServiceCollection services) =>
+                    services.AddSingleton(loggerFactory);
+
+                var client = ServerFactory
+                    .WithWebHostBuilder(whb => whb.ConfigureServices(ConfigureTestServices))
+                    .CreateClient();
 
                 var userName = $"{Guid.NewGuid()}@example.com";
                 var password = $"!Test.Password1$";
@@ -40,9 +46,14 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             using (StartLog(out var loggerFactory))
             {
                 // Arrange
-                var server = ServerFactory.CreateServer(loggerFactory, builder =>
-                    builder.ConfigureServices(services => services.SetupTestThirdPartyLogin()));
-                var client = ServerFactory.CreateDefaultClient(server);
+                void ConfigureTestServices(IServiceCollection services) =>
+                    services
+                        .SetupTestThirdPartyLogin()
+                        .AddSingleton(loggerFactory);
+
+                var client = ServerFactory
+                    .WithWebHostBuilder(whb => whb.ConfigureServices(ConfigureTestServices))
+                    .CreateClient();
 
                 var guid = Guid.NewGuid();
                 var userName = $"{guid}";

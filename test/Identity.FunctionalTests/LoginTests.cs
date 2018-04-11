@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Identity.DefaultUI.WebSite;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Testing;
 using Xunit;
 using Xunit.Abstractions;
@@ -27,9 +28,11 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             using (StartLog(out var loggerFactory))
             {
                 // Arrange
-                var server = ServerFactory.CreateDefaultServer(loggerFactory);
-                var client = ServerFactory.CreateDefaultClient(server);
-                var newClient = ServerFactory.CreateDefaultClient(server);
+                var server = ServerFactory
+                    .WithWebHostBuilder(whb => whb.ConfigureServices(sc => sc.AddSingleton(loggerFactory)));
+
+                var client = server.CreateClient();
+                var newClient = server.CreateClient();
 
                 var userName = $"{Guid.NewGuid()}@example.com";
                 var password = $"!Test.Password1$";
@@ -48,9 +51,11 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             using (StartLog(out var loggerFactory))
             {
                 // Arrange
-                var server = ServerFactory.CreateDefaultServer(loggerFactory);
-                var client = ServerFactory.CreateDefaultClient(server);
-                var newClient = ServerFactory.CreateDefaultClient(server);
+                var server = ServerFactory
+                    .WithWebHostBuilder(whb => whb.ConfigureServices(sc => sc.AddSingleton(loggerFactory)));
+
+                var client = server.CreateClient();
+                var newClient = server.CreateClient();
 
                 var userName = $"{Guid.NewGuid()}@example.com";
                 var password = $"!Test.Password1$";
@@ -72,10 +77,10 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             using (StartLog(out var loggerFactory))
             {
                 // Arrange
-                var server = ServerFactory.CreateServer(loggerFactory, builder =>
-                   builder.ConfigureServices(services => services.SetupGlobalAuthorizeFilter()));
-                var client = ServerFactory.CreateDefaultClient(server);
-                var newClient = ServerFactory.CreateDefaultClient(server);
+                var server = ServerFactory
+                    .WithWebHostBuilder(whb => whb.ConfigureServices(sc => sc.AddSingleton(loggerFactory)));
+                var client = server.CreateClient();
+                var newClient = server.CreateClient();
 
                 var userName = $"{Guid.NewGuid()}@example.com";
                 var password = $"!Test.Password1$";
@@ -97,9 +102,11 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             using (StartLog(out var loggerFactory))
             {
                 // Arrange
-                var server = ServerFactory.CreateDefaultServer(loggerFactory);
-                var client = ServerFactory.CreateDefaultClient(server);
-                var newClient = ServerFactory.CreateDefaultClient(server);
+                var server = ServerFactory
+                    .WithWebHostBuilder(whb => whb.ConfigureServices(sc => sc.AddSingleton(loggerFactory)));
+
+                var client = server.CreateClient();
+                var newClient = server.CreateClient();
 
                 var userName = $"{Guid.NewGuid()}@example.com";
                 var password = $"!Test.Password1$";
@@ -121,10 +128,13 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             using (StartLog(out var loggerFactory))
             {
                 // Arrange
-                var server = ServerFactory.CreateServer(loggerFactory, builder =>
-                    builder.ConfigureServices(services => services.SetupGlobalAuthorizeFilter()));
-                var client = ServerFactory.CreateDefaultClient(server);
-                var newClient = ServerFactory.CreateDefaultClient(server);
+                void ConfigureTestServices(IServiceCollection services) =>
+                    services.SetupGlobalAuthorizeFilter().AddSingleton(loggerFactory);
+
+                var server = ServerFactory
+                    .WithWebHostBuilder(whb => whb.ConfigureServices(ConfigureTestServices));
+                var client = server.CreateClient();
+                var newClient = server.CreateClient();
 
                 var userName = $"{Guid.NewGuid()}@example.com";
                 var password = $"!Test.Password1$";
@@ -146,16 +156,17 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             using (StartLog(out var loggerFactory))
             {
                 // Arrange
-                var emailSender = new ContosoEmailSender();
-                var server = ServerFactory.CreateServer(loggerFactory, builder =>
-                {
-                    builder.ConfigureServices(services => services
-                        .SetupTestEmailSender(emailSender)
-                        .SetupEmailRequired());
-                });
 
-                var client = ServerFactory.CreateDefaultClient(server);
-                var newClient = ServerFactory.CreateDefaultClient(server);
+                var emailSender = new ContosoEmailSender();
+                void ConfigureTestServices(IServiceCollection services) => services
+                        .SetupTestEmailSender(emailSender)
+                        .SetupEmailRequired()
+                        .AddSingleton(loggerFactory);
+
+                var server = ServerFactory.WithWebHostBuilder(whb => whb.ConfigureServices(ConfigureTestServices));
+
+                var client = server.CreateClient();
+                var newClient = server.CreateClient();
 
                 var userName = $"{Guid.NewGuid()}@example.com";
                 var password = $"!Test.Password1$";
@@ -175,15 +186,15 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             {
                 // Arrange
                 var emailSender = new ContosoEmailSender();
-                var server = ServerFactory.CreateServer(loggerFactory, builder =>
-                {
-                    builder.ConfigureServices(services => services
-                        .SetupTestEmailSender(emailSender)
-                        .SetupEmailRequired());
-                });
+                void ConfigureTestServices(IServiceCollection services) => services
+                    .SetupTestEmailSender(emailSender)
+                    .SetupEmailRequired()
+                    .AddSingleton(loggerFactory);
 
-                var client = ServerFactory.CreateDefaultClient(server);
-                var newClient = ServerFactory.CreateDefaultClient(server);
+                var server = ServerFactory.WithWebHostBuilder(whb => whb.ConfigureServices(ConfigureTestServices));
+
+                var client = server.CreateClient();
+                var newClient = server.CreateClient();
 
                 var userName = $"{Guid.NewGuid()}@example.com";
                 var password = $"!Test.Password1$";
@@ -205,10 +216,14 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             using (StartLog(out var loggerFactory))
             {
                 // Arrange
-                var server = ServerFactory.CreateServer(loggerFactory, builder =>
-                    builder.ConfigureServices(services => services.SetupTestThirdPartyLogin()));
-                var client = ServerFactory.CreateDefaultClient(server);
-                var newClient = ServerFactory.CreateDefaultClient(server);
+                void ConfigureTestServices(IServiceCollection services) =>
+                    services.SetupTestThirdPartyLogin()
+                    .AddSingleton(loggerFactory);
+
+                var server = ServerFactory.WithWebHostBuilder(whb => whb.ConfigureServices(ConfigureTestServices));
+
+                var client = server.CreateClient();
+                var newClient = server.CreateClient();
 
                 var guid = Guid.NewGuid();
                 var userName = $"{guid}";
@@ -227,11 +242,15 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             {
                 // Arrange
                 var emailSender = new ContosoEmailSender();
-                var server = ServerFactory.CreateServer(loggerFactory, b => b.ConfigureServices(s =>
-                    s.SetupTestEmailSender(emailSender)));
-                var client = ServerFactory.CreateDefaultClient(server);
-                var resetPasswordClient = ServerFactory.CreateDefaultClient(server);
-                var newClient = ServerFactory.CreateDefaultClient(server);
+                void ConfigureTestServices(IServiceCollection services) => services
+                    .SetupTestEmailSender(emailSender)
+                    .AddSingleton(loggerFactory);
+
+                var server = ServerFactory.WithWebHostBuilder(whb => whb.ConfigureServices(ConfigureTestServices));
+
+                var client = server.CreateClient();
+                var resetPasswordClient = server.CreateClient();
+                var newClient = server.CreateClient();
 
                 var userName = $"{Guid.NewGuid()}@example.com";
                 var password = $"!Test.Password1$";
