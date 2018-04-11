@@ -29,21 +29,8 @@ namespace Identity.DefaultUI.WebSite
             services.AddDefaultIdentity<TestUser>()
                 .AddUserManager<UserManager<TestUser>>();
             services.AddSingleton<IUserStore<TestUser>, InMemoryUserStore<TestUser>>();
-            services.AddSingleton<IUserFactory<TestUser>, TestUserFactory>();
 
             services.AddMvc();
-        }
-
-        public class TestUserFactory : IUserFactory<TestUser>
-        {
-            public TestUser CreateUser(string email, string userName)
-            {
-                return new TestUser
-                {
-                    Email = email,
-                    UserName = userName
-                };
-            }
         }
     }
 }
