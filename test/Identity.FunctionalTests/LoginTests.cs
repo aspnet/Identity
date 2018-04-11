@@ -13,14 +13,14 @@ using Xunit.Sdk;
 
 namespace Microsoft.AspNetCore.Identity.FunctionalTests
 {
-    public class LoginTests : LoggedTest, IClassFixture<ServerFactory>
+    public abstract class LoginTests<TStartup> : LoggedTest, IClassFixture<ServerFactory<TStartup>> where TStartup : class
     {
-        public LoginTests(ServerFactory serverFactory, ITestOutputHelper output) : base(output)
+        public LoginTests(ServerFactory<TStartup> serverFactory, ITestOutputHelper output) : base(output)
         {
             ServerFactory = serverFactory;
         }
 
-        public ServerFactory ServerFactory { get; }
+        public ServerFactory<TStartup> ServerFactory { get; }
 
         [Fact]
         public async Task CanLogInWithAPreviouslyRegisteredUser()

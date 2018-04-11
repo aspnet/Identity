@@ -10,14 +10,14 @@ using Xunit.Abstractions;
 
 namespace Microsoft.AspNetCore.Identity.FunctionalTests
 {
-    public class RegistrationTests : LoggedTest, IClassFixture<ServerFactory>
+    public abstract class RegistrationTests<TStartup> : LoggedTest, IClassFixture<ServerFactory<TStartup>> where TStartup : class
     {
-        public RegistrationTests(ServerFactory serverFactory, ITestOutputHelper output) : base(output)
+        public RegistrationTests(ServerFactory<TStartup> serverFactory, ITestOutputHelper output) : base(output)
         {
             ServerFactory = serverFactory;
         }
 
-        public ServerFactory ServerFactory { get; }
+        public ServerFactory<TStartup> ServerFactory { get; }
 
         [Fact]
         public async Task CanRegisterAUser()

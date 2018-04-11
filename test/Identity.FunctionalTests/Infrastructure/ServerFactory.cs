@@ -2,14 +2,13 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
-using Identity.DefaultUI.WebSite;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.AspNetCore.Identity.FunctionalTests
 {
-    public class ServerFactory: WebApplicationFactory<Startup>
+    public class ServerFactory<TStartup>: WebApplicationFactory<TStartup> where TStartup : class
     {
         public ServerFactory()
         {
@@ -20,6 +19,7 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             base.ConfigureWebHost(builder);
+            builder.UseStartup<TStartup>();
             builder.ConfigureServices(sc => sc.SetupTestDatabase(Guid.NewGuid().ToString())
                     .AddMvc()
                     // Mark the cookie as essential for right now, as Identity uses it on
