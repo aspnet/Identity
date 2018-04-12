@@ -26,9 +26,9 @@ namespace Identity.DefaultUI.WebSite
                 options.CheckConsentNeeded = context => true;
             });
 
-            services.AddDefaultIdentity<TestUser>()
-                .AddUserManager<UserManager<TestUser>>();
-            services.AddSingleton<IUserStore<TestUser>, InMemoryUserStore<TestUser>>();
+            services.AddDefaultIdentity<Microsoft.AspNetCore.Identity.Test.PocoUser>()
+                .AddUserManager<UserManager<Microsoft.AspNetCore.Identity.Test.PocoUser>>();
+            services.AddSingleton<IUserStore<Microsoft.AspNetCore.Identity.Test.PocoUser>, InMemoryUserStore<Microsoft.AspNetCore.Identity.Test.PocoUser>>();
 
             services.AddMvc();
         }
