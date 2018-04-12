@@ -58,6 +58,12 @@ namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Manage.Internal
                 personalData.Add(p.Name, p.GetValue(user)?.ToString() ?? "null");
             }
 
+            var logins = await _userManager.GetLoginsAsync(user);
+            foreach (var l in logins)
+            {
+                personalData.Add($"{l.LoginProvider} external login provider key", l.ProviderKey);
+            }
+
             personalData.Add($"Authenticator Key", await _userManager.GetAuthenticatorKeyAsync(user));
 
             Response.Headers.Add("Content-Disposition", "attachment; filename=PersonalData.json");
