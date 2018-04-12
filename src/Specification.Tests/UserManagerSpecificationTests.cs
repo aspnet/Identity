@@ -1885,7 +1885,7 @@ namespace Microsoft.AspNetCore.Identity.Test
             var manager = CreateManager();
             var user = CreateTestUser();
             IdentityResultAssert.IsSuccess(await manager.CreateAsync(user));
-            const string error = "No IUserTokenProvider named 'bogus' is registered.";
+            const string error = "No IUserTwoFactorTokenProvider named 'bogus' is registered.";
             var ex = await
                 Assert.ThrowsAsync<NotSupportedException>(
                     () => manager.GenerateTwoFactorTokenAsync(user, "bogus"));
