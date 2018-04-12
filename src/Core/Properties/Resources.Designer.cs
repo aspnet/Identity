@@ -207,7 +207,7 @@ namespace Microsoft.Extensions.Identity.Core
             => GetString("MustCallAddIdentity");
 
         /// <summary>
-        /// No IUserTokenProvider named '{0}' is registered.
+        /// No IUserTwoFactorTokenProvider named '{0}' is registered.
         /// </summary>
         internal static string NoTokenProvider
         {
@@ -215,7 +215,7 @@ namespace Microsoft.Extensions.Identity.Core
         }
 
         /// <summary>
-        /// No IUserTokenProvider named '{0}' is registered.
+        /// No IUserTwoFactorTokenProvider named '{0}' is registered.
         /// </summary>
         internal static string FormatNoTokenProvider(object p0)
             => string.Format(CultureInfo.CurrentCulture, GetString("NoTokenProvider"), p0);
