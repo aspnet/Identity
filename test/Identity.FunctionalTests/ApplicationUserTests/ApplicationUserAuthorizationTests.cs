@@ -9,7 +9,7 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests.IdentityUserTests
 {
     public class ApplicationUserAuthorizationTests : AuthorizationTests<ApplicationUserStartup,ApplicationDbContext>
     {
-        public ApplicationUserAuthorizationTests(ServerFactory<ApplicationUserStartup, ApplicationDbContext> serverFactory, ITestOutputHelper output) : base(serverFactory, output)
+        public ApplicationUserAuthorizationTests(ServerFactory<ApplicationUserStartup, ApplicationDbContext> serverFactory) : base(serverFactory)
         {
         }
     }

@@ -9,7 +9,7 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests.IdentityUserTests
 {
     public class IdentityUserLoginTests : LoginTests<Startup, IdentityDbContext>
     {
-        public IdentityUserLoginTests(ServerFactory<Startup, IdentityDbContext> serverFactory, ITestOutputHelper output) : base(serverFactory, output)
+        public IdentityUserLoginTests(ServerFactory<Startup, IdentityDbContext> serverFactory) : base(serverFactory)
         {
         }
     }

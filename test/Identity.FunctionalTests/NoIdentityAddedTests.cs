@@ -12,9 +12,9 @@ using Xunit.Abstractions;
 
 namespace Microsoft.AspNetCore.Identity.FunctionalTests
 {
-    public class NoIdentityAddedTests : LoggedTest, IClassFixture<ServerFactory<NoIdentityStartup, IdentityDbContext>>
+    public class NoIdentityAddedTests : IClassFixture<ServerFactory<NoIdentityStartup, IdentityDbContext>>
     {
-        public NoIdentityAddedTests(ServerFactory<NoIdentityStartup, IdentityDbContext> serverFactory, ITestOutputHelper output) : base(output)
+        public NoIdentityAddedTests(ServerFactory<NoIdentityStartup, IdentityDbContext> serverFactory)
         {
             ServerFactory = serverFactory;
         }
@@ -25,21 +25,17 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
         [MemberData(nameof(IdentityEndpoints))]
         public async Task QueryingIdentityEndpointsReturnsNotFoundWhenIdentityIsNotPresent(string endpoint)
         {
-            using (StartLog(out var loggerFactory))
-            {
-                // Arrange
-                void ConfigureTestServices(IServiceCollection services) =>
-                    services.AddSingleton(loggerFactory);
+            // Arrange
+            void ConfigureTestServices(IServiceCollection services) { return; };
 
-                var client = ServerFactory
-                    .WithWebHostBuilder(whb => whb.ConfigureServices(ConfigureTestServices))
-                    .CreateClient();
+            var client = ServerFactory
+                .WithWebHostBuilder(whb => whb.ConfigureServices(ConfigureTestServices))
+                .CreateClient();
 
-                // Act
-                var response = await client.GetAsync(endpoint);
+            // Act
+            var response = await client.GetAsync(endpoint);
 
-                Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-            }
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
         public static TheoryData<string> IdentityEndpoints => new TheoryData<string>

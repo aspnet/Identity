@@ -9,7 +9,7 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests.IdentityUserTests
 {
     public class PocoUserAuthorizationTests : AuthorizationTests<PocoUserStartup, IdentityDbContext>
     {
-        public PocoUserAuthorizationTests(ServerFactory<PocoUserStartup, IdentityDbContext> serverFactory, ITestOutputHelper output) : base(serverFactory, output)
+        public PocoUserAuthorizationTests(ServerFactory<PocoUserStartup, IdentityDbContext> serverFactory) : base(serverFactory)
         {
         }
     }
