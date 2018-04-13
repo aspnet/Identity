@@ -228,5 +228,71 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
             await UserStories.ResetPasswordAsync(resetPasswordClient, email, userName, newPassword);
             await UserStories.LoginExistingUserAsync(newClient, userName, newPassword);
         }
+
+        [Fact]
+        public async Task CanResetPassword_WithGlobalAuthorizeFilter()
+        {
+            using (StartLog(out var loggerFactory))
+            {
+                // Arrange
+                var emailSender = new ContosoEmailSender();
+                var server = ServerFactory.CreateServer(loggerFactory, builder =>
+                {
+                    builder.ConfigureServices(services => services
+                        .SetupGlobalAuthorizeFilter()
+                        .SetupTestEmailSender(emailSender));
+                });
+
+                var client = ServerFactory.CreateDefaultClient(server);
+                var resetPasswordClient = ServerFactory.CreateDefaultClient(server);
+                var newClient = ServerFactory.CreateDefaultClient(server);
+
+                var userName = $"{Guid.NewGuid()}@example.com";
+                var password = $"!Test.Password1$";
+                var newPassword = $"!New.Password1$";
+
+                await UserStories.RegisterNewUserAsync(client, userName, password);
+                var registrationEmail = Assert.Single(emailSender.SentEmails);
+                await UserStories.ConfirmEmailAsync(registrationEmail, client);
+
+                // Act & Assert
+                await UserStories.ForgotPasswordAsync(resetPasswordClient, userName);
+                Assert.Equal(2, emailSender.SentEmails.Count);
+                var email = emailSender.SentEmails[1];
+                await UserStories.ResetPasswordAsync(resetPasswordClient, email, userName, newPassword);
+                await UserStories.LoginExistingUserAsync(newClient, userName, newPassword);
+            }
+        }
+
+        [Fact]
+        public async Task UserLockedOut_AfterMaxFailedAccessAttempts_WithGlobalAuthorizeFilter()
+        {
+            using (StartLog(out var loggerFactory))
+            {
+                // Arrange
+                var emailSender = new ContosoEmailSender();
+                var server = ServerFactory.CreateServer(loggerFactory, builder =>
+                {
+                    builder.ConfigureServices(services => services
+                        .SetupGlobalAuthorizeFilter()
+                        .SetupTestEmailSender(emailSender)
+                        .SetupMaxFailedAccessAttempts());
+                });
+
+                var client = ServerFactory.CreateDefaultClient(server);
+                var newClient = ServerFactory.CreateDefaultClient(server);
+
+                var userName = $"{Guid.NewGuid()}@example.com";
+                var password = $"!Test.Password1$";
+                var wrongPassword = $"!Wrong.Password1$";
+
+                await UserStories.RegisterNewUserAsync(client, userName, password);
+                var registrationEmail = Assert.Single(emailSender.SentEmails);
+                await UserStories.ConfirmEmailAsync(registrationEmail, client);
+
+                // Act & Assert
+                await UserStories.LockoutExistingUserAsync(newClient, userName, wrongPassword);
+            }
+        }
     }
 }
