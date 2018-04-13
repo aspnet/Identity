@@ -78,6 +78,35 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
         }
 
         [Fact]
+        public async Task CanChangeEmail()
+        {
+            using (StartLog(out var loggerFactory))
+            {
+                // Arrange
+                var emails = new ContosoEmailSender();
+                void ConfigureTestServices(IServiceCollection services) =>
+                    services.AddSingleton(loggerFactory);
+
+                var client = ServerFactory
+                    .WithWebHostBuilder(whb => whb.ConfigureServices(ConfigureTestServices))
+                    .CreateClient();
+
+                var userName = $"{Guid.NewGuid()}@example.com";
+                var password = $"!Test.Password1$";
+                var newEmail = "updatedEmail@example.com";
+
+                var index = await UserStories.RegisterNewUserAsync(client, userName, password);
+                var manageIndex = await UserStories.SendUpdateProfileAsync(index, newEmail);
+
+                // Act & Assert
+                var pageUserName = manageIndex.GetUserName();
+                Assert.Equal(newEmail, pageUserName);
+                var pageEmail = manageIndex.GetEmail();
+                Assert.Equal(newEmail, pageEmail);
+            }
+        }
+
+        [Fact]
         public async Task CanChangePassword()
         {
             using (StartLog(out var loggerFactory))
