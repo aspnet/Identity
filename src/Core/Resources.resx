@@ -174,7 +174,7 @@
     <comment>Error when AddIdentity is not called</comment>
   </data>
   <data name="NoTokenProvider" xml:space="preserve">
-    <value>No IUserTwoFactorTokenProvider named '{0}' is registered.</value>
+    <value>No IUserTwoFactorTokenProvider&lt;{0}&gt; named '{1}' is registered.</value>
     <comment>Error when there is no IUserTwoFactorTokenProvider</comment>
   </data>
   <data name="NullSecurityStamp" xml:space="preserve">
