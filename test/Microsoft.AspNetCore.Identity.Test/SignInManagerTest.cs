@@ -245,6 +245,64 @@ namespace Microsoft.AspNetCore.Identity.Test
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
+        public async Task CheckPasswordOnlyResetLockoutWhenTfaNotEnabled(bool tfaEnabled)
+        {
+            // Setup
+            var user = new TestUser { UserName = "Foo" };
+            var manager = SetupUserManager(user);
+            manager.Setup(m => m.SupportsUserLockout).Returns(true).Verifiable();
+            manager.Setup(m => m.IsLockedOutAsync(user)).ReturnsAsync(false).Verifiable();
+            manager.Setup(m => m.SupportsUserTwoFactor).Returns(tfaEnabled).Verifiable();
+            manager.Setup(m => m.CheckPasswordAsync(user, "password")).ReturnsAsync(true).Verifiable();
+
+            if (tfaEnabled)
+            {
+                manager.Setup(m => m.GetTwoFactorEnabledAsync(user)).ReturnsAsync(true).Verifiable();
+                manager.Setup(m => m.GetValidTwoFactorProvidersAsync(user)).ReturnsAsync(new string[1] {"Fake"}).Verifiable();
+            }
+            else
+            {
+                manager.Setup(m => m.ResetAccessFailedCountAsync(user)).ReturnsAsync(IdentityResult.Success).Verifiable();
+            }
+
+            var context = new DefaultHttpContext();
+            var helper = SetupSignInManager(manager.Object, context);
+
+            // Act
+            var result = await helper.CheckPasswordSignInAsync(user, "password", false);
+
+            // Assert
+            Assert.True(result.Succeeded);
+            manager.Verify();
+        }
+
+        [Fact]
+        public async Task CheckPasswordAlwaysResetLockoutWhenQuirked()
+        {
+            AppContext.SetSwitch("Microsoft.AspNetCore.Identity.CheckPasswordSignInAlwaysResetLockoutOnSuccess", true);
+
+            // Setup
+            var user = new TestUser { UserName = "Foo" };
+            var manager = SetupUserManager(user);
+            manager.Setup(m => m.SupportsUserLockout).Returns(true).Verifiable();
+            manager.Setup(m => m.IsLockedOutAsync(user)).ReturnsAsync(false).Verifiable();
+            manager.Setup(m => m.CheckPasswordAsync(user, "password")).ReturnsAsync(true).Verifiable();
+            manager.Setup(m => m.ResetAccessFailedCountAsync(user)).ReturnsAsync(IdentityResult.Success).Verifiable();
+
+            var context = new DefaultHttpContext();
+            var helper = SetupSignInManager(manager.Object, context);
+
+            // Act
+            var result = await helper.CheckPasswordSignInAsync(user, "password", false);
+
+            // Assert
+            Assert.True(result.Succeeded);
+            manager.Verify();
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
         public async Task PasswordSignInRequiresVerification(bool supportsLockout)
         {
             // Setup

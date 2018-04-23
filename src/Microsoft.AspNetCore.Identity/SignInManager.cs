@@ -247,8 +247,14 @@ namespace Microsoft.AspNetCore.Identity
             }
             if (await UserManager.CheckPasswordAsync(user, password))
             {
-                await ResetLockout(user);
-                return await SignInOrTwoFactorAsync(user, isPersistent);
+                var alwaysLockout = AppContext.TryGetSwitch("Microsoft.AspNetCore.Identity.CheckPasswordSignInAlwaysResetLockoutOnSuccess", out var enabled) && enabled;
+                // Only reset the lockout when TFA is not enabled when not in quirks mode
+                if (alwaysLockout || !await IsTfaEnabled(user))
+                {
+                    await ResetLockout(user);
+                }
+
+                return SignInResult.Success;
             }
             Logger.LogWarning(2, "User {userId} failed to provide the correct password.", await UserManager.GetUserIdAsync(user));
 
@@ -501,7 +507,7 @@ namespace Microsoft.AspNetCore.Identity
 
             return IdentityResult.Success;
         }
-        
+
         /// <summary>
         /// Configures the redirect URL and user identifier for the specified external login <paramref name="provider"/>.
         /// </summary>
@@ -552,12 +558,14 @@ namespace Microsoft.AspNetCore.Identity
             return identity;
         }
 
+        private async Task<bool> IsTfaEnabled(TUser user)
+            => UserManager.SupportsUserTwoFactor &&
+            await UserManager.GetTwoFactorEnabledAsync(user) &&
+            (await UserManager.GetValidTwoFactorProvidersAsync(user)).Count > 0;
 
         private async Task<SignInResult> SignInOrTwoFactorAsync(TUser user, bool isPersistent, string loginProvider = null)
         {
-            if (UserManager.SupportsUserTwoFactor &&
-                await UserManager.GetTwoFactorEnabledAsync(user) &&
-                (await UserManager.GetValidTwoFactorProvidersAsync(user)).Count > 0)
+            if (!bypassTwoFactor && await IsTfaEnabled(user))
             {
                 if (!await IsTwoFactorClientRememberedAsync(user))
                 {
