@@ -179,11 +179,61 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests
         }
 
         [Fact]
+        public async Task CanLogInAfterConfirmingEmail_WithGlobalAuthorizeFilter()
+        {
+            // Arrange
+            var emailSender = new ContosoEmailSender();
+            void ConfigureTestServices(IServiceCollection services) => services
+                .SetupTestEmailSender(emailSender)
+                .SetupEmailRequired()
+                .SetupGlobalAuthorizeFilter();
+
+            var server = ServerFactory.WithWebHostBuilder(whb => whb.ConfigureServices(ConfigureTestServices));
+
+            var client = server.CreateClient();
+            var newClient = server.CreateClient();
+
+            var userName = $"{Guid.NewGuid()}@example.com";
+            var password = $"!Test.Password1$";
+
+            var loggedIn = await UserStories.RegisterNewUserAsync(client, userName, password);
+
+            // Act & Assert
+            // Use a new client to simulate a new browser session.
+            var email = Assert.Single(emailSender.SentEmails);
+            await UserStories.ConfirmEmailAsync(email, newClient);
+
+            await UserStories.LoginExistingUserAsync(newClient, userName, password);
+        }
+
+        [Fact]
         public async Task CanLoginWithASocialLoginProvider()
         {
             // Arrange
             void ConfigureTestServices(IServiceCollection services) =>
                 services.SetupTestThirdPartyLogin();
+
+            var server = ServerFactory.WithWebHostBuilder(whb => whb.ConfigureServices(ConfigureTestServices));
+
+            var client = server.CreateClient();
+            var newClient = server.CreateClient();
+
+            var guid = Guid.NewGuid();
+            var userName = $"{guid}";
+            var email = $"{guid}@example.com";
+
+            // Act & Assert
+            await UserStories.RegisterNewUserWithSocialLoginAsync(client, userName, email);
+            await UserStories.LoginWithSocialLoginAsync(newClient, userName);
+        }
+
+        [Fact]
+        public async Task CanLoginWithASocialLoginProvider_WithGlobalAuthorizeFilter()
+        {
+            // Arrange
+            void ConfigureTestServices(IServiceCollection services) => services
+                .SetupTestThirdPartyLogin()
+                .SetupGlobalAuthorizeFilter();
 
             var server = ServerFactory.WithWebHostBuilder(whb => whb.ConfigureServices(ConfigureTestServices));
 
