@@ -199,7 +199,7 @@ namespace Microsoft.AspNetCore.Identity.Test
             var signInManager = new Mock<SignInManager<PocoUser>>(userManager.Object,
                 contextAccessor.Object, claimsManager.Object, identityOptions.Object, null, new Mock<IAuthenticationSchemeProvider>().Object);
             signInManager.Setup(s => s.ValidateSecurityStampAsync(It.IsAny<ClaimsPrincipal>())).Throws(new Exception("Shouldn't be called"));
-            signInManager.Setup(s => s.SignInAsync(user, false, null)).Throws(new Exception("Shouldn't be called"));
+            signInManager.Setup(s => s.SignInAsync(user, false, null, null)).Throws(new Exception("Shouldn't be called"));
             var services = new ServiceCollection();
             services.AddSingleton(options.Object);
             services.AddSingleton(signInManager.Object);

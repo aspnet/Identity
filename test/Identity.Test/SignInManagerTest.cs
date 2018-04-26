@@ -523,7 +523,7 @@ namespace Microsoft.AspNetCore.Identity.Test
             { CallBase = true };
             //signInManager.Setup(s => s.SignInAsync(user, It.Is<AuthenticationProperties>(p => p.IsPersistent == isPersistent),
             //externalLogin? loginProvider : null)).Returns(Task.FromResult(0)).Verifiable();
-            signInManager.Setup(s => s.SignInAsync(user, It.IsAny<AuthenticationProperties>(), null)).Returns(Task.FromResult(0)).Verifiable();
+            signInManager.Setup(s => s.SignInAsync(user, It.IsAny<AuthenticationProperties>(), null, null)).Returns(Task.FromResult(0)).Verifiable();
             signInManager.Object.Context = context;
 
             // Act
