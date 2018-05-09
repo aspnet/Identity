@@ -282,7 +282,7 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
         /// <returns>The user role if it exists.</returns>
         protected override Task<TUserRole> FindUserRoleAsync(TKey userId, TKey roleId, CancellationToken cancellationToken)
         {
-            return UserRoles.FindAsync(new object[] { userId, roleId }, cancellationToken);
+            return UserRoles.SingleOrDefaultAsync(r => r.UserId.Equals(userId) && r.RoleId.Equals(roleId), cancellationToken);
         }
 
         /// <summary>
