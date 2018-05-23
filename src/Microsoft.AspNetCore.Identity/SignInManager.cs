@@ -89,7 +89,8 @@ namespace Microsoft.AspNetCore.Identity
         /// <summary>
         /// The <see cref="HttpContext"/> used.
         /// </summary>
-        public HttpContext Context { 
+        public HttpContext Context
+        {
             get
             {
                 var context = _context ?? _contextAccessor?.HttpContext;
@@ -251,7 +252,7 @@ namespace Microsoft.AspNetCore.Identity
             }
 
             var attempt = await CheckPasswordSignInAsync(user, password, lockoutOnFailure);
-            return attempt.Succeeded 
+            return attempt.Succeeded
                 ? await SignInOrTwoFactorAsync(user, isPersistent)
                 : attempt;
         }
@@ -302,7 +303,13 @@ namespace Microsoft.AspNetCore.Identity
 
             if (await UserManager.CheckPasswordAsync(user, password))
             {
-                await ResetLockout(user);
+                var alwaysLockout = AppContext.TryGetSwitch("Microsoft.AspNetCore.Identity.CheckPasswordSignInAlwaysResetLockoutOnSuccess", out var enabled) && enabled;
+                // Only reset the lockout when TFA is not enabled when not in quirks mode
+                if (alwaysLockout || !await IsTfaEnabled(user))
+                {
+                    await ResetLockout(user);
+                }
+
                 return SignInResult.Success;
             }
             Logger.LogWarning(2, "User {userId} failed to provide the correct password.", await UserManager.GetUserIdAsync(user));
@@ -508,7 +515,7 @@ namespace Microsoft.AspNetCore.Identity
         /// <param name="isPersistent">Flag indicating whether the sign-in cookie should persist after the browser is closed.</param>
         /// <returns>The task object representing the asynchronous operation containing the <see name="SignInResult"/>
         /// for the sign-in attempt.</returns>
-        public virtual Task<SignInResult> ExternalLoginSignInAsync(string loginProvider, string providerKey, bool isPersistent) 
+        public virtual Task<SignInResult> ExternalLoginSignInAsync(string loginProvider, string providerKey, bool isPersistent)
             => ExternalLoginSignInAsync(loginProvider, providerKey, isPersistent, bypassTwoFactor: false);
 
         /// <summary>
@@ -619,7 +626,7 @@ namespace Microsoft.AspNetCore.Identity
 
             return IdentityResult.Success;
         }
-        
+
         /// <summary>
         /// Configures the redirect URL and user identifier for the specified external login <paramref name="provider"/>.
         /// </summary>
@@ -669,7 +676,12 @@ namespace Microsoft.AspNetCore.Identity
             }
             return identity;
         }
-        
+
+        private async Task<bool> IsTfaEnabled(TUser user)
+            => UserManager.SupportsUserTwoFactor &&
+            await UserManager.GetTwoFactorEnabledAsync(user) &&
+            (await UserManager.GetValidTwoFactorProvidersAsync(user)).Count > 0;
+
         /// <summary>
         /// Signs in the specified <paramref name="user"/> if <paramref name="bypassTwoFactor"/> is set to false.
         /// Otherwise stores the <paramref name="user"/> for use after a two factor check.
@@ -681,10 +693,7 @@ namespace Microsoft.AspNetCore.Identity
         /// <returns>Returns a <see cref="SignInResult"/></returns>
         protected virtual async Task<SignInResult> SignInOrTwoFactorAsync(TUser user, bool isPersistent, string loginProvider = null, bool bypassTwoFactor = false)
         {
-            if (!bypassTwoFactor &&
-                UserManager.SupportsUserTwoFactor &&
-                await UserManager.GetTwoFactorEnabledAsync(user) &&
-                (await UserManager.GetValidTwoFactorProvidersAsync(user)).Count > 0)
+            if (!bypassTwoFactor && await IsTfaEnabled(user))
             {
                 if (!await IsTwoFactorClientRememberedAsync(user))
                 {
