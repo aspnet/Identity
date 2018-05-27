@@ -682,7 +682,7 @@ namespace Microsoft.AspNetCore.Identity
         }
 
         /// <summary>
-        /// Creates <see cref="ClaimsPrincipal"/> for given user to remembering the browser for 2fa.
+        /// Creates <see cref="ClaimsPrincipal"/> for given user to remember the browser for 2fa.
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
