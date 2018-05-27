@@ -670,7 +670,7 @@ namespace Microsoft.AspNetCore.Identity
         /// <param name="userId">The user whose is logging in via 2fa.</param>
         /// <param name="loginProvider">The 2fa provider.</param>
         /// <returns>A <see cref="ClaimsPrincipal"/> containing the user 2fa information.</returns>
-        internal ClaimsPrincipal StoreTwoFactorInfo(string userId, string loginProvider)
+        protected internal virtual ClaimsPrincipal StoreTwoFactorInfo(string userId, string loginProvider)
         {
             var identity = new ClaimsIdentity(IdentityConstants.TwoFactorUserIdScheme);
             identity.AddClaim(new Claim(ClaimTypes.Name, userId));
@@ -681,7 +681,12 @@ namespace Microsoft.AspNetCore.Identity
             return new ClaimsPrincipal(identity);
         }
 
-        internal async Task<ClaimsPrincipal> StoreRememberClient(TUser user)
+        /// <summary>
+        /// Creates <see cref="ClaimsPrincipal"/> for given user to remembering the browser for 2fa.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        protected internal virtual async Task<ClaimsPrincipal> StoreRememberClient(TUser user)
         {
             var userId = await UserManager.GetUserIdAsync(user);
             var rememberBrowserIdentity = new ClaimsIdentity(IdentityConstants.TwoFactorRememberMeScheme);
@@ -742,7 +747,7 @@ namespace Microsoft.AspNetCore.Identity
             return SignInResult.Success;
         }
 
-        private async Task<TwoFactorAuthenticationInfo> RetrieveTwoFactorInfoAsync()
+        protected virtual async Task<TwoFactorAuthenticationInfo> RetrieveTwoFactorInfoAsync()
         {
             var result = await Context.AuthenticateAsync(IdentityConstants.TwoFactorUserIdScheme);
             if (result?.Principal != null)
@@ -809,7 +814,7 @@ namespace Microsoft.AspNetCore.Identity
             return Task.CompletedTask;
         }
 
-        internal class TwoFactorAuthenticationInfo
+        protected internal class TwoFactorAuthenticationInfo
         {
             public string UserId { get; set; }
             public string LoginProvider { get; set; }
