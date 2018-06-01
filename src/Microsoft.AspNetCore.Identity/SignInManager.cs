@@ -73,7 +73,7 @@ namespace Microsoft.AspNetCore.Identity
         internal IUserClaimsPrincipalFactory<TUser> ClaimsFactory { get; set; }
         internal IdentityOptions Options { get; set; }
 
-        internal HttpContext Context { 
+        internal HttpContext Context {
             get
             {
                 var context = _context ?? _contextAccessor?.HttpContext;
@@ -247,7 +247,15 @@ namespace Microsoft.AspNetCore.Identity
             }
             if (await UserManager.CheckPasswordAsync(user, password))
             {
-                var alwaysLockout = AppContext.TryGetSwitch("Microsoft.AspNetCore.Identity.CheckPasswordSignInAlwaysResetLockoutOnSuccess", out var enabled) && enabled;
+                bool enabled;
+                const string quirksModeSwitchName = "Microsoft.AspNetCore.Identity.CheckPasswordSignInAlwaysResetLockoutOnSuccess";
+#if NET451
+                var alwaysLockout = bool.TryParse(System.Configuration.ConfigurationManager.AppSettings[quirksModeSwitchName], out enabled) && enabled;
+#elif NETSTANDARD1_3
+                var alwaysLockout = AppContext.TryGetSwitch(quirksModeSwitchName, out enabled) && enabled;
+#else
+#error Update target frameworks
+#endif
                 // Only reset the lockout when TFA is not enabled when not in quirks mode
                 if (alwaysLockout || !await IsTfaEnabled(user))
                 {
@@ -339,7 +347,7 @@ namespace Microsoft.AspNetCore.Identity
         /// <param name="provider">The two factor authentication provider to validate the code against.</param>
         /// <param name="code">The two factor authentication code to validate.</param>
         /// <param name="isPersistent">Flag indicating whether the sign-in cookie should persist after the browser is closed.</param>
-        /// <param name="rememberClient">Flag indicating whether the current browser should be remember, suppressing all further 
+        /// <param name="rememberClient">Flag indicating whether the current browser should be remember, suppressing all further
         /// two factor authentication prompts.</param>
         /// <returns>The task object representing the asynchronous operation containing the <see name="SignInResult"/>
         /// for the sign-in attempt.</returns>
@@ -565,7 +573,7 @@ namespace Microsoft.AspNetCore.Identity
 
         private async Task<SignInResult> SignInOrTwoFactorAsync(TUser user, bool isPersistent, string loginProvider = null)
         {
-            if (!bypassTwoFactor && await IsTfaEnabled(user))
+            if (await IsTfaEnabled(user))
             {
                 if (!await IsTwoFactorClientRememberedAsync(user))
                 {

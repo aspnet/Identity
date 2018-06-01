@@ -269,7 +269,7 @@ namespace Microsoft.AspNetCore.Identity.Test
             var helper = SetupSignInManager(manager.Object, context);
 
             // Act
-            var result = await helper.CheckPasswordSignInAsync(user, "password", false);
+            var result = await helper.PasswordSignInAsync(user, "password", false, false);
 
             // Assert
             Assert.True(result.Succeeded);
@@ -279,7 +279,13 @@ namespace Microsoft.AspNetCore.Identity.Test
         [Fact]
         public async Task CheckPasswordAlwaysResetLockoutWhenQuirked()
         {
+#if NET451
+            System.Configuration.ConfigurationManager.AppSettings["Microsoft.AspNetCore.Identity.CheckPasswordSignInAlwaysResetLockoutOnSuccess"] = "true";
+#elif NETCOREAPP1_0
             AppContext.SetSwitch("Microsoft.AspNetCore.Identity.CheckPasswordSignInAlwaysResetLockoutOnSuccess", true);
+#else
+#error Update target frameworks
+#endif
 
             // Setup
             var user = new TestUser { UserName = "Foo" };
@@ -293,7 +299,7 @@ namespace Microsoft.AspNetCore.Identity.Test
             var helper = SetupSignInManager(manager.Object, context);
 
             // Act
-            var result = await helper.CheckPasswordSignInAsync(user, "password", false);
+            var result = await helper.PasswordSignInAsync(user, "password", false, false);
 
             // Assert
             Assert.True(result.Succeeded);

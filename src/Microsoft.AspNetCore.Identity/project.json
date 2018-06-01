@@ -26,10 +26,15 @@
     "Microsoft.AspNetCore.Hosting.Abstractions": "1.0.5"
   },
   "frameworks": {
-    "net451": {},
+    "net451": {
+      "frameworkAssemblies": {
+        "System.Configuration": ""
+      }
+    },
     "netstandard1.3": {
       "dependencies": {
-        "System.Text.RegularExpressions": "4.1.0"
+        "System.Text.RegularExpressions": "4.1.0",
+        "System.AppContext": "4.1.0"
       }
     }
   }
