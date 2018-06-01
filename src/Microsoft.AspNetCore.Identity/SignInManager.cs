@@ -262,7 +262,7 @@ namespace Microsoft.AspNetCore.Identity
                     await ResetLockout(user);
                 }
 
-                return SignInResult.Success;
+                return await SignInOrTwoFactorAsync(user, isPersistent);
             }
             Logger.LogWarning(2, "User {userId} failed to provide the correct password.", await UserManager.GetUserIdAsync(user));
 
