@@ -28,7 +28,11 @@
     "NETStandard.Library": "1.6.1"
   },
   "frameworks": {
-    "net451": {},
+    "net451": {
+      "frameworkAssemblies": {
+        "System.Configuration": ""
+      }
+    },
     "netstandard1.3": {}
   }
 }

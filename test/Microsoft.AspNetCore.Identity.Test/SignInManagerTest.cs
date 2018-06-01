@@ -310,7 +310,13 @@ namespace Microsoft.AspNetCore.Identity.Test
         [Fact]
         public async Task CheckPasswordAlwaysResetLockoutWhenQuirked()
         {
+#if NET451
+            System.Configuration.ConfigurationManager.AppSettings["Microsoft.AspNetCore.Identity.CheckPasswordSignInAlwaysResetLockoutOnSuccess"] = "true";
+#elif NETCOREAPP1_1
             AppContext.SetSwitch("Microsoft.AspNetCore.Identity.CheckPasswordSignInAlwaysResetLockoutOnSuccess", true);
+#else
+#error Update target frameworks
+#endif
 
             // Setup
             var user = new TestUser { UserName = "Foo" };
