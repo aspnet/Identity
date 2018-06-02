@@ -228,7 +228,7 @@ namespace Microsoft.AspNetCore.Identity.Test
 
             var context = new Mock<HttpContext>();
             var auth = new Mock<AuthenticationManager>();
-            SetupSignIn(auth);
+            SetupSignIn(auth, user.Id, false);
             context.Setup(c => c.Authentication).Returns(auth.Object).Verifiable();
             var helper = SetupSignInManager(manager.Object, context.Object);
 
@@ -245,7 +245,7 @@ namespace Microsoft.AspNetCore.Identity.Test
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public async Task CheckPasswordOnlyResetLockoutWhenTfaNotEnabled(bool tfaEnabled)
+        public async Task PasswordSignInOnlyResetLockoutWhenTfaNotEnabled(bool tfaEnabled)
         {
             // Setup
             var user = new TestUser { UserName = "Foo" };
@@ -255,6 +255,8 @@ namespace Microsoft.AspNetCore.Identity.Test
             manager.Setup(m => m.SupportsUserTwoFactor).Returns(tfaEnabled).Verifiable();
             manager.Setup(m => m.CheckPasswordAsync(user, "password")).ReturnsAsync(true).Verifiable();
 
+            var context = new Mock<HttpContext>();
+            var auth = new Mock<AuthenticationManager>();
             if (tfaEnabled)
             {
                 manager.Setup(m => m.GetTwoFactorEnabledAsync(user)).ReturnsAsync(true).Verifiable();
@@ -263,17 +265,28 @@ namespace Microsoft.AspNetCore.Identity.Test
             else
             {
                 manager.Setup(m => m.ResetAccessFailedCountAsync(user)).ReturnsAsync(IdentityResult.Success).Verifiable();
+                SetupSignIn(auth);
             }
 
-            var context = new DefaultHttpContext();
-            var helper = SetupSignInManager(manager.Object, context);
+            context.Setup(c => c.Authentication).Returns(auth.Object).Verifiable();
+            var helper = SetupSignInManager(manager.Object, context.Object);
 
             // Act
             var result = await helper.PasswordSignInAsync(user, "password", false, false);
 
             // Assert
-            Assert.True(result.Succeeded);
+            if (tfaEnabled)
+            {
+                Assert.False(result.Succeeded);
+                Assert.True(result.RequiresTwoFactor);
+            }
+            else
+            {
+                Assert.True(result.Succeeded);
+            }
             manager.Verify();
+            context.Verify();
+            auth.Verify();
         }
 
         [Fact]
@@ -295,8 +308,11 @@ namespace Microsoft.AspNetCore.Identity.Test
             manager.Setup(m => m.CheckPasswordAsync(user, "password")).ReturnsAsync(true).Verifiable();
             manager.Setup(m => m.ResetAccessFailedCountAsync(user)).ReturnsAsync(IdentityResult.Success).Verifiable();
 
-            var context = new DefaultHttpContext();
-            var helper = SetupSignInManager(manager.Object, context);
+            var context = new Mock<HttpContext>();
+            var auth = new Mock<AuthenticationManager>();
+            SetupSignIn(auth);
+            context.Setup(c => c.Authentication).Returns(auth.Object).Verifiable();
+            var helper = SetupSignInManager(manager.Object, context.Object);
 
             // Act
             var result = await helper.PasswordSignInAsync(user, "password", false, false);
@@ -304,6 +320,8 @@ namespace Microsoft.AspNetCore.Identity.Test
             // Assert
             Assert.True(result.Succeeded);
             manager.Verify();
+            context.Verify();
+            auth.Verify();
         }
 
         [Theory]
