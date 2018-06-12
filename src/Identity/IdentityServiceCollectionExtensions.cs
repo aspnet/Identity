@@ -88,9 +88,9 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddScoped<ISecurityStampValidator, SecurityStampValidator<TUser>>();
             services.TryAddScoped<ITwoFactorSecurityStampValidator, TwoFactorSecurityStampValidator<TUser>>();
             services.TryAddScoped<IUserClaimsPrincipalFactory<TUser>, UserClaimsPrincipalFactory<TUser, TRole>>();
-            services.TryAddScoped<UserManager<TUser>, UserManager<TUser>>();
-            services.TryAddScoped<SignInManager<TUser>, SignInManager<TUser>>();
-            services.TryAddScoped<RoleManager<TRole>, RoleManager<TRole>>();
+            services.TryAddScoped<UserManager<TUser>>();
+            services.TryAddScoped<SignInManager<TUser>>();
+            services.TryAddScoped<RoleManager<TRole>>();
 
             if (setupAction != null)
             {
