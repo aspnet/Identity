@@ -230,6 +230,51 @@ namespace Microsoft.AspNetCore.Identity.InMemory
         }
 
         [Fact]
+        public async Task SecurityStampValidatorCanUpdateRoles()
+        {
+            var clock = new TestClock();
+            var server = CreateServer(services => services.AddSingleton<ISystemClock>(clock));
+
+            var transaction1 = await SendAsync(server, "http://example.com/createMe");
+            Assert.Equal(HttpStatusCode.OK, transaction1.Response.StatusCode);
+            Assert.Null(transaction1.SetCookie);
+
+            var transaction2 = await SendAsync(server, "http://example.com/pwdLogin/false");
+            Assert.Equal(HttpStatusCode.OK, transaction2.Response.StatusCode);
+            Assert.NotNull(transaction2.SetCookie);
+            Assert.DoesNotContain("; expires=", transaction2.SetCookie);
+
+            var transaction3 = await SendAsync(server, "http://example.com/me", transaction2.CookieNameValue);
+            Assert.Equal("hao", FindClaimValue(transaction3, ClaimTypes.Name));
+            Assert.Null(FindClaimValue(transaction3, ClaimTypes.Role));
+            Assert.Null(transaction3.SetCookie);
+
+            var transaction4 = await SendAsync(server, "http://example.com/addRole");
+            Assert.Equal(HttpStatusCode.OK, transaction2.Response.StatusCode);
+
+            // Cookie not expired yet so no role claim
+            var transaction5 = await SendAsync(server, "http://example.com/me", transaction2.CookieNameValue);
+            Assert.Equal("hao", FindClaimValue(transaction5, ClaimTypes.Name));
+            Assert.Null(FindClaimValue(transaction5, ClaimTypes.Role));
+            Assert.Null(transaction3.SetCookie);
+
+            // Wait for validation interval
+            clock.Add(TimeSpan.FromMinutes(32));
+
+            // Role with new cookie
+            var transaction6 = await SendAsync(server, "http://example.com/me", transaction2.CookieNameValue);
+            Assert.Equal("hao", FindClaimValue(transaction6, ClaimTypes.Name));
+            Assert.Equal("Test", FindClaimValue(transaction6, ClaimTypes.Role));
+            Assert.NotNull(transaction6.SetCookie);
+
+            var transaction7 = await SendAsync(server, "http://example.com/me", transaction6.CookieNameValue);
+            Assert.Equal("hao", FindClaimValue(transaction7, ClaimTypes.Name));
+            Assert.Equal("Test", FindClaimValue(transaction7, ClaimTypes.Role));
+            Assert.Null(transaction6.SetCookie);
+        }
+
+
+        [Fact]
         public async Task TwoFactorRememberCookieClearedBySecurityStampChange()
         {
             var clock = new TestClock();
@@ -337,6 +382,13 @@ namespace Microsoft.AspNetCore.Identity.InMemory
                         {
                             var user = await userManager.FindByNameAsync("hao");
                             await signInManager.RememberTwoFactorClientAsync(user);
+                            res.StatusCode = 200;
+                        }
+                        else if (req.Path == new PathString("/addRole"))
+                        {
+                            var user = await userManager.FindByNameAsync("hao");
+                            await roleManager.CreateAsync(new PocoRole("Test"));
+                            var result = await userManager.AddToRoleAsync(user, "Test");
                             res.StatusCode = 200;
                         }
                         else if (req.Path == new PathString("/isTwoFactorRememebered"))
