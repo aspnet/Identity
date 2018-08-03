@@ -47,13 +47,7 @@
     </header>
 
     <div class="container-fluid">
-        @{
-            var cookieConsent = Engine.FindView(ViewContext, "_CookieConsentPartial", isMainPage: false);
-        }
-        @if (cookieConsent.Success)
-        {
-            await Html.RenderPartialAsync("_CookieConsentPartial");
-        }
+        <partial name="_CookieConsentPartial" optional />
         <main role="main" class="pb-1">
             @RenderBody()
         </main>
