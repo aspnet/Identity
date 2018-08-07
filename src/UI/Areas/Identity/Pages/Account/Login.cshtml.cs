@@ -81,9 +81,9 @@ namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Internal
 
             if (ModelState.IsValid)
             {
-                // Login failure counts towards account lockout.
-                // To disable password failures triggering account lockout, set lockoutOnFailure: false
-                var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: true);
+                // This doesn't count login failures towards account lockout
+                // To enable password failures to trigger account lockout, set lockoutOnFailure: true
+                var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
