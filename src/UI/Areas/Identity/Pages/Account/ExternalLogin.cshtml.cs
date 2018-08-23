@@ -6,19 +6,21 @@ using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Internal
 {
+    [AllowAnonymous]
     [IdentityDefaultUI(typeof(ExternalLoginModel<>))]
     public class ExternalLoginModel : PageModel
     {
         [BindProperty]
         public InputModel Input { get; set; }
 
-        public string LoginProvider { get; set; }
+        public string ProviderDisplayName { get; set; }
 
         public string ReturnUrl { get; set; }
 
@@ -105,7 +107,7 @@ namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Internal
             {
                 // If the user does not have an account, then ask the user to create an account.
                 ReturnUrl = returnUrl;
-                LoginProvider = info.LoginProvider;
+                ProviderDisplayName = info.ProviderDisplayName;
                 if (info.Principal.HasClaim(c => c.Type == ClaimTypes.Email))
                 {
                     Input = new InputModel
@@ -152,7 +154,7 @@ namespace Microsoft.AspNetCore.Identity.UI.Pages.Account.Internal
                 }
             }
 
-            LoginProvider = info.LoginProvider;
+            ProviderDisplayName = info.ProviderDisplayName;
             ReturnUrl = returnUrl;
             return Page();
         }

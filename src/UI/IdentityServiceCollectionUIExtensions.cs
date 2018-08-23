@@ -5,13 +5,13 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace Microsoft.AspNetCore.Identity
+namespace Microsoft.Extensions.DependencyInjection
 {
     /// <summary>
     /// Default UI extensions to <see cref="IServiceCollection"/>.
@@ -28,7 +28,7 @@ namespace Microsoft.AspNetCore.Identity
         /// can be found by the application.
         /// </remarks>
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-        /// <returns>The <see cref="IServiceCollection"/>.</returns>
+        /// <returns>The <see cref="IdentityBuilder"/>.</returns>
         public static IdentityBuilder AddDefaultIdentity<TUser>(this IServiceCollection services) where TUser : class
             => services.AddDefaultIdentity<TUser>(_ => { });
 
@@ -43,7 +43,7 @@ namespace Microsoft.AspNetCore.Identity
         /// </remarks>
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <param name="configureOptions">Configures the <see cref="IdentityOptions"/>.</param>
-        /// <returns>The <see cref="IServiceCollection"/>.</returns>
+        /// <returns>The <see cref="IdentityBuilder"/>.</returns>
         public static IdentityBuilder AddDefaultIdentity<TUser>(this IServiceCollection services, Action<IdentityOptions> configureOptions) where TUser : class
         {
             services.AddAuthentication(o =>
