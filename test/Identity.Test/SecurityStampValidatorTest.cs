@@ -167,7 +167,6 @@ namespace Microsoft.AspNetCore.Identity.Test
                 contextAccessor.Object, claimsManager.Object, identityOptions.Object, null, new Mock<IAuthenticationSchemeProvider>().Object);
             userManager.Setup(u => u.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(user).Verifiable();
             claimsManager.Setup(c => c.CreateAsync(user)).ReturnsAsync(new ClaimsPrincipal()).Verifiable();
-            //userManager.Setup(u => u.GetSecurityStampAsync(user)).ReturnsAsync(user.SecurityStamp).Verifiable();
 
             var services = new ServiceCollection();
             services.AddSingleton(options.Object);
@@ -189,6 +188,7 @@ namespace Microsoft.AspNetCore.Identity.Test
             Assert.NotNull(context.Principal);
 
             userManager.VerifyAll();
+            claimsManager.VerifyAll();
         }
 
         [Fact]
