@@ -4,5 +4,5 @@
 using Microsoft.AspNetCore.Testing.xunit;
 using Xunit;
 
-// Caused test issues. See https://github.com/aspnet/Identity/issues/1926
+// Caused OOM test issues with file watcher. See https://github.com/aspnet/Identity/issues/1926
 [assembly: CollectionBehavior(DisableTestParallelization = true)]
