@@ -13,7 +13,7 @@ namespace Microsoft.Extensions.DependencyInjection
     public static class IdentityServiceCollectionExtensions
     {
         /// <summary>
-        /// Adds and configures the identity system for the specified User and Role types.
+        /// Adds and configures the identity system for the specified User type.
         /// </summary>
         /// <typeparam name="TUser">The type representing a User in the system.</typeparam>
         /// <param name="services">The services available in the application.</param>
@@ -22,7 +22,7 @@ namespace Microsoft.Extensions.DependencyInjection
             => services.AddIdentityCore<TUser>(o => { });
 
         /// <summary>
-        /// Adds and configures the identity system for the specified User and Role types.
+        /// Adds and configures the identity system for the specified User type.
         /// </summary>
         /// <typeparam name="TUser">The type representing a User in the system.</typeparam>
         /// <param name="services">The services available in the application.</param>
