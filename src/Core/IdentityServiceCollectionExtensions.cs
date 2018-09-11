@@ -10,6 +10,10 @@ namespace Microsoft.Extensions.DependencyInjection
     /// <summary>
     /// Contains extension methods to <see cref="IServiceCollection"/> for configuring identity services.
     /// </summary>
+    /// <remarks>
+    /// The methods in this class do not add Role services. See <see cref="AddIdentity"/> to create a
+    /// Role.
+    /// </remarks>
     public static class IdentityServiceCollectionExtensions
     {
         /// <summary>
