@@ -10,14 +10,11 @@ namespace Microsoft.Extensions.DependencyInjection
     /// <summary>
     /// Contains extension methods to <see cref="IServiceCollection"/> for configuring identity services.
     /// </summary>
-    /// <remarks>
-    /// The methods in this class do not add Role services. See <see cref="AddIdentity"/> to create a
-    /// Role.
-    /// </remarks>
-    public static class IdentityServiceCollectionExtensions
+       public static class IdentityServiceCollectionExtensions
     {
         /// <summary>
-        /// Adds and configures the identity system for the specified User type.
+        /// Adds and configures the identity system for the specified User type. Role services are not added 
+        /// by default but can be added with <see cref="AddRoles{TRole}"/>.
         /// </summary>
         /// <typeparam name="TUser">The type representing a User in the system.</typeparam>
         /// <param name="services">The services available in the application.</param>
@@ -26,7 +23,8 @@ namespace Microsoft.Extensions.DependencyInjection
             => services.AddIdentityCore<TUser>(o => { });
 
         /// <summary>
-        /// Adds and configures the identity system for the specified User type.
+        /// Adds and configures the identity system for the specified User type. Role services are not added by default 
+        /// but can be added with <see cref="AddRoles{TRole}"/>.
         /// </summary>
         /// <typeparam name="TUser">The type representing a User in the system.</typeparam>
         /// <param name="services">The services available in the application.</param>
