@@ -14,7 +14,7 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         /// <summary>
         /// Adds and configures the identity system for the specified User type. Role services are not added 
-        /// by default but can be added with <see cref="AddRoles{TRole}"/>.
+        /// by default but can be added with <see cref="IdentityBuilder.AddRoles{TRole}"/>.
         /// </summary>
         /// <typeparam name="TUser">The type representing a User in the system.</typeparam>
         /// <param name="services">The services available in the application.</param>
@@ -24,7 +24,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         /// <summary>
         /// Adds and configures the identity system for the specified User type. Role services are not added by default 
-        /// but can be added with <see cref="AddRoles{TRole}"/>.
+        /// but can be added with <see cref="IdentityBuilder.AddRoles{TRole}"/>.
         /// </summary>
         /// <typeparam name="TUser">The type representing a User in the system.</typeparam>
         /// <param name="services">The services available in the application.</param>
