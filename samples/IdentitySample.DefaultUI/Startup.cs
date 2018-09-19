@@ -35,6 +35,7 @@ namespace IdentitySample.DefaultUI
             services.AddMvc();
 
             services.AddDefaultIdentity<ApplicationUser>()
+                 .AddDefaultUI(Microsoft.AspNetCore.Identity.UI.UIFramework.Bootstrap4)
                  .AddRoles<IdentityRole>()
                  .AddEntityFrameworkStores<ApplicationDbContext>();
         }
