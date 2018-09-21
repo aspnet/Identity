@@ -52,22 +52,20 @@ namespace Microsoft.AspNetCore.Identity.UI.V4.Pages.Account.Internal
     {
         private readonly SignInManager<TUser> _signInManager;
         private readonly UserManager<TUser> _userManager;
-        private readonly IUserStore<TUser> _userStore;
-        private readonly IUserEmailStore<TUser> _emailStore;
+        private readonly IdentityDefaultUIUserFactory<TUser> _userFactory;
         private readonly ILogger<LoginModel> _logger;
         private readonly IEmailSender _emailSender;
 
         public RegisterModel(
             UserManager<TUser> userManager,
-            IUserStore<TUser> userStore,
             SignInManager<TUser> signInManager,
+            IdentityDefaultUIUserFactory<TUser> userFactory,
             ILogger<LoginModel> logger,
             IEmailSender emailSender)
         {
             _userManager = userManager;
-            _userStore = userStore;
-            _emailStore = GetEmailStore();
             _signInManager = signInManager;
+            _userFactory = userFactory;
             _logger = logger;
             _emailSender = emailSender;
         }
@@ -82,10 +80,8 @@ namespace Microsoft.AspNetCore.Identity.UI.V4.Pages.Account.Internal
             returnUrl = returnUrl ?? Url.Content("~/");
             if (ModelState.IsValid)
             {
-                var user = CreateUser();
-
-                await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
-                await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+                // By default we use the email for the user name and the email
+                var user = _userFactory.Create(Input.Email, Input.Email);
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
                 if (result.Succeeded)
@@ -114,29 +110,6 @@ namespace Microsoft.AspNetCore.Identity.UI.V4.Pages.Account.Internal
 
             // If we got this far, something failed, redisplay form
             return Page();
-        }
-
-        private TUser CreateUser()
-        {
-            try
-            {
-                return Activator.CreateInstance<TUser>();
-            }
-            catch
-            {
-                throw new InvalidOperationException($"Can't create an instance of '{nameof(TUser)}'. " +
-                    $"Ensure that '{nameof(TUser)}' is not an abstract class and has a parameterless constructor, or alternatively " +
-                    $"override the register page in /Areas/Identity/Pages/Account/Register.cshtml");
-            }
-        }
-
-        private IUserEmailStore<TUser> GetEmailStore()
-        {
-            if (!_userManager.SupportsUserEmail)
-            {
-                throw new NotSupportedException("The default UI requires a user store with email support.");
-            }
-            return (IUserEmailStore<TUser>)_userStore;
         }
     }
 }

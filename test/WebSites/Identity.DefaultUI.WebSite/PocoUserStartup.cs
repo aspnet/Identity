@@ -28,7 +28,13 @@ namespace Identity.DefaultUI.WebSite
 
             services.AddDefaultIdentity<Microsoft.AspNetCore.Identity.Test.PocoUser>()
                 .AddDefaultUI(UIFramework.Bootstrap4)
-                .AddUserManager<UserManager<Microsoft.AspNetCore.Identity.Test.PocoUser>>();
+                .AddUserManager<UserManager<Microsoft.AspNetCore.Identity.Test.PocoUser>>()
+                .AddDefaultUIUserFactory<Microsoft.AspNetCore.Identity.Test.PocoUser>((userName,email) =>
+                    new Microsoft.AspNetCore.Identity.Test.PocoUser()
+                    {
+                        UserName = userName,
+                        Email = email
+                    });
             services.AddSingleton<IUserStore<Microsoft.AspNetCore.Identity.Test.PocoUser>, InMemoryUserStore<Microsoft.AspNetCore.Identity.Test.PocoUser>>();
 
             services.AddMvc();

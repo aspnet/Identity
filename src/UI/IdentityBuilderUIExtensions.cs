@@ -32,6 +32,11 @@ namespace Microsoft.AspNetCore.Identity
         /// <returns>The <see cref="IdentityBuilder"/>.</returns>
         public static IdentityBuilder AddDefaultUI(this IdentityBuilder builder) => builder.AddDefaultUI(UIFramework.Bootstrap3);
 
+        public static IdentityBuilder AddDefaultUIUserFactory<TUser>(this IdentityBuilder builder, Func<string, string, TUser> createUser) where TUser : class
+        {
+            builder.Services.AddSingleton<IdentityDefaultUIUserFactory<TUser>>(new FuncUserFactory<TUser>(createUser));
+            return builder;
+        }
 
         /// <summary>
         /// Adds a default, self-contained UI for Identity to the application using
@@ -58,7 +63,40 @@ namespace Microsoft.AspNetCore.Identity
 
             builder.Services.Configure<DefaultUIOptions>(o => o.UIFramework = framework);
 
+            // Hookup the UserFactory for IdentityUser based user types that have a default constructor
+            if (TryGetIdentityUserType(builder.UserType, out var primaryKeyType))
+            {
+                var userFactoryType = typeof(IdentityDefaultUIUserFactory<>).MakeGenericType(builder.UserType);
+                var defaultUserFactoryType = typeof(DefaultUserFactory<,>).MakeGenericType(builder.UserType, primaryKeyType);
+                builder.Services.TryAddSingleton(userFactoryType, defaultUserFactoryType);
+            }
+
             return builder;
+        }
+
+        private static bool TryGetIdentityUserType(Type userType, out Type primaryKeyType)
+        {
+            primaryKeyType = null;
+
+            // Must have a default constructor
+            if (userType.GetConstructor(Type.EmptyTypes) == null)
+            {
+                return false;
+            }
+
+            var baseType = userType.BaseType;
+            while (baseType != null)
+            {
+                if (baseType.IsGenericType &&
+                    baseType.GetGenericTypeDefinition() == typeof(IdentityUser<>))
+                {
+                    primaryKeyType = baseType.GetGenericArguments()[0];
+                    return true;
+                }
+                baseType = baseType.BaseType;
+            }
+
+            return false;
         }
 
         private static readonly IDictionary<UIFramework, string> _assemblyMap =
