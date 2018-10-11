@@ -69,22 +69,24 @@ namespace Microsoft.AspNetCore.Identity
             {
                 throw new ArgumentNullException(nameof(user));
             }
-            var ms = new MemoryStream();
-            var userId = await manager.GetUserIdAsync(user);
-            using (var writer = ms.CreateWriter())
+            using (var ms = new MemoryStream())
             {
-                writer.Write(DateTimeOffset.UtcNow);
-                writer.Write(userId);
-                writer.Write(purpose ?? "");
-                string stamp = null;
-                if (manager.SupportsUserSecurityStamp)
+                var userId = await manager.GetUserIdAsync(user);
+                using (var writer = ms.CreateWriter())
                 {
-                    stamp = await manager.GetSecurityStampAsync(user);
+                    writer.Write(DateTimeOffset.UtcNow);
+                    writer.Write(userId);
+                    writer.Write(purpose ?? "");
+                    string stamp = null;
+                    if (manager.SupportsUserSecurityStamp)
+                    {
+                        stamp = await manager.GetSecurityStampAsync(user);
+                    }
+                    writer.Write(stamp ?? "");
                 }
-                writer.Write(stamp ?? "");
+                var protectedBytes = Protector.Protect(ms.ToArray());
+                return Convert.ToBase64String(protectedBytes);
             }
-            var protectedBytes = Protector.Protect(ms.ToArray());
-            return Convert.ToBase64String(protectedBytes);
         }
 
         /// <summary>
@@ -103,38 +105,40 @@ namespace Microsoft.AspNetCore.Identity
             try
             {
                 var unprotectedData = Protector.Unprotect(Convert.FromBase64String(token));
-                var ms = new MemoryStream(unprotectedData);
-                using (var reader = ms.CreateReader())
+                using (var ms = new MemoryStream(unprotectedData))
                 {
-                    var creationTime = reader.ReadDateTimeOffset();
-                    var expirationTime = creationTime + Options.TokenLifespan;
-                    if (expirationTime < DateTimeOffset.UtcNow)
+                    using (var reader = ms.CreateReader())
                     {
-                        return false;
-                    }
+                        var creationTime = reader.ReadDateTimeOffset();
+                        var expirationTime = creationTime + Options.TokenLifespan;
+                        if (expirationTime < DateTimeOffset.UtcNow)
+                        {
+                            return false;
+                        }
 
-                    var userId = reader.ReadString();
-                    var actualUserId = await manager.GetUserIdAsync(user);
-                    if (userId != actualUserId)
-                    {
-                        return false;
-                    }
-                    var purp = reader.ReadString();
-                    if (!string.Equals(purp, purpose))
-                    {
-                        return false;
-                    }
-                    var stamp = reader.ReadString();
-                    if (reader.PeekChar() != -1)
-                    {
-                        return false;
-                    }
+                        var userId = reader.ReadString();
+                        var actualUserId = await manager.GetUserIdAsync(user);
+                        if (userId != actualUserId)
+                        {
+                            return false;
+                        }
+                        var purp = reader.ReadString();
+                        if (!string.Equals(purp, purpose))
+                        {
+                            return false;
+                        }
+                        var stamp = reader.ReadString();
+                        if (reader.PeekChar() != -1)
+                        {
+                            return false;
+                        }
 
-                    if (manager.SupportsUserSecurityStamp)
-                    {
-                        return stamp == await manager.GetSecurityStampAsync(user);
+                        if (manager.SupportsUserSecurityStamp)
+                        {
+                            return stamp == await manager.GetSecurityStampAsync(user);
+                        }
+                        return stamp == "";
                     }
-                    return stamp == "";
                 }
             }
             // ReSharper disable once EmptyGeneralCatchClause
