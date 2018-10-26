@@ -73,15 +73,6 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests.Account
             Assert.Contains("Invalid login attempt.", content);
         }
 
-        public async Task LoginWrongPasswordAsync(string userName, string password)
-        {
-            var failedLogin = await SendLoginForm(userName, password);
-
-            ResponseAssert.IsOK(failedLogin);
-            var content = await failedLogin.Content.ReadAsStringAsync();
-            Assert.Contains("Invalid login attempt.", content);
-        }
-
         public async Task<DefaultUIPage> LockoutUserAsync(string userName, string password)
         {
             var loginAttempt = await SendLoginForm(userName, password);
