@@ -8,7 +8,8 @@
 
 <partial name="_StatusMessage" model="Model.StatusMessage" />
 <h4>@ViewData["Title"]</h4>
-@if (HttpContext.Features.Get<ITrackingConsentFeature>().CanTrack)
+var consentFeature = HttpContext.Features.Get<ITrackingConsentFeature>();
+@if (consentFeature?.CanTrack ?? true)
 {
     @if (Model.Is2faEnabled)
     {
