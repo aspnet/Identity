@@ -131,7 +131,6 @@ namespace Microsoft.AspNetCore.Identity.Test
             // Assert
             Assert.False(result.Succeeded);
             Assert.True(result.IsLockedOut);
-//            Assert.Contains($"User {user.Id} is currently locked out.", logStore.ToString());
             manager.Verify();
         }
 
@@ -162,7 +161,6 @@ namespace Microsoft.AspNetCore.Identity.Test
             // Assert
             Assert.False(result.Succeeded);
             Assert.True(result.IsLockedOut);
-            //Assert.Contains($"User {user.Id} is currently locked out.", logStore.ToString());
             manager.Verify();
         }
 
