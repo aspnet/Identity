@@ -17,7 +17,7 @@ namespace Microsoft.AspNetCore.Identity
         private static readonly Encoding _encoding = new UTF8Encoding(false, true);
         private static readonly RandomNumberGenerator _rng = RandomNumberGenerator.Create();
 
-        // Generates a new 80-bit security token
+        // Generates a new 160-bit security token
         public static byte[] GenerateRandomKey()
         {
             byte[] bytes = new byte[20];
