@@ -25,8 +25,8 @@
     <MicrosoftAspNetCoreHttpAbstractionsPackageVersion>3.0.0-alpha1-10670</MicrosoftAspNetCoreHttpAbstractionsPackageVersion>
     <MicrosoftAspNetCoreHttpPackageVersion>3.0.0-alpha1-10670</MicrosoftAspNetCoreHttpPackageVersion>
     <MicrosoftAspNetCoreHttpsPolicyPackageVersion>3.0.0-alpha1-10670</MicrosoftAspNetCoreHttpsPolicyPackageVersion>
-    <MicrosoftAspNetCoreMvcPackageVersion>3.0.0-a-alpha1-react-razor-design-19157</MicrosoftAspNetCoreMvcPackageVersion>
-    <MicrosoftAspNetCoreMvcTestingPackageVersion>3.0.0-a-alpha1-react-razor-design-19157</MicrosoftAspNetCoreMvcTestingPackageVersion>
+    <MicrosoftAspNetCoreMvcPackageVersion>3.0.0-a-alpha1-mapapplication-19167</MicrosoftAspNetCoreMvcPackageVersion>
+    <MicrosoftAspNetCoreMvcTestingPackageVersion>3.0.0-a-alpha1-mapapplication-19167</MicrosoftAspNetCoreMvcTestingPackageVersion>
     <MicrosoftAspNetCoreRewritePackageVersion>3.0.0-alpha1-10670</MicrosoftAspNetCoreRewritePackageVersion>
     <MicrosoftAspNetCoreServerIISIntegrationPackageVersion>2.2.0-rtm-10670</MicrosoftAspNetCoreServerIISIntegrationPackageVersion>
     <MicrosoftAspNetCoreServerKestrelHttpsPackageVersion>3.0.0-alpha1-10670</MicrosoftAspNetCoreServerKestrelHttpsPackageVersion>
