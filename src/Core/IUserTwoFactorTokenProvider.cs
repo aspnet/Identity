@@ -17,6 +17,7 @@ namespace Microsoft.AspNetCore.Identity
         /// <param name="purpose">The purpose the token will be used for.</param>
         /// <param name="manager">The <see cref="UserManager{TUser}"/> that can be used to retrieve user properties.</param>
         /// <param name="user">The user a token should be generated for.</param>
+        /// <param name="length">The length of code.</param>
         /// <returns>
         /// The <see cref="Task"/> that represents the asynchronous operation, containing the token for the specified 
         /// <paramref name="user"/> and <paramref name="purpose"/>.
@@ -30,7 +31,7 @@ namespace Microsoft.AspNetCore.Identity
         /// Implementations of <see cref="IUserTwoFactorTokenProvider{TUser}"/> should validate that purpose is not null or empty to
         /// help with token separation.
         /// </remarks>
-        Task<string> GenerateAsync(string purpose, UserManager<TUser> manager, TUser user);
+        Task<string> GenerateAsync(string purpose, UserManager<TUser> manager, TUser user,int length);
 
         /// <summary>
         /// Returns a flag indicating whether the specified <paramref name="token"/> is valid for the given
@@ -40,12 +41,13 @@ namespace Microsoft.AspNetCore.Identity
         /// <param name="token">The token to validate.</param>
         /// <param name="manager">The <see cref="UserManager{TUser}"/> that can be used to retrieve user properties.</param>
         /// <param name="user">The user a token should be validated for.</param>
+        /// <param name="length">The length of code.</param>
         /// <returns>
         /// The <see cref="Task"/> that represents the asynchronous operation, containing the a flag indicating the result
         /// of validating the <paramref name="token"> for the specified </paramref><paramref name="user"/> and <paramref name="purpose"/>.
         /// The task will return true if the token is valid, otherwise false.
         /// </returns>
-        Task<bool> ValidateAsync(string purpose, string token, UserManager<TUser> manager, TUser user);
+        Task<bool> ValidateAsync(string purpose, string token, UserManager<TUser> manager, TUser user,int length);
 
         /// <summary>
         /// Returns a flag indicating whether the token provider can generate a token suitable for two factor authentication token for

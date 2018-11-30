@@ -12,12 +12,13 @@ namespace Microsoft.AspNetCore.Identity
 
     internal static class Rfc6238AuthenticationService
     {
+
         private static readonly DateTime _unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         private static readonly TimeSpan _timestep = TimeSpan.FromMinutes(3);
         private static readonly Encoding _encoding = new UTF8Encoding(false, true);
         private static readonly RandomNumberGenerator _rng = RandomNumberGenerator.Create();
 
-        // Generates a new 80-bit security token
+        // Generates a new 160-bit security token
         public static byte[] GenerateRandomKey()
         {
             byte[] bytes = new byte[20];
@@ -25,10 +26,17 @@ namespace Microsoft.AspNetCore.Identity
             return bytes;
         }
 
-        internal static int ComputeTotp(HashAlgorithm hashAlgorithm, ulong timestepNumber, string modifier)
+        /// <summary>
+        /// </summary>
+        /// <param name="hashAlgorithm"></param>
+        /// <param name="timestepNumber"></param>
+        /// <param name="modifier"></param>
+        /// <param name="length"></param>
+        /// <returns></returns>
+        internal static int ComputeTotp(HashAlgorithm hashAlgorithm, ulong timestepNumber, string modifier, int length)
         {
             // # of 0's = length of pin
-            const int Mod = 1000000;
+            int Mod = 10 ^ length;
 
             // See https://tools.ietf.org/html/rfc4226
             // We can add an optional modifier
@@ -67,7 +75,13 @@ namespace Microsoft.AspNetCore.Identity
             return (ulong)(delta.Ticks / _timestep.Ticks);
         }
 
-        public static int GenerateCode(byte[] securityToken, string modifier = null)
+        /// <summary>
+        /// </summary>
+        /// <param name="securityToken"></param>
+        /// <param name="modifier"></param>
+        /// <param name="length"></param>
+        /// <returns></returns>
+        public static int GenerateCode(byte[] securityToken, string modifier, int length)
         {
             if (securityToken == null)
             {
@@ -78,11 +92,18 @@ namespace Microsoft.AspNetCore.Identity
             var currentTimeStep = GetCurrentTimeStepNumber();
             using (var hashAlgorithm = new HMACSHA1(securityToken))
             {
-                return ComputeTotp(hashAlgorithm, currentTimeStep, modifier);
+                return ComputeTotp(hashAlgorithm, currentTimeStep, modifier, length);
             }
         }
 
-        public static bool ValidateCode(byte[] securityToken, int code, string modifier = null)
+        /// <summary>
+        /// </summary>
+        /// <param name="securityToken"></param>
+        /// <param name="code"></param>
+        /// <param name="modifier"></param>
+        /// <param name="length"></param>
+        /// <returns></returns>
+        public static bool ValidateCode(byte[] securityToken, int code, string modifier, int length)
         {
             if (securityToken == null)
             {
@@ -95,7 +116,7 @@ namespace Microsoft.AspNetCore.Identity
             {
                 for (var i = -2; i <= 2; i++)
                 {
-                    var computedTotp = ComputeTotp(hashAlgorithm, (ulong)((long)currentTimeStep + i), modifier);
+                    var computedTotp = ComputeTotp(hashAlgorithm, (ulong)((long)currentTimeStep + i), modifier, length);
                     if (computedTotp == code)
                     {
                         return true;

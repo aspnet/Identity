@@ -409,7 +409,7 @@ namespace Microsoft.AspNetCore.Identity.Test
 
         private class GoodTokenProvider : AuthenticatorTokenProvider<PocoUser>
         {
-            public override Task<bool> ValidateAsync(string purpose, string token, UserManager<PocoUser> manager, PocoUser user)
+            public override Task<bool> ValidateAsync(string purpose, string token, UserManager<PocoUser> manager, PocoUser user, int length)
             {
                 return Task.FromResult(true);
             }

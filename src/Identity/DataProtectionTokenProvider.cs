@@ -62,8 +62,9 @@ namespace Microsoft.AspNetCore.Identity
         /// <param name="purpose">The purpose the token will be used for.</param>
         /// <param name="manager">The <see cref="UserManager{TUser}"/> to retrieve user properties from.</param>
         /// <param name="user">The <typeparamref name="TUser"/> the token will be generated from.</param>
+	/// <param name="length">The length of code.</param>
         /// <returns>A <see cref="Task{TResult}"/> representing the generated token.</returns>
-        public virtual async Task<string> GenerateAsync(string purpose, UserManager<TUser> manager, TUser user)
+        public virtual async Task<string> GenerateAsync(string purpose, UserManager<TUser> manager, TUser user, int length)
         {
             if (user == null)
             {
@@ -94,11 +95,12 @@ namespace Microsoft.AspNetCore.Identity
         /// <param name="token">The token to validate.</param>
         /// <param name="manager">The <see cref="UserManager{TUser}"/> to retrieve user properties from.</param>
         /// <param name="user">The <typeparamref name="TUser"/> the token was generated for.</param>
+	/// <param name="length">The length of code.</param>
         /// <returns>
         /// A <see cref="Task{TResult}"/> that represents the result of the asynchronous validation,
         /// containing true if the token is valid, otherwise false.
         /// </returns>
-        public virtual async Task<bool> ValidateAsync(string purpose, string token, UserManager<TUser> manager, TUser user)
+        public virtual async Task<bool> ValidateAsync(string purpose, string token, UserManager<TUser> manager, TUser user, int length)
         {
             try
             {

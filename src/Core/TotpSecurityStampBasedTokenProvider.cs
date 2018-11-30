@@ -17,6 +17,7 @@ namespace Microsoft.AspNetCore.Identity
         /// <param name="purpose">The purpose the token will be used for.</param>
         /// <param name="manager">The <see cref="UserManager{TUser}"/> that can be used to retrieve user properties.</param>
         /// <param name="user">The user a token should be generated for.</param>
+        /// <param name="length">The length of code.</param>
         /// <returns>
         /// The <see cref="Task"/> that represents the asynchronous operation, containing the token for the specified 
         /// <paramref name="user"/> and <paramref name="purpose"/>.
@@ -30,7 +31,7 @@ namespace Microsoft.AspNetCore.Identity
         /// Implementations of <see cref="IUserTwoFactorTokenProvider{TUser}"/> should validate that purpose is not null or empty to
         /// help with token separation.
         /// </remarks>
-        public virtual async Task<string> GenerateAsync(string purpose, UserManager<TUser> manager, TUser user)
+        public virtual async Task<string> GenerateAsync(string purpose, UserManager<TUser> manager, TUser user,int length)
         {
             if (manager == null)
             {
@@ -38,7 +39,8 @@ namespace Microsoft.AspNetCore.Identity
             }
             var token = await manager.CreateSecurityTokenAsync(user);
             var modifier = await GetUserModifierAsync(purpose, manager, user);
-            return Rfc6238AuthenticationService.GenerateCode(token, modifier).ToString("D6", CultureInfo.InvariantCulture);
+            return Rfc6238AuthenticationService.GenerateCode(token, modifier, length)
+                .ToString($"D{length}" , CultureInfo.InvariantCulture);
         }
 
         /// <summary>
@@ -49,12 +51,13 @@ namespace Microsoft.AspNetCore.Identity
         /// <param name="token">The token to validate.</param>
         /// <param name="manager">The <see cref="UserManager{TUser}"/> that can be used to retrieve user properties.</param>
         /// <param name="user">The user a token should be validated for.</param>
+	/// <param name="length">The length of code.</param>
         /// <returns>
         /// The <see cref="Task"/> that represents the asynchronous operation, containing the a flag indicating the result
         /// of validating the <paramref name="token"> for the specified </paramref><paramref name="user"/> and <paramref name="purpose"/>.
         /// The task will return true if the token is valid, otherwise false.
         /// </returns>
-        public virtual async Task<bool> ValidateAsync(string purpose, string token, UserManager<TUser> manager, TUser user)
+        public virtual async Task<bool> ValidateAsync(string purpose, string token, UserManager<TUser> manager, TUser user, int length)
         {
             if (manager == null)
             {
@@ -67,7 +70,7 @@ namespace Microsoft.AspNetCore.Identity
             }
             var securityToken = await manager.CreateSecurityTokenAsync(user);
             var modifier = await GetUserModifierAsync(purpose, manager, user);
-            return securityToken != null && Rfc6238AuthenticationService.ValidateCode(securityToken, code, modifier);
+            return securityToken != null && Rfc6238AuthenticationService.ValidateCode(securityToken, code, modifier,length);
         }
 
         /// <summary>

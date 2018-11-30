@@ -12,6 +12,7 @@ namespace Microsoft.AspNetCore.Identity
     /// </summary>
     public class AuthenticatorTokenProvider<TUser> : IUserTwoFactorTokenProvider<TUser> where TUser : class
     {
+  
         /// <summary>
         /// Checks if a two factor authentication token can be generated for the specified <paramref name="user"/>.
         /// </summary>
@@ -30,21 +31,28 @@ namespace Microsoft.AspNetCore.Identity
         /// <param name="purpose">Ignored.</param>
         /// <param name="manager">The <see cref="UserManager{TUser}"/> to retrieve the <paramref name="user"/> from.</param>
         /// <param name="user">The <typeparamref name="TUser"/>.</param>
+        /// <param name="length">The length of code.</param>
         /// <returns>string.Empty.</returns>
-        public virtual Task<string> GenerateAsync(string purpose, UserManager<TUser> manager, TUser user)
+        public virtual Task<string> GenerateAsync(string purpose, UserManager<TUser> manager, TUser user, int length)
         {
             return Task.FromResult(string.Empty);
         }
 
         /// <summary>
-        /// 
+        /// Returns a flag indicating whether the specified <paramref name="token"/> is valid for the given
+        /// <paramref name="user"/> and <paramref name="purpose"/>.
         /// </summary>
-        /// <param name="purpose"></param>
-        /// <param name="token"></param>
-        /// <param name="manager"></param>
-        /// <param name="user"></param>
-        /// <returns></returns>
-        public virtual async Task<bool> ValidateAsync(string purpose, string token, UserManager<TUser> manager, TUser user)
+        /// <param name="purpose">The purpose the token will be used for.</param>
+        /// <param name="token">The token to validate.</param>
+        /// <param name="manager">The <see cref="UserManager{TUser}"/> that can be used to retrieve user properties.</param>
+        /// <param name="user">The user a token should be validated for.</param>
+        /// <param name="length">The length of code.</param>
+        /// <returns>
+        /// The <see cref="Task"/> that represents the asynchronous operation, containing the a flag indicating the result
+        /// of validating the <paramref name="token"> for the specified </paramref><paramref name="user"/> and <paramref name="purpose"/>.
+        /// The task will return true if the token is valid, otherwise false.
+        /// </returns>
+	public virtual async Task<bool> ValidateAsync(string purpose, string token, UserManager<TUser> manager, TUser user, int length)
         {
             var key = await manager.GetAuthenticatorKeyAsync(user);
             int code;
@@ -59,7 +67,7 @@ namespace Microsoft.AspNetCore.Identity
             // Allow codes from 90s in each direction (we could make this configurable?)
             for (int i = -2; i <= 2; i++)
             {
-                var expectedCode = Rfc6238AuthenticationService.ComputeTotp(hash, (ulong)(timestep + i), modifier: null);
+                var expectedCode = Rfc6238AuthenticationService.ComputeTotp(hash, (ulong)(timestep + i), modifier: null, length);
                 if (expectedCode == code)
                 {
                     return true;

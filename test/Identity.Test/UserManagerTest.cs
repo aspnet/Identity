@@ -670,12 +670,12 @@ namespace Microsoft.AspNetCore.Identity.Test
                 throw new NotImplementedException();
             }
 
-            public Task<string> GenerateAsync(string purpose, UserManager<PocoUser> manager, PocoUser user)
+            public Task<string> GenerateAsync(string purpose, UserManager<PocoUser> manager, PocoUser user,int length)
             {
                 throw new NotImplementedException();
             }
 
-            public Task<bool> ValidateAsync(string purpose, string token, UserManager<PocoUser> manager, PocoUser user)
+            public Task<bool> ValidateAsync(string purpose, string token, UserManager<PocoUser> manager, PocoUser user,int length)
             {
                 throw new NotImplementedException();
             }
@@ -1346,12 +1346,12 @@ namespace Microsoft.AspNetCore.Identity.Test
         {
             public string Name { get; } = "Noop";
 
-            public Task<string> GenerateAsync(string purpose, UserManager<PocoUser> manager, PocoUser user)
+            public Task<string> GenerateAsync(string purpose, UserManager<PocoUser> manager, PocoUser user, int length)
             {
                 return Task.FromResult("Test");
             }
 
-            public Task<bool> ValidateAsync(string purpose, string token, UserManager<PocoUser> manager, PocoUser user)
+            public Task<bool> ValidateAsync(string purpose, string token, UserManager<PocoUser> manager, PocoUser user, int length)
             {
                 return Task.FromResult(true);
             }

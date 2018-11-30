@@ -52,7 +52,7 @@ namespace Microsoft.AspNetCore.Identity.FunctionalTests.Account.Manage
             var hash = new HMACSHA1(Base32.FromBase32(key));
             var unixTimestamp = Convert.ToInt64(Math.Round((DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0)).TotalSeconds));
             var timestep = Convert.ToInt64(unixTimestamp / 30);
-            var topt = Rfc6238AuthenticationService.ComputeTotp(hash, (ulong)timestep, modifier: null);
+            var topt = Rfc6238AuthenticationService.ComputeTotp(hash, (ulong)timestep, modifier: null, 6);
             return topt.ToString("D6");
         }
     }

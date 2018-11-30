@@ -1705,7 +1705,7 @@ namespace Microsoft.AspNetCore.Identity
                 throw new NotSupportedException(Resources.FormatNoTokenProvider(nameof(TUser), tokenProvider));
             }
             // Make sure the token is valid
-            var result = await _tokenProviders[tokenProvider].ValidateAsync(purpose, token, this, user);
+            var result = await _tokenProviders[tokenProvider].ValidateAsync(purpose, token, this, user, 6);
 
             if (!result)
             {
@@ -1740,7 +1740,7 @@ namespace Microsoft.AspNetCore.Identity
                 throw new NotSupportedException(Resources.FormatNoTokenProvider(nameof(TUser), tokenProvider));
             }
 
-            return _tokenProviders[tokenProvider].GenerateAsync(purpose, this, user);
+            return _tokenProviders[tokenProvider].GenerateAsync(purpose, this, user, 6);
         }
 
         /// <summary>
@@ -1808,7 +1808,7 @@ namespace Microsoft.AspNetCore.Identity
             }
 
             // Make sure the token is valid
-            var result = await _tokenProviders[tokenProvider].ValidateAsync("TwoFactor", token, this, user);
+            var result = await _tokenProviders[tokenProvider].ValidateAsync("TwoFactor", token, this, user, 6);
             if (!result)
             {
                 Logger.LogWarning(10, $"{nameof(VerifyTwoFactorTokenAsync)}() failed for user {await GetUserIdAsync(user)}.");
@@ -1837,7 +1837,7 @@ namespace Microsoft.AspNetCore.Identity
                 throw new NotSupportedException(Resources.FormatNoTokenProvider(nameof(TUser), tokenProvider));
             }
 
-            return _tokenProviders[tokenProvider].GenerateAsync("TwoFactor", this, user);
+            return _tokenProviders[tokenProvider].GenerateAsync("TwoFactor", this, user, 6);
         }
 
         /// <summary>

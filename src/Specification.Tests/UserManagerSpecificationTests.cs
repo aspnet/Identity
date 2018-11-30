@@ -1059,12 +1059,12 @@ namespace Microsoft.AspNetCore.Identity.Test
 
         private class StaticTokenProvider : IUserTwoFactorTokenProvider<TUser>
         {
-            public async Task<string> GenerateAsync(string purpose, UserManager<TUser> manager, TUser user)
+            public async Task<string> GenerateAsync(string purpose, UserManager<TUser> manager, TUser user,int length)
             {
                 return MakeToken(purpose, await manager.GetUserIdAsync(user));
             }
 
-            public async Task<bool> ValidateAsync(string purpose, string token, UserManager<TUser> manager, TUser user)
+            public async Task<bool> ValidateAsync(string purpose, string token, UserManager<TUser> manager, TUser user,int length)
             {
                 return token == MakeToken(purpose, await manager.GetUserIdAsync(user));
             }
@@ -1600,10 +1600,10 @@ namespace Microsoft.AspNetCore.Identity.Test
             public Task<bool> CanGenerateTwoFactorTokenAsync(UserManager<TUser> manager, TUser user)
                 => Task.FromResult(true);
 
-            public Task<string> GenerateAsync(string purpose, UserManager<TUser> manager, TUser user)
+            public Task<string> GenerateAsync(string purpose, UserManager<TUser> manager, TUser user, int length)
                 => Task.FromResult(purpose);
 
-            public Task<bool> ValidateAsync(string purpose, string token, UserManager<TUser> manager, TUser user)
+            public Task<bool> ValidateAsync(string purpose, string token, UserManager<TUser> manager, TUser user, int length)
                 => Task.FromResult(true);
         }
 
