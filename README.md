@@ -1,13 +1,11 @@
-ASP.NET Core Identity
-===
+ASP.NET Core Identity [Archived]
+================================
 
-AppVeyor: [![AppVeyor](https://ci.appveyor.com/api/projects/status/vf79kttspnblh2hx/branch/dev?svg=true)](https://ci.appveyor.com/project/aspnetci/Identity/branch/dev)
-
-Travis:   [![Travis](https://travis-ci.org/aspnet/Identity.svg?branch=dev)](https://travis-ci.org/aspnet/Identity)
+**This GitHub project has been archived.** Ongoing development on this project can be found in <https://github.com/aspnet/AspNetCore>.
 
 ASP.NET Core Identity is the membership system for building ASP.NET Core web applications, including membership, login, and user data. ASP.NET Core Identity allows you to add login features to your application and makes it easy to customize data about the logged in user.
 
-This project is part of ASP.NET Core. You can find samples, documentation and getting started instructions for ASP.NET Core at the [Home](https://github.com/aspnet/home) repo.
+This project is part of ASP.NET Core. You can find samples, documentation and getting started instructions for ASP.NET Core at the [AspNetCore](https://github.com/aspnet/AspNetCore) repo.
 
 ## ASP.NET Identity for ASP.NET MVC 5
 
